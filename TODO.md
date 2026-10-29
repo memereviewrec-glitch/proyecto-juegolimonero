@@ -8,9 +8,10 @@
 - Mostrar indicadores comprensibles del progreso, estado actual y ramas recorridas para facilitar el análisis del guion, sin cambiar su lógica narrativa.
 
 ## [x] Representar interacciones contextuales y zonas clicables
-- Representar las zonas clicables de cada escena; el limón se mueve al punto clicado y las acciones se habilitan según el estado descrito.
-- Presentar las opciones contextuales, descripciones y respuesta visual de cada estado.
-- No tratar toda el área de la escena como clicable; se deben diferenciar los puntos transitables e interactivos de las zonas sin interacción.
+- Representar las zonas clicables de cada escena; las acciones contextuales se habilitan según el estado descrito y no toda la pantalla debe abrir acciones.
+- En el local, el limón debe moverse por el suelo siguiendo los clics del ratón, con una animación más pausada; el movimiento no debe habilitar acciones fuera de los puntos interactivos.
+- Los cuadros de diálogo y de elección de acción deben integrarse visualmente dentro de la pantalla del juego y compartir su estética pixel art.
+- Mostrar opciones contextuales, descripciones y respuesta visual de cada estado.
 
 ## [x] Reflejar la secuencia de la pantalla 1 y la regla musical del portal
 - La secuencia obligatoria es conectar el cable primero a la guitarra y después al amplificador; después se puede examinar el amplificador y alternar su estado con el control ON/OFF; por último, se habilita tocar la guitarra.
@@ -28,4 +29,7 @@
 
 ## [x] Mantener la dirección visual del guion
 - Presentar el contenido con pixel art ingenuo y artesanal, tranquilo y meditativo, como dibujado en MS Paint.
-- Mantener fidelidad a los detalles de escena del storyboard y del documento de guion aprobado.
+- Dar al fondo del local más creatividad psicodélica y perspectiva, conservando espacio para los objetos y puntos interactivos.
+- Hacer que el portal sea más psicodélico y se acerque a la referencia del storyboard.
+- Reducir la velocidad de las animaciones para mantener un ritmo pausado.
+- Mantener fidelidad a los detalles visuales del storyboard y del documento de guion aprobado.

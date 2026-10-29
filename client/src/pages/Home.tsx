@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import "./home.css";
 
 type Scene = "room" | "dawn";
@@ -137,6 +137,7 @@ export default function Home() {
   const [ampInspection, setAmpInspection] = useState(false);
   const [roomAction, setRoomAction] = useState<RoomAction>(null);
   const [lemonPosition, setLemonPosition] = useState("lemon-left");
+  const [lemonFloorPoint, setLemonFloorPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [lastChord, setLastChord] = useState<string[]>([]);
@@ -175,12 +176,28 @@ export default function Home() {
   }, [branch, silence, birdsPassed]);
 
   function moveTo(position: string, callback: () => void) {
+    setLemonFloorPoint(null);
     setIsMoving(true);
     setLemonPosition(position);
     window.setTimeout(() => {
       setIsMoving(false);
       callback();
-    }, 520);
+    }, 1450);
+  }
+
+  function handleRoomStageClick(event: MouseEvent<HTMLDivElement>) {
+    if (ampInspection || portalOpen || roomAction || isMoving) return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 3, 97);
+    const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 97);
+    const walkableEdge = 53 + (Math.abs(x - 50) / 50) * 6;
+    if (y < walkableEdge || y > 96) return;
+    setRoomAction(null);
+    setLemonPosition("lemon-free");
+    setLemonFloorPoint({ x, bottom: 100 - y });
+    setIsMoving(true);
+    window.setTimeout(() => setIsMoving(false), 1450);
   }
 
   function handleRoomHotspot(target: RoomTarget) {
@@ -391,13 +408,13 @@ export default function Home() {
           </div>
 
           {scene === "room" ? (
-            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""}`}>
+            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""}`} onClick={handleRoomStageClick}>
               <div className="room-wall" />
               <div className="room-floor" />
               <div className="room-horizon" />
               <div className="room-empty-note">LOCAL DE ENSAYO</div>
               <div className={`cable-line ${pluggedGuitar ? "cable-at-guitar" : ""} ${pluggedAmp ? "cable-at-amp" : ""} ${pluggedGuitar && pluggedAmp ? "cable-complete" : ""}`} aria-hidden="true"><span /></div>
-              <div className={`lemon-actor ${lemonPosition} ${isMoving ? "walking" : ""}`}><LemonSprite /></div>
+              <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
               <button className={`hotspot guitar-hotspot ${roomPhase === "guitar-cable" || roomPhase === "play" ? "hotspot-active" : ""}`} aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")}>
                 <span className="hotspot-pulse" /><GuitarSprite /><span className="object-label">GUITARRA</span>
               </button>
@@ -409,7 +426,7 @@ export default function Home() {
                 <AmpSprite large powered={ampOn} />
                 <button className="power-switch" onClick={toggleAmplifier} aria-label={ampOn ? "Apagar ON/OFF" : "Encender ON/OFF"}><span className={`switch-light ${ampOn ? "lit" : ""}`} />ON / OFF <span className="switch-arrow">↵</span></button>
               </div>}
-              {portalOpen && <div className="portal-glow" aria-hidden="true"><span>PORTAL ABIERTO</span></div>}
+              {portalOpen && <div className="portal-glow" aria-hidden="true"><span className="portal-orbit portal-orbit-one" /><span className="portal-orbit portal-orbit-two" /><span className="portal-core" /><strong>PORTAL<br />ABIERTO</strong></div>}
               <span className="stage-coordinate">LF · 01</span>
             </div>
           ) : (
@@ -436,7 +453,7 @@ export default function Home() {
         </div>
 
         <aside className="control-column">
-          <div className="control-head"><div><span className="stage-kicker">PANEL DE INTERACCIÓN</span><h3>{scene === "room" ? "El local" : "El diálogo"}</h3></div><span className="tiny-orbit">✳</span></div>
+          <div className="control-head"><div><span className="stage-kicker">PANEL DEL JUEGO</span><h3>{scene === "room" ? "El local" : "El diálogo"}</h3></div><span className="tiny-orbit">✳</span></div>
           <div className="notice-box"><span className="notice-mark">✦</span><p>{notice}</p></div>
 
           {scene === "room" ? <>

@@ -128,6 +128,16 @@ function clamp(value: number, minimum: number, maximum: number) {
   return Math.max(minimum, Math.min(maximum, value));
 }
 
+function dawnWalkableTop(x: number) {
+  const terrain = [[0, 68], [16, 69], [30, 73], [43, 77], [58, 79], [72, 78], [84, 82], [100, 85]] as const;
+  for (let index = 1; index < terrain.length; index += 1) {
+    const [rightX, rightY] = terrain[index];
+    const [leftX, leftY] = terrain[index - 1];
+    if (x <= rightX) return leftY + (rightY - leftY) * ((x - leftX) / (rightX - leftX));
+  }
+  return terrain[terrain.length - 1][1];
+}
+
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
@@ -139,11 +149,14 @@ export default function Home() {
   const [lemonPosition, setLemonPosition] = useState("lemon-left");
   const [lemonFloorPoint, setLemonFloorPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [isMoving, setIsMoving] = useState(false);
+  const [dawnLemonPoint, setDawnLemonPoint] = useState<{ x: number; bottom: number } | null>(null);
+  const [dawnIsMoving, setDawnIsMoving] = useState(false);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [portalOpen, setPortalOpen] = useState(false);
   const [introStarted, setIntroStarted] = useState(false);
 
   const [dialogueStarted, setDialogueStarted] = useState(false);
+  const [showDialogueChoices, setShowDialogueChoices] = useState(false);
   const [dialogueTurn, setDialogueTurn] = useState(0);
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
@@ -181,18 +194,33 @@ export default function Home() {
   }
 
   function handleRoomStageClick(event: MouseEvent<HTMLDivElement>) {
-    if (ampInspection || portalOpen || roomAction || isMoving) return;
+    if (ampInspection || roomAction || isMoving) return;
     if (event.target instanceof Element && event.target.closest("button")) return;
     const bounds = event.currentTarget.getBoundingClientRect();
-    const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 3, 97);
+    const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 8, 92);
     const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 97);
-    const walkableEdge = 53 + (Math.abs(x - 50) / 50) * 6;
-    if (y < walkableEdge || y > 96) return;
+    if (y < 78 || y > 96) return;
     setRoomAction(null);
     setLemonPosition("lemon-free");
     setLemonFloorPoint({ x, bottom: 100 - y });
     setIsMoving(true);
     window.setTimeout(() => setIsMoving(false), 1450);
+  }
+
+  function handleDawnStageClick(event: MouseEvent<HTMLDivElement>) {
+    if (dawnIsMoving) return;
+    if (event.target instanceof Element && event.target.closest("button")) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 7, 93);
+    const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 96);
+    if (y < dawnWalkableTop(x) + 2 || y > 95) return;
+    setDawnLemonPoint({ x, bottom: 100 - y });
+    setDawnIsMoving(true);
+    window.setTimeout(() => setDawnIsMoving(false), 1450);
+  }
+
+  function advanceDialogue() {
+    setShowDialogueChoices(true);
   }
 
   function handleRoomHotspot(target: RoomTarget) {
@@ -285,6 +313,7 @@ export default function Home() {
 
   function startDialogue() {
     setDialogueStarted(true);
+    setShowDialogueChoices(false);
     setDialogueTurn(0);
     setScoreA(0);
     setScoreB(0);
@@ -312,6 +341,7 @@ export default function Home() {
 
     if (nextTurn < DIALOGUE.length) {
       setDialogueTurn(nextTurn);
+      setShowDialogueChoices(false);
       setNotice(`La elección favorece el camino ${response}. La conversación continúa.`);
       return;
     }
@@ -390,34 +420,25 @@ export default function Home() {
             <span className="stage-location">{scene === "room" ? "ANTES DE LA OTRA DIMENSIÓN" : "ALBATERA · AMANECER"}</span>
           </div>
 
-          <div className={`playfield ${scene === "dawn" ? "playfield-portrait" : ""}`}>
+          <div className={`playfield ${scene === "dawn" ? "playfield-portrait" : "playfield-room"}`}>
           {scene === "room" ? (
-            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""}`} onClick={handleRoomStageClick}>
-              <div className="room-wall" />
-              <div className="room-floor" />
-              <div className="room-horizon" />
-              <div className="room-empty-note">LOCAL DE ENSAYO</div>
+            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""}`} onClick={handleRoomStageClick}>
               <div className={`cable-line ${pluggedGuitar ? "cable-at-guitar" : ""} ${pluggedAmp ? "cable-at-amp" : ""} ${pluggedGuitar && pluggedAmp ? "cable-complete" : ""}`} aria-hidden="true"><span /></div>
               <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
-              <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")}>
-                <GuitarSprite /><span className="object-label">GUITARRA</span>
-              </button>
-              <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || (roomPhase !== "amp-cable" && roomPhase !== "power")}>
-                <AmpSprite powered={ampOn} /><span className="object-label">AMPLIFICADOR</span>
-              </button>
+              <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")} />
+              <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || (roomPhase !== "amp-cable" && roomPhase !== "power")} />
               {ampInspection && <div className="amp-closeup" role="dialog" aria-label="Vista frontal del amplificador">
                 <span className="closeup-label">VISTA FRONTAL · ÚNICO CONTROL</span>
                 <AmpSprite large powered={ampOn} />
                 <button className="power-switch" onClick={toggleAmplifier} aria-label={ampOn ? "Apagar ON/OFF" : "Encender ON/OFF"}><span className={`switch-light ${ampOn ? "lit" : ""}`} />ON / OFF <span className="switch-arrow">↵</span></button>
               </div>}
-              {portalOpen && <div className="portal-glow" aria-hidden="true"><span className="portal-orbit portal-orbit-one" /><span className="portal-orbit portal-orbit-two" /><span className="portal-core" /><strong>PORTAL<br />ABIERTO</strong></div>}
               <span className="stage-coordinate">LF · 01</span>
             </div>
           ) : (
-            <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`}>
+            <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
               <div className="dawn-veil" aria-hidden="true" />
               <div className={`bird-flock ${birdsPassed ? "birds-visible" : ""}`} aria-label={birdsPassed ? "Bandada de pájaros silbando" : undefined}><span>◆</span><span>◆</span><span>◆</span><span>♪</span></div>
-              <button type="button" className="dawn-lemon-hitbox" onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected} />
+              <button type="button" className={`dawn-lemon-actor ${dawnIsMoving ? "walking" : ""}`} style={dawnLemonPoint ? { left: `${dawnLemonPoint.x}%`, bottom: `${dawnLemonPoint.bottom}%` } : undefined} onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected}><LemonSprite /></button>
               <span className={`seed-spark ${flowerOpen ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} aria-hidden="true" />
               <span className="stage-coordinate">LF · 02</span>
             </div>
@@ -431,11 +452,13 @@ export default function Home() {
               </div><button className="action-button play-button" onClick={playSelection}>Tocar <span>♫</span></button></div>}
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
             </> : <>
-              {dialogueStarted && !branch && <div className="dialogue-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p></div><div className="choice-list" aria-label="Tres respuestas posibles">
-                <button onClick={() => chooseResponse("restart")}><span className="choice-code">↺</span><strong>{currentDialogue.restart}</strong><span className="choice-arrow">↗</span></button>
-                <button onClick={() => chooseResponse("A")}><span className="choice-code">A</span><strong>{currentDialogue.a}</strong><span className="choice-arrow">↗</span></button>
-                <button onClick={() => chooseResponse("B")}><span className="choice-code">B</span><strong>{currentDialogue.b}</strong><span className="choice-arrow">↗</span></button>
-              </div></div>}
+              {dialogueStarted && !branch && <div className="dialogue-card">
+                {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label="Tres respuestas posibles">
+                  <button onClick={() => chooseResponse("restart")}><span className="choice-code">↺</span><strong>{currentDialogue.restart}</strong><span className="choice-arrow">▶</span></button>
+                  <button onClick={() => chooseResponse("A")}><span className="choice-code">A</span><strong>{currentDialogue.a}</strong><span className="choice-arrow">▶</span></button>
+                  <button onClick={() => chooseResponse("B")}><span className="choice-code">B</span><strong>{currentDialogue.b}</strong><span className="choice-arrow">▶</span></button>
+                </div>}
+              </div>}
               {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={whistle}>Silbar <span>♪</span></button></div>}
               {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>…</p></div><div className="silence-meter"><span /><span /><span /></div></div>}
               {flowerOpen && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Un silbido cruza el cielo. No está solo." : "El silbido alcanza el otro lado."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla <span>→</span></button></div>}

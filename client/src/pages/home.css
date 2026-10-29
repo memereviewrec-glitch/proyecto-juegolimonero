@@ -45,6 +45,9 @@ button { font:inherit; }
 .stage-heading .stage-kicker,.stage-heading .stage-location { color:#d4c7d7; }
 .stage-location { font-size:8px; text-align:right; }
 .scene-stage { position:relative; width:100%; aspect-ratio:16/9; min-height:320px; overflow:hidden; border:1px solid #c9c0b2; box-shadow:0 8px 28px #55475212; isolation:isolate; image-rendering:pixelated; }
+.scene-stage.game-screen { aspect-ratio:1180/1333; min-height:unset; }
+.roots-closeup-stage { position:absolute; inset:0; z-index:10; border-color:#a8a08c; background:#090b0c; }
+.ruins-stage-obscured { visibility:hidden; pointer-events:none; }
 .room-stage { aspect-ratio:1180/1333; min-height:unset; background:#050509; cursor:crosshair; }
 .room-world { position:absolute; top:0; left:50%; height:100%; aspect-ratio:981/1604; transform:translateX(-50%); overflow:hidden; background:#28273b url("/room-background-empty.png") center/100% 100% no-repeat; image-rendering:pixelated; }
 .room-wall { position:absolute; inset:0 0 47%; overflow:hidden; background-color:#6b4a82; background-image:repeating-radial-gradient(ellipse at 50% 100%,transparent 0 16px,#f6d66a55 19px 22px,transparent 26px 39px),linear-gradient(115deg,#49305f 0%,#b45291 30%,#e9828e 47%,#7d5aa0 72%,#40305f 100%); }

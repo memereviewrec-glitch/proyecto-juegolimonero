@@ -52,7 +52,8 @@
 ## [x] Pantalla 3: ruinas, inscripciones y canción «Raíces»
 - El fondo se basa en el cuadro 03 del storyboard v02: ruinas invadidas por la vegetación, camino y arco de piedra entre dos columnas. El limón se mueve por el camino.
 - Los fondos de las pantallas posteriores se basarán en los cuadros correspondientes del storyboard v02, sin sustituir esta dirección visual por fondos genéricos.
-- El limón se acerca a las dos columnas de una en una. Al llegar a una columna aparece «Examinar» y se abre su primer plano.
+- El limón se acerca a las dos columnas de una en una. Al llegar a una columna aparece «Examinar» y se abre una vista extra de primer plano que ocupa el mismo lienzo de juego; no aparece debajo de la escena de las ruinas.
+- Cada minijuego de columna llena ese mismo marco de proporción 1180:1333; la escena de las ruinas queda oculta, pero sigue montada para conservar la posición del limón al volver.
 - En cada primer plano, el jugador arrastra las hojas que cubren la piedra para apartarlas. Al despejar la columna izquierda aparece exactamente «as above»; al despejar la derecha, exactamente «so below».
 - Tras descubrir ambas inscripciones, una planta crece hasta florecer y entrega la tercera semilla, que desbloquea la tercera canción «Raíces».
 
@@ -63,7 +64,7 @@
 ## [x] Llegada, movimiento y presentación
 - Al cruzar el portal, el limón salta hacia él; en la escena 2 sale del portal, salta y cae en el suelo. El portal gira en ambas dimensiones y aparece delante de la salida del sol.
 - Durante el cruce y la llegada se bloquean las pestañas, el movimiento del limón y los cuadros de interacción.
-- Ambas áreas de juego mantienen la misma proporción responsive; en desktop miden 760 × 859 px. El local vertical se centra con bandas negras, sin deformar el arte.
+- Las pantallas jugables 1, 2 y 3, y sus vistas extra de minijuego, comparten el mismo lienzo responsive con proporción 1180:1333; en desktop cada una mide 760 × 859 px. El local se centra con bandas negras, sin deformar el arte.
 - En ambas escenas, el limón sigue el clic solo por el suelo transitable; se ignoran las bandas negras, paredes y cielo. Cada desplazamiento dura 3,8 s y las dos patas se animan mientras camina.
 - Los cuadros de diálogo y de acción comparten marco pixel art, pueden variar en ubicación y tamaño según la escena para no tapar elementos importantes, y avanzan con «Siguiente» antes de presentar respuestas.
 - Los cuadros aparecen mediante un fundido suave de 1,45 s. La llegada, caminata y amanecer respetan `prefers-reduced-motion`.

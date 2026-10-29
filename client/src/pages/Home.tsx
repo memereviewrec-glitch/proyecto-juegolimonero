@@ -522,7 +522,7 @@ export default function Home() {
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
           {scene === "room" ? (
-            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
+            <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
@@ -541,7 +541,7 @@ export default function Home() {
               {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onPlay={playSelection} onClose={() => setRoomView("scene")} />}
             </div>
           ) : scene === "dawn" ? (
-            <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
+            <div className={`scene-stage game-screen dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
               {arrivalPortal && <div className="arrival-portal" aria-hidden="true" />}
               <div className="dawn-veil" aria-hidden="true" />
               {sunRisen && <div className="sunrise-glow" aria-hidden="true" />}
@@ -557,17 +557,20 @@ export default function Home() {
               rightRevealed={rightColumnRevealed}
               flowerStage={ruinsFlowerStage}
               seedCollected={rootsSeedCollected}
+              puzzleOpen={ruinsView !== "scene"}
               onApproachColumn={setRuinsAction}
               onCollectSeed={collectRootsSeed}
             />
           )}
 
-          {scene === "ruins" && ruinsView !== "scene" && <RuinsColumnPuzzle
-            side={ruinsView}
-            alreadyRevealed={ruinsView === "left" ? leftColumnRevealed : rightColumnRevealed}
-            onReveal={() => revealRuinsColumn(ruinsView)}
-            onClose={() => setRuinsView("scene")}
-          />}
+          {scene === "ruins" && ruinsView !== "scene" && <div className="scene-stage game-screen roots-closeup-stage">
+            <RuinsColumnPuzzle
+              side={ruinsView}
+              alreadyRevealed={ruinsView === "left" ? leftColumnRevealed : rightColumnRevealed}
+              onReveal={() => revealRuinsColumn(ruinsView)}
+              onClose={() => setRuinsView("scene")}
+            />
+          </div>}
 
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>

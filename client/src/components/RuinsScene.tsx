@@ -10,6 +10,7 @@ type Props = {
   rightRevealed: boolean;
   flowerStage: RuinsFlowerStage;
   seedCollected: boolean;
+  puzzleOpen: boolean;
   onApproachColumn: (side: RuinsColumnSide) => void;
   onCollectSeed: () => void;
 };
@@ -34,6 +35,7 @@ export function RuinsScene({
   rightRevealed,
   flowerStage,
   seedCollected,
+  puzzleOpen,
   onApproachColumn,
   onCollectSeed,
 }: Props) {
@@ -76,7 +78,7 @@ export function RuinsScene({
   }
 
   return (
-    <div className="scene-stage ruins-stage" onClick={handlePathClick}>
+    <div className={`scene-stage game-screen ruins-stage${puzzleOpen ? " ruins-stage-obscured" : ""}`} aria-hidden={puzzleOpen} onClick={handlePathClick}>
       <div className="ruins-world" ref={worldRef}>
         <button
           className="ruins-column-hotspot ruins-column-left"

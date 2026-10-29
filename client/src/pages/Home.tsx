@@ -8,6 +8,14 @@ type RoomAction = "plug-guitar" | "plug-amp" | "examine" | "play" | null;
 type Branch = "A" | "B";
 type Response = "restart" | Branch;
 
+const WALK_DURATION_MS = 3800;
+const PORTAL_TRANSIT_DURATION_MS = 2800;
+const PORTAL_ARRIVAL_DURATION_MS = 4800;
+
+function motionDuration(duration: number) {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
+}
+
 const NOTES = [
   { id: "C#", label: "Do♯", frequency: 277.18 },
   { id: "D#", label: "Re♯", frequency: 311.13 },
@@ -21,21 +29,21 @@ const NOTES = [
 const DIALOGUE = [
   {
     prompt: "¿Hay alguien ahí?",
-    restart: "Volver a preguntarlo",
-    a: "Llamar hacia la sierra",
-    b: "Quedarse quieto y escuchar",
+    restart: "Repetir la pregunta",
+    a: "Llamar a la sierra",
+    b: "Escuchar en silencio",
   },
   {
     prompt: "No veo a nadie. ¿Estoy solo en esta dimensión?",
-    restart: "Empezar esta conversación otra vez",
-    a: "Mirar hacia las ventanas de roca",
-    b: "Escuchar el valle en silencio",
+    restart: "Empezar de nuevo",
+    a: "Mirar las ventanas",
+    b: "Escuchar el valle",
   },
   {
     prompt: "¿Hago una señal, o dejo que el mundo conteste?",
     restart: "Volver al principio",
-    a: "Probar a llamar una vez más",
-    b: "Esperar sin hacer ruido",
+    a: "Llamar otra vez",
+    b: "Esperar en silencio",
   },
 ];
 
@@ -53,7 +61,10 @@ function LemonSprite({ className = "" }: { className?: string }) {
       <rect x="17" y="25" width="3" height="3" fill="#28242b" />
       <rect x="29" y="25" width="3" height="3" fill="#28242b" />
       <path d="M22 34h7v2h-7z" fill="#bd704f" />
-      <path d="M13 46h4v7h-4zM32 46h4v7h-4z" fill="#29252d" />
+      <g className="lemon-legs" fill="#29252d">
+        <path className="lemon-leg lemon-leg-left" d="M13 46h4v7h-4z" />
+        <path className="lemon-leg lemon-leg-right" d="M32 46h4v7h-4z" />
+      </g>
     </svg>
   );
 }
@@ -153,6 +164,8 @@ export default function Home() {
   const [dawnIsMoving, setDawnIsMoving] = useState(false);
   const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
   const [portalOpen, setPortalOpen] = useState(false);
+  const [portalTransit, setPortalTransit] = useState(false);
+  const [arrivalPortal, setArrivalPortal] = useState(false);
   const [introStarted, setIntroStarted] = useState(false);
 
   const [dialogueStarted, setDialogueStarted] = useState(false);
@@ -190,11 +203,11 @@ export default function Home() {
     window.setTimeout(() => {
       setIsMoving(false);
       callback();
-    }, 1450);
+    }, motionDuration(WALK_DURATION_MS));
   }
 
   function handleRoomStageClick(event: MouseEvent<HTMLDivElement>) {
-    if (ampInspection || roomAction || isMoving) return;
+    if (ampInspection || roomAction || isMoving || portalTransit) return;
     if (event.target instanceof Element && event.target.closest("button")) return;
     const world = event.currentTarget.querySelector(".room-world");
     if (!world) return;
@@ -207,11 +220,11 @@ export default function Home() {
     setLemonPosition("lemon-free");
     setLemonFloorPoint({ x, bottom: 100 - y });
     setIsMoving(true);
-    window.setTimeout(() => setIsMoving(false), 1450);
+    window.setTimeout(() => setIsMoving(false), motionDuration(WALK_DURATION_MS));
   }
 
   function handleDawnStageClick(event: MouseEvent<HTMLDivElement>) {
-    if (dawnIsMoving) return;
+    if (dawnIsMoving || arrivalPortal) return;
     if (event.target instanceof Element && event.target.closest("button")) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 7, 93);
@@ -219,7 +232,7 @@ export default function Home() {
     if (y < dawnWalkableTop(x) + 2 || y > 95) return;
     setDawnLemonPoint({ x, bottom: 100 - y });
     setDawnIsMoving(true);
-    window.setTimeout(() => setDawnIsMoving(false), 1450);
+    window.setTimeout(() => setDawnIsMoving(false), motionDuration(WALK_DURATION_MS));
   }
 
   function advanceDialogue() {
@@ -308,10 +321,22 @@ export default function Home() {
   }
 
   function enterDawn() {
-    if (!portalOpen) return;
-    setScene("dawn");
-    setRoomAction(null);
-    setNotice("Nueva dimensión. El limón intenta averiguar si está solo.");
+    if (!portalOpen || portalTransit) return;
+    setPortalTransit(true);
+    setIsMoving(false);
+    setLemonFloorPoint(null);
+    setLemonPosition("lemon-portal");
+    setNotice("El limón salta hacia el portal.");
+    window.setTimeout(() => {
+      setScene("dawn");
+      setPortalTransit(false);
+      setLemonPosition("lemon-left");
+      setLemonFloorPoint(null);
+      setRoomAction(null);
+      setArrivalPortal(true);
+      setNotice("El portal aparece ante el amanecer de la otra dimensión.");
+      window.setTimeout(() => setArrivalPortal(false), motionDuration(PORTAL_ARRIVAL_DURATION_MS));
+    }, motionDuration(PORTAL_TRANSIT_DURATION_MS));
   }
 
   function startDialogue() {
@@ -373,15 +398,16 @@ export default function Home() {
   }
 
   function setVisitedScene(nextScene: Scene) {
+    if (portalTransit || arrivalPortal) return;
     if (nextScene === "dawn" && !portalOpen) return;
     setScene(nextScene);
     setRoomAction(null);
   }
 
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
-  const showOverlay = scene === "room"
+  const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
     ? Boolean(roomAction) || roomPhase === "play" || portalOpen
-    : dialogueStarted || branch !== null || flowerOpen || seedCollected;
+    : dialogueStarted || branch !== null || flowerOpen || seedCollected);
 
   return (
     <main className="explorer-shell">
@@ -408,10 +434,10 @@ export default function Home() {
       </section>
 
       <nav className="screen-nav" aria-label="Seleccionar pantalla">
-        <button className={`screen-tab ${scene === "room" ? "active" : ""}`} onClick={() => setVisitedScene("room")}>
+        <button className={`screen-tab ${scene === "room" ? "active" : ""}`} onClick={() => setVisitedScene("room")} disabled={portalTransit || arrivalPortal}>
           <span className="tab-number">01</span><span><strong>El local de ensayo</strong><small>La Intro · antes del portal</small></span><span className="tab-mark">{portalOpen ? "✓" : "•"}</span>
         </button>
-        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen}>
+        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen || portalTransit || arrivalPortal}>
           <span className="tab-number">02</span><span><strong>El Cuchillo al amanecer</strong><small>Ventana al sendero</small></span><span className="tab-mark">{seedCollected ? "✓" : portalOpen ? "↗" : "⌑"}</span>
         </button>
       </nav>
@@ -425,10 +451,11 @@ export default function Home() {
 
           <div className={`playfield ${scene === "dawn" ? "playfield-portrait" : "playfield-room"}`}>
           {scene === "room" ? (
-            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""}`} onClick={handleRoomStageClick}>
+            <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               <div className="room-world">
                 <div className={`cable-line ${pluggedGuitar ? "cable-at-guitar" : ""} ${pluggedAmp ? "cable-at-amp" : ""} ${pluggedGuitar && pluggedAmp ? "cable-complete" : ""}`} aria-hidden="true"><span /></div>
-                <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
+                {portalTransit && <div className="portal-spin" aria-hidden="true" />}
+                <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
                 <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")} />
                 <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || (roomPhase !== "amp-cable" && roomPhase !== "power")} />
                 {ampInspection && <div className="amp-closeup" role="dialog" aria-label="Vista frontal del amplificador">
@@ -441,23 +468,24 @@ export default function Home() {
             </div>
           ) : (
             <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
+              {arrivalPortal && <div className="arrival-portal" aria-hidden="true" />}
               <div className="dawn-veil" aria-hidden="true" />
               <div className={`bird-flock ${birdsPassed ? "birds-visible" : ""}`} aria-label={birdsPassed ? "Bandada de pájaros silbando" : undefined}><span>◆</span><span>◆</span><span>◆</span><span>♪</span></div>
-              <button type="button" className={`dawn-lemon-actor ${dawnIsMoving ? "walking" : ""}`} style={dawnLemonPoint ? { left: `${dawnLemonPoint.x}%`, bottom: `${dawnLemonPoint.bottom}%` } : undefined} onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected}><LemonSprite /></button>
+              <button type="button" className={`dawn-lemon-actor ${dawnIsMoving ? "walking" : ""}`} style={dawnLemonPoint ? { left: `${dawnLemonPoint.x}%`, bottom: `${dawnLemonPoint.bottom}%` } : undefined} onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected || arrivalPortal}><LemonSprite /></button>
               <span className={`seed-spark ${flowerOpen ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} aria-hidden="true" />
               <span className="stage-coordinate">LF · 02</span>
             </div>
           )}
 
-          {showOverlay && <aside className={`control-column ${scene === "room" ? "room-controls" : "dawn-controls"}`} aria-label="Cuadro de diálogo del juego">
+          {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : "dawn-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
-              {roomAction && <div className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomActionLabel(roomAction)} <span>→</span></button></div>}
+              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomActionLabel(roomAction)} <span>→</span></button></div>}
               {roomPhase === "play" && <div className="chord-panel"><div className="note-picker" aria-label="Notas de la guitarra">
                 {NOTES.map(note => <button key={note.id} className={`note-key ${selectedNotes.includes(note.id) ? "selected" : ""}`} onClick={() => toggleNote(note.id)} aria-pressed={selectedNotes.includes(note.id)}><strong>{note.label}</strong><small>{note.id}</small></button>)}
               </div><button className="action-button play-button" onClick={playSelection}>Tocar <span>♫</span></button></div>}
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
             </> : <>
-              {dialogueStarted && !branch && <div className="dialogue-card">
+              {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label="Tres respuestas posibles">
                   <button onClick={() => chooseResponse("restart")}><span className="choice-code">↺</span><strong>{currentDialogue.restart}</strong><span className="choice-arrow">▶</span></button>
                   <button onClick={() => chooseResponse("A")}><span className="choice-code">A</span><strong>{currentDialogue.a}</strong><span className="choice-arrow">▶</span></button>

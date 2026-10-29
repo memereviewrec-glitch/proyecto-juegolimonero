@@ -3,25 +3,36 @@
 ## [x] Fondos y flujo de la primera pantalla
 - La pantalla 1 conserva la composición del local y el portal del storyboard. El limón y los objetos mantienen posiciones y perspectiva del arte; el personaje se dibuja aparte para poder caminar.
 - La secuencia sigue siendo enchufar el cable primero a la guitarra y luego al amplificador; examinarlo, encenderlo y tocar la guitarra.
-- Para cruzar el portal basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; las díadas cuentan. Se admiten inversiones, acordes extendidos y las notas que correspondan a la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
+- Para cruzar basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; las díadas cuentan. Se admiten inversiones, acordes extendidos y las notas de la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
 ## [x] Resolver la conversación de la segunda pantalla según el camino mayoritario
-- Cada turno normal ofrece tres respuestas: una reinicia la conversación, otra favorece el camino A y otra favorece el camino B.
-- La conversación suma probabilidad al camino favorecido. Si la probabilidad de B supera el 50 %, el resultado es siempre B y los pájaros cruzan silbando para que el limón los oiga.
-- Si la probabilidad de A es mayor que la de B, el resultado es siempre A; su desenlace solo ofrece «Silbar».
+- Cada turno normal ofrece tres respuestas: una reinicia la conversación, otra favorece A y otra B.
+- La conversación suma probabilidad al camino favorecido. Si B supera el 50 %, el resultado es siempre B y los pájaros cruzan silbando para que el limón los oiga.
+- Si A tiene más probabilidad que B, el resultado es siempre A; su desenlace solo ofrece «Silbar».
 - Si A y B quedan exactamente empatados, la resolución se mantiene aleatoria al 50 %.
-- La escena conserva el fondo de amanecer de referencia; el sol sale, la flor se abre y se puede recoger la semilla de «Ventana al sendero».
+- La escena conserva el fondo de amanecer; el sol sale, la flor se abre y se puede recoger la semilla de «Ventana al sendero».
 
-## [x] Agrandar los cuadros de texto manteniendo su pixel art
-- Los cuadros de diálogo y de acción comparten marco pixel art, se integran dentro de la ilustración y se anclan abajo del área de juego.
-- Las cajas y opciones usan más espacio y letra mayor para facilitar la lectura; el diálogo avanza mediante «Siguiente» antes de mostrar las respuestas.
-- Las zonas libres del juego conservan los clics de movimiento sin que el cuadro bloquee la interacción de sus botones.
+## [x] Cajas legibles y escenas de igual proporción
+- Los cuadros de diálogo y de acción comparten marco pixel art, se integran dentro de la ilustración y usan texto de mayor tamaño. El diálogo avanza mediante «Siguiente» antes de presentar las respuestas.
+- Ambas áreas de juego comparten dimensión y proporción responsive; en desktop cada una mide 760 × 859 px. El arte vertical del local queda centrado entre bandas negras sin deformarse.
+- En ambas escenas el limón solo camina dentro del suelo transitable. Se ignoran clics en las bandas negras, pared o cielo y se conservan las interacciones de objetos.
 
-## [x] Igualar dimensiones, proporción y movimiento en ambas pantallas
-- Ambas áreas de juego comparten dimensión y proporción responsive; en la vista desktop comprobada, cada una mide 760 × 859 px.
-- El arte vertical del local conserva su proporción, centrado entre bandas negras laterales; no se deforma para coincidir con el amanecer.
-- En ambas escenas el limón solo se mueve al hacer clic en suelo transitable; los clics en las bandas negras, la pared o el cielo no lo desplazan, y los puntos de objeto conservan sus acciones.
+## [x] Animar el cruce entre dimensiones
+- Al pulsar «Cruzar», el limón salta hacia el portal mientras el aro y el interior giran.
+- Al acabar el salto, aparece en la segunda dimensión un portal que se materializa girando delante del amanecer; se desvanece lentamente después de 4,8 segundos.
+- Durante el cruce y la llegada, las dos pestañas quedan bloqueadas, se ocultan las cajas y el limón no puede moverse ni iniciar el diálogo. La navegación se habilita cuando termina la aparición.
+- Las duraciones de movimiento, cruce y llegada se sincronizan con `prefers-reduced-motion`; en ese modo las guardas no mantienen al personaje bloqueado tras terminar la transición visual.
 
-## [x] Validación del sitio
-- TypeScript y build estático completan sin errores; ambos fondos se sirven como PNG y el manifiesto de rutas es válido.
-- En Preview se recorrió la primera escena y se probaron los finales A y B, incluidos los pájaros, el amanecer, la semilla y el acorde mínimo Do♯–Mi.
+## [x] Variar la ubicación de las cajas sin tapar puntos importantes
+- La caja de acciones del local se sitúa arriba a la izquierda sobre la pared despejada. En desktop la caja del amanecer se sitúa arriba a la derecha, lejos del sol y las ventanas; en móvil pasa a arriba a la izquierda para dejar libre el pico alto. Los tamaños se adaptan a cada escena.
+- Las cajas evitan cubrir guitarra y amplificador, limón, portal de llegada y flor/semilla; comparten marco pixel art y texto legible.
+- Cada caja nueva aparece lentamente, pasando de transparente a opaca en 1,7 segundos.
+
+## [x] Hacer la caminata pausada y animar las patas
+- El limón tarda 3,8 segundos en recorrer cada destino, manteniendo el movimiento restringido a suelo transitable en ambas escenas.
+- Ambas patas alternan mientras camina y se detienen al llegar; el salto al portal tiene una animación diferenciada.
+
+## [x] Validación final
+- TypeScript (`pnpm check`) y build estático pasan; los fondos PNG y el manifiesto de rutas se incluyen en `dist/public`.
+- Preview sirve la página y el manifiesto. Se probó el Do♯–Mi, la caminata de 3,8 s con animación de patas y rechazo de clics en el cielo.
+- Se comprobó el inicio del salto y giro, la llegada animada, el bloqueo de las dos pestañas durante el cruce y la ausencia de cajas sobre el portal durante su llegada.

@@ -5,13 +5,14 @@
 - Conservar la estructura narrativa, lógica musical, estados, zonas clicables y atmósfera contemplativa del guion y el storyboard asociados.
 - Limitar el alcance a las pantallas 1 y 2. No convertir las escenas en combate ni añadir pantallas no solicitadas.
 - Dar una navegación clara entre escenas y presentar los detalles relevantes del guion y su storyboard.
-- Mostrar indicadores comprensibles del progreso, estado actual y ramas recorridas para facilitar el análisis del guion, sin cambiar su lógica narrativa.
+- Mostrar indicadores comprensibles del progreso y estado actual, sin revelar las probabilidades de las respuestas.
 
 ## [x] Representar interacciones contextuales y zonas clicables
 - Representar las zonas clicables de cada escena; las acciones contextuales se habilitan según el estado descrito y no toda la pantalla debe abrir acciones.
 - En el local, el limón debe moverse por el suelo siguiendo los clics del ratón, con una animación más pausada; el movimiento no debe habilitar acciones fuera de los puntos interactivos.
-- Los cuadros de diálogo y de elección de acción deben integrarse visualmente dentro de la pantalla del juego y compartir su estética pixel art.
-- Mostrar opciones contextuales, descripciones y respuesta visual de cada estado.
+- Los cuadros de diálogo, los textos y las opciones para elegir acciones deben aparecer encima de la ilustración del fondo, dentro del espacio de juego, al estilo de cajas de diálogo de juegos de aventura como Zelda o Pokémon; no deben quedar en un panel lateral separado.
+- No hace falta mostrar pistas al jugador; quitar instrucciones y explicaciones visibles que indiquen qué hacer o revelen las probabilidades y los efectos de las respuestas.
+- Mantener las opciones de acción, la narración necesaria y la respuesta visual de cada estado dentro del espacio de juego.
 
 ## [x] Reflejar la secuencia de la pantalla 1 y la regla musical del portal
 - La secuencia obligatoria es conectar el cable primero a la guitarra y después al amplificador; después se puede examinar el amplificador y alternar su estado con el control ON/OFF; por último, se habilita tocar la guitarra.
@@ -25,11 +26,11 @@
 - La rama A culmina en el turno final con la única opción «Silbar».
 - La rama B culmina en silencio, roto por una bandada de pájaros que silba y permite que el limón entienda que no está solo.
 - En ambos desenlaces sale el sol, se abre la flor y queda disponible recoger la semilla de «Ventana al sendero».
-- Mostrar visualmente qué rama y secuencia ha recorrido el usuario sin alterar la lógica del relato.
+- Mostrar la rama mediante el diálogo y su respuesta visual, sin panel lateral de probabilidades ni instrucciones que revelen el resultado.
 
 ## [x] Mantener la dirección visual del guion
 - Presentar el contenido con pixel art ingenuo y artesanal, tranquilo y meditativo, como dibujado en MS Paint.
-- Dar al fondo del local más creatividad psicodélica y perspectiva, conservando espacio para los objetos y puntos interactivos.
-- Hacer que el portal sea más psicodélico y se acerque a la referencia del storyboard.
-- Reducir la velocidad de las animaciones para mantener un ritmo pausado.
+- Hacer ambos fondos más psicodélicos y conservar espacio para los objetos interactivos.
+- Usar como fondo de la pantalla 2 la escena de amanecer del storyboard original, igual a la ilustración de referencia.
+- Mantener el portal psicodélico y próximo a la referencia del storyboard, y animaciones lentas.
 - Mantener fidelidad a los detalles visuales del storyboard y del documento de guion aprobado.

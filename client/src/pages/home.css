@@ -325,3 +325,90 @@ button { font:inherit; }
 @media (prefers-reduced-motion: reduce) {
  *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-delay:0ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
 }
+
+
+/* Primeros planos interactivos del local */
+.lemon-cable { left:53%; }
+.cable-floor-prop { position:absolute; z-index:5; left:36%; bottom:13.6%; width:44%; height:10%; filter:drop-shadow(3px 4px 0 #211b24aa); pointer-events:none; }
+.cable-scene-art { display:block; width:100%; height:100%; overflow:visible; image-rendering:pixelated; }
+.cable-floor-connected .cable-scene-art { filter:drop-shadow(0 0 4px #eed17b88); }
+.hotspot.cable-hotspot { left:34%; top:74%; width:49%; height:19%; z-index:8; }
+.hotspot.cable-hotspot:focus-visible,.hotspot.guitar-hotspot:focus-visible,.hotspot.amp-hotspot:focus-visible { outline:2px dashed #fff1b2; outline-offset:2px; }
+.room-closeup { position:absolute; z-index:15; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(10px,2vh,18px); overflow:auto; padding:clamp(14px,3vw,28px); border:8px solid #28222c; color:#f7eedb; background:radial-gradient(ellipse at 52% 34%,#73616b 0%,#4c424d 52%,#302b36 100%); box-shadow:inset 0 0 0 3px #a4917d; image-rendering:auto; cursor:default; }
+.closeup-heading { width:min(100%,760px); text-align:center; flex:none; }
+.closeup-heading>span { color:#efcf78; font:9px 'DM Mono',monospace; letter-spacing:.16em; }
+.closeup-heading h3 { margin:5px 0 3px; font:600 clamp(19px,3vw,28px)/1.1 'Space Grotesk',sans-serif; letter-spacing:-.045em; color:#fff6e3; }
+.closeup-heading p { margin:0; color:#dfd1c2; font:10px/1.45 'DM Mono',monospace; }
+.amp-detail-art { display:block; flex:none; width:min(100%,690px); max-height:55vh; height:auto; filter:drop-shadow(0 10px 0 #211d25aa); image-rendering:pixelated; }
+.amp-closeup-controls { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; width:min(100%,690px); }
+.amp-input-label { color:#ead6a8; font:8px 'DM Mono',monospace; letter-spacing:.1em; }
+.amp-input-jack { width:24px; height:24px; display:inline-block; border:5px solid #bca77c; border-radius:50%; background:#211e26; box-shadow:inset 0 0 0 3px #58515a,2px 2px 0 #211e26; }
+.amp-input-jack.amp-input-lit { border-color:#ecb958; box-shadow:0 0 10px #f5d47399,inset 0 0 0 3px #58515a; }
+.room-closeup .power-switch { min-height:42px; border:3px solid #29242c; padding:9px 12px; font-size:9px; box-shadow:3px 3px 0 #1f1c24; cursor:pointer; }
+.room-closeup .closeup-back { border:1px solid #cab78f; padding:10px 13px; background:#3b333e; color:#f8eedb; font:9px 'DM Mono',monospace; cursor:pointer; }
+.room-closeup .closeup-back span { margin-left:8px; color:#eac96d; }
+.cable-closeup { justify-content:flex-start; padding-top:clamp(14px,3vh,30px); }
+.cable-workbench { position:relative; flex:none; width:min(100%,860px); height:min(42vh,340px); min-height:220px; overflow:hidden; touch-action:none; border:5px solid #28222c; background:linear-gradient(180deg,#74616b 0%,#59515a 58%,#695c62 100%); box-shadow:inset 0 0 0 3px #a78f7b,5px 5px 0 #211d25; }
+.cable-workbench::before { content:""; position:absolute; inset:8% 4%; pointer-events:none; border:1px dashed #dfc89a55; background:repeating-linear-gradient(90deg,transparent 0 9.8%,#f1dba512 10% 10.2%); }
+.cable-coil-art { position:absolute; z-index:1; inset:0; width:100%; height:100%; pointer-events:none; }
+.cable-target-wrap { position:absolute; z-index:2; top:50%; width:22%; min-width:96px; transform:translateY(-50%); }
+.guitar-target-wrap { left:2%; }
+.amp-target-wrap { right:2%; }
+.cable-drop-target { width:100%; padding:5px 4px; border:2px dashed #e9d8b5; color:#fff3d9; background:#332d36dd; cursor:pointer; }
+.cable-drop-target svg { display:block; width:100%; max-height:73px; }
+.cable-drop-target span { display:block; margin-top:4px; font:7px 'DM Mono',monospace; line-height:1.25; }
+.cable-drop-target.target-connected { border-style:solid; border-color:#eaca62; box-shadow:0 0 0 2px #eaca6244; }
+.cable-drop-target:focus-visible,.cable-jack-handle:focus-visible,.closeup-back:focus-visible,.amp-closeup-controls button:focus-visible,.fretboard-actions button:focus-visible { outline:3px dashed #fff2bd; outline-offset:3px; }
+.cable-jack-handle { position:absolute; z-index:4; width:clamp(112px,21%,168px); padding:2px 2px 5px; border:2px solid #d0b98e; color:#fff4dc; background:#342d36; box-shadow:3px 4px 0 #211d25; transform:translate(-50%,-50%); cursor:grab; touch-action:none; user-select:none; }
+.cable-jack-handle svg { display:block; width:100%; height:auto; }
+.cable-jack-handle>span { display:block; font:7px 'DM Mono',monospace; letter-spacing:.08em; }
+.cable-jack-handle.jack-active { border-color:#f0d06a; box-shadow:0 0 0 2px #f0d06a55,3px 4px 0 #211d25; }
+.cable-jack-handle[aria-disabled="true"] { opacity:.58; cursor:not-allowed; }
+.cable-jack-handle.jack-dragging { z-index:6; cursor:grabbing; transform:translate(-50%,-50%) scale(1.08); }
+.cable-jack-handle.jack-connected { border-color:#91a876; }
+.cable-closeup-footer { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px 14px; width:min(100%,860px); }
+.cable-closeup-footer p { margin:0; color:#fff1d7; font:10px/1.45 'DM Mono',monospace; }
+.cable-progress { display:flex; gap:6px; color:#dfd2c1; font:7px 'DM Mono',monospace; letter-spacing:.06em; }
+.cable-progress span { padding:5px 6px; border:1px solid #b5a39666; }
+.cable-progress .done { color:#fae197; border-color:#e6ca70; }
+.cable-closeup-footer .closeup-back { grid-column:1/-1; justify-self:center; }
+.guitar-closeup { justify-content:flex-start; padding-top:clamp(14px,3vh,30px); }
+.fretboard-scroll { width:min(100%,980px); overflow-x:auto; overscroll-behavior-inline:contain; scrollbar-color:#c1a87d #37313b; }
+.guitar-fretboard-svg { display:block; width:100%; min-width:680px; height:auto; background:#211d25; border:4px solid #1a171e; box-shadow:4px 5px 0 #17141a; }
+.guitar-fretboard-svg .fret-number { fill:#f3e2bd; font:600 17px 'DM Mono',monospace; }
+.guitar-fretboard-svg .open-note-label { fill:#f4dd9e; font:600 12px 'DM Mono',monospace; stroke:#322932; stroke-width:2px; paint-order:stroke; }
+.guitar-fretboard-svg .selected-note-label { fill:#332833; font:700 15px 'DM Mono',monospace; pointer-events:none; }
+.guitar-fretboard-svg .headstock-title { fill:#fff0d2; font:700 12px 'DM Mono',monospace; letter-spacing:2px; }
+.guitar-fretboard-svg .headstock-caption { fill:#f2d493; font:8px 'DM Mono',monospace; letter-spacing:1px; }
+.guitar-fretboard-svg [role="button"] { cursor:pointer; }
+.guitar-fretboard-svg [role="button"]:focus-visible { fill:#fff4aeaa; stroke:#fff5cf; stroke-width:3px; }
+.guitar-closeup-footer { width:min(100%,980px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; }
+.guitar-closeup-footer p { margin:0; color:#f4e4c8; font:9px/1.5 'DM Mono',monospace; }
+.guitar-closeup-footer p strong { color:#f4d16d; }
+.fretboard-actions { display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+.room-closeup .fretboard-actions .action-button { width:auto; min-width:160px; min-height:40px; border:3px solid #211d25; padding:9px 12px; font-size:9px; cursor:pointer; }
+@media (max-width:600px) {
+ .lemon-cable { left:53%; }
+ .hotspot.cable-hotspot { left:31%; top:72%; width:55%; height:22%; }
+ .room-closeup { gap:11px; padding:12px 10px; border-width:5px; }
+ .closeup-heading>span { font-size:7px; }
+ .closeup-heading h3 { font-size:20px; }
+ .closeup-heading p { font-size:8px; }
+ .amp-detail-art { width:100%; max-height:44vh; }
+ .amp-closeup-controls { gap:7px; }
+ .room-closeup .power-switch,.room-closeup .closeup-back { min-height:38px; padding:8px; font-size:8px; }
+ .cable-workbench { height:34vh; min-height:190px; }
+ .cable-target-wrap { width:23%; min-width:72px; }
+ .cable-drop-target { padding:3px 2px; }
+ .cable-drop-target svg { max-height:55px; }
+ .cable-drop-target span { font-size:6px; }
+ .cable-jack-handle { width:clamp(86px,25%,128px); }
+ .cable-jack-handle>span { font-size:6px; }
+ .cable-closeup-footer { grid-template-columns:1fr; text-align:center; }
+ .cable-closeup-footer p { font-size:8px; }
+ .cable-progress { justify-content:center; }
+ .cable-closeup-footer .closeup-back { grid-column:1; }
+ .guitar-fretboard-svg { min-width:680px; }
+ .guitar-closeup-footer { align-items:stretch; flex-direction:column; }
+ .fretboard-actions { justify-content:center; }
+}

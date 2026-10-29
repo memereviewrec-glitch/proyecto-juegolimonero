@@ -1,10 +1,12 @@
 import { useMemo, useState, type MouseEvent } from "react";
+import { AmpCloseup, CableCloseup, CableSceneArt, GuitarCloseup, type FretSelection } from "../components/RoomCloseups";
 import "./home.css";
 
 type Scene = "room" | "dawn";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
-type RoomTarget = "guitar" | "amp";
-type RoomAction = "plug-guitar" | "plug-amp" | "examine" | "play" | null;
+type RoomTarget = "guitar" | "amp" | "cable";
+type RoomAction = "examine-cable" | "examine" | "play" | null;
+type RoomView = "scene" | "cable" | "amp" | "guitar";
 type Branch = "A" | "B";
 type Response = "restart" | Branch;
 
@@ -19,15 +21,7 @@ function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
 }
 
-const NOTES = [
-  { id: "C#", label: "Do♯", frequency: 277.18 },
-  { id: "D#", label: "Re♯", frequency: 311.13 },
-  { id: "E", label: "Mi", frequency: 329.63 },
-  { id: "F#", label: "Fa♯", frequency: 369.99 },
-  { id: "G#", label: "Sol♯", frequency: 415.3 },
-  { id: "A", label: "La", frequency: 440 },
-  { id: "B", label: "Si", frequency: 493.88 },
-] as const;
+const C_SHARP_MINOR_SCALE = new Set(["Do#", "Re#", "Mi", "Fa#", "Sol#", "La", "Si"]);
 
 const DIALOGUE = [
   {
@@ -207,17 +201,17 @@ function dawnWalkableTop(x: number) {
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
+  const [roomView, setRoomView] = useState<RoomView>("scene");
   const [pluggedGuitar, setPluggedGuitar] = useState(false);
   const [pluggedAmp, setPluggedAmp] = useState(false);
   const [ampOn, setAmpOn] = useState(false);
-  const [ampInspection, setAmpInspection] = useState(false);
   const [roomAction, setRoomAction] = useState<RoomAction>(null);
   const [lemonPosition, setLemonPosition] = useState("lemon-left");
   const [lemonFloorPoint, setLemonFloorPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [dawnLemonPoint, setDawnLemonPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [dawnIsMoving, setDawnIsMoving] = useState(false);
-  const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
+  const [selectedFrets, setSelectedFrets] = useState<FretSelection[]>([]);
   const [portalOpen, setPortalOpen] = useState(false);
   const [portalTransit, setPortalTransit] = useState(false);
   const [arrivalPortal, setArrivalPortal] = useState(false);
@@ -235,11 +229,14 @@ export default function Home() {
   const [seedAvailable, setSeedAvailable] = useState(false);
   const [seedCollected, setSeedCollected] = useState(false);
   const [lemonWhistling, setLemonWhistling] = useState(false);
-  const [notice, setNotice] = useState("Empieza conectando el cable a la guitarra.");
+  const [notice, setNotice] = useState("Acércate al cable y examínalo para conectar sus dos extremos.");
 
   const validChord = useMemo(
-    () => selectedNotes.length >= 2 && selectedNotes.includes("C#") && selectedNotes.every(note => NOTES.some(item => item.id === note)),
-    [selectedNotes],
+    () => {
+      const pitchClasses = new Set(selectedFrets.map(note => note.noteId));
+      return pitchClasses.size >= 2 && pitchClasses.has("Do#") && [...pitchClasses].every(note => C_SHARP_MINOR_SCALE.has(note));
+    },
+    [selectedFrets],
   );
 
   function moveTo(position: string, callback: () => void) {
@@ -253,7 +250,7 @@ export default function Home() {
   }
 
   function handleRoomStageClick(event: MouseEvent<HTMLDivElement>) {
-    if (ampInspection || roomAction || isMoving || portalTransit) return;
+    if (roomView !== "scene" || roomAction || isMoving || portalTransit) return;
     if (event.target instanceof Element && event.target.closest("button")) return;
     const world = event.currentTarget.querySelector(".room-world");
     if (!world) return;
@@ -286,15 +283,10 @@ export default function Home() {
   }
 
   function handleRoomHotspot(target: RoomTarget) {
-    if (isMoving || ampInspection || portalOpen) return;
-    if (roomPhase === "guitar-cable" && target === "guitar") {
-      moveTo("lemon-guitar", () => setRoomAction("plug-guitar"));
-      setNotice("Has llegado a la guitarra. Conecta aquí el primer extremo del cable.");
-      return;
-    }
-    if (roomPhase === "amp-cable" && target === "amp") {
-      moveTo("lemon-amp", () => setRoomAction("plug-amp"));
-      setNotice("El extremo de la guitarra ya está conectado. Falta el amplificador.");
+    if (isMoving || roomView !== "scene" || portalOpen) return;
+    if (target === "cable") {
+      moveTo("lemon-cable", () => setRoomAction("examine-cable"));
+      setNotice("El cable une los instrumentos. Examínalo para conectar sus dos puntas.");
       return;
     }
     if (roomPhase === "power" && target === "amp") {
@@ -309,29 +301,39 @@ export default function Home() {
   }
 
   function performRoomAction() {
-    if (roomAction === "plug-guitar") {
-      setPluggedGuitar(true);
-      setRoomPhase("amp-cable");
+    if (roomAction === "examine-cable") {
+      setRoomView("cable");
       setRoomAction(null);
-      setNotice("Cable conectado a la guitarra. Ahora lleva el otro extremo al amplificador.");
-    } else if (roomAction === "plug-amp") {
-      setPluggedAmp(true);
-      setRoomPhase("power");
-      setRoomAction(null);
-      setNotice("Los dos extremos están conectados. Acércate al ampli y examínalo.");
     } else if (roomAction === "examine") {
-      setAmpInspection(true);
+      setRoomView("amp");
       setRoomAction(null);
     } else if (roomAction === "play") {
+      setRoomView("guitar");
       setRoomAction(null);
-      setNotice("Selecciona una o más notas y toca la selección. Una nota sola no abre el portal.");
+      setNotice("Pulsa una cuerda y un traste; después toca la selección.");
     }
+  }
+
+  function connectCableEnd(end: "a" | "b", target: "guitar" | "amp") {
+    if (end === "a" && target === "guitar" && !pluggedGuitar && roomPhase === "guitar-cable") {
+      setPluggedGuitar(true);
+      setRoomPhase("amp-cable");
+      setNotice("Primera punta conectada a la guitarra. Ahora lleva la otra al amplificador.");
+      return;
+    }
+    if (end === "b" && target === "amp" && pluggedGuitar && !pluggedAmp && roomPhase === "amp-cable") {
+      setPluggedAmp(true);
+      setRoomPhase("power");
+      setNotice("Las dos puntas están conectadas. Acércate al amplificador para examinarlo.");
+      return;
+    }
+    setNotice(end === "a" ? "Primero arrastra la punta A a la guitarra." : "La punta B va después, a la entrada del amplificador.");
   }
 
   function toggleAmplifier() {
     const nextState = !ampOn;
     setAmpOn(nextState);
-    setAmpInspection(false);
+    setRoomView("scene");
     if (nextState) {
       setRoomPhase("play");
       setNotice("Altavoz encendido. Vuelve a la guitarra para tocar.");
@@ -341,29 +343,36 @@ export default function Home() {
     }
   }
 
-  function toggleNote(noteId: string) {
-    setSelectedNotes(current => current.includes(noteId) ? current.filter(note => note !== noteId) : [...current, noteId]);
+  function toggleFret(note: FretSelection) {
+    setSelectedFrets(current => current.some(item => item.key === note.key)
+      ? current.filter(item => item.key !== note.key)
+      : [...current.filter(item => item.stringIndex !== note.stringIndex), note]);
   }
 
   function playSelection() {
-    if (selectedNotes.length === 0) {
-      setNotice("Elige una nota o varias antes de tocar.");
+    if (selectedFrets.length === 0) {
+      setNotice("Pulsa una posición del mástil antes de tocar.");
       return;
     }
-    const ordered = NOTES.filter(note => selectedNotes.includes(note.id));
-    playFrequencies(ordered.map(note => note.frequency));
-    if (selectedNotes.length === 1) {
-      setNotice(`${ordered[0].label}: suena, pero una nota sola no abre el portal.`);
+    playFrequencies(selectedFrets.map(note => note.frequency));
+    const pitchClasses = new Set(selectedFrets.map(note => note.noteId));
+    if (selectedFrets.length === 1) {
+      setNotice(`${selectedFrets[0].label}: suena, pero una nota sola no abre el portal.`);
+      return;
+    }
+    if (pitchClasses.size < 2) {
+      setNotice("Las posiciones elegidas repiten la misma clase de nota; añade una nota diferente para formar un acorde.");
       return;
     }
     if (validChord) {
       setPortalOpen(true);
       setIntroStarted(true);
       setRoomPhase("portal");
+      setRoomView("scene");
       setNotice("Acorde válido de Do♯ menor. El portal se abre y empieza la Intro.");
       return;
     }
-    setNotice("Ese acorde no cumple la regla: necesita Do♯ y solo notas de la tonalidad de Do♯ menor.");
+    setNotice(`Ese conjunto (${selectedFrets.map(note => note.label).join(" · ")}) no abre el portal: usa Do♯ y solo notas de Do♯ menor.`);
   }
 
   function enterDawn() {
@@ -468,12 +477,13 @@ export default function Home() {
     if (portalTransit || arrivalPortal) return;
     if (nextScene === "dawn" && !portalOpen) return;
     setScene(nextScene);
+    setRoomView("scene");
     setRoomAction(null);
   }
 
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
-    ? Boolean(roomAction) || roomPhase === "play" || portalOpen
+    ? roomView === "scene" && (Boolean(roomAction) || portalOpen)
     : dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected);
 
   return (
@@ -519,19 +529,18 @@ export default function Home() {
           <div className={`playfield ${scene === "dawn" ? "playfield-portrait" : "playfield-room"}`}>
           {scene === "room" ? (
             <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
-              <div className="room-world">
-                <div className={`cable-line ${pluggedGuitar ? "cable-at-guitar" : ""} ${pluggedAmp ? "cable-at-amp" : ""} ${pluggedGuitar && pluggedAmp ? "cable-complete" : ""}`} aria-hidden="true"><span /></div>
+              {roomView === "scene" && <div className="room-world">
+                <div className={`cable-floor-prop ${pluggedGuitar && pluggedAmp ? "cable-floor-connected" : ""}`} aria-hidden="true"><CableSceneArt /></div>
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
-                <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")} />
-                <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || (roomPhase !== "amp-cable" && roomPhase !== "power")} />
-                {ampInspection && <div className="amp-closeup" role="dialog" aria-label="Vista frontal del amplificador">
-                  <span className="closeup-label">VISTA FRONTAL · ÚNICO CONTROL</span>
-                  <AmpSprite large powered={ampOn} />
-                  <button className="power-switch" onClick={toggleAmplifier} aria-label={ampOn ? "Apagar ON/OFF" : "Encender ON/OFF"}><span className={`switch-light ${ampOn ? "lit" : ""}`} />ON / OFF <span className="switch-arrow">↵</span></button>
-                </div>}
+                <button className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving} />
+                <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || roomPhase !== "play"} />
+                <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || roomPhase !== "power"} />
                 <span className="stage-coordinate">LF · 01</span>
-              </div>
+              </div>}
+              {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onClose={() => setRoomView("scene")} />}
+              {roomView === "cable" && <CableCloseup pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} onConnect={connectCableEnd} onClose={() => setRoomView("scene")} />}
+              {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onPlay={playSelection} onClose={() => setRoomView("scene")} />}
             </div>
           ) : (
             <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
@@ -549,9 +558,6 @@ export default function Home() {
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : "dawn-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
               {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomActionLabel(roomAction)} <span>→</span></button></div>}
-              {roomPhase === "play" && <div className="chord-panel"><div className="note-picker" aria-label="Notas de la guitarra">
-                {NOTES.map(note => <button key={note.id} className={`note-key ${selectedNotes.includes(note.id) ? "selected" : ""}`} onClick={() => toggleNote(note.id)} aria-pressed={selectedNotes.includes(note.id)}><strong>{note.label}</strong><small>{note.id}</small></button>)}
-              </div><button className="action-button play-button" onClick={playSelection}>Tocar <span>♫</span></button></div>}
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
             </> : <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
@@ -585,8 +591,7 @@ export default function Home() {
 
 function roomActionLabel(action: Exclude<RoomAction, null>) {
   const labels: Record<Exclude<RoomAction, null>, string> = {
-    "plug-guitar": "Enchufar cable a la guitarra",
-    "plug-amp": "Enchufar cable al amplificador",
+    "examine-cable": "Examinar cable",
     examine: "Examinar amplificador",
     play: "Tocar la guitarra",
   };

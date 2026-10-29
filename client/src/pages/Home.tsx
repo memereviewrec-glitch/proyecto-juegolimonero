@@ -5,7 +5,7 @@ import "./home.css";
 type Scene = "room" | "dawn";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
-type RoomAction = "examine-cable" | "examine" | "play" | null;
+type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
 type RoomView = "scene" | "cable" | "amp" | "guitar";
 type Branch = "A" | "B";
 type Response = "restart" | Branch;
@@ -286,24 +286,38 @@ export default function Home() {
   }
 
   function handleRoomHotspot(target: RoomTarget) {
-    if (isMoving || roomView !== "scene" || portalOpen) return;
+    if (isMoving || roomAction || roomView !== "scene" || portalOpen) return;
     if (target === "cable") {
       moveTo("lemon-cable", () => setRoomAction("examine-cable"));
       setNotice("El cable une los instrumentos. Examínalo para conectar sus dos puntas.");
       return;
     }
-    if (roomPhase === "power" && target === "amp") {
-      moveTo("lemon-amp", () => setRoomAction("examine"));
-      setNotice("El cable está conectado por ambos extremos. Examina el amplificador.");
-      return;
-    }
-    if (roomPhase === "play" && target === "guitar") {
+    if (target === "guitar") {
+      if (!pluggedGuitar || !pluggedAmp) {
+        setRoomAction("guitar-unplugged");
+        setNotice("La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.");
+        return;
+      }
+      if (!ampOn) {
+        setRoomAction("amp-off");
+        setNotice("La guitarra ya está conectada, pero el amplificador sigue apagado.");
+        return;
+      }
       moveTo("lemon-guitar", () => setRoomAction("play"));
       setNotice("El amplificador está encendido. Ya puedes tocar.");
+      return;
+    }
+    if (target === "amp" && pluggedGuitar && pluggedAmp) {
+      moveTo("lemon-amp", () => setRoomAction("examine"));
+      setNotice(ampOn ? "El amplificador está encendido." : "El cable está conectado por ambos extremos. Examina y enciende el amplificador.");
     }
   }
 
   function performRoomAction() {
+    if (roomAction === "guitar-unplugged" || roomAction === "amp-off") {
+      setRoomAction(null);
+      return;
+    }
     if (roomAction === "examine-cable") {
       setRoomView("cable");
       setRoomAction(null);
@@ -538,12 +552,17 @@ export default function Home() {
           {scene === "room" ? (
             <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
-                <div className={`cable-floor-prop ${pluggedGuitar && pluggedAmp ? "cable-floor-connected" : ""}`} aria-hidden="true"><CableSceneArt /></div>
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
-                <button className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving} />
-                <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || roomPhase !== "play"} />
-                <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || roomPhase !== "power"} />
+                <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
+                  <CableSceneArt /><span className="object-label" aria-hidden="true">CABLE</span>
+                </button>
+                <button type="button" className="hotspot guitar-hotspot" aria-label="Guitarra eléctrica roja" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || portalOpen}>
+                  <GuitarSprite /><span className="object-label" aria-hidden="true">GUITARRA</span>
+                </button>
+                <button type="button" className="hotspot amp-hotspot" aria-label="Amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || !pluggedGuitar || !pluggedAmp || portalOpen}>
+                  <AmpSprite powered={ampOn} /><span className="object-label" aria-hidden="true">AMPLIFICADOR</span>
+                </button>
                 <span className="stage-coordinate">LF · 01</span>
               </div>}
               {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} onClose={() => setRoomView("scene")} />}
@@ -565,20 +584,20 @@ export default function Home() {
 
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : "dawn-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
-              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomActionLabel(roomAction)} <span>→</span></button></div>}
+              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
             </> : <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label="Tres respuestas posibles">
-                  <button onClick={() => chooseResponse("restart")}><span className="choice-code">↺</span><strong>{currentDialogue.restart}</strong><span className="choice-arrow">▶</span></button>
-                  <button onClick={() => chooseResponse("A")}><span className="choice-code">A</span><strong>{currentDialogue.a}</strong><span className="choice-arrow">▶</span></button>
-                  <button onClick={() => chooseResponse("B")}><span className="choice-code">B</span><strong>{currentDialogue.b}</strong><span className="choice-arrow">▶</span></button>
+                  <button onClick={() => chooseResponse("restart")}><strong>{currentDialogue.restart}</strong></button>
+                  <button onClick={() => chooseResponse("A")}><strong>{currentDialogue.a}</strong></button>
+                  <button onClick={() => chooseResponse("B")}><strong>{currentDialogue.b}</strong></button>
                 </div>}
               </div>}
-              {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={whistle}>Silbar <span>♪</span></button></div>}
-              {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={listenToBirds}>Mirar al cielo y escuchar a los pájaros silbar <span>→</span></button></div>}
+              {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={whistle}>Silbar</button></div>}
+              {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={listenToBirds}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
-              {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla <span>→</span></button></div>}
+              {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla</button></div>}
               {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("room")}>Volver al local ↗</button></div>}
             </>}
           </aside>}
@@ -602,6 +621,8 @@ function roomActionLabel(action: Exclude<RoomAction, null>) {
     "examine-cable": "Examinar cable",
     examine: "Examinar amplificador",
     play: "Tocar la guitarra",
+    "guitar-unplugged": "La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.",
+    "amp-off": "La guitarra ya está conectada, pero el amplificador sigue apagado. Primero tengo que encenderlo.",
   };
   return labels[action];
 }

@@ -157,21 +157,17 @@ button { font:inherit; }
 .control-column .unlock-card .action-button { flex-basis:auto; width:auto; }
 .control-column .song-card { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .room-controls { top:3%; left:3%; right:auto; bottom:auto; width:min(56%,430px); max-height:48%; }
-.dawn-controls { top:3%; left:auto; right:3%; bottom:auto; width:min(56%,430px); max-height:45%; }
-.control-column.dawn-controls .choice-list { grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
-.control-column.dawn-controls .choice-list button { display:grid; grid-template-columns:1fr auto; grid-template-rows:auto 1fr; column-gap:4px; row-gap:4px; min-height:70px; padding:8px; }
-.control-column.dawn-controls .choice-code { grid-column:1; grid-row:1; width:22px; height:22px; }
-.control-column.dawn-controls .choice-list strong { grid-column:1/-1; grid-row:2; align-self:start; font-size:11px; line-height:1.25; }
-.control-column.dawn-controls .choice-arrow { grid-column:2; grid-row:1; margin-left:0; }
+.dawn-controls { top:3%; left:auto; right:3%; bottom:auto; width:min(64%,520px); max-height:58%; }
+.control-column.dawn-controls .choice-list { grid-template-columns:1fr; gap:8px; }
+.control-column.dawn-controls .choice-list button { display:flex; width:100%; min-height:54px; align-items:center; justify-content:flex-start; padding:10px 14px; }
+.control-column.dawn-controls .choice-list strong { display:block; min-width:0; overflow-wrap:anywhere; font:600 16px/1.35 'DM Mono',monospace; text-align:left; }
 .control-column .thought-bubble { border:0; border-left:3px solid #62536e; background:transparent; box-shadow:none; padding:2px 7px; }
 .control-column .thought-bubble>span { display:block; font-size:9px; color:#786b7f; }
 .control-column .thought-bubble p { margin:5px 0 0; font:500 14px/1.45 'DM Mono',monospace; color:#29252c; }
 .control-column .action-button,.control-column .dialogue-next { width:auto; min-width:118px; min-height:42px; border:3px solid #26212d; background:#4a3e54; color:#fff7e9; padding:10px 13px; font:11px 'DM Mono',monospace; box-shadow:3px 3px 0 #9f907f; }
 .control-column .choice-list { display:grid; grid-template-columns:1fr; gap:8px; }
 .control-column .choice-list button { min-height:44px; padding:8px 11px; gap:9px; border:3px solid #3b3342; background:#f7f0e2; box-shadow:3px 3px 0 #b6a88f; }
-.control-column .choice-code { width:24px; height:24px; font-size:10px; }
 .control-column .choice-list strong { min-width:0; overflow-wrap:anywhere; font:11px/1.3 'DM Mono',monospace; }
-.control-column .choice-arrow { font-size:12px; }
 .control-column > .dialogue-card,.control-column > .action-card,.control-column > .chord-panel,.control-column > .unlock-card,.control-column > .branch-card,.control-column > .context-card { animation:text-box-enter 1.45s ease-out both; }
 .dialogue-next { float:right; display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px; cursor:pointer; }
 .dialogue-next span { color:#f2d98c; }
@@ -296,11 +292,9 @@ button { font:inherit; }
  .control-column .play-button { width:100%; margin-top:8px; }
  .control-column .choice-list { grid-template-columns:1fr; gap:6px; }
  .control-column .choice-list button { min-height:42px; padding:7px 9px; }
- .control-column.dawn-controls .choice-list { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
- .control-column.dawn-controls .choice-list button { grid-template-columns:1fr auto; grid-template-rows:auto 1fr; min-height:70px; padding:6px 5px; gap:4px; }
- .control-column.dawn-controls .choice-code { width:18px; height:18px; font-size:8px; }
- .control-column.dawn-controls .choice-list strong { font-size:10px; line-height:1.2; }
- .control-column.dawn-controls .choice-arrow { font-size:10px; }
+ .control-column.dawn-controls .choice-list { grid-template-columns:1fr; gap:6px; }
+ .control-column.dawn-controls .choice-list button { display:flex; width:100%; min-height:50px; align-items:center; justify-content:flex-start; padding:8px 11px; gap:8px; }
+ .control-column.dawn-controls .choice-list strong { font-size:14px; line-height:1.3; }
  .control-column .thought-bubble p { font-size:12px; }
  .room-empty-note { top:12px; left:12px; font-size:6px; }
  .amp-sprite { width:74px; }
@@ -458,4 +452,51 @@ button { font:inherit; }
  .cable-drop-target span { font-size:8px; }
  .cable-jack-handle>span { font-size:8px; }
  .cable-closeup-footer p { font-size:10px; }
+}
+
+
+/* Composición espacial: cada objeto tiene su propia zona claramente separada */
+.room-world { background:#28273b url("/room-background-empty.png") center/100% 100% no-repeat; }
+.lemon-guitar { left:18%; }
+.lemon-amp { left:82%; }
+.lemon-cable { left:50%; }
+.hotspot.guitar-hotspot,.hotspot.amp-hotspot,.hotspot.cable-hotspot {
+ display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; overflow:visible;
+}
+.hotspot.guitar-hotspot { left:5%; top:52%; width:26%; height:28%; }
+.hotspot.amp-hotspot { left:69%; top:53%; width:26%; height:27%; }
+.hotspot.cable-hotspot { left:39%; top:72%; width:22%; height:13%; z-index:8; }
+.hotspot.guitar-hotspot .guitar-sprite { width:84%; max-height:27vh; }
+.hotspot.amp-hotspot .amp-sprite { width:100%; max-height:21vh; transform:scaleY(1.18); transform-origin:bottom center; }
+.hotspot.cable-hotspot .cable-scene-art { display:block; width:100%; height:auto; max-height:78%; overflow:visible; image-rendering:pixelated; }
+.hotspot .object-label {
+ display:block; order:-1; margin:0 0 4px; padding:3px 5px; border:1px solid #e9d6a4; color:#fff4d9; background:#211b2be8;
+ box-shadow:2px 2px 0 #17131b; font:700 9px/1.1 'DM Mono',monospace; letter-spacing:.07em; white-space:nowrap;
+}
+.hotspot.amp-hotspot:disabled .amp-sprite { opacity:.78; }
+.hotspot.cable-hotspot:focus-visible,.hotspot.guitar-hotspot:focus-visible,.hotspot.amp-hotspot:focus-visible { outline:3px dashed #fff1b2; outline-offset:4px; }
+
+/* Diálogos de Ventana al sendero: más grandes y sin códigos visuales en las respuestas */
+.dawn-controls { width:min(64%,520px); max-height:58%; }
+.dawn-controls .thought-bubble>span { font-size:11px; }
+.dawn-controls .thought-bubble p { font-size:18px; line-height:1.42; }
+.dawn-controls .choice-list { grid-template-columns:1fr; gap:8px; }
+.dawn-controls .choice-list button { display:flex; width:100%; min-height:54px; align-items:center; justify-content:flex-start; padding:10px 14px; }
+.dawn-controls .choice-list strong { display:block; min-width:0; font:600 16px/1.35 'DM Mono',monospace; text-align:left; }
+.dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:14px; }
+
+@media (max-width:600px) {
+ .lemon-guitar { left:18%; }
+ .lemon-amp { left:82%; }
+ .hotspot.guitar-hotspot { left:5%; top:52%; width:26%; height:28%; }
+ .hotspot.amp-hotspot { left:69%; top:53%; width:26%; height:27%; }
+ .hotspot.cable-hotspot { left:39%; top:72%; width:22%; height:13%; }
+ .hotspot .object-label { font-size:8px; }
+ .dawn-controls { left:auto; right:3%; width:86%; max-height:74%; }
+ .dawn-controls .thought-bubble>span { font-size:10px; }
+ .dawn-controls .thought-bubble p { font-size:16px; }
+ .dawn-controls .choice-list { grid-template-columns:1fr; }
+ .dawn-controls .choice-list button { min-height:50px; padding:8px 11px; }
+ .dawn-controls .choice-list strong { font-size:14px; }
+ .dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:13px; }
 }

@@ -1,8 +1,12 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { AmpCloseup, CableCloseup, CableSceneArt, GuitarCloseup, type FretSelection } from "../components/RoomCloseups";
+import { LemonSprite } from "../components/GameSprites";
+import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColumnPuzzle";
+import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
+import { SeedBook, type SeedSongId } from "../components/SeedBook";
 import "./home.css";
 
-type Scene = "room" | "dawn";
+type Scene = "room" | "dawn" | "ruins";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -44,66 +48,6 @@ const DIALOGUE = [
   },
 ];
 
-function LemonSprite({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      className={`lemon-sprite ${className}`}
-      viewBox="0 0 48 56"
-      role="img"
-      aria-label="Limón protagonista"
-      shapeRendering="crispEdges"
-    >
-      <path d="M20 7h8v4h7v4h5v7h3v17h-4v7h-7v4H16v-4h-6v-5H6V21h4v-6h6v-4h4z" fill="#f4c943" stroke="#29252d" strokeWidth="2" />
-      <path d="M17 8h7V4h7v4h-3v4h-7v3h-6v-4h2z" fill="#719452" stroke="#29252d" strokeWidth="1.5" />
-      <rect x="17" y="25" width="3" height="3" fill="#28242b" />
-      <rect x="29" y="25" width="3" height="3" fill="#28242b" />
-      <path d="M22 34h7v2h-7z" fill="#bd704f" />
-      <g className="lemon-legs" fill="#29252d">
-        <path className="lemon-leg lemon-leg-left" d="M13 46h4v7h-4z" />
-        <path className="lemon-leg lemon-leg-right" d="M32 46h4v7h-4z" />
-      </g>
-    </svg>
-  );
-}
-
-function AmpSprite({ large = false, powered = false }: { large?: boolean; powered?: boolean }) {
-  return (
-    <svg
-      className={`amp-sprite${large ? " amp-sprite-large" : ""}`}
-      viewBox="0 0 128 116"
-      role="img"
-      aria-label={powered ? "Amplificador encendido" : "Amplificador apagado"}
-      shapeRendering="crispEdges"
-    >
-      <rect x="13" y="12" width="102" height="96" fill="#28252e" stroke="#1e1b22" strokeWidth="4" />
-      <rect x="19" y="18" width="90" height="16" fill="#d8c8a0" stroke="#1e1b22" strokeWidth="3" />
-      <rect x="26" y="23" width="5" height="5" fill={powered ? "#d55e42" : "#77716b"} />
-      <rect x="38" y="22" width="6" height="6" fill="#4b4650" />
-      <rect x="53" y="22" width="6" height="6" fill="#4b4650" />
-      <rect x="68" y="22" width="6" height="6" fill="#4b4650" />
-      <rect x="82" y="22" width="6" height="6" fill="#4b4650" />
-      <rect x="22" y="40" width="84" height="59" fill="#403b43" stroke="#17151a" strokeWidth="3" />
-      <path d="M27 46h74v3H27zm0 9h74v3H27zm0 9h74v3H27zm0 9h74v3H27zm0 9h74v3H27zm0 9h74v3H27z" fill="#615a61" />
-      <rect x="11" y="104" width="14" height="5" fill="#18161c" />
-      <rect x="103" y="104" width="14" height="5" fill="#18161c" />
-    </svg>
-  );
-}
-
-function GuitarSprite() {
-  return (
-    <svg className="guitar-sprite" viewBox="0 0 96 176" role="img" aria-label="Guitarra eléctrica roja" shapeRendering="crispEdges">
-      <path d="M42 5h12v58h-5v16h8l8 8-2 13 8 9-2 14-12 10H37l-12-10-2-14 8-9-2-13 8-8h8V63h-3z" fill="#b64745" stroke="#2c2630" strokeWidth="3" />
-      <path d="M43 7h10v62H43z" fill="#d6ad83" stroke="#2c2630" strokeWidth="2" />
-      <path d="M44 16h8m-8 7h8m-8 7h8m-8 7h8m-8 7h8m-8 7h8" stroke="#594a4a" strokeWidth="2" />
-      <path d="M39 82h18v37H39z" fill="#eadfcb" stroke="#2c2630" strokeWidth="2" />
-      <path d="M31 98h34m-34 7h34m-34 7h34" stroke="#51464b" strokeWidth="2" />
-      <circle cx="48" cy="91" r="3" fill="#2c2630" />
-      <path d="M46 8h4m-8-4h12" stroke="#2c2630" strokeWidth="3" />
-    </svg>
-  );
-}
-
 function FlowerSprite({ open }: { open: boolean }) {
   return (
     <svg className={`flower-bloom${open ? " flower-bloom-open" : ""}`} viewBox="0 0 64 64" aria-hidden="true" shapeRendering="crispEdges">
@@ -125,66 +69,39 @@ function FlowerSprite({ open }: { open: boolean }) {
   );
 }
 
+const activeGameAudio = new Set<HTMLAudioElement>();
+
+function stopGameAudio() {
+  activeGameAudio.forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+  activeGameAudio.clear();
+}
+
+function playMp3Sample(source: string, volume: number) {
+  if (typeof window === "undefined") return;
+  const audio = new Audio(source);
+  audio.volume = Math.max(0, Math.min(1, volume));
+  activeGameAudio.add(audio);
+  const remove = () => activeGameAudio.delete(audio);
+  audio.addEventListener("ended", remove, { once: true });
+  void audio.play().catch(remove);
+}
+
 function playFrequencies(frequencies: number[]) {
   if (typeof window === "undefined" || frequencies.length === 0) return;
-  try {
-    const context = new window.AudioContext();
-    const now = context.currentTime;
-    const noteDuration = 2;
-    frequencies.forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const peakGain = 0.12 / frequencies.length;
-      oscillator.type = "triangle";
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(peakGain, now + 0.025);
-      gain.gain.setValueAtTime(peakGain, now + noteDuration - 0.3 + index * 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration + index * 0.02);
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start(now);
-      oscillator.stop(now + noteDuration + 0.05 + index * 0.02);
-    });
-    window.setTimeout(() => void context.close(), 2300);
-  } catch {
-    // La reproducción de prueba es opcional; el estado visual del guion sigue funcionando.
-  }
+  stopGameAudio();
+  frequencies.forEach(frequency => {
+    const midi = Math.round(69 + 12 * Math.log2(frequency / 440));
+    if (midi < 40 || midi > 73) return;
+    playMp3Sample(`/audio/guitar/guitar-midi-${midi}.mp3`, 0.48 / frequencies.length);
+  });
 }
 
 function playWhistle(source: "lemon" | "birds") {
-  if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return;
-  let context: AudioContext | undefined;
-  try {
-    context = new window.AudioContext();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    const now = context.currentTime;
-    const notes = source === "birds"
-      ? [{ at: 0, length: 0.16, from: 1480, to: 1980 }, { at: 0.22, length: 0.15, from: 1710, to: 2240 }, { at: 0.46, length: 0.19, from: 1560, to: 2100 }]
-      : [{ at: 0, length: 0.45, from: 920, to: 1330 }, { at: 0.56, length: 0.48, from: 1110, to: 1580 }];
-    oscillator.type = "sine";
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    gain.gain.setValueAtTime(0.0001, now);
-    notes.forEach(note => {
-      const start = now + note.at;
-      oscillator.frequency.setValueAtTime(note.from, start);
-      oscillator.frequency.exponentialRampToValueAtTime(note.to, start + note.length * 0.7);
-      oscillator.frequency.exponentialRampToValueAtTime(note.from, start + note.length);
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(0.025, start + 0.025);
-      gain.gain.setValueAtTime(0.025, start + note.length * 0.8);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + note.length);
-    });
-    const duration = notes[notes.length - 1].at + notes[notes.length - 1].length;
-    oscillator.start(now);
-    oscillator.stop(now + duration + 0.04);
-    void context.resume();
-    window.setTimeout(() => { void context?.close(); }, (duration + 0.2) * 1000);
-  } catch {
-    if (context) void context.close();
-  }
+  stopGameAudio();
+  playMp3Sample(source === "birds" ? "/audio/bird-whistles.mp3" : "/audio/lemon-whistle.mp3", 0.32);
 }
 
 function clamp(value: number, minimum: number, maximum: number) {
@@ -203,6 +120,7 @@ function dawnWalkableTop(x: number) {
 
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
+  const [seedBookOpen, setSeedBookOpen] = useState(false);
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
   const [roomView, setRoomView] = useState<RoomView>("scene");
   const [pluggedGuitar, setPluggedGuitar] = useState(false);
@@ -231,8 +149,27 @@ export default function Home() {
   const [flowerOpen, setFlowerOpen] = useState(false);
   const [seedAvailable, setSeedAvailable] = useState(false);
   const [seedCollected, setSeedCollected] = useState(false);
+  const [leftColumnRevealed, setLeftColumnRevealed] = useState(false);
+  const [rightColumnRevealed, setRightColumnRevealed] = useState(false);
+  const [ruinsView, setRuinsView] = useState<"scene" | RuinsColumnSide>("scene");
+  const [ruinsAction, setRuinsAction] = useState<RuinsColumnSide | null>(null);
+  const [ruinsFlowerStage, setRuinsFlowerStage] = useState<RuinsFlowerStage>("hidden");
+  const [rootsSeedCollected, setRootsSeedCollected] = useState(false);
   const [lemonWhistling, setLemonWhistling] = useState(false);
-  const [notice, setNotice] = useState("Acércate al cable y examínalo para conectar sus dos extremos.");
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (!leftColumnRevealed || !rightColumnRevealed) return;
+    setRuinsFlowerStage("growing");
+    const openTimer = window.setTimeout(() => setRuinsFlowerStage("open"), motionDuration(1700));
+    const fallTimer = window.setTimeout(() => setRuinsFlowerStage("falling"), motionDuration(3100));
+    const seedTimer = window.setTimeout(() => setRuinsFlowerStage("seed"), motionDuration(4200));
+    return () => {
+      window.clearTimeout(openTimer);
+      window.clearTimeout(fallTimer);
+      window.clearTimeout(seedTimer);
+    };
+  }, [leftColumnRevealed, rightColumnRevealed]);
 
   const validChord = useMemo(
     () => {
@@ -495,18 +432,46 @@ export default function Home() {
     setNotice("Semilla recogida. «Ventana al sendero» queda como recompensa de esta pantalla.");
   }
 
-  function setVisitedScene(nextScene: Scene) {
-    if (portalTransit || arrivalPortal) return;
-    if (nextScene === "dawn" && !portalOpen) return;
-    setScene(nextScene);
-    setRoomView("scene");
-    setRoomAction(null);
+  function openRuinsPuzzle() {
+    if (!ruinsAction) return;
+    setRuinsView(ruinsAction);
+    setRuinsAction(null);
   }
 
+  function revealRuinsColumn(side: RuinsColumnSide) {
+    if (side === "left") setLeftColumnRevealed(true);
+    else setRightColumnRevealed(true);
+  }
+
+  function collectRootsSeed() {
+    if (ruinsFlowerStage !== "seed") return;
+    setRootsSeedCollected(true);
+    setNotice("La tercera semilla, «Raíces», queda en tu equipaje.");
+  }
+
+  function setVisitedScene(nextScene: Scene) {
+    if (portalTransit || arrivalPortal) return;
+    if (nextScene === "room" && scene !== "room") return;
+    if (nextScene === "dawn" && (!portalOpen || scene === "ruins")) return;
+    if (nextScene === "ruins" && !seedCollected) return;
+    setScene(nextScene);
+    if (nextScene === "ruins") setNotice("");
+    setRoomView("scene");
+    setRoomAction(null);
+    setRuinsAction(null);
+    setRuinsView("scene");
+  }
+
+  const discoveredSongIds: SeedSongId[] = [];
+  if (portalOpen) discoveredSongIds.push("intro");
+  if (seedCollected) discoveredSongIds.push("ventana");
+  if (rootsSeedCollected) discoveredSongIds.push("raices");
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
     ? roomView === "scene" && (Boolean(roomAction) || portalOpen)
-    : dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected);
+    : scene === "dawn"
+      ? dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected
+      : ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed" || rootsSeedCollected));
 
   return (
     <main className="explorer-shell">
@@ -516,60 +481,66 @@ export default function Home() {
           <span><strong>Limonero Fuzz</strong><small>EXPLORADOR DEL GUION</small></span>
         </a>
         <div className="topbar-right">
-          <span className="status-dot" /> <span>Preproducción interactiva</span>
+          <span className="status-dot" /> <span className="status-copy">Preproducción interactiva</span>
+          <button className="seedbook-toggle" type="button" onClick={() => setSeedBookOpen(open => !open)} aria-expanded={seedBookOpen} aria-controls="seedbook-panel">
+            <span className="seedbook-toggle-icon" aria-hidden="true">✳</span><span className="seedbook-toggle-label">Libro de semillas</span><b>{discoveredSongIds.length}/{10}</b>
+          </button>
           <a className="top-link" href="#storyboard">Ver storyboard</a>
         </div>
       </header>
+      {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}
 
       <section className="intro-band" id="inicio">
         <div className="intro-copy">
           <div className="eyebrow"><span>DISCO · 10 CANCIONES</span><span className="eyebrow-line" /></div>
-          <h1>Dos pantallas.<br /><em>Un camino de vuelta.</em></h1>
-          <p>Explora el comienzo del viaje: del primer acorde en un local vacío al amanecer detrás de El Cuchillo.</p>
+          <h1>Tres pantallas.<br /><em>Un camino de vuelta.</em></h1>
+          <p>Del primer acorde en el local vacío al amanecer de El Cuchillo y las ruinas cubiertas de raíces.</p>
         </div>
-        <div className="intro-stamp" aria-label="Dos pantallas disponibles">
-          <span className="stamp-big">02</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
+        <div className="intro-stamp" aria-label="Tres pantallas disponibles">
+          <span className="stamp-big">03</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
         </div>
       </section>
 
       <nav className="screen-nav" aria-label="Seleccionar pantalla">
-        <button className={`screen-tab ${scene === "room" ? "active" : ""}`} onClick={() => setVisitedScene("room")} disabled={portalTransit || arrivalPortal}>
+        <button className={`screen-tab ${scene === "room" ? "active" : ""}`} onClick={() => setVisitedScene("room")} disabled={scene !== "room" || portalTransit || arrivalPortal}>
           <span className="tab-number">01</span><span><strong>El local de ensayo</strong><small>La Intro · antes del portal</small></span><span className="tab-mark">{portalOpen ? "✓" : "•"}</span>
         </button>
-        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen || portalTransit || arrivalPortal}>
+        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen || scene === "ruins" || portalTransit || arrivalPortal}>
           <span className="tab-number">02</span><span><strong>El Cuchillo al amanecer</strong><small>Ventana al sendero</small></span><span className="tab-mark">{seedCollected ? "✓" : portalOpen ? "↗" : "⌑"}</span>
+        </button>
+        <button className={`screen-tab ${scene === "ruins" ? "active" : ""}`} onClick={() => setVisitedScene("ruins")} disabled={!seedCollected || portalTransit || arrivalPortal}>
+          <span className="tab-number">03</span><span><strong>Ruinas invadidas</strong><small>Raíces · las dos columnas</small></span><span className="tab-mark">{rootsSeedCollected ? "✓" : seedCollected ? "↗" : "⌑"}</span>
         </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : "02"}</span><h2>{scene === "room" ? "El local de ensayo" : "El Cuchillo al amanecer"}</h2></div>
-            <span className="stage-location">{scene === "room" ? "ANTES DE LA OTRA DIMENSIÓN" : "ALBATERA · AMANECER"}</span>
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : "03"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : "Ruinas invadidas por raíces"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : "EL CAMINO · DOS COLUMNAS"}</span>}
           </div>
 
-          <div className={`playfield ${scene === "dawn" ? "playfield-portrait" : "playfield-room"}`}>
+          <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
           {scene === "room" ? (
             <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
                 <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
-                  <CableSceneArt /><span className="object-label" aria-hidden="true">CABLE</span>
+                  <CableSceneArt />
                 </button>
                 <button type="button" className="hotspot guitar-hotspot" aria-label="Guitarra eléctrica roja" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || portalOpen}>
-                  <GuitarSprite /><span className="object-label" aria-hidden="true">GUITARRA</span>
+                  <img className="guitar-sprite" src="/guitar-sprite-original.png" alt="" />
                 </button>
                 <button type="button" className="hotspot amp-hotspot" aria-label="Amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || !pluggedGuitar || !pluggedAmp || portalOpen}>
-                  <AmpSprite powered={ampOn} /><span className="object-label" aria-hidden="true">AMPLIFICADOR</span>
+                  <img className="amp-sprite" src="/amp-sprite-original.png" alt="" />
                 </button>
-                <span className="stage-coordinate">LF · 01</span>
               </div>}
-              {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} onClose={() => setRoomView("scene")} />}
+              {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} />}
               {roomView === "cable" && <CableCloseup pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} onConnect={connectCableEnd} onClose={() => setRoomView("scene")} />}
               {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onPlay={playSelection} onClose={() => setRoomView("scene")} />}
             </div>
-          ) : (
+          ) : scene === "dawn" ? (
             <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
               {arrivalPortal && <div className="arrival-portal" aria-hidden="true" />}
               <div className="dawn-veil" aria-hidden="true" />
@@ -580,13 +551,29 @@ export default function Home() {
               <span className={`seed-spark ${flowerOpen ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} aria-hidden="true" />
               <span className="stage-coordinate">LF · 02</span>
             </div>
+          ) : (
+            <RuinsScene
+              leftRevealed={leftColumnRevealed}
+              rightRevealed={rightColumnRevealed}
+              flowerStage={ruinsFlowerStage}
+              seedCollected={rootsSeedCollected}
+              onApproachColumn={setRuinsAction}
+              onCollectSeed={collectRootsSeed}
+            />
           )}
 
-          {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : "dawn-controls"}`} aria-label="Cuadro de diálogo del juego">
+          {scene === "ruins" && ruinsView !== "scene" && <RuinsColumnPuzzle
+            side={ruinsView}
+            alreadyRevealed={ruinsView === "left" ? leftColumnRevealed : rightColumnRevealed}
+            onReveal={() => revealRuinsColumn(ruinsView)}
+            onClose={() => setRuinsView("scene")}
+          />}
+
+          {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
               {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
-            </> : <>
+            </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label="Tres respuestas posibles">
                   <button onClick={() => chooseResponse("restart")}><strong>{currentDialogue.restart}</strong></button>
@@ -598,7 +585,11 @@ export default function Home() {
               {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={listenToBirds}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
               {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla</button></div>}
-              {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("room")}>Volver al local ↗</button></div>}
+              {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("ruins")}>Siguiente: Raíces</button></div>}
+            </> : <>
+              {ruinsAction && <div key={`column-${ruinsAction}`} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{ruinsAction === "left" ? "Las hojas cubren una inscripción en la columna izquierda." : "Una inscripción espera bajo las hojas de la columna derecha."}</p></div><button className="action-button" onClick={openRuinsPuzzle}>Examinar</button></div>}
+              {ruinsFlowerStage === "seed" && !rootsSeedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>La planta ha florecido y deja una semilla entre las raíces.</p></div><button className="action-button" onClick={collectRootsSeed}>Coger semilla</button></div>}
+              {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div><span className="roots-seed-note">La tercera semilla</span></div>}
             </>}
           </aside>}
           </div>
@@ -607,11 +598,12 @@ export default function Home() {
       </section>
 
       <section className="storyboard-section" id="storyboard">
-        <div className="storyboard-heading"><div><span className="stage-kicker">DOCUMENTO DE PREPRODUCCIÓN</span><h2>El storyboard original</h2></div><span>REFERENCIA VISUAL · PANTALLAS 01–02</span></div>
+        <div className="storyboard-heading"><div><span className="stage-kicker">DOCUMENTO DE PREPRODUCCIÓN</span><h2>El storyboard original</h2></div><span>REFERENCIA VISUAL · PANTALLAS 01–03</span></div>
         <figure className="storyboard-frame"><img src="/storyboard-pantallas-01-02.png" alt="Storyboard conceptual: el local de ensayo vacío y el limón ante El Cuchillo de Albatera al amanecer." /><figcaption><span>01 · Local de ensayo</span><span>02 · El Cuchillo al amanecer</span></figcaption></figure>
+        <figure className="storyboard-frame storyboard-frame-roots"><img src="/ruins-background.png" alt="Fondo de las ruinas invadidas por raíces, basado en el panel 03 del storyboard v02." /><figcaption><span>03 · Ruinas y arco de piedra</span><span>Fondo adaptado del panel 03 · storyboard v02</span></figcaption></figure>
       </section>
 
-      <footer className="site-footer"><div className="footer-mark">LF<span>✳</span></div><p>Un guion se vuelve paisaje, un clic cada vez.</p><span>PREPRODUCCIÓN · VERSIÓN 0.4</span></footer>
+      <footer className="site-footer"><div className="footer-mark">LF<span>✳</span></div><p>Un guion se vuelve paisaje, un clic cada vez.</p><span>PREPRODUCCIÓN · VERSIÓN 0.5</span></footer>
     </main>
   );
 }

@@ -1,0 +1,111 @@
+.ruins-puzzle {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  image-rendering: pixelated;
+  background: #1e2521;
+  isolation: isolate;
+}
+
+.ruins-puzzle-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  overflow: hidden;
+  background-color: #252a24;
+  background-repeat: no-repeat;
+  background-size: 100% 100%, cover;
+  background-position: center, center 46%;
+  image-rendering: pixelated;
+}
+
+.ruins-puzzle[data-side="left"] .ruins-puzzle-stage {
+  background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-left.png");
+  background-size: 100% 100%, auto 108%;
+  background-position: center, center;
+}
+
+.ruins-puzzle[data-side="right"] .ruins-puzzle-stage {
+  background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-right.png");
+  background-size: 100% 100%, auto 108%;
+  background-position: center, center;
+}
+
+.ruins-puzzle[data-side="left"] .ruins-puzzle-inscription { left: 46%; }
+.ruins-puzzle[data-side="right"] .ruins-puzzle-inscription { left: 52%; }
+
+.ruins-puzzle-inscription {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #382e25;
+  font: 700 clamp(20px, 3vw, 34px)/1 monospace;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  text-shadow: 2px 2px #d8c69a;
+  image-rendering: pixelated;
+}
+
+.ruins-puzzle-leaf {
+  position: absolute;
+  z-index: 3;
+  width: clamp(76px, 17vw, 132px);
+  height: clamp(68px, 14vw, 104px);
+  padding: 7px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ruins-puzzle-leaf svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 4px 0 rgb(25 35 23 / 42%));
+  pointer-events: none;
+}
+
+.ruins-puzzle-leaf:active,
+.ruins-puzzle-leaf.is-dragging {
+  z-index: 5;
+  cursor: grabbing;
+}
+
+.ruins-puzzle-leaf:focus-visible,
+.ruins-puzzle-back:focus-visible {
+  outline: 3px solid #f2db91;
+  outline-offset: 3px;
+}
+
+.ruins-puzzle-back {
+  position: absolute;
+  z-index: 6;
+  right: clamp(10px, 3vw, 24px);
+  bottom: clamp(10px, 3vw, 22px);
+  min-height: 42px;
+  padding: 9px 13px;
+  border: 3px solid #28251f;
+  border-radius: 0;
+  background: #d0bb8c;
+  box-shadow: 4px 4px 0 #302920;
+  color: #30271f;
+  font: 700 12px/1.2 monospace;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .ruins-puzzle-inscription { font-size: clamp(18px, 5.5vw, 26px); }
+  .ruins-puzzle-leaf { width: clamp(74px, 23vw, 104px); height: clamp(66px, 20vw, 92px); }
+}

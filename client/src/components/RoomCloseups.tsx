@@ -70,10 +70,9 @@ export function CableSceneArt() {
   );
 }
 
-export function AmpCloseup({ powered, onPower, onContinue, onClose }: { powered: boolean; onPower: () => void; onContinue: () => void; onClose: () => void }) {
+export function AmpCloseup({ powered, onPower, onContinue }: { powered: boolean; onPower: () => void; onContinue: () => void }) {
   return (
     <div className="room-closeup amp-closeup" role="dialog" aria-label="Primer plano frontal del amplificador">
-      <div className="closeup-heading"><span>OBJETO EXAMINADO · 01</span><h3>El amplificador</h3><p>Tólex antiguo, rejilla tejida y mandos de baquelita.</p></div>
       <svg className="amp-detail-art" viewBox="0 0 760 520" role="img" aria-label="Amplificador antiguo con tólex gastado, rejilla tejida, ribete y controles">
         <defs>
           <pattern id="ampTolexGrain" width="12" height="12" patternUnits="userSpaceOnUse">
@@ -101,10 +100,6 @@ export function AmpCloseup({ powered, onPower, onContinue, onClose }: { powered:
         <path d="M102 57l41-9-13 15-28 8m557-10 17 24-16 2m-575 315 19-7-3 19m578-18 17-6-8 24" fill="#c2a07b" opacity=".7" />
         <path d="M126 89h510v48H126z" fill="#25242a" stroke="#bd9d6c" strokeWidth="4" />
         <path d="M141 99h474v27H141z" fill="#d7c59f" stroke="#5c4c48" strokeWidth="2" />
-        <text x="153" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="3">VOLUME</text>
-        <text x="302" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="3">TONE</text>
-        <text x="439" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="2">REVERB</text>
-        <text x="551" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="2">POWER</text>
         {[205, 345, 482, 567].map((x, index) => <g key={x}>
           <circle cx={x} cy="102" r="19" fill="#28242a" stroke="#d1bd92" strokeWidth="4" />
           <circle cx={x} cy="102" r="12" fill="#e1d4b6" stroke="#4c4143" strokeWidth="2" />
@@ -120,18 +115,15 @@ export function AmpCloseup({ powered, onPower, onContinue, onClose }: { powered:
         <circle cx="384" cy="282" r="14" fill="#554a4b" stroke="#d0bb93" strokeWidth="3" />
         <path d="M325 224q58-42 116 1M322 343q63 37 124-2" fill="none" stroke="#544749" strokeWidth="4" opacity=".72" />
         <rect x="290" y="389" width="190" height="22" fill="#3e3438" stroke="#bfaa82" strokeWidth="2" />
-        <text x="385" y="405" fill="#e3d4b4" fontSize="13" textAnchor="middle" fontFamily="monospace" letterSpacing="3">LIMONERO FUZZ</text>
         <path d="M106 58l28-8 11 5-20 17m508 1 12 24-14 8M93 404l18-14 12 8-14 20m523-5 16-15 12 13-22 17" fill="none" stroke="#d5b58c" strokeWidth="5" opacity=".78" />
         <circle cx="114" cy="72" r="4" fill="url(#ampMetal)" /><circle cx="650" cy="72" r="4" fill="url(#ampMetal)" />
         <circle cx="105" cy="400" r="4" fill="url(#ampMetal)" /><circle cx="651" cy="403" r="4" fill="url(#ampMetal)" />
         <path d="M150 430h41v17h-41zm443 0h41v17h-41z" fill="#231f25" stroke="#a68e71" strokeWidth="4" />
       </svg>
       <div className="amp-closeup-controls">
-        <span className="amp-input-label">ENTRADA JACK · ¼″</span><span className={`amp-input-jack ${powered ? "amp-input-lit" : ""}`} aria-hidden="true" />
-        <button className="power-switch" onClick={onPower} aria-label={powered ? "Apagar amplificador" : "Encender amplificador"} aria-pressed={powered}><span className={`switch-light ${powered ? "lit" : ""}`} /><span className="switch-label">ON / OFF</span><span className="switch-state">{powered ? "ENCENDIDO" : "APAGADO"}</span></button>
-        {powered
-          ? <button className="closeup-next" onClick={onContinue}>Siguiente <span>→</span></button>
-          : <button className="closeup-back" onClick={onClose}>Volver al local <span>↗</span></button>}
+        <span className={`amp-input-jack ${powered ? "amp-input-lit" : ""}`} aria-hidden="true" />
+        <button className="power-switch" onClick={onPower} aria-label={powered ? "Apagar amplificador" : "Encender amplificador"} aria-pressed={powered}><span className={`switch-light ${powered ? "lit" : ""}`} /><span className="switch-label">ON / OFF</span></button>
+        {powered && <button className="closeup-next" onClick={onContinue}>Siguiente</button>}
       </div>
     </div>
   );
@@ -215,7 +207,6 @@ export function CableCloseup({
 
   return (
     <div className="room-closeup cable-closeup" role="dialog" aria-label="Primer plano del cable de guitarra">
-      <div className="closeup-heading"><span>OBJETO EXAMINADO · 02</span><h3>El cable y sus dos jacks</h3><p>Arrastra primero una punta a la guitarra; después, la otra al amplificador.</p></div>
       <div className="cable-workbench" ref={workbenchRef} onPointerMove={movePlug} onPointerUp={dropPlug} onPointerCancel={() => setDraggingEnd(null)}>
         <svg className="cable-coil-art" viewBox="0 0 1000 500" aria-hidden="true" preserveAspectRatio="none">
           <path d={cablePath} fill="none" stroke="#211b24" strokeWidth="34" strokeLinecap="round" />
@@ -225,13 +216,11 @@ export function CableCloseup({
         <div className="cable-endpoint cable-target-wrap guitar-target-wrap">
           <button ref={node => { targetRefs.current.guitar = node; }} className={`cable-drop-target ${pluggedGuitar ? "target-connected" : ""}`} data-cable-target="guitar" onClick={() => connectFromKeyboard("guitar")} aria-label="Destino: entrada de guitarra">
             <svg viewBox="0 0 110 80" aria-hidden="true"><path d="M20 14h70v52H20z" fill="#a34e49" stroke="#211d25" strokeWidth="6" /><path d="M32 23h46v34H32z" fill="#ddd0b5" stroke="#2b252d" strokeWidth="4" /><circle cx="55" cy="41" r="8" fill="#27232b" stroke="#c3a876" strokeWidth="4" /><path d="M44 59h22" stroke="#4a3e46" strokeWidth="4" /></svg>
-            <span>{pluggedGuitar ? "GUITARRA · CONECTADA" : "GUITARRA · ENTRADA"}</span>
           </button>
         </div>
         <div className="cable-endpoint cable-target-wrap amp-target-wrap">
           <button ref={node => { targetRefs.current.amp = node; }} className={`cable-drop-target amp-target ${pluggedAmp ? "target-connected" : ""}`} data-cable-target="amp" onClick={() => connectFromKeyboard("amp")} aria-label="Destino: entrada de amplificador">
             <svg viewBox="0 0 110 80" aria-hidden="true"><path d="M13 16h84v53H13z" fill="#45343a" stroke="#211d25" strokeWidth="6" /><path d="M22 23h66v30H22z" fill="#b7a27f" stroke="#27232b" strokeWidth="4" /><circle cx="55" cy="39" r="9" fill="#29242b" stroke="#d0b783" strokeWidth="4" /><circle cx="55" cy="39" r="3" fill="#17151a" /><path d="M27 59h55" stroke="#d5c6a6" strokeWidth="3" /></svg>
-            <span>{pluggedAmp ? "AMPLIFICADOR · CONECTADO" : "AMPLIFICADOR · INPUT"}</span>
           </button>
         </div>
         {(["a", "b"] as const).map(endName => {
@@ -250,14 +239,11 @@ export function CableCloseup({
             type="button"
           >
             <svg viewBox="0 0 154 66" aria-hidden="true"><path d="M9 25h25v16H9z" fill="#312a32" stroke="#211b24" strokeWidth="4" /><path d="M30 18h51v30H30z" fill="#c2af87" stroke="#27232b" strokeWidth="4" /><path d="M39 19v28m12-28v28m12-28v28" stroke="#665963" strokeWidth="3" /><path d="M80 22h35v22H80z" fill="#e3d8c0" stroke="#27232b" strokeWidth="4" /><path d="M114 26h27v14h-27z" fill="#bfc0bb" stroke="#29252e" strokeWidth="3" /><path d="M138 29h11v8h-11z" fill="#4b4650" stroke="#29252e" strokeWidth="2" /><circle cx="18" cy="33" r="3" fill="#e8bd55" /></svg>
-            <span>PUNTA {endName.toUpperCase()}</span>
           </button>;
         })}
       </div>
       <div className="cable-closeup-footer">
-        <p aria-live="polite">{pluggedAmp ? "Los dos extremos están conectados." : pluggedGuitar ? "Punta A conectada. Ahora arrastra la punta B al amplificador." : keyboardEnd ? `Punta ${keyboardEnd.toUpperCase()} seleccionada: pulsa ahora la entrada correcta.` : "Arrastra la punta A hasta la guitarra."}</p>
-        <div className="cable-progress"><span className={pluggedGuitar ? "done" : ""}>01 · GUITARRA</span><span className={pluggedAmp ? "done" : ""}>02 · AMPLIFICADOR</span></div>
-        <button className="closeup-back" onClick={onClose}>Volver al local <span>↗</span></button>
+        <button className="closeup-back" onClick={onClose}>Volver al local</button>
       </div>
     </div>
   );

@@ -22,6 +22,10 @@ En unas ruinas cubiertas de vegetación, el limón recorre un sendero de piedra 
 - [Amanecer](referencias/amanecer.png): referencia ampliada de la escena y el motivo de la flor.
 - La implementación de la escena 03 se guía por las referencias de las ruinas y columnas de `client/public/ruins-background.png` y `client/public/ruins-column-*.png`.
 
+## Dirección de arte y experiencia
+
+Consulta la [guía estética del juego](GUIA-ESTETICA.md) para los principios de pixel art, paleta, composición, animación y sonido, además del tono, ritmo, feedback, diseño de acertijos y accesibilidad de la experiencia del jugador.
+
 ## Fuente de implementación
 
 El flujo detallado de interacciones, acertijos, reglas y criterios de arte se mantiene en `TODO.md`, junto con el código de las escenas en `client/src/`.

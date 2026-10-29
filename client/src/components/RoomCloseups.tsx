@@ -44,27 +44,31 @@ function noteAt(stringIndex: number, fret: number): FretSelection {
   };
 }
 
-export function CableSceneArt() {
+export function CableSceneArt({ pluggedGuitar, pluggedAmp }: { pluggedGuitar: boolean; pluggedAmp: boolean }) {
+  const start = pluggedGuitar ? { x: 264, y: 1218 } : { x: 338, y: 1242 };
+  const end = pluggedAmp ? { x: 708, y: 1136 } : { x: 654, y: 1262 };
+  const cablePath = `M ${start.x} ${start.y} C ${start.x + 82} ${start.y - 96}, 442 1432, 510 1344 S 615 1186, ${end.x - 73} ${end.y + 74} S ${end.x - 24} ${end.y + 10}, ${end.x} ${end.y}`;
+
   return (
-    <svg className="cable-scene-art" viewBox="0 0 560 190" aria-hidden="true" shapeRendering="crispEdges">
-      <path d="M62 81 C111 47 110 139 163 126 S214 46 275 84 S343 153 397 103 S451 69 499 93" fill="none" stroke="#211b24" strokeWidth="14" strokeLinecap="round" />
-      <path d="M62 81 C111 47 110 139 163 126 S214 46 275 84 S343 153 397 103 S451 69 499 93" fill="none" stroke="#584a50" strokeWidth="8" strokeLinecap="round" />
-      <path d="M62 78 C112 50 110 134 163 121 S214 51 275 79 S343 148 397 98 S451 74 499 90" fill="none" stroke="#9b7b62" strokeWidth="2" strokeLinecap="round" />
-      <g transform="translate(15 57) rotate(-20 43 25)">
-        <rect x="1" y="15" width="27" height="18" rx="3" fill="#332a32" stroke="#211b24" strokeWidth="3" />
-        <path d="M24 12h39v24H24z" fill="#c5b18a" stroke="#28222b" strokeWidth="3" />
-        <path d="M37 13v22m8-22v22m8-22v22" stroke="#5c5360" strokeWidth="2" />
-        <path d="M61 17h16v14H61z" fill="#d9d2c4" stroke="#28222b" strokeWidth="3" />
-        <path d="M75 20h16v8H75z" fill="#61585b" stroke="#28222b" strokeWidth="2" />
-        <circle cx="7" cy="24" r="3" fill="#e6b84f" />
+    <svg className="cable-scene-art" viewBox="0 0 981 1604" aria-hidden="true" shapeRendering="crispEdges">
+      <path d={cablePath} fill="none" stroke="#211b24" strokeWidth="18" strokeLinecap="round" />
+      <path d={cablePath} fill="none" stroke="#584a50" strokeWidth="11" strokeLinecap="round" />
+      <path d={cablePath} fill="none" stroke="#9b7b62" strokeWidth="3" strokeLinecap="round" />
+      <g transform={`translate(${start.x - 24} ${start.y - 14}) rotate(-12 20 14)`}>
+        <path d="M0 4h29v20H0z" fill="#332a32" stroke="#211b24" strokeWidth="4" />
+        <path d="M22 1h30v26H22z" fill="#c5b18a" stroke="#28222b" strokeWidth="4" />
+        <path d="M30 3v22m8-22v22m8-22v22" stroke="#5c5360" strokeWidth="2" />
+        <path d="M48 7h19v14H48z" fill="#d9d2c4" stroke="#28222b" strokeWidth="3" />
+        <path d="M65 10h16v8H65z" fill="#61585b" stroke="#28222b" strokeWidth="2" />
+        <circle cx="5" cy="14" r="3" fill="#e6b84f" />
       </g>
-      <g transform="translate(464 70) rotate(18 43 25)">
-        <rect x="0" y="15" width="27" height="18" rx="3" fill="#332a32" stroke="#211b24" strokeWidth="3" />
-        <path d="M23 12h39v24H23z" fill="#c5b18a" stroke="#28222b" strokeWidth="3" />
-        <path d="M36 13v22m8-22v22m8-22v22" stroke="#5c5360" strokeWidth="2" />
-        <path d="M60 17h16v14H60z" fill="#d9d2c4" stroke="#28222b" strokeWidth="3" />
-        <path d="M75 20h16v8H75z" fill="#61585b" stroke="#28222b" strokeWidth="2" />
-        <circle cx="7" cy="24" r="3" fill="#e6b84f" />
+      <g transform={`translate(${end.x - 50} ${end.y - 14}) rotate(168 40 14)`}>
+        <path d="M0 4h29v20H0z" fill="#332a32" stroke="#211b24" strokeWidth="4" />
+        <path d="M22 1h30v26H22z" fill="#c5b18a" stroke="#28222b" strokeWidth="4" />
+        <path d="M30 3v22m8-22v22m8-22v22" stroke="#5c5360" strokeWidth="2" />
+        <path d="M48 7h19v14H48z" fill="#d9d2c4" stroke="#28222b" strokeWidth="3" />
+        <path d="M65 10h16v8H65z" fill="#61585b" stroke="#28222b" strokeWidth="2" />
+        <circle cx="5" cy="14" r="3" fill="#e6b84f" />
       </g>
     </svg>
   );

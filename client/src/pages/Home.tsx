@@ -108,6 +108,11 @@ function clamp(value: number, minimum: number, maximum: number) {
   return Math.max(minimum, Math.min(maximum, value));
 }
 
+function resolveBranch(scoreA: number, scoreB: number): Branch {
+  const chanceA = clamp(50 + (scoreA - scoreB) * 12, 14, 86);
+  return chanceA > 50 ? "A" : chanceA < 50 ? "B" : Math.random() < 0.5 ? "A" : "B";
+}
+
 function dawnWalkableTop(x: number) {
   const terrain = [[0, 68], [16, 69], [30, 73], [43, 77], [58, 79], [72, 78], [84, 82], [100, 85]] as const;
   for (let index = 1; index < terrain.length; index += 1) {
@@ -144,6 +149,7 @@ export default function Home() {
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
   const [branch, setBranch] = useState<Branch | null>(null);
+  const [pendingBranch, setPendingBranch] = useState<Branch | null>(null);
   const [birdsPassed, setBirdsPassed] = useState(false);
   const [sunRisen, setSunRisen] = useState(false);
   const [flowerOpen, setFlowerOpen] = useState(false);
@@ -362,6 +368,7 @@ export default function Home() {
     setScoreA(0);
     setScoreB(0);
     setBranch(null);
+    setPendingBranch(null);
     setBirdsPassed(false);
     setSunRisen(false);
     setFlowerOpen(false);
@@ -377,6 +384,7 @@ export default function Home() {
       setNotice("La conversación vuelve directamente a su primera línea.");
       return;
     }
+    if (dialogueTurn >= DIALOGUE.length - 1 || branch !== null) return;
 
     const nextA = scoreA + (response === "A" ? 1 : 0);
     const nextB = scoreB + (response === "B" ? 1 : 0);
@@ -387,18 +395,22 @@ export default function Home() {
     if (nextTurn < DIALOGUE.length) {
       setDialogueTurn(nextTurn);
       setShowDialogueChoices(false);
-      setNotice(`La elección favorece el camino ${response}. La conversación continúa.`);
+      if (nextTurn === DIALOGUE.length - 1) {
+        const outcome = resolveBranch(nextA, nextB);
+        setPendingBranch(outcome);
+        setNotice(`Las respuestas anteriores llevan al camino ${outcome}. La última pregunta ya solo ofrece su desenlace o reiniciar.`);
+      } else {
+        setNotice(`La elección favorece el camino ${response}. La conversación continúa.`);
+      }
       return;
     }
+  }
 
-    const chanceA = clamp(50 + (nextA - nextB) * 12, 14, 86);
-    const outcome: Branch = chanceA > 50 ? "A" : chanceA < 50 ? "B" : Math.random() < 0.5 ? "A" : "B";
-    setBranch(outcome);
-    if (outcome === "A") {
-      setNotice("La conversación desemboca en el camino A. Solo queda una opción: silbar.");
-    } else {
-      setNotice("La conversación desemboca en el camino B. El limón guarda silencio y escucha.");
-    }
+  function chooseFinalResponse() {
+    if (!pendingBranch || branch !== null) return;
+    setShowDialogueChoices(false);
+    if (pendingBranch === "A") whistle("A");
+    else listenToBirds("B");
   }
 
   function beginSunrise(message: string) {
@@ -411,16 +423,18 @@ export default function Home() {
     }, motionDuration(DAWN_FLOWER_DELAY_MS));
   }
 
-  function whistle() {
-    if (branch !== "A" || sunRisen) return;
+  function whistle(outcome: Branch | null = branch) {
+    if (outcome !== "A" || sunRisen) return;
+    setBranch(outcome);
     playWhistle("lemon");
     setLemonWhistling(true);
     window.setTimeout(() => setLemonWhistling(false), motionDuration(LEMON_WHISTLE_DURATION_MS));
     beginSunrise("El limón silba. El cielo empieza a iluminarse y la flor se prepara para abrirse.");
   }
 
-  function listenToBirds() {
-    if (branch !== "B" || birdsPassed || sunRisen) return;
+  function listenToBirds(outcome: Branch | null = branch) {
+    if (outcome !== "B" || birdsPassed || sunRisen) return;
+    setBranch(outcome);
     playWhistle("birds");
     setBirdsPassed(true);
     beginSunrise("El limón mira al cielo. Los pájaros silban mientras el amanecer ilumina la sierra.");
@@ -482,13 +496,9 @@ export default function Home() {
         </a>
         <div className="topbar-right">
           <span className="status-dot" /> <span className="status-copy">Preproducción interactiva</span>
-          <button className="seedbook-toggle" type="button" onClick={() => setSeedBookOpen(open => !open)} aria-expanded={seedBookOpen} aria-controls="seedbook-panel">
-            <span className="seedbook-toggle-icon" aria-hidden="true">✳</span><span className="seedbook-toggle-label">Libro de semillas</span><b>{discoveredSongIds.length}/{10}</b>
-          </button>
           <a className="top-link" href="#storyboard">Ver storyboard</a>
         </div>
       </header>
-      {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}
 
       <section className="intro-band" id="inicio">
         <div className="intro-copy">
@@ -521,19 +531,24 @@ export default function Home() {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
+            <button className="seedbook-toggle" type="button" onClick={() => setSeedBookOpen(open => !open)} aria-expanded={seedBookOpen} aria-controls="seedbook-panel">
+              <span className="seedbook-toggle-icon" aria-hidden="true">✳</span><span className="seedbook-toggle-label">Libro de semillas</span><b>{discoveredSongIds.length}/{10}</b>
+            </button>
+            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
+                <div className="cable-art-layer" aria-hidden="true"><CableSceneArt pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} /></div>
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
                 <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
-                  <CableSceneArt />
+                  <span className="sr-only">Cable en el suelo</span>
                 </button>
                 <button type="button" className="hotspot guitar-hotspot" aria-label="Guitarra eléctrica roja" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || portalOpen}>
-                  <img className="guitar-sprite" src="/guitar-sprite-original.png" alt="" />
+                  <img className="guitar-sprite" src="/guitar-sprite-recut-v2.png" alt="" />
                 </button>
                 <button type="button" className="hotspot amp-hotspot" aria-label="Amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || !pluggedGuitar || !pluggedAmp || portalOpen}>
-                  <img className="amp-sprite" src="/amp-sprite-original.png" alt="" />
+                  <img className="amp-sprite" src="/amp-sprite-light.png" alt="" />
                 </button>
               </div>}
               {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} />}
@@ -578,14 +593,19 @@ export default function Home() {
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
-                {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label="Tres respuestas posibles">
-                  <button onClick={() => chooseResponse("restart")}><strong>{currentDialogue.restart}</strong></button>
-                  <button onClick={() => chooseResponse("A")}><strong>{currentDialogue.a}</strong></button>
-                  <button onClick={() => chooseResponse("B")}><strong>{currentDialogue.b}</strong></button>
+                {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label={dialogueTurn === DIALOGUE.length - 1 ? "Dos opciones finales" : "Tres respuestas posibles"}>
+                  {dialogueTurn === DIALOGUE.length - 1 ? <>
+                    <button onClick={() => chooseResponse("restart")}><strong>Volver al principio de la conversación</strong></button>
+                    <button className="final-route-choice" onClick={chooseFinalResponse} disabled={!pendingBranch}><strong>{pendingBranch === "A" ? "Silbar" : "Escuchar a los pájaros silbar"}</strong></button>
+                  </> : <>
+                    <button onClick={() => chooseResponse("restart")}><strong>{currentDialogue.restart}</strong></button>
+                    <button onClick={() => chooseResponse("A")}><strong>{currentDialogue.a}</strong></button>
+                    <button onClick={() => chooseResponse("B")}><strong>{currentDialogue.b}</strong></button>
+                  </>}
                 </div>}
               </div>}
-              {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={whistle}>Silbar</button></div>}
-              {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={listenToBirds}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
+              {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={() => whistle()}>Silbar</button></div>}
+              {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={() => listenToBirds()}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
               {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla</button></div>}
               {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("ruins")}>Siguiente: Raíces</button></div>}

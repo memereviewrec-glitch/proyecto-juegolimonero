@@ -14,13 +14,13 @@ type Leaf = { id: number; x: number; y: number; rotation: number };
 
 const INITIAL_LEAVES: Leaf[] = [
   { id: 0, x: 29, y: 24, rotation: -27 },
-  { id: 1, x: 48, y: 20, rotation: 18 },
-  { id: 2, x: 68, y: 25, rotation: 43 },
-  { id: 3, x: 35, y: 44, rotation: 34 },
-  { id: 4, x: 58, y: 43, rotation: -38 },
-  { id: 5, x: 29, y: 63, rotation: 20 },
-  { id: 6, x: 49, y: 66, rotation: -19 },
-  { id: 7, x: 69, y: 62, rotation: 39 },
+  { id: 1, x: 47, y: 25, rotation: 18 },
+  { id: 2, x: 67, y: 28, rotation: 43 },
+  { id: 3, x: 36, y: 37, rotation: 34 },
+  { id: 4, x: 53, y: 42, rotation: -38 },
+  { id: 5, x: 30, y: 58, rotation: 20 },
+  { id: 6, x: 49, y: 59, rotation: -19 },
+  { id: 7, x: 69, y: 61, rotation: 39 },
 ];
 
 export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: Props) {
@@ -78,7 +78,7 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
   return (
     <div className="ruins-puzzle" role="dialog" aria-label="Columna antigua" data-side={side}>
       <div className="ruins-puzzle-stage" ref={stageRef}>
-        {leaves.length === 0 && <div className="ruins-puzzle-inscription" aria-live="polite">{inscription}</div>}
+        <span className="sr-only" aria-live="polite">{leaves.length === 0 ? inscription : ""}</span>
         {leaves.map((leaf, index) => (
           <button
             key={leaf.id}

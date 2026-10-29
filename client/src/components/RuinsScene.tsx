@@ -22,8 +22,44 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-function walkableTop(x: number) {
-  return 75 + Math.abs(x - 50) * 0.25;
+const STONE_PATH_BOUNDS = [
+  { y: 63, left: 43, right: 60 },
+  { y: 68, left: 39, right: 64 },
+  { y: 73, left: 36, right: 73 },
+  { y: 79, left: 29, right: 77 },
+  { y: 84, left: 23, right: 83 },
+  { y: 91, left: 16, right: 84 },
+  { y: 98, left: 9, right: 91 },
+] as const;
+
+function pathBoundsAt(y: number) {
+  if (y < STONE_PATH_BOUNDS[0].y || y > STONE_PATH_BOUNDS[STONE_PATH_BOUNDS.length - 1].y) return null;
+  for (let index = 1; index < STONE_PATH_BOUNDS.length; index += 1) {
+    const right = STONE_PATH_BOUNDS[index];
+    const left = STONE_PATH_BOUNDS[index - 1];
+    if (y <= right.y) {
+      const amount = (y - left.y) / (right.y - left.y);
+      return {
+        left: left.left + (right.left - left.left) * amount,
+        right: left.right + (right.right - left.right) * amount,
+      };
+    }
+  }
+  return null;
+}
+
+function isOnStonePath(point: LemonPoint) {
+  const bounds = pathBoundsAt(point.y);
+  return bounds !== null && point.x >= bounds.left + 1 && point.x <= bounds.right - 1;
+}
+
+function pathSegmentIsWalkable(from: LemonPoint, to: LemonPoint) {
+  return Array.from({ length: 17 }, (_, index) => index / 16).every(amount =>
+    isOnStonePath({
+      x: from.x + (to.x - from.x) * amount,
+      y: from.y + (to.y - from.y) * amount,
+    }),
+  );
 }
 
 function motionDuration(duration: number) {
@@ -50,7 +86,7 @@ export function RuinsScene({
 
   function moveLemon(point: LemonPoint, afterMove?: () => void) {
     if (walkTimer.current !== null) window.clearTimeout(walkTimer.current);
-    setLemonPoint({ x: clamp(point.x, 8, 92), y: clamp(point.y, 70, 97) });
+    setLemonPoint({ x: clamp(point.x, 8, 92), y: clamp(point.y, 63, 97) });
     setWalking(true);
     walkTimer.current = window.setTimeout(() => {
       setWalking(false);
@@ -65,16 +101,19 @@ export function RuinsScene({
     if (!world) return;
     const bounds = world.getBoundingClientRect();
     if (event.clientX < bounds.left || event.clientX > bounds.right) return;
-    const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 8, 92);
-    const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 97);
-    if (y < walkableTop(x)) return;
-    moveLemon({ x, y });
+    const target = {
+      x: clamp(((event.clientX - bounds.left) / bounds.width) * 100, 8, 92),
+      y: clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 97),
+    };
+    if (!isOnStonePath(target) || !pathSegmentIsWalkable(lemonPoint, target)) return;
+    moveLemon(target);
   }
 
   function approachColumn(side: RuinsColumnSide) {
     if (walking || (side === "left" ? leftRevealed : rightRevealed)) return;
-    const x = side === "left" ? 29 : 53;
-    moveLemon({ x, y: 82 }, () => onApproachColumn(side));
+    const target = { x: side === "left" ? 34 : 53, y: 82 };
+    if (!isOnStonePath(target) || !pathSegmentIsWalkable(lemonPoint, target)) return;
+    moveLemon(target, () => onApproachColumn(side));
   }
 
   return (

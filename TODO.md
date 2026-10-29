@@ -35,8 +35,8 @@
 ## [x] Pantalla 2: conversación y cierre de rama
 - Cada turno normal ofrece tres respuestas: reiniciar la conversación, favorecer A o favorecer B.
 - Si la probabilidad de B supera el 50 %, se elige B; si A supera a B, se elige A. Si empatan, se resuelve al azar al 50 %.
-- Si predomina A, la última parte ofrece una única opción: «Silbar»; al elegirla, silba el limón y no aparecen pájaros.
-- Si predomina B, la última parte ofrece una única opción: «Mirar al cielo y escuchar a los pájaros silbar»; al elegirla, silba la bandada y no el limón. Los finales no vuelven a abrir el conjunto de tres respuestas.
+- La última pregunta muestra exactamente dos respuestas: volver al principio o ejecutar el resultado acumulado. Si predomina A, la segunda respuesta es «Silbar» y solo silba el limón; si predomina B, es «Escuchar a los pájaros silbar» y silba la bandada, no el limón.
+- Elegir la salida de la rama inicia directamente el amanecer; no aparece una tercera respuesta ni se reabre el conjunto normal de tres opciones.
 
 ## [x] Legibilidad y limpieza de las respuestas en la pantalla 2
 - Los cuadros de diálogo de «Ventana al sendero» muestran las respuestas con tipografía mayor y fácil de leer.
@@ -50,12 +50,30 @@
 - Al terminar y recoger la semilla de «Ventana al sendero», la acción de avance abre la pantalla siguiente «Raíces»; no ofrece volver al local.
 
 ## [x] Pantalla 3: ruinas, inscripciones y canción «Raíces»
-- El fondo se basa en el cuadro 03 del storyboard v02: ruinas invadidas por la vegetación, camino y arco de piedra entre dos columnas. El limón se mueve por el camino.
+- El fondo se basa en el cuadro 03 del storyboard v02: ruinas invadidas por la vegetación, camino y arco de piedra entre dos columnas. El limón se mueve únicamente sobre el camino de piedra; los clics en hierba no lo desplazan.
 - Los fondos de las pantallas posteriores se basarán en los cuadros correspondientes del storyboard v02, sin sustituir esta dirección visual por fondos genéricos.
 - El limón se acerca a las dos columnas de una en una. Al llegar a una columna aparece «Examinar» y se abre una vista extra de primer plano que ocupa el mismo lienzo de juego; no aparece debajo de la escena de las ruinas.
 - Cada minijuego de columna llena ese mismo marco de proporción 1180:1333; la escena de las ruinas queda oculta, pero sigue montada para conservar la posición del limón al volver.
 - En cada primer plano, el jugador arrastra las hojas que cubren la piedra para apartarlas. Al despejar la columna izquierda aparece exactamente «as above»; al despejar la derecha, exactamente «so below».
 - Tras descubrir ambas inscripciones, una planta crece hasta florecer y entrega la tercera semilla, que desbloquea la tercera canción «Raíces».
+
+## [x] Guitarra y amplificador visibles como en el storyboard
+- El recorte de la Stratocaster conserva completa la punta izquierda del cuerpo, sin que quede amputada ni pegada al borde del sprite.
+- En la escena principal el amplificador se ve más claro y legible, siguiendo los valores y detalles visibles en el storyboard original.
+
+## [x] Cable conectado persistente en la escena 1
+- Al terminar el minijuego del cable y volver al local, el cable queda visible recorriendo el suelo y conectando físicamente la guitarra con el amplificador; no vuelve a parecer un cable suelto.
+
+## [x] Dos opciones en la pregunta final de Ventana al sendero
+- Los turnos normales mantienen sus tres respuestas. La última pregunta muestra exactamente dos opciones: «Volver al principio de la conversación» o ejecutar el resultado acumulado hasta entonces.
+- La segunda opción es «Silbar» si las respuestas anteriores llevan a A, o «Escuchar a los pájaros silbar» si llevan a B; ejecuta directamente ese desenlace y no muestra opciones A/B ni una tercera acción.
+
+## [x] Camino transitable e inscripciones integradas en Raíces
+- El limón solo puede caminar sobre el camino de piedra visible y puede alcanzar ambas columnas desde el camino; los clics en hierba u otras zonas se ignoran.
+- Las hojas apartables cubren inscripciones que están pintadas/grabadas en la piedra del arte pixelado de cada columna. Al retirar las hojas aparecen exactamente «as above» en la izquierda y «so below» en la derecha, sin un rótulo flotante separado.
+
+## [x] Libro de semillas desplegable dentro de la ventana de juego
+- Tanto el botón que abre el libro como el panel desplegable están dentro del marco 1180:1333 del juego. El panel se abre sobre la escena, queda contenido por la ventana jugable y se cierra desde ahí; no aparece fijado al viewport ni sobre el encabezado exterior.
 
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.
@@ -80,8 +98,9 @@
 - Cada nota conserva aproximadamente dos segundos de sustain y las muestras de acordes pueden reproducirse simultáneamente.
 
 ## [x] Validación de la versión actual
-- `pnpm check`, `pnpm build:static` y `git diff --check` pasan; el manifiesto de rutas, los fondos PNG y los 36 recursos MP3 del juego se incluyen en la build.
+- `pnpm check`, `pnpm build:static` y `git diff --check` pasan; la build incluye el manifiesto de rutas, los fondos PNG, los sprites v2 de guitarra/amplificador, las columnas inscritas y los 36 MP3 de juego.
 - Se incluyen 34 muestras MP3 de guitarra entre E2 y C#5 y dos silbidos MP3; `ffprobe` confirma codec MP3 y una duración aproximada de 2 s para las notas. No quedan `AudioContext` ni osciladores en el código del juego.
+- El sprite `guitar-sprite-recut-v2.png` mide 839 × 1874 px; su alfa deja 25 px libres a la izquierda y no toca ninguno de los cuatro bordes. El asset está incluido en `dist/public`.
 - La ruta del banco de guitarra apunta a `/audio/guitar/`; el panel del libro recibe el foco al abrirse, atrapa Tab/Mayús+Tab, cierra con Escape y devuelve el foco al control que lo abrió.
 - En Preview se usaron eventos de puntero `pointerdown`/`pointermove`/`pointerup` para conectar la punta A a la guitarra y después la punta B al amplificador; la conexión completa habilita la siguiente etapa.
 - Con clics de navegador se verificó que al inicio la guitarra está activa y abre el pensamiento «La guitarra no está enchufada. Tengo que conectar el cable antes de tocar», sin mover al limón; el ampli permanece deshabilitado.
@@ -89,7 +108,7 @@
 - Se abrió el primer plano del amplificador y se verificaron su tamaño, textura de tólex/rejilla, mandos y control ON/OFF. Tras pulsar ON/OFF, el LED rojo se iluminó y el primer plano siguió abierto; «Siguiente» cerró ese primer plano.
 - La escena principal empieza sin pistas ni rótulos; el diálogo solo aparece al interactuar. La ventana del cable muestra solo cable/conectores y «Volver al local». El ampli conserva únicamente controles funcionales, sin título ni indicaciones.
 - Se abrió el mástil y se verificaron E–A–D–G–B–E, seis clavijas y los nueve trastes. Una nota sola y dos notas sin Do♯ no abrieron el portal; una díada Do♯–Mi en cuerdas distintas sí lo abrió.
-- En Preview se recorrió la ruta B hasta su acción terminal. Las tres respuestas normales se muestran sin iconos ni códigos, con 16 px de texto y una columna; la opción final «Mirar al cielo y escuchar a los pájaros silbar» no lleva ningún símbolo.
+- En el código actual los turnos normales conservan tres respuestas y la pregunta final muestra exactamente dos: «Volver al principio de la conversación» o la acción correspondiente a la rama acumulada (Silbar para A; Escuchar a los pájaros silbar para B), ejecutada directamente.
 - Al recoger «Ventana al sendero», «Siguiente: Raíces» abre la tercera escena; no aparece un botón de retorno al local. La navegación de progreso tampoco habilita volver a pantallas anteriores.
 - En las ruinas se caminaron las zonas del sendero, se examinó cada columna por separado y se arrastraron sus hojas: izquierda «as above», derecha «so below». Al despejar ambas, creció la flor, cayó la tercera semilla y se desbloqueó «Raíces».
 - Las dos rutas del amanecer, la flor, la semilla y el salto del limón siguen verificadas de la iteración anterior; se capturaron vistas responsive de escritorio y móvil para comprobar la separación de los sprites.

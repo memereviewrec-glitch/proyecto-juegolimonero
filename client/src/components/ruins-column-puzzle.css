@@ -24,32 +24,15 @@
 }
 
 .ruins-puzzle[data-side="left"] .ruins-puzzle-stage {
-  background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-left.png");
+  background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-left-inscribed-v2.png");
   background-size: 100% 100%, auto 108%;
   background-position: center, center;
 }
 
 .ruins-puzzle[data-side="right"] .ruins-puzzle-stage {
-  background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-right.png");
+  background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-right-inscribed-v2.png");
   background-size: 100% 100%, auto 108%;
   background-position: center, center;
-}
-
-.ruins-puzzle[data-side="left"] .ruins-puzzle-inscription { left: 46%; }
-.ruins-puzzle[data-side="right"] .ruins-puzzle-inscription { left: 52%; }
-
-.ruins-puzzle-inscription {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #382e25;
-  font: 700 clamp(20px, 3vw, 34px)/1 monospace;
-  letter-spacing: .02em;
-  white-space: nowrap;
-  text-shadow: 2px 2px #d8c69a;
-  image-rendering: pixelated;
 }
 
 .ruins-puzzle-leaf {
@@ -106,6 +89,5 @@
 }
 
 @media (max-width: 480px) {
-  .ruins-puzzle-inscription { font-size: clamp(18px, 5.5vw, 26px); }
   .ruins-puzzle-leaf { width: clamp(74px, 23vw, 104px); height: clamp(66px, 20vw, 92px); }
 }

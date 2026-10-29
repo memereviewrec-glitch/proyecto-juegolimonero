@@ -1,22 +1,27 @@
 # TODO · Explorador de pantallas Limonero Fuzz
 
-## [x] Alinear los fondos de las pantallas 1 y 2 con el storyboard aprobado
-- En la pantalla 1, usar la composición del local y el portal interdimensional del storyboard de diez escenas; conservar su paleta, perspectiva, posiciones y pixel art.
-- Mantener guitarra y amplificador interactivos, iniciar con el cable desconectado y reflejar la conexión por pasos; retirar del fondo el limón inmóvil para que se dibuje como personaje móvil.
-- En la pantalla 2, conservar el paisaje de amanecer aportado por la banda y retirar del fondo el limón fijo, manteniendo la flor y el resto de la ilustración.
+## [x] Fondos y flujo de la primera pantalla
+- La pantalla 1 conserva la composición del local y el portal del storyboard. El limón y los objetos mantienen posiciones y perspectiva del arte; el personaje se dibuja aparte para poder caminar.
+- La secuencia sigue siendo enchufar el cable primero a la guitarra y luego al amplificador; examinarlo, encenderlo y tocar la guitarra.
+- Para cruzar el portal basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; las díadas cuentan. Se admiten inversiones, acordes extendidos y las notas que correspondan a la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
-## [x] Restringir el movimiento del limón a suelo transitable en cada pantalla
-- En ambas pantallas, el limón sigue los clics solo dentro de la zona de suelo; los clics en pared o cielo no cambian su destino.
-- La zona transitable respeta el piso del local y el contorno ascendente del terreno de la escena de Albatera.
-- Las zonas clicables de los objetos conservan sus acciones y no se confunden con clics de movimiento.
+## [x] Resolver la conversación de la segunda pantalla según el camino mayoritario
+- Cada turno normal ofrece tres respuestas: una reinicia la conversación, otra favorece el camino A y otra favorece el camino B.
+- La conversación suma probabilidad al camino favorecido. Si la probabilidad de B supera el 50 %, el resultado es siempre B y los pájaros cruzan silbando para que el limón los oiga.
+- Si la probabilidad de A es mayor que la de B, el resultado es siempre A; su desenlace solo ofrece «Silbar».
+- Si A y B quedan exactamente empatados, la resolución se mantiene aleatoria al 50 %.
+- La escena conserva el fondo de amanecer de referencia; el sol sale, la flor se abre y se puede recoger la semilla de «Ventana al sendero».
 
-## [x] Unificar los cuadros de diálogo y de acción dentro del juego
-- Mostrar todos los cuadros dentro de la ilustración y pegados a la parte inferior del área de juego, no en una columna a la derecha.
-- Usar una caja compacta común con marco pixelado; recortar el texto por cuadro y avanzar con «Siguiente» antes de presentar las respuestas.
-- Conservar exactamente tres respuestas por turno de la segunda pantalla: volver al inicio, favorecer el camino A o favorecer el camino B; el camino A termina con «Silbar» y el B con silencio roto por los pájaros.
-- Conservar el orden de las interacciones de la primera pantalla: enchufar guitarra, enchufar amplificador, encenderlo y tocar un acorde válido de Do♯ menor antes de cruzar el portal.
+## [x] Agrandar los cuadros de texto manteniendo su pixel art
+- Los cuadros de diálogo y de acción comparten marco pixel art, se integran dentro de la ilustración y se anclan abajo del área de juego.
+- Las cajas y opciones usan más espacio y letra mayor para facilitar la lectura; el diálogo avanza mediante «Siguiente» antes de mostrar las respuestas.
+- Las zonas libres del juego conservan los clics de movimiento sin que el cuadro bloquee la interacción de sus botones.
 
-## [x] Validar el sitio y sus recursos
-- TypeScript y build estático completan sin errores; el manifiesto de rutas responde con HTTP 200 y JSON válido.
-- Ambos fondos se sirven como PNG en Preview y aparecen incluidos en la build.
-- Se comprobó la secuencia guitarra–amplificador–Do♯ menor–portal; en ambas escenas los clics en suelo mueven el personaje y los clics fuera del suelo se ignoran; la caja de diálogo queda dentro del marco y presenta tres opciones.
+## [x] Igualar dimensiones, proporción y movimiento en ambas pantallas
+- Ambas áreas de juego comparten dimensión y proporción responsive; en la vista desktop comprobada, cada una mide 760 × 859 px.
+- El arte vertical del local conserva su proporción, centrado entre bandas negras laterales; no se deforma para coincidir con el amanecer.
+- En ambas escenas el limón solo se mueve al hacer clic en suelo transitable; los clics en las bandas negras, la pared o el cielo no lo desplazan, y los puntos de objeto conservan sus acciones.
+
+## [x] Validación del sitio
+- TypeScript y build estático completan sin errores; ambos fondos se sirven como PNG y el manifiesto de rutas es válido.
+- En Preview se recorrió la primera escena y se probaron los finales A y B, incluidos los pájaros, el amanecer, la semilla y el acorde mínimo Do♯–Mi.

@@ -196,7 +196,10 @@ export default function Home() {
   function handleRoomStageClick(event: MouseEvent<HTMLDivElement>) {
     if (ampInspection || roomAction || isMoving) return;
     if (event.target instanceof Element && event.target.closest("button")) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
+    const world = event.currentTarget.querySelector(".room-world");
+    if (!world) return;
+    const bounds = world.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right) return;
     const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 8, 92);
     const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 97);
     if (y < 78 || y > 96) return;
@@ -347,13 +350,13 @@ export default function Home() {
     }
 
     const chanceA = clamp(50 + (nextA - nextB) * 12, 14, 86);
-    const outcome: Branch = Math.random() * 100 < chanceA ? "A" : "B";
+    const outcome: Branch = chanceA > 50 ? "A" : chanceA < 50 ? "B" : Math.random() < 0.5 ? "A" : "B";
     setBranch(outcome);
     if (outcome === "A") {
-      setNotice(`La conversación desemboca en el camino A (${chanceA}% de probabilidad al resolver).`);
+      setNotice("La conversación desemboca en el camino A. Solo queda una opción: silbar.");
     } else {
       setSilence(true);
-      setNotice(`La conversación desemboca en el camino B (${100 - chanceA}% de probabilidad). El limón guarda silencio.`);
+      setNotice("La conversación desemboca en el camino B. El limón guarda silencio y escucha.");
     }
   }
 
@@ -423,16 +426,18 @@ export default function Home() {
           <div className={`playfield ${scene === "dawn" ? "playfield-portrait" : "playfield-room"}`}>
           {scene === "room" ? (
             <div className={`scene-stage room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""}`} onClick={handleRoomStageClick}>
-              <div className={`cable-line ${pluggedGuitar ? "cable-at-guitar" : ""} ${pluggedAmp ? "cable-at-amp" : ""} ${pluggedGuitar && pluggedAmp ? "cable-complete" : ""}`} aria-hidden="true"><span /></div>
-              <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
-              <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")} />
-              <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || (roomPhase !== "amp-cable" && roomPhase !== "power")} />
-              {ampInspection && <div className="amp-closeup" role="dialog" aria-label="Vista frontal del amplificador">
-                <span className="closeup-label">VISTA FRONTAL · ÚNICO CONTROL</span>
-                <AmpSprite large powered={ampOn} />
-                <button className="power-switch" onClick={toggleAmplifier} aria-label={ampOn ? "Apagar ON/OFF" : "Encender ON/OFF"}><span className={`switch-light ${ampOn ? "lit" : ""}`} />ON / OFF <span className="switch-arrow">↵</span></button>
-              </div>}
-              <span className="stage-coordinate">LF · 01</span>
+              <div className="room-world">
+                <div className={`cable-line ${pluggedGuitar ? "cable-at-guitar" : ""} ${pluggedAmp ? "cable-at-amp" : ""} ${pluggedGuitar && pluggedAmp ? "cable-complete" : ""}`} aria-hidden="true"><span /></div>
+                <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
+                <button className="hotspot guitar-hotspot" aria-label="Zona interactiva: guitarra" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || (roomPhase !== "guitar-cable" && roomPhase !== "play")} />
+                <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || (roomPhase !== "amp-cable" && roomPhase !== "power")} />
+                {ampInspection && <div className="amp-closeup" role="dialog" aria-label="Vista frontal del amplificador">
+                  <span className="closeup-label">VISTA FRONTAL · ÚNICO CONTROL</span>
+                  <AmpSprite large powered={ampOn} />
+                  <button className="power-switch" onClick={toggleAmplifier} aria-label={ampOn ? "Apagar ON/OFF" : "Encender ON/OFF"}><span className={`switch-light ${ampOn ? "lit" : ""}`} />ON / OFF <span className="switch-arrow">↵</span></button>
+                </div>}
+                <span className="stage-coordinate">LF · 01</span>
+              </div>
             </div>
           ) : (
             <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>

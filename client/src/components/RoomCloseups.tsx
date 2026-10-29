@@ -24,6 +24,8 @@ const STRINGS = [
   { name: "Mi", tuning: "E4", midi: 64 },
 ] as const;
 
+const VISUAL_STRING_ORDER = [5, 4, 3, 2, 1, 0] as const;
+
 const PITCH_NAMES = ["Do", "Do♯", "Re", "Re♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"] as const;
 
 function noteAt(stringIndex: number, fret: number): FretSelection {
@@ -68,7 +70,7 @@ export function CableSceneArt() {
   );
 }
 
-export function AmpCloseup({ powered, onPower, onClose }: { powered: boolean; onPower: () => void; onClose: () => void }) {
+export function AmpCloseup({ powered, onPower, onContinue, onClose }: { powered: boolean; onPower: () => void; onContinue: () => void; onClose: () => void }) {
   return (
     <div className="room-closeup amp-closeup" role="dialog" aria-label="Primer plano frontal del amplificador">
       <div className="closeup-heading"><span>OBJETO EXAMINADO · 01</span><h3>El amplificador</h3><p>Tólex antiguo, rejilla tejida y mandos de baquelita.</p></div>
@@ -99,15 +101,15 @@ export function AmpCloseup({ powered, onPower, onClose }: { powered: boolean; on
         <path d="M102 57l41-9-13 15-28 8m557-10 17 24-16 2m-575 315 19-7-3 19m578-18 17-6-8 24" fill="#c2a07b" opacity=".7" />
         <path d="M126 89h510v48H126z" fill="#25242a" stroke="#bd9d6c" strokeWidth="4" />
         <path d="M141 99h474v27H141z" fill="#d7c59f" stroke="#5c4c48" strokeWidth="2" />
-        <text x="153" y="117" fill="#44383c" fontSize="13" fontFamily="monospace" letterSpacing="3">VOLUME</text>
-        <text x="302" y="117" fill="#44383c" fontSize="13" fontFamily="monospace" letterSpacing="3">TONE</text>
-        <text x="439" y="117" fill="#44383c" fontSize="13" fontFamily="monospace" letterSpacing="2">REVERB</text>
-        <text x="551" y="117" fill="#44383c" fontSize="13" fontFamily="monospace" letterSpacing="2">POWER</text>
+        <text x="153" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="3">VOLUME</text>
+        <text x="302" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="3">TONE</text>
+        <text x="439" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="2">REVERB</text>
+        <text x="551" y="117" fill="#44383c" fontSize="15" fontFamily="monospace" letterSpacing="2">POWER</text>
         {[205, 345, 482, 567].map((x, index) => <g key={x}>
           <circle cx={x} cy="102" r="19" fill="#28242a" stroke="#d1bd92" strokeWidth="4" />
           <circle cx={x} cy="102" r="12" fill="#e1d4b6" stroke="#4c4143" strokeWidth="2" />
           <path d={`M${x} 93v9`} stroke="#403840" strokeWidth="3" />
-          <circle cx={x} cy="123" r="2.6" fill={index === 3 && powered ? "#e35f45" : "#554b4d"} />
+          <circle cx={x} cy="123" r="2.6" fill={index === 3 && powered ? "#ef3443" : "#554b4d"} style={index === 3 && powered ? { filter: "drop-shadow(0 0 5px #f13a48)" } : undefined} />
         </g>)}
         <rect x="124" y="154" width="520" height="259" rx="2" fill="#29252b" stroke="#d0b88d" strokeWidth="7" />
         <rect x="138" y="168" width="492" height="231" fill="url(#ampGrilleWeave)" stroke="#514246" strokeWidth="4" />
@@ -118,7 +120,7 @@ export function AmpCloseup({ powered, onPower, onClose }: { powered: boolean; on
         <circle cx="384" cy="282" r="14" fill="#554a4b" stroke="#d0bb93" strokeWidth="3" />
         <path d="M325 224q58-42 116 1M322 343q63 37 124-2" fill="none" stroke="#544749" strokeWidth="4" opacity=".72" />
         <rect x="290" y="389" width="190" height="22" fill="#3e3438" stroke="#bfaa82" strokeWidth="2" />
-        <text x="385" y="405" fill="#e3d4b4" fontSize="11" textAnchor="middle" fontFamily="monospace" letterSpacing="3">LIMONERO FUZZ</text>
+        <text x="385" y="405" fill="#e3d4b4" fontSize="13" textAnchor="middle" fontFamily="monospace" letterSpacing="3">LIMONERO FUZZ</text>
         <path d="M106 58l28-8 11 5-20 17m508 1 12 24-14 8M93 404l18-14 12 8-14 20m523-5 16-15 12 13-22 17" fill="none" stroke="#d5b58c" strokeWidth="5" opacity=".78" />
         <circle cx="114" cy="72" r="4" fill="url(#ampMetal)" /><circle cx="650" cy="72" r="4" fill="url(#ampMetal)" />
         <circle cx="105" cy="400" r="4" fill="url(#ampMetal)" /><circle cx="651" cy="403" r="4" fill="url(#ampMetal)" />
@@ -126,8 +128,10 @@ export function AmpCloseup({ powered, onPower, onClose }: { powered: boolean; on
       </svg>
       <div className="amp-closeup-controls">
         <span className="amp-input-label">ENTRADA JACK · ¼″</span><span className={`amp-input-jack ${powered ? "amp-input-lit" : ""}`} aria-hidden="true" />
-        <button className="power-switch" onClick={onPower} aria-label={powered ? "Apagar amplificador" : "Encender amplificador"}><span className={`switch-light ${powered ? "lit" : ""}`} />{powered ? "APAGAR AMPLIFICADOR" : "ENCENDER AMPLIFICADOR"}<span className="switch-arrow">↵</span></button>
-        <button className="closeup-back" onClick={onClose}>Volver al local <span>↗</span></button>
+        <button className="power-switch" onClick={onPower} aria-label={powered ? "Apagar amplificador" : "Encender amplificador"} aria-pressed={powered}><span className={`switch-light ${powered ? "lit" : ""}`} /><span className="switch-label">ON / OFF</span><span className="switch-state">{powered ? "ENCENDIDO" : "APAGADO"}</span></button>
+        {powered
+          ? <button className="closeup-next" onClick={onContinue}>Siguiente <span>→</span></button>
+          : <button className="closeup-back" onClick={onClose}>Volver al local <span>↗</span></button>}
       </div>
     </div>
   );
@@ -274,7 +278,7 @@ export function GuitarCloseup({
   const fretEndX = 1000;
   const scaleLength = (fretEndX - nutX) / (1 - 2 ** (-9 / 12));
   const fretX = Array.from({ length: 10 }, (_, fret) => fret === 0 ? nutX : nutX + scaleLength * (1 - 2 ** (-fret / 12)));
-  const stringY = STRINGS.map((_, index) => 143 + index * 34);
+  const stringY = VISUAL_STRING_ORDER.map((_, row) => 143 + row * 34);
   const inlayFrets = [3, 5, 7, 9];
 
   function activate(note: FretSelection) {
@@ -290,7 +294,7 @@ export function GuitarCloseup({
 
   return (
     <div className="room-closeup guitar-closeup" role="dialog" aria-label="Primer plano del mástil de guitarra">
-      <div className="closeup-heading"><span>INSTRUMENTO · AFINACIÓN ESTÁNDAR</span><h3>Seis cuerdas, nueve trastes</h3><p>Mi–La–Re–Sol–Si–Mi · E–A–D–G–B–E (sexta a primera)</p></div>
+      <div className="closeup-heading"><span>INSTRUMENTO · AFINACIÓN ESTÁNDAR</span><h3>Seis cuerdas, nueve trastes</h3><p>De abajo arriba: Mi–La–Re–Sol–Si–Mi (E2–A2–D3–G3–B3–E4)</p></div>
       <div className="fretboard-scroll">
         <svg className="guitar-fretboard-svg" viewBox="0 0 1080 414" role="group" aria-label="Mástil de guitarra con la pala y los primeros nueve trastes">
           <defs>
@@ -302,11 +306,12 @@ export function GuitarCloseup({
           <path d="M46 134 183 151v124L46 292" fill="#3c3033" opacity=".55" />
           <path d="M177 116h817v223H177z" fill="url(#fretboardWood)" stroke="#2b242b" strokeWidth="9" />
           <path d="M184 125h809v12H184z" fill="#ddd2bb" stroke="#42343a" strokeWidth="3" />
-          {stringY.map((y, index) => {
-            const pegX = 56 + index * 17;
-            const pegDirection = index < 3 ? -1 : 1;
-            return <g key={`tuner-${index}`}>
-              <path d={`M ${pegX} ${y} H 185`} fill="none" stroke="url(#stringMetal)" strokeWidth={index === 0 || index === 5 ? 3.2 : 2.2} />
+          {stringY.map((y, row) => {
+            const stringIndex = VISUAL_STRING_ORDER[row];
+            const pegX = 56 + row * 17;
+            const pegDirection = row < 3 ? -1 : 1;
+            return <g key={`tuner-${stringIndex}`}>
+              <path d={`M ${pegX} ${y} H 185`} fill="none" stroke="url(#stringMetal)" strokeWidth={stringIndex === 0 ? 3.2 : stringIndex === 5 ? 1.4 : 2.2} />
               <path d={`M ${pegX} ${y} v ${pegDirection * 23}`} stroke="#d3c7aa" strokeWidth="4" />
               <circle cx={pegX} cy={y} r="7" fill="#d8d0bc" stroke="#393238" strokeWidth="3" />
               <rect x={pegX - 8} y={y + pegDirection * 31 - 9} width="16" height="18" rx="4" fill="#d1c7b0" stroke="#393238" strokeWidth="3" />
@@ -325,24 +330,28 @@ export function GuitarCloseup({
               {fret === 9 && <circle cx={center} cy="235" r="3" fill="#7c5b4a" />}
             </g>;
           })}
-          {stringY.map((y, stringIndex) => (
-            <g key={`string-${stringIndex}`}>
+          {stringY.map((y, row) => {
+            const stringIndex = VISUAL_STRING_ORDER[row];
+            return <g key={`string-${stringIndex}`}>
               <path d={`M 184 ${y} H 992`} stroke="#373038" strokeWidth="5" opacity=".65" />
-              <path d={`M 184 ${y - 1} H 992`} stroke="url(#stringMetal)" strokeWidth={stringIndex === 0 || stringIndex === 5 ? 2.3 : 1.6} />
+              <path d={`M 184 ${y - 1} H 992`} stroke="url(#stringMetal)" strokeWidth={stringIndex === 0 ? 2.8 : stringIndex === 5 ? 1.2 : 1.7} />
               <text x="190" y={y - 8} className="open-note-label">{STRINGS[stringIndex].tuning}</text>
-            </g>
-          ))}
-          {stringY.flatMap((y, stringIndex) => Array.from({ length: 10 }, (_, fret) => {
-            const note = noteAt(stringIndex, fret);
-            const left = fret === 0 ? nutX : fretX[fret];
-            const right = fret === 9 ? 1000 : fretX[fret + 1];
-            const center = (left + right) / 2;
-            const active = selectedPositions.includes(note.key);
-            return <g key={note.key}>
-              <rect x={left + 3} y={y - 14} width={Math.max(10, right - left - 6)} height="28" rx="5" fill={active ? "#f1d878" : "transparent"} fillOpacity={active ? ".74" : "0"} stroke={active ? "#f7e8aa" : "transparent"} strokeWidth="2" role="button" tabIndex={0} aria-label={`${STRINGS[stringIndex].tuning}, ${fret === 0 ? "cuerda al aire" : `traste ${fret}`}: ${note.label}`} aria-pressed={active} onClick={() => activate(note)} onKeyDown={event => handleKeyDown(event, note)} />
-              {active && <text x={center} y={y + 5} className="selected-note-label" textAnchor="middle">{note.label}</text>}
             </g>;
-          }))}
+          })}
+          {stringY.flatMap((y, row) => {
+            const stringIndex = VISUAL_STRING_ORDER[row];
+            return Array.from({ length: 10 }, (_, fret) => {
+              const note = noteAt(stringIndex, fret);
+              const left = fret === 0 ? nutX : fretX[fret];
+              const right = fret === 9 ? 1000 : fretX[fret + 1];
+              const center = (left + right) / 2;
+              const active = selectedPositions.includes(note.key);
+              return <g key={note.key}>
+                <rect x={left + 3} y={y - 14} width={Math.max(10, right - left - 6)} height="28" rx="5" fill={active ? "#f1d878" : "transparent"} fillOpacity={active ? ".74" : "0"} stroke={active ? "#f7e8aa" : "transparent"} strokeWidth="2" role="button" tabIndex={0} aria-label={`${STRINGS[stringIndex].tuning}, ${fret === 0 ? "cuerda al aire" : `traste ${fret}`}: ${note.label}`} aria-pressed={active} onClick={() => activate(note)} onKeyDown={event => handleKeyDown(event, note)} />
+                {active && <text x={center} y={y + 5} className="selected-note-label" textAnchor="middle">{note.label}</text>}
+              </g>;
+            });
+          })}
           <path d="M22 216h32" stroke="#d8c69e" strokeWidth="3" />
           <text x="97" y="215" className="headstock-title" textAnchor="middle">PALA</text>
           <text x="97" y="234" className="headstock-caption" textAnchor="middle">6 CLAVIJAS</text>

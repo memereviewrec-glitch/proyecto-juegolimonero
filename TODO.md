@@ -8,6 +8,10 @@
 ## [x] Primer plano detallado del amplificador
 - Al elegir «Examinar amplificador», el amplificador ocupa una vista frontal grande y legible, conserva la acción ON/OFF y muestra detalles de tólex antiguo desgastado y una rejilla de altavoz de aspecto antiguo.
 
+## [x] Confirmación tras encender el amplificador
+- Al pulsar ON/OFF, una luz roja visible en el propio botón se enciende y el jugador permanece en el primer plano del amplificador; la vista no se cierra automáticamente.
+- Solo al pulsar «Siguiente» se abandona el primer plano y se vuelve al local para continuar hacia la guitarra.
+
 ## [x] Examinar y conectar el cable con arrastre
 - El cable y sus dos conectores jack se distinguen claramente en la escena. Al acercarse al cable aparece la acción «Examinar cable», que abre un primer plano independiente, como la vista del amplificador.
 - En el primer plano se arrastra un extremo del cable a la guitarra y, después, el otro extremo al amplificador. La secuencia obligatoria sigue siendo guitarra primero, amplificador después; la conexión incorrecta no avanza el acertijo.
@@ -15,8 +19,13 @@
 
 ## [x] Tocar en el primer plano del mástil
 - Al elegir «Tocar la guitarra», la escena cambia a un primer plano horizontal del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes visibles y numerados.
-- La afinación estándar se muestra de sexta a primera cuerda: Mi–La–Re–Sol–Si–Mi (E–A–D–G–B–E). Se pueden elegir cuerdas/trastes en el mástil y tocar la selección; las notas se oyen según la altura real que corresponde a esa cuerda y traste.
+- La afinación estándar se muestra con la cuerda grave Mi abajo. De abajo arriba aparecen Mi–La–Re–Sol–Si–Mi (E2–A2–D3–G3–B3–E4). Se pueden elegir cuerdas/trastes en el mástil y tocar la selección; las notas se oyen según la altura real que corresponde a esa cuerda y traste.
 - Se conserva la regla del portal: al menos dos notas distintas que formen clases de nota de la escala de Do♯ menor natural, incluido Do♯. Las notas sueltas, dos posiciones de la misma clase de nota y las notas/acordes fuera de la escala no abren el portal.
+
+## [x] Sustain y legibilidad de las vistas ampliadas
+- Cada nota de guitarra tiene un sustain estable y una caída suave, con 2 segundos de duración programada por nota antes de detener el oscilador.
+- En el dibujo, la cuerda grave Mi queda abajo; de abajo arriba aparecen Mi–La–Re–Sol–Si–Mi, en afinación estándar.
+- Los textos de las vistas ampliadas del amplificador, el cable y el mástil aumentan alrededor de dos puntos y permanecen legibles también en el breakpoint móvil.
 
 ## [x] Pantalla 2: conversación y cierre de rama
 - Cada turno normal ofrece tres respuestas: reiniciar la conversación, favorecer A o favorecer B.
@@ -41,3 +50,5 @@
 - En Preview se usaron eventos de puntero `pointerdown`/`pointermove`/`pointerup` para conectar la punta A a la guitarra y después la punta B al amplificador; la conexión completa habilita la siguiente etapa.
 - Se abrió el primer plano del amplificador y se verificaron su tamaño, textura de tólex/rejilla, mandos y control ON/OFF. También se abrió el mástil y se verificaron E–A–D–G–B–E, seis clavijas y los nueve trastes.
 - Una nota sola y dos notas sin Do♯ no abrieron el portal; una díada Do♯–Mi en cuerdas distintas sí lo abrió. Las dos rutas del amanecer, la flor, la semilla y el salto del limón siguen verificadas de la iteración anterior.
+- Tras pulsar ON/OFF, el LED rojo del botón se iluminó y el primer plano siguió abierto; «Siguiente» cerró ese primer plano y habilitó la guitarra.
+- En la vista del mástil, Preview muestra de arriba abajo E4–B3–G3–D3–A2–E2, por lo que la grave E2 queda abajo. Se midieron rótulos del primer plano de 11–19 px; el audio programa 2 segundos antes del final de cada nota.

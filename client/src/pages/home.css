@@ -412,3 +412,50 @@ button { font:inherit; }
  .guitar-closeup-footer { align-items:stretch; flex-direction:column; }
  .fretboard-actions { justify-content:center; }
 }
+
+
+/* Confirmación manual del encendido del amplificador */
+.room-closeup .power-switch { min-width:190px; justify-content:center; }
+.switch-label { font-weight:700; letter-spacing:.12em; }
+.switch-state { margin-left:3px; color:#61546c; font-size:7px; font-weight:500; letter-spacing:.08em; }
+.switch-light.lit { background:#ff2739; border-color:#ffd0c9; box-shadow:0 0 4px #ff3948,0 0 11px #ee2638,0 0 19px #f0444f99; }
+.room-closeup .closeup-next { min-height:42px; border:3px solid #29242c; padding:9px 16px; color:#28252c; background:#efc647; font:700 10px 'DM Mono',monospace; letter-spacing:.09em; box-shadow:3px 3px 0 #1f1c24; cursor:pointer; }
+.room-closeup .closeup-next span { margin-left:9px; color:#5d486b; font-size:15px; }
+.room-closeup .closeup-next:hover { background:#f5d878; }
+@media (max-width:600px) {
+ .room-closeup .power-switch { min-width:170px; }
+ .switch-state { font-size:6px; }
+ .room-closeup .closeup-next { min-height:38px; padding:8px 12px; font-size:8px; }
+}
+
+
+/* Legibilidad reforzada en las ventanas de ampliación */
+.closeup-heading>span { font-size:11px; }
+.closeup-heading p { font-size:12px; }
+.amp-input-label { font-size:10px; }
+.room-closeup .power-switch { font-size:11px; }
+.switch-state { font-size:9px; }
+.room-closeup .closeup-next { font-size:12px; }
+.room-closeup .closeup-back { font-size:11px; }
+.cable-drop-target span { font-size:9px; }
+.cable-jack-handle>span { font-size:9px; }
+.cable-closeup-footer p { font-size:12px; }
+.cable-progress { font-size:9px; }
+.guitar-fretboard-svg .fret-number { font-size:19px; }
+.guitar-fretboard-svg .open-note-label { font-size:15px; }
+.guitar-fretboard-svg .selected-note-label { font-size:17px; }
+.guitar-fretboard-svg .headstock-title { font-size:14px; }
+.guitar-fretboard-svg .headstock-caption { font-size:11px; }
+.guitar-closeup-footer p { font-size:11px; }
+.room-closeup .fretboard-actions .action-button { font-size:11px; }
+
+@media (max-width:600px) {
+ .closeup-heading>span { font-size:9px; }
+ .closeup-heading p { font-size:10px; }
+ .room-closeup .power-switch,.room-closeup .closeup-back { font-size:10px; }
+ .switch-state { font-size:8px; }
+ .room-closeup .closeup-next { font-size:10px; }
+ .cable-drop-target span { font-size:8px; }
+ .cable-jack-handle>span { font-size:8px; }
+ .cable-closeup-footer p { font-size:10px; }
+}

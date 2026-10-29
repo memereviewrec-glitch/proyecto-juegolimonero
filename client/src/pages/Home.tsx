@@ -130,20 +130,23 @@ function playFrequencies(frequencies: number[]) {
   try {
     const context = new window.AudioContext();
     const now = context.currentTime;
+    const noteDuration = 2;
     frequencies.forEach((frequency, index) => {
       const oscillator = context.createOscillator();
       const gain = context.createGain();
+      const peakGain = 0.12 / frequencies.length;
       oscillator.type = "triangle";
       oscillator.frequency.value = frequency;
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.12 / frequencies.length, now + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8 + index * 0.02);
+      gain.gain.exponentialRampToValueAtTime(peakGain, now + 0.025);
+      gain.gain.setValueAtTime(peakGain, now + noteDuration - 0.3 + index * 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration + index * 0.02);
       oscillator.connect(gain);
       gain.connect(context.destination);
       oscillator.start(now);
-      oscillator.stop(now + 0.85 + index * 0.02);
+      oscillator.stop(now + noteDuration + 0.05 + index * 0.02);
     });
-    window.setTimeout(() => void context.close(), 1200);
+    window.setTimeout(() => void context.close(), 2300);
   } catch {
     // La reproducción de prueba es opcional; el estado visual del guion sigue funcionando.
   }
@@ -333,14 +336,19 @@ export default function Home() {
   function toggleAmplifier() {
     const nextState = !ampOn;
     setAmpOn(nextState);
-    setRoomView("scene");
     if (nextState) {
-      setRoomPhase("play");
-      setNotice("Altavoz encendido. Vuelve a la guitarra para tocar.");
+      setNotice("El piloto rojo está encendido. Pulsa «Siguiente» para continuar.");
     } else {
       setRoomPhase("power");
       setNotice("Altavoz apagado. Enciéndelo para habilitar la guitarra.");
     }
+  }
+
+  function continueAfterAmplifier() {
+    if (!ampOn) return;
+    setRoomPhase("play");
+    setRoomView("scene");
+    setNotice("Altavoz encendido. Vuelve a la guitarra para tocar.");
   }
 
   function toggleFret(note: FretSelection) {
@@ -538,7 +546,7 @@ export default function Home() {
                 <button className="hotspot amp-hotspot" aria-label="Zona interactiva: amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || roomPhase !== "power"} />
                 <span className="stage-coordinate">LF · 01</span>
               </div>}
-              {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onClose={() => setRoomView("scene")} />}
+              {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} onClose={() => setRoomView("scene")} />}
               {roomView === "cable" && <CableCloseup pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} onConnect={connectCableEnd} onClose={() => setRoomView("scene")} />}
               {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onPlay={playSelection} onClose={() => setRoomView("scene")} />}
             </div>

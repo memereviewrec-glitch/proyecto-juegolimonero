@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useMemo, useState, type MouseEvent } from "react";
 import "./home.css";
 
 type Scene = "room" | "dawn";
@@ -11,6 +11,9 @@ type Response = "restart" | Branch;
 const WALK_DURATION_MS = 3800;
 const PORTAL_TRANSIT_DURATION_MS = 2800;
 const PORTAL_ARRIVAL_DURATION_MS = 4800;
+const DAWN_FLOWER_DELAY_MS = 2600;
+const FLOWER_SEED_DROP_MS = 1900;
+const LEMON_WHISTLE_DURATION_MS = 2200;
 
 function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
@@ -107,8 +110,25 @@ function GuitarSprite() {
   );
 }
 
-function SunSprite({ risen }: { risen: boolean }) {
-  return <div className={`sun-disc${risen ? " sun-risen" : ""}`} aria-label={risen ? "Sol sobre la sierra" : "Sol detrás de la sierra"} />;
+function FlowerSprite({ open }: { open: boolean }) {
+  return (
+    <svg className={`flower-bloom${open ? " flower-bloom-open" : ""}`} viewBox="0 0 64 64" aria-hidden="true" shapeRendering="crispEdges">
+      <g className="flower-petals" fill="#f4edcf" stroke="#6e5d6c" strokeWidth="2">
+        <rect x="27" y="3" width="10" height="18" />
+        <rect x="42" y="9" width="15" height="10" />
+        <rect x="43" y="26" width="17" height="10" />
+        <rect x="39" y="40" width="14" height="12" />
+        <rect x="26" y="42" width="12" height="17" />
+        <rect x="11" y="39" width="14" height="12" />
+        <rect x="4" y="25" width="17" height="11" />
+        <rect x="8" y="10" width="15" height="11" />
+      </g>
+      <g className="flower-heart">
+        <rect x="25" y="25" width="15" height="15" fill="#f2ca52" stroke="#514348" strokeWidth="2" />
+        <rect x="29" y="29" width="4" height="4" fill="#fff0a2" />
+      </g>
+    </svg>
+  );
 }
 
 function playFrequencies(frequencies: number[]) {
@@ -132,6 +152,41 @@ function playFrequencies(frequencies: number[]) {
     window.setTimeout(() => void context.close(), 1200);
   } catch {
     // La reproducción de prueba es opcional; el estado visual del guion sigue funcionando.
+  }
+}
+
+function playWhistle(source: "lemon" | "birds") {
+  if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return;
+  let context: AudioContext | undefined;
+  try {
+    context = new window.AudioContext();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+    const notes = source === "birds"
+      ? [{ at: 0, length: 0.16, from: 1480, to: 1980 }, { at: 0.22, length: 0.15, from: 1710, to: 2240 }, { at: 0.46, length: 0.19, from: 1560, to: 2100 }]
+      : [{ at: 0, length: 0.45, from: 920, to: 1330 }, { at: 0.56, length: 0.48, from: 1110, to: 1580 }];
+    oscillator.type = "sine";
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    gain.gain.setValueAtTime(0.0001, now);
+    notes.forEach(note => {
+      const start = now + note.at;
+      oscillator.frequency.setValueAtTime(note.from, start);
+      oscillator.frequency.exponentialRampToValueAtTime(note.to, start + note.length * 0.7);
+      oscillator.frequency.exponentialRampToValueAtTime(note.from, start + note.length);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.025, start + 0.025);
+      gain.gain.setValueAtTime(0.025, start + note.length * 0.8);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + note.length);
+    });
+    const duration = notes[notes.length - 1].at + notes[notes.length - 1].length;
+    oscillator.start(now);
+    oscillator.stop(now + duration + 0.04);
+    void context.resume();
+    window.setTimeout(() => { void context?.close(); }, (duration + 0.2) * 1000);
+  } catch {
+    if (context) void context.close();
   }
 }
 
@@ -174,27 +229,18 @@ export default function Home() {
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
   const [branch, setBranch] = useState<Branch | null>(null);
-  const [silence, setSilence] = useState(false);
   const [birdsPassed, setBirdsPassed] = useState(false);
   const [sunRisen, setSunRisen] = useState(false);
   const [flowerOpen, setFlowerOpen] = useState(false);
+  const [seedAvailable, setSeedAvailable] = useState(false);
   const [seedCollected, setSeedCollected] = useState(false);
+  const [lemonWhistling, setLemonWhistling] = useState(false);
   const [notice, setNotice] = useState("Empieza conectando el cable a la guitarra.");
 
   const validChord = useMemo(
     () => selectedNotes.length >= 2 && selectedNotes.includes("C#") && selectedNotes.every(note => NOTES.some(item => item.id === note)),
     [selectedNotes],
   );
-  useEffect(() => {
-    if (branch !== "B" || !silence || birdsPassed) return;
-    const timer = window.setTimeout(() => {
-      setBirdsPassed(true);
-      setSunRisen(true);
-      setFlowerOpen(true);
-      setNotice("Una bandada cruza las ventanas y silba. El sol sale y la flor se abre.");
-    }, 1700);
-    return () => window.clearTimeout(timer);
-  }, [branch, silence, birdsPassed]);
 
   function moveTo(position: string, callback: () => void) {
     setLemonFloorPoint(null);
@@ -328,6 +374,8 @@ export default function Home() {
     setLemonPosition("lemon-portal");
     setNotice("El limón salta hacia el portal.");
     window.setTimeout(() => {
+      setDawnLemonPoint(null);
+      setDawnIsMoving(false);
       setScene("dawn");
       setPortalTransit(false);
       setLemonPosition("lemon-left");
@@ -346,11 +394,12 @@ export default function Home() {
     setScoreA(0);
     setScoreB(0);
     setBranch(null);
-    setSilence(false);
     setBirdsPassed(false);
     setSunRisen(false);
     setFlowerOpen(false);
+    setSeedAvailable(false);
     setSeedCollected(false);
+    setLemonWhistling(false);
     setNotice("El limón inicia una conversación consigo mismo.");
   }
 
@@ -380,19 +429,37 @@ export default function Home() {
     if (outcome === "A") {
       setNotice("La conversación desemboca en el camino A. Solo queda una opción: silbar.");
     } else {
-      setSilence(true);
       setNotice("La conversación desemboca en el camino B. El limón guarda silencio y escucha.");
     }
   }
 
-  function whistle() {
+  function beginSunrise(message: string) {
+    if (sunRisen) return;
     setSunRisen(true);
-    setFlowerOpen(true);
-    setNotice("El limón silba. El sol asoma tras la sierra y la flor se abre.");
+    setNotice(message);
+    window.setTimeout(() => {
+      setFlowerOpen(true);
+      window.setTimeout(() => setSeedAvailable(true), motionDuration(FLOWER_SEED_DROP_MS));
+    }, motionDuration(DAWN_FLOWER_DELAY_MS));
+  }
+
+  function whistle() {
+    if (branch !== "A" || sunRisen) return;
+    playWhistle("lemon");
+    setLemonWhistling(true);
+    window.setTimeout(() => setLemonWhistling(false), motionDuration(LEMON_WHISTLE_DURATION_MS));
+    beginSunrise("El limón silba. El cielo empieza a iluminarse y la flor se prepara para abrirse.");
+  }
+
+  function listenToBirds() {
+    if (branch !== "B" || birdsPassed || sunRisen) return;
+    playWhistle("birds");
+    setBirdsPassed(true);
+    beginSunrise("El limón mira al cielo. Los pájaros silban mientras el amanecer ilumina la sierra.");
   }
 
   function collectSeed() {
-    if (!flowerOpen) return;
+    if (!seedAvailable) return;
     setSeedCollected(true);
     setNotice("Semilla recogida. «Ventana al sendero» queda como recompensa de esta pantalla.");
   }
@@ -407,7 +474,7 @@ export default function Home() {
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
     ? Boolean(roomAction) || roomPhase === "play" || portalOpen
-    : dialogueStarted || branch !== null || flowerOpen || seedCollected);
+    : dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected);
 
   return (
     <main className="explorer-shell">
@@ -470,8 +537,10 @@ export default function Home() {
             <div className={`scene-stage dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
               {arrivalPortal && <div className="arrival-portal" aria-hidden="true" />}
               <div className="dawn-veil" aria-hidden="true" />
+              {sunRisen && <div className="sunrise-glow" aria-hidden="true" />}
               <div className={`bird-flock ${birdsPassed ? "birds-visible" : ""}`} aria-label={birdsPassed ? "Bandada de pájaros silbando" : undefined}><span>◆</span><span>◆</span><span>◆</span><span>♪</span></div>
-              <button type="button" className={`dawn-lemon-actor ${dawnIsMoving ? "walking" : ""}`} style={dawnLemonPoint ? { left: `${dawnLemonPoint.x}%`, bottom: `${dawnLemonPoint.bottom}%` } : undefined} onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected || arrivalPortal}><LemonSprite /></button>
+              <button type="button" className={`dawn-lemon-actor ${dawnIsMoving ? "walking" : ""} ${arrivalPortal ? "portal-exit-leap" : ""} ${lemonWhistling ? "lemon-whistling" : ""}`} style={dawnLemonPoint ? { left: `${dawnLemonPoint.x}%`, bottom: `${dawnLemonPoint.bottom}%` } : undefined} onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected || arrivalPortal}><LemonSprite />{lemonWhistling && <span className="lemon-whistle-note" aria-hidden="true">♪</span>}</button>
+              <FlowerSprite open={flowerOpen} />
               <span className={`seed-spark ${flowerOpen ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} aria-hidden="true" />
               <span className="stage-coordinate">LF · 02</span>
             </div>
@@ -493,8 +562,9 @@ export default function Home() {
                 </div>}
               </div>}
               {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={whistle}>Silbar <span>♪</span></button></div>}
-              {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>…</p></div><div className="silence-meter"><span /><span /><span /></div></div>}
-              {flowerOpen && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Un silbido cruza el cielo. No está solo." : "El silbido alcanza el otro lado."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla <span>→</span></button></div>}
+              {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={listenToBirds}>Mirar al cielo y escuchar a los pájaros silbar <span>→</span></button></div>}
+              {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
+              {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla <span>→</span></button></div>}
               {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("room")}>Volver al local ↗</button></div>}
             </>}
           </aside>}

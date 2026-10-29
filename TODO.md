@@ -75,6 +75,9 @@
 ## [x] Libro de semillas desplegable dentro de la ventana de juego
 - Tanto el botón que abre el libro como el panel desplegable están dentro del marco 1180:1333 del juego. El panel se abre sobre la escena, queda contenido por la ventana jugable y se cierra desde ahí; no aparece fijado al viewport ni sobre el encabezado exterior.
 
+## [x] Arte original del Libro de Semillas
+- El encabezado del panel muestra una ilustración original de pixel art de un libro de semillas encantado, coherente con la paleta y el estilo de las escenas existentes. El recurso tiene fondo transparente, se incluye en `client/public/seedbook-art.png`, se carga desde el propio juego y conserva legibilidad en escritorio y móvil.
+
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.
 - La flor se abre en pixel art después de comenzar el amanecer y entrega una semilla que cae desde su centro. Solo se ofrece «Coger semilla» después de que termine la caída.

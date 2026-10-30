@@ -544,7 +544,7 @@ button { font:inherit; }
 .seedbook-header p { margin:0; color:#61546c; font:10px 'DM Mono',monospace; }
 .seedbook-close { width:34px; height:34px; flex:0 0 auto; border:2px solid #2b2631; background:#eee7d8; color:#2b2631; font-size:22px; line-height:1; cursor:pointer; }
 .seedbook-restart-area { margin:14px 0 18px; padding:12px; border:2px dashed #d98470; background:#fffdf7; }
-.seedbook-page { order:1; width:96%; aspect-ratio:4 / 5; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:center; }
+.seedbook-page { order:1; width:96%; aspect-ratio:4 / 5; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:flex-start; overflow-y:auto; overflow-x:hidden; scrollbar-color:#9a879d #eee7d8; }
 .seedbook-restart-area { order:4; margin-top:auto; margin-bottom:0; }
 .seedbook-restart-button,.seedbook-restart-actions button { display:inline-flex; min-height:38px; align-items:center; justify-content:center; padding:8px 12px; border:2px solid #3c3346; color:#3c3346; font:600 10px 'DM Mono',monospace; cursor:pointer; }
 .seedbook-restart-button { width:100%; background:#eee7d8; }
@@ -558,10 +558,16 @@ button { font:inherit; }
 .seedbook-page-indicator { margin:16px 0 8px; color:#706a73; text-align:center; font:9px 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
 .seedbook-entry { padding:14px; border:2px solid #d9d0c0; background:#fffdf7; box-shadow:3px 3px #eee7d8; }
 .seedbook-preview-entry { border-style:dashed; background:#f7fbf5; }
+.seedbook-page-seed { display:flex; min-height:116px; align-items:center; justify-content:center; padding:10px 0 5px; }
+.seedbook-page-seed-button { display:grid; width:92px; height:104px; place-items:center; border:0; background:transparent; cursor:pointer; image-rendering:pixelated; }
+.seedbook-page-seed-button .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
+.seedbook-page-seed-button:hover:not(:disabled),.seedbook-page-seed-button:focus-visible { outline:2px dashed #d98470; outline-offset:4px; }
+.seedbook-page-seed-button:disabled { cursor:not-allowed; opacity:.72; }
 .seedbook-entry-heading { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 .seedbook-number { color:#d98470; font:10px 'DM Mono',monospace; }
 .seedbook-entry-heading h3 { flex:1; margin:0; font-size:17px; letter-spacing:-.04em; }
 .seedbook-locked { color:#7c7180; font:8px 'DM Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
+.seedbook-lyrics-space { min-height:128px; margin:4px 0 14px; padding:12px; border:1px dashed #c7bdad; background:repeating-linear-gradient(to bottom,#fffdf7 0 22px,#e6dfd2 23px 24px); color:#8c818b; font:8px 'DM Mono',monospace; letter-spacing:.08em; }
 .seedbook-collected { color:#d19a3a; font-size:16px; }
 .seedbook-colored-seed { display:grid; width:24px; height:28px; flex:0 0 auto; place-items:center; }
 .seedbook-replay-icon { display:grid; width:44px; min-width:44px; height:44px; min-height:44px; flex:0 0 auto; place-items:center; margin:0; padding:6px; border:2px solid transparent; border-radius:0; background:transparent; box-shadow:none; cursor:pointer; touch-action:manipulation; image-rendering:pixelated; }
@@ -607,6 +613,10 @@ button { font:inherit; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }
+ .seedbook-page-seed { min-height:92px; padding-top:4px; }
+ .seedbook-page-seed-button { width:72px; height:82px; }
+ .seedbook-page-seed-button .seed-glyph { width:56px; height:72px; }
+ .seedbook-lyrics-space { min-height:104px; margin-bottom:12px; padding:9px; }
  .seedbook-metadata { gap:4px; }
  .seedbook-metadata span { padding:5px; }
  .seedbook-metadata b,.seedbook-metadata small { font-size:8px; }

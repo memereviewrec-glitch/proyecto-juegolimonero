@@ -195,17 +195,15 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 const isPreview = song.id === previewSong?.id;
                 const seedId = getPhysicalSeedId(song.id);
                 return <>
+                <div className="seedbook-page-seed">
+                  {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
+                    <SeedGlyph seed={seedId} />
+                  </button>}
+                </div>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{song.title}</h3>
                   {isPreview && <span className="seedbook-locked">bloqueada</span>}
-                  {seedId ? (
-                      <button className="seedbook-collected seedbook-colored-seed seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
-                      <SeedGlyph seed={seedId} />
-                    </button>
-                  ) : (
-                    <button className="seedbook-collected seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>✦</button>
-                  )}
                 </div>
                 <div className="seedbook-metadata" aria-label={`Recursos de ${song.title}`}>
                   <span><b>Fragmento MP3</b><small>{song.mp3FragmentUrl ? "Listo para escuchar" : "Pendiente del archivo"}</small></span>
@@ -227,6 +225,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                     <button type="button" className="seedbook-action" disabled>WAV pendiente</button>
                   )}
                 </div>
+                <div className="seedbook-lyrics-space" aria-label={`Espacio para la letra de ${song.title}`}><span>LETRA DE LA CANCIÓN</span></div>
                 </>;
               })()}
             </article>

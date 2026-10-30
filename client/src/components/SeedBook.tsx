@@ -43,16 +43,26 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onR
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
   const [restartConfirmationOpen, setRestartConfirmationOpen] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
   const restartTriggerRef = useRef<HTMLButtonElement | null>(null);
   const restartCancelRef = useRef<HTMLButtonElement | null>(null);
   const restoreRestartFocusRef = useRef(false);
   const discoveredSongs = SONG_CATALOG.filter(song => discoveredSongIds.includes(song.id));
   const previewSong = previewSongId && !discoveredSongIds.includes(previewSongId) ? SONG_CATALOG.find(song => song.id === previewSongId) ?? null : null;
   const visibleSongs = previewSong ? [...discoveredSongs, previewSong] : discoveredSongs;
+  const currentSong = visibleSongs[pageIndex];
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
+
+  useEffect(() => {
+    setPageIndex(previewSong ? visibleSongs.length - 1 : 0);
+  }, [previewSongId]);
+
+  useEffect(() => {
+    if (pageIndex >= visibleSongs.length && visibleSongs.length > 0) setPageIndex(visibleSongs.length - 1);
+  }, [pageIndex, visibleSongs.length]);
 
   useEffect(() => {
     if (restartConfirmationOpen) {
@@ -173,12 +183,15 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onR
             <p>Aún no hay semillas en el libro.</p>
             <small>La primera canción aparecerá al encontrar la música del portal.</small>
           </div>
-        ) : (
-          <ol className="seedbook-list">
-            {visibleSongs.map(song => {
-              const isPreview = song.id === previewSong?.id;
-              const seedId = getPhysicalSeedId(song.id);
-              return <li className={`seedbook-entry${isPreview ? " seedbook-preview-entry" : ""}`} key={song.id}>
+        ) : currentSong ? (
+          <>
+            <div className="seedbook-page-indicator" aria-live="polite">Página {pageIndex + 1} de {visibleSongs.length}</div>
+            <article className={`seedbook-entry${currentSong.id === previewSong?.id ? " seedbook-preview-entry" : ""}`}>
+              {(() => {
+                const song = currentSong;
+                const isPreview = song.id === previewSong?.id;
+                const seedId = getPhysicalSeedId(song.id);
+                return <>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{song.title}</h3>
@@ -211,10 +224,15 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onR
                     <button type="button" className="seedbook-action" disabled>WAV pendiente</button>
                   )}
                 </div>
-              </li>;
-            })}
-          </ol>
-        )}
+                </>;
+              })()}
+            </article>
+            <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
+              <button type="button" onClick={() => setPageIndex(index => index - 1)} disabled={pageIndex === 0}>← anterior</button>
+              <button type="button" onClick={() => setPageIndex(index => index + 1)} disabled={pageIndex === visibleSongs.length - 1}>siguiente →</button>
+            </nav>
+          </>
+        ) : null}
         {audioError && <p className="seedbook-error" role="status">No se pudo reproducir el MP3. Comprueba que el archivo esté disponible.</p>}
         <p className="seedbook-footnote">Las semillas descubiertas se guardan en este navegador. Los enlaces se activarán al incorporar los archivos oficiales del disco.</p>
       </aside>

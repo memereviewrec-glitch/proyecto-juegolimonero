@@ -5,7 +5,7 @@
 .hummingbird-branch { position:absolute; z-index:2; left:-5%; right:-5%; bottom:21%; height:5%; transform:rotate(-4deg); background:#231921; box-shadow:0 10px 0 #4a2d2a,0 14px 0 #172027; }
 .hummingbird-branch::before,.hummingbird-branch::after { content:""; position:absolute; bottom:70%; width:18%; height:30%; border-left:6px solid #2e4c3a; border-radius:50%; transform:rotate(-32deg); }
 .hummingbird-branch::before { left:18%; } .hummingbird-branch::after { right:19%; transform:rotate(28deg); }
-.hummingbird-sprite { position:absolute; z-index:4; left:29%; bottom:31%; width:clamp(62px,10%,104px); aspect-ratio:1; background:url("/colibri-sprite.png") 0 0 / 1400% 100% no-repeat; image-rendering:pixelated; animation:hummingbird-wingbeat .94s steps(14,end) infinite; filter:drop-shadow(3px 4px 0 #0d1420); }
+.hummingbird-sprite { position:absolute; z-index:4; left:29%; bottom:31%; width:clamp(62px,10%,104px); aspect-ratio:1; background-image:url("/colibri-sprite.png"); background-position:0 0; background-size:1400% 100%; background-repeat:no-repeat; image-rendering:pixelated; animation:hummingbird-wingbeat .94s steps(14,end) infinite; filter:drop-shadow(3px 4px 0 #0d1420); }
 .hummingbird-lemon { position:absolute; z-index:4; right:22%; bottom:26%; width:64px; height:76px; filter:drop-shadow(3px 4px 0 #1d2027); }
 .hummingbird-lemon .lemon-sprite { width:100%; height:100%; image-rendering:pixelated; }
 .hummingbird-meter { position:absolute; z-index:8; bottom:3%; left:50%; width:min(80%,560px); transform:translateX(-50%); padding:8px 12px; border:2px solid #c5d7cd; background:#111a2bd9; box-shadow:3px 3px 0 #0a101b; font:8px 'DM Mono',monospace; }
@@ -30,6 +30,21 @@
 .hummingbird-good .hummingbird-sprite { animation-duration:1.4s; }
 .hummingbird-bad .hummingbird-sprite { filter:grayscale(.55) drop-shadow(4px 5px 0 #0d1420); transform:scaleX(.94); }
 .hummingbird-neutral .hummingbird-sprite { animation-play-state:paused; background-position:100% 0; }
-@keyframes hummingbird-wingbeat { from { background-position:0 0; } to { background-position:100% 0; } }
+@keyframes hummingbird-wingbeat {
+  0%, 7.142% { background-position:0 0; }
+  14.285% { background-position:7.692% 0; }
+  21.428% { background-position:15.384% 0; }
+  28.571% { background-position:23.076% 0; }
+  35.714% { background-position:30.768% 0; }
+  42.857% { background-position:38.461% 0; }
+  50% { background-position:46.153% 0; }
+  57.142% { background-position:53.846% 0; }
+  64.285% { background-position:61.538% 0; }
+  71.428% { background-position:69.230% 0; }
+  78.571% { background-position:76.923% 0; }
+  85.714% { background-position:84.615% 0; }
+  92.857% { background-position:92.307% 0; }
+  100% { background-position:100% 0; }
+}
 @media (max-width:700px) { .hummingbird-options { grid-template-columns:1fr; max-height:165px; overflow:auto; } .hummingbird-options button { min-height:38px; } .hummingbird-dialogue { width:100%; margin-top:10px; padding:9px 10px; } .hummingbird-dialogue p { font-size:9px; } .hummingbird-sprite { left:16%; bottom:32%; width:20%; } .hummingbird-lemon { right:12%; bottom:27%; width:55px; height:68px; } .hummingbird-meter { bottom:2%; width:90%; } }
 @media (prefers-reduced-motion:reduce) { .hummingbird-sprite { animation:none; } .hummingbird-meter-track span { transition:none; } }

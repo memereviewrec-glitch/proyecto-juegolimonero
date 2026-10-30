@@ -253,6 +253,7 @@ export default function Home() {
   const [campfireFireStage, setCampfireFireStage] = useState<CampfireFireStage>(() => persistedSeedIds.includes("rambla") ? "seed" : "unlit");
   const [campfireSeedCollected, setCampfireSeedCollected] = useState(() => persistedSeedIds.includes("rambla"));
   const [riverSeedCollected, setRiverSeedCollected] = useState(() => persistedSeedIds.includes("espiritus-del-rio"));
+  const [riverConversationComplete, setRiverConversationComplete] = useState(false);
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
@@ -748,6 +749,7 @@ export default function Home() {
       setRamblaEscapeSucceeded(false);
     } else if (songId === "espiritus-del-rio") {
       setRiverSeedCollected(false);
+      setRiverConversationComplete(false);
       setRiverChallengeComplete(false);
     } else if (songId === "el-rio") {
       setElRioSeedCollected(false);
@@ -782,7 +784,7 @@ export default function Home() {
     || (scene === "dawn" && seedCollected)
     || (scene === "ruins" && ruinsView === "scene" && rootsSeedCollected)
     || (scene === "gathering" && campfireSeedCollected)
-    || (scene === "river" && riverSeedCollected)
+    || (scene === "river" && riverConversationComplete)
     || (scene === "river-challenge" && riverChallengeComplete)
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
@@ -972,7 +974,7 @@ export default function Home() {
             />
           ) : (
             scene === "river" ? (
-              <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} />
+              <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} onConversationComplete={() => setRiverConversationComplete(true)} />
             ) : scene === "river-challenge" ? (
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={() => setRiverChallengeComplete(true)} />
             ) : (

@@ -10,6 +10,7 @@ type RiverMirrorSceneProps = {
   route: RiverRoute;
   seedCollected: boolean;
   onCollectSeed: () => void;
+  onConversationComplete: () => void;
 };
 
 const RIVER_DIALOGUE = {
@@ -62,7 +63,7 @@ const NEXT_LABEL: Partial<Record<RiverStep, string>> = {
   "revelation-2": "seguir la corriente",
 };
 
-export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverMirrorSceneProps) {
+export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConversationComplete }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
   const [stoneStatus, setStoneStatus] = useState<"ground" | "throwing" | "thrown">("ground");
   const [rippleVisible, setRippleVisible] = useState(false);
@@ -105,6 +106,7 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
   }
 
   function advance() {
+    if (step === "revelation-2") onConversationComplete();
     setStep(current => {
       if (current === "spirits-1") return "spirits-2";
       if (current === "spirits-2") return "spirits-3";

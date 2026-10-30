@@ -30,12 +30,13 @@ export const SONG_CATALOG: readonly SongResource[] = [
 type SeedBookProps = {
   discoveredSongIds: SeedSongId[];
   previewSongId?: SeedSongId | null;
+  focusSongId?: SeedSongId | null;
   onClose: () => void;
   onRestart: () => void;
   onReplaySong: (songId: SeedSongId) => void;
 };
 
-export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onRestart, onReplaySong }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, onClose, onRestart, onReplaySong }: SeedBookProps) {
   const [playingSongId, setPlayingSongId] = useState<SeedSongId | null>(null);
   const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -57,8 +58,9 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onR
   }, [onClose]);
 
   useEffect(() => {
-    setPageIndex(previewSong ? visibleSongs.length - 1 : 0);
-  }, [previewSongId]);
+    const focusedIndex = focusSongId ? visibleSongs.findIndex(song => song.id === focusSongId) : -1;
+    setPageIndex(focusedIndex >= 0 ? focusedIndex : previewSong ? visibleSongs.length - 1 : 0);
+  }, [focusSongId, previewSongId]);
 
   useEffect(() => {
     if (pageIndex >= visibleSongs.length && visibleSongs.length > 0) setPageIndex(visibleSongs.length - 1);

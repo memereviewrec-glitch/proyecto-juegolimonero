@@ -1,5 +1,8 @@
 # TODO · Explorador de pantallas Limonero Fuzz
 
+## [x] Acceso informal mediante contraseña
+- Antes de mostrar el juego aparece una pantalla de acceso que solicita `0123456789`; al acertarla permite entrar durante la sesión del navegador. Es una barrera informal de interfaz y no una protección de servidor.
+
 ## [x] Escena del colibrí y canción «Ponzoña»
 - La diapositiva narrativa posterior al incendio termina en «Entonces comenzó a conversar con Limón…»; no añade la explicación de amor, sabiduría y consuelo.
 - La conversación tiene preguntas con tres respuestas y un medidor de ánimo que parte de 0, sube con las respuestas adecuadas y baja con las respuestas hirientes. El minijuego solo termina bien al alcanzar +100 o mal al alcanzar −100; si se acaban las preguntas sin llegar a ninguno de los dos extremos, termina en un final neutro: el colibrí duda qué hacer y se queda quieto en una rama del árbol, dudando.

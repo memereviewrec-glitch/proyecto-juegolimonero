@@ -8,7 +8,7 @@
 .hummingbird-sprite { position:absolute; z-index:4; left:29%; bottom:31%; width:clamp(62px,10%,104px); aspect-ratio:1; background:url("/colibri-sprite.png") 0 0 / 1400% 100% no-repeat; image-rendering:pixelated; animation:hummingbird-wingbeat .94s steps(14,end) infinite; filter:drop-shadow(3px 4px 0 #0d1420); }
 .hummingbird-lemon { position:absolute; z-index:4; right:22%; bottom:26%; width:64px; height:76px; filter:drop-shadow(3px 4px 0 #1d2027); }
 .hummingbird-lemon .lemon-sprite { width:100%; height:100%; image-rendering:pixelated; }
-.hummingbird-meter { position:absolute; z-index:8; top:15%; left:50%; width:min(80%,560px); transform:translateX(-50%); padding:8px 12px; border:2px solid #c5d7cd; background:#111a2bd9; box-shadow:3px 3px 0 #0a101b; font:8px 'DM Mono',monospace; }
+.hummingbird-meter { position:absolute; z-index:8; bottom:3%; left:50%; width:min(80%,560px); transform:translateX(-50%); padding:8px 12px; border:2px solid #c5d7cd; background:#111a2bd9; box-shadow:3px 3px 0 #0a101b; font:8px 'DM Mono',monospace; }
 .hummingbird-meter-heading,.hummingbird-meter-labels { display:flex; justify-content:space-between; gap:10px; }
 .hummingbird-meter-heading strong { color:#f4cf71; font-size:11px; }
 .hummingbird-meter-track { position:relative; height:12px; margin:7px 0 4px; overflow:hidden; border:2px solid #718287; background:linear-gradient(90deg,#5a2e49 0 49.5%,#53624a 50% 100%); }
@@ -31,5 +31,5 @@
 .hummingbird-bad .hummingbird-sprite { filter:grayscale(.55) drop-shadow(4px 5px 0 #0d1420); transform:scaleX(.94); }
 .hummingbird-neutral .hummingbird-sprite { animation-play-state:paused; background-position:100% 0; }
 @keyframes hummingbird-wingbeat { from { background-position:0 0; } to { background-position:100% 0; } }
-@media (max-width:700px) { .hummingbird-options { grid-template-columns:1fr; max-height:165px; overflow:auto; } .hummingbird-options button { min-height:38px; } .hummingbird-dialogue { width:100%; margin-top:10px; padding:9px 10px; } .hummingbird-dialogue p { font-size:9px; } .hummingbird-sprite { left:16%; bottom:32%; width:20%; } .hummingbird-lemon { right:12%; bottom:27%; width:55px; height:68px; } .hummingbird-meter { top:15%; width:90%; } }
+@media (max-width:700px) { .hummingbird-options { grid-template-columns:1fr; max-height:165px; overflow:auto; } .hummingbird-options button { min-height:38px; } .hummingbird-dialogue { width:100%; margin-top:10px; padding:9px 10px; } .hummingbird-dialogue p { font-size:9px; } .hummingbird-sprite { left:16%; bottom:32%; width:20%; } .hummingbird-lemon { right:12%; bottom:27%; width:55px; height:68px; } .hummingbird-meter { bottom:2%; width:90%; } }
 @media (prefers-reduced-motion:reduce) { .hummingbird-sprite { animation:none; } .hummingbird-meter-track span { transition:none; } }

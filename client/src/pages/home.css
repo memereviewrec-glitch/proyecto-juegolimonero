@@ -95,7 +95,7 @@ button { font:inherit; }
 .lemon-actor.walking { animation:step-bob .72s steps(2,end) infinite alternate; }
 .lemon-actor.walking .lemon-leg,.dawn-lemon-actor.walking .lemon-leg { transform-box:fill-box; transform-origin:top center; animation:foot-step .38s steps(2,end) infinite alternate; }
 .lemon-actor.walking .lemon-leg-right,.dawn-lemon-actor.walking .lemon-leg-right { animation-delay:-.19s; }
-.lemon-left { left:29%; }
+.lemon-left { left:8%; }
 .lemon-cable { left:49%; }
 .lemon-guitar { left:28%; }
 .lemon-amp { left:67%; }
@@ -328,7 +328,7 @@ button { font:inherit; }
  .amp-sprite { width:74px; }
  .guitar-sprite { width:52px; }
  .lemon-actor { transform:none; transform-origin:bottom left; }
- .lemon-left { left:29%; }
+ .lemon-left { left:8%; }
  .lemon-guitar { left:28%; }
  .lemon-amp { left:57%; }
  .hotspot.guitar-hotspot { left:5%; top:52%; width:26%; height:28%; }
@@ -510,7 +510,7 @@ button { font:inherit; }
 .dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:14px; }
 
 @media (max-width:600px) {
- .lemon-left { left:29%; }
+ .lemon-left { left:8%; }
  .lemon-guitar { left:28%; }
  .lemon-amp { left:57%; }
  .lemon-cable { left:29%; }
@@ -558,6 +558,9 @@ button { font:inherit; }
 .seedbook-page-indicator { margin:16px 0 8px; color:#706a73; text-align:center; font:9px 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
 .seedbook-entry { padding:14px; border:2px solid #d9d0c0; background:#fffdf7; box-shadow:3px 3px #eee7d8; }
 .seedbook-preview-entry { border-style:dashed; background:#f7fbf5; }
+.seedbook-preview-entry .seedbook-page-seed-button { position:relative; border:2px dashed #9aa6a2; background:#e8efeb; opacity:.78; }
+.seedbook-preview-entry .seedbook-page-seed-button::after { content:"▣"; position:absolute; right:4px; bottom:3px; color:#52666a; font:12px 'DM Mono',monospace; }
+.seedbook-preview-entry .seedbook-page-seed-button .seed-glyph { filter:grayscale(.72) saturate(.55) opacity(.62); }
 .seedbook-page-seed { display:flex; min-height:116px; align-items:center; justify-content:center; padding:10px 0 5px; }
 .seedbook-page-seed-button { display:grid; width:92px; height:104px; place-items:center; border:0; background:transparent; cursor:pointer; image-rendering:pixelated; }
 .seedbook-page-seed-button .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
@@ -566,7 +569,7 @@ button { font:inherit; }
 .seedbook-entry-heading { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 .seedbook-number { color:#d98470; font:10px 'DM Mono',monospace; }
 .seedbook-entry-heading h3 { flex:1; margin:0; font-size:17px; letter-spacing:-.04em; }
-.seedbook-locked { color:#7c7180; font:8px 'DM Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
+.seedbook-locked { color:#52666a; font:700 8px 'DM Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
 .seedbook-lyrics-space { min-height:128px; margin:4px 0 14px; padding:12px; border:1px dashed #c7bdad; background:repeating-linear-gradient(to bottom,#fffdf7 0 22px,#e6dfd2 23px 24px); color:#8c818b; font:8px 'DM Mono',monospace; letter-spacing:.08em; }
 .seedbook-collected { color:#d19a3a; font-size:16px; }
 .seedbook-colored-seed { display:grid; width:24px; height:28px; flex:0 0 auto; place-items:center; }

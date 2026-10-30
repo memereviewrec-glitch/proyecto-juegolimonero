@@ -1,0 +1,28 @@
+.fire-forest-stage { position: relative; overflow: hidden; border-color: #423b50; background: #080a12; image-rendering: pixelated; }
+.fire-forest-world { position:absolute; inset:0; overflow:hidden; background:linear-gradient(#171b30 0 35%,#211a22 61%,#0c1118 100%); }
+.fire-forest-world::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 67%,#ef6a2d66 0 12%,transparent 42%),linear-gradient(180deg,transparent 0 53%,#0a0d15aa 54% 100%); }
+.fire-forest-moon { position:absolute; top:10%; right:15%; width:12%; aspect-ratio:1; background:#dfc98d; box-shadow:0 0 0 4px #dfc98d22,0 0 28px #efb34d66; image-rendering:pixelated; }
+.fire-forest-trees { position:absolute; z-index:2; inset:15% -5% 8%; display:flex; align-items:flex-end; justify-content:space-around; gap:2%; }
+.fire-forest-trees i { position:relative; display:block; width:14%; height:72%; background:#11151e; clip-path:polygon(48% 0,71% 24%,64% 25%,86% 49%,73% 49%,100% 76%,73% 75%,82% 100%,18% 100%,27% 76%,0 77%,27% 49%,14% 49%,36% 25%,29% 25%); box-shadow:inset 7px 0 #3c2930; }
+.fire-forest-trees i:nth-child(2),.fire-forest-trees i:nth-child(4) { height:84%; width:17%; filter:brightness(.72); }
+.fire-forest-flames { position:absolute; z-index:3; left:12%; right:12%; bottom:13%; height:48%; display:flex; align-items:flex-end; justify-content:space-around; }
+.fire-forest-flames i { display:block; width:13%; height:58%; background:#e35d2f; border:3px solid #712b2b; clip-path:polygon(50% 0,67% 24%,95% 48%,78% 49%,100% 73%,73% 100%,28% 100%,0 74%,24% 53%,7% 48%,38% 25%); filter:drop-shadow(0 0 9px #f69a3866); animation:forest-flame .8s steps(4,end) infinite alternate; }
+.fire-forest-flames i:nth-child(2n) { height:78%; background:#f18c35; animation-delay:-.35s; }
+.fire-forest-flames i:nth-child(3n) { height:43%; background:#efc34b; }
+.fire-forest-rain { position:absolute; z-index:5; inset:-15% 0 0; opacity:0; background:repeating-linear-gradient(105deg,transparent 0 5%,#c7eaff 5.2% 5.45%,transparent 5.7% 10%); transform:translateY(-12%); }
+.fire-rain-started .fire-forest-rain { opacity:.28; animation:forest-rain .55s linear infinite; }
+.fire-is-out .fire-forest-rain { opacity:.42; }
+.fire-is-out .fire-forest-flames { opacity:0; transition:opacity 1.4s steps(6,end); }
+.burnt-seed,.burnt-seed-collected { position:absolute; z-index:8; left:50%; bottom:17%; display:grid; place-items:center; width:62px; height:70px; transform:translateX(-50%); border:0; background:transparent; filter:drop-shadow(0 0 7px #b96a3a); cursor:pointer; }
+.burnt-seed .seed-glyph,.burnt-seed-collected .seed-glyph { width:44px; height:58px; }
+.burnt-seed::after { content:""; position:absolute; inset:4px; border:2px dashed #d6a36a; opacity:.8; animation:seed-reveal 1.2s steps(4,end) infinite; }
+.burnt-seed-collected { opacity:.6; cursor:default; }
+.burnt-seed-collected span { position:absolute; top:100%; white-space:nowrap; color:#ddd0ba; font:8px 'DM Mono',monospace; }
+.fire-forest-dialogue { position:absolute; z-index:12; left:50%; bottom:2%; width:min(78%,620px); max-height:25%; overflow:auto; transform:translateX(-50%); padding:11px 15px 9px; border:4px solid #292334; background:#e9dfcf; color:#28212d; box-shadow:5px 5px 0 #090a10; }
+.fire-forest-dialogue span { color:#7d4d48; font:8px 'DM Mono',monospace; letter-spacing:.12em; }
+.fire-forest-dialogue p { margin:6px 0 0; font:11px/1.4 'DM Mono',monospace; }
+@keyframes forest-flame { to { transform:scaleY(.82) translateX(4px); filter:drop-shadow(0 0 14px #ffbd4566); } }
+@keyframes forest-rain { to { transform:translateY(12%); } }
+@keyframes seed-reveal { to { opacity:.15; transform:scale(1.12); } }
+@media (max-width:600px) { .fire-forest-dialogue { width:90%; max-height:28%; padding:9px 11px 8px; } .fire-forest-dialogue p { font-size:9px; } .fire-forest-trees { inset:20% -12% 8%; } }
+@media (prefers-reduced-motion:reduce) { .fire-forest-flames i,.fire-forest-rain,.burnt-seed::after { animation:none; } }

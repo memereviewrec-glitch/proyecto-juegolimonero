@@ -41,6 +41,13 @@ export const PHYSICAL_SEED_COLORS = {
     outline: "#304957",
     name: "blanco perla",
   },
+  "el-fuego": {
+    body: "#202027",
+    highlight: "#6f625e",
+    leaf: "#111319",
+    outline: "#090a0f",
+    name: "quemada",
+  },
 } as const;
 
 export type PhysicalSeedId = keyof typeof PHYSICAL_SEED_COLORS;
@@ -53,6 +60,7 @@ export function getPhysicalSeedId(songId: string): PhysicalSeedId | null {
     case "rambla":
     case "espiritus-del-rio":
     case "el-rio":
+    case "el-fuego":
       return songId;
     default:
       return null;

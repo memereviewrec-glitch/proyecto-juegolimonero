@@ -7,6 +7,7 @@ import { CampfireScene, type CampfireFireStage } from "../components/CampfireSce
 import { RiverMirrorScene } from "../components/RiverMirrorScene";
 import { RiverChallengeScene } from "../components/RiverChallengeScene";
 import { ElRioScene } from "../components/ElRioScene";
+import { FireForestScene } from "../components/FireForestScene";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
@@ -16,8 +17,8 @@ import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio";
-type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio";
+type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest";
+type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -32,6 +33,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   rambla: "gathering",
   "espiritus-del-rio": "river",
   "el-rio": "el-rio",
+  "el-fuego": "fire-forest",
 };
 
 const WALK_DURATION_MS = 3800;
@@ -57,7 +59,8 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
     return `${arrival} Así que decidió lanzar piedras al agua, para ver si algo le respondía desde el fondo.`;
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
-  return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
+  if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
+  return "En el fondo del río, el limón encontró otra señal del camino. La corriente lo llevó hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
 }
 
 const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
@@ -67,6 +70,7 @@ const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
   "river-arrival": "rambla",
   "spirits-challenge": "espiritus-del-rio",
   "el-rio": "el-rio",
+  "fire-forest": "el-fuego",
 };
 
 function motionDuration(duration: number) {
@@ -258,6 +262,7 @@ export default function Home() {
   const [riverConversationComplete, setRiverConversationComplete] = useState(false);
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
+  const [fireSeedCollected, setFireSeedCollected] = useState(() => persistedSeedIds.includes("el-fuego"));
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -627,6 +632,12 @@ export default function Home() {
     setNotice("El pez blanco entrega la semilla de «El Río» al Libro de Semillas.");
   }
 
+  function collectFireSeed() {
+    if (fireSeedCollected) return;
+    setFireSeedCollected(true);
+    setNotice("La semilla negra y quemada queda en el Libro de Semillas.");
+  }
+
   function chooseRamblaResponse(path: RamblaPath) {
     if (ramblaOutcome !== null || campfireSeedCollected) return;
     const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
@@ -680,6 +691,7 @@ export default function Home() {
     if (nextScene === "river" && !(campfireSeedCollected || persistedSeedIds.includes("rambla"))) return;
     if (nextScene === "river-challenge" && !(riverSeedCollected || persistedSeedIds.includes("espiritus-del-rio"))) return;
     if (nextScene === "el-rio" && !riverChallengeComplete) return;
+    if (nextScene === "fire-forest" && !elRioSeedCollected) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -768,8 +780,9 @@ export default function Home() {
     if (campfireSeedCollected) found.add("rambla");
     if (riverSeedCollected) found.add("espiritus-del-rio");
     if (elRioSeedCollected) found.add("el-rio");
+    if (fireSeedCollected) found.add("el-fuego");
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
-  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected]);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected]);
 
   useEffect(() => {
     const merged = SONG_CATALOG
@@ -790,6 +803,7 @@ export default function Home() {
     || (scene === "gathering" && campfireSeedCollected)
     || (scene === "river" && riverConversationComplete && riverSeedCollected)
     || (scene === "river-challenge" && riverChallengeComplete)
+    || (scene === "el-rio" && elRioSeedCollected)
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
@@ -816,7 +830,9 @@ export default function Home() {
             ? "river"
             : storyBeat === "spirits-challenge"
               ? "river-challenge"
-              : "el-rio";
+              : storyBeat === "el-rio"
+                ? "el-rio"
+                : "fire-forest";
     setScene(nextScene);
     setStoryBeat(null);
     setRoomView("scene");
@@ -852,6 +868,8 @@ export default function Home() {
       showStory("spirits-challenge");
     } else if (scene === "river-challenge") {
       showStory("el-rio");
+    } else if (scene === "el-rio") {
+      showStory("fire-forest");
     }
   }
 
@@ -901,13 +919,16 @@ export default function Home() {
         <button className={`screen-tab ${scene === "el-rio" ? "active" : ""}`} onClick={() => setVisitedScene("el-rio")} disabled={!riverChallengeComplete || portalTransit || arrivalPortal}>
           <span className="tab-number">07</span><span><strong>El Río</strong><small>El fondo del cauce</small></span><span className="tab-mark">{riverChallengeComplete ? "↗" : "⌑"}</span>
         </button>
+        <button className={`screen-tab ${scene === "fire-forest" ? "active" : ""}`} onClick={() => setVisitedScene("fire-forest")} disabled={!elRioSeedCollected || portalTransit || arrivalPortal}>
+          <span className="tab-number">08</span><span><strong>El bosque ardiendo</strong><small>El fuego · después de la lluvia</small></span><span className="tab-mark">{fireSeedCollected ? "✓" : elRioSeedCollected ? "↗" : "⌑"}</span>
+        </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : scene === "river-challenge" ? "06" : "07"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : scene === "river-challenge" ? "El reto del río" : "El Río"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : scene === "river-challenge" ? "RÍO ESPEJO · LA PRUEBA" : "RÍO ESPEJO · FONDO DEL CAUCE"}</span>}
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : scene === "river-challenge" ? "06" : scene === "el-rio" ? "07" : "08"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : scene === "river-challenge" ? "El reto del río" : scene === "el-rio" ? "El Río" : "El bosque ardiendo"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : scene === "river-challenge" ? "RÍO ESPEJO · LA PRUEBA" : scene === "el-rio" ? "RÍO ESPEJO · FONDO DEL CAUCE" : "BOSQUE · DESPUÉS DEL INCENDIO"}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
@@ -993,8 +1014,10 @@ export default function Home() {
               <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} onConversationComplete={() => setRiverConversationComplete(true)} />
             ) : scene === "river-challenge" ? (
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={() => setRiverChallengeComplete(true)} />
-            ) : (
+            ) : scene === "el-rio" ? (
               <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} />
+            ) : (
+              <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
             )
           )}
 

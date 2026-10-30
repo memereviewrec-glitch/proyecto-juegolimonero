@@ -192,6 +192,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 const song = currentSong;
                 const isPreview = song.id === previewSong?.id;
                 const seedId = getPhysicalSeedId(song.id);
+                const visibleTitle = isPreview ? "Semilla bloqueada" : song.title;
                 return <>
                 <div className="seedbook-page-seed">
                   {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
@@ -200,7 +201,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 </div>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
-                  <h3>{song.title}</h3>
+                  <h3>{visibleTitle}</h3>
                   {isPreview && <span className="seedbook-locked">bloqueada</span>}
                 </div>
                 <div className="seedbook-metadata" aria-label={`Recursos de ${song.title}`}>

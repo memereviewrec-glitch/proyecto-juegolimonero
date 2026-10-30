@@ -5,6 +5,9 @@
 - La secuencia es conectar el cable primero a la guitarra y luego al amplificador; examinar el amplificador, encenderlo y tocar la guitarra.
 - Para cruzar basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; cuentan las díadas. Se admiten inversiones y extensiones dentro de la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
+## [x] Nombre de la canción inicial: Aurora
+- En el Libro de Semillas, el rótulo de desbloqueo y los mensajes que nombran la canción se muestra «Aurora», no «Intro». Se conserva `intro` como identificador interno para mantener intactos el desbloqueo del portal y el progreso local ya guardado.
+
 ## [x] Primer plano detallado del amplificador
 - Al elegir «Examinar amplificador», el amplificador ocupa una vista frontal grande y legible, conserva la acción ON/OFF y muestra detalles de tólex antiguo desgastado y una rejilla de altavoz de aspecto antiguo.
 
@@ -77,15 +80,46 @@
 - «as above» y «so below» forman parte de la ilustración tallada en la piedra; no se presentan como texto o rótulo superpuesto a la escena.
 - Las semillas físicas se muestran sin recuadro ni fondo sólido, con transparencia y, como máximo, un resplandor pequeño del color propio de cada semilla.
 
+## [x] Inscripciones al mismo pixel art de las columnas
+- Rediseñar el pixel art de la piedra con más definición y textura de grietas; ajustar su cuadrícula al mismo tamaño de píxel que «as above» y «so below», conservando esas palabras exactas talladas e integradas y manteniendo legible el relieve.
+
 ## [x] Pantalla 4: encuentro nocturno y hoguera
 - El fondo se basa en el panel oficial 04: cielo estrellado con luna creciente, valle rocoso y figuras reunidas alrededor de un símbolo central, en el mismo pixel art deliberado del juego y la proporción estrecha del mundo de la escena 03. El limón no queda pintado en el fondo: es un actor separado que el jugador puede mover.
-- La pantalla 04 solo se desbloquea después de recoger la semilla de «Raíces». El jugador recoge cuatro palitos y lleva cada uno al centro de la reunión; la hoguera no se puede encender hasta que todos estén allí.
+- La pantalla 04 solo se desbloquea después de recoger la semilla de «Raíces». El jugador recoge tres palitos y los lleva al centro de la reunión; la hoguera no se puede encender hasta que todos estén allí.
 - Al encenderla comienza una animación legible del fuego que respeta `prefers-reduced-motion`. Cuando termina, aparece una semilla como control clicable y accesible; la cuarta canción «Rambla» no se añade al Libro de Semillas hasta que el jugador pulsa esa semilla.
 - Las semillas descubiertas, incluida «Rambla», permanecen en el Libro de Semillas al cambiar de escena y después de recargar el juego, mediante persistencia local del navegador.
 
+## [x] Conversación ramificada y tirada de habilidad de Rambla
+- Antes de recoger palitos, el limón conversa con tres encapuchados. Cada turno tiene tres respuestas y cada una suma un punto al camino «pacifico» o al «drastico»:
+  1. El líder pregunta «¿Qué es la alegría, qué es la risa, cuando las llamas siempre están ardiendo? Envueltos en la oscuridad, ¿no buscarían una luz?»; respuestas: «La luz no se busca solo con los ojos, sino con el calor que compartimos» (pacifico), «Yo solo soy una fruta intentando no asarme aquí. ¿Podemos ir al grano?» (drastico) o guardar silencio y rodar hacia atrás para huir (drastico).
+  2. El segundo pregunta «Tu piel refleja el brillo de la hoguera, pero dime, pequeño cítrico: ¿es tu interior dulce néctar o amarga defensa contra las sombras?»; respuestas: «Tengo amargura por fuera para proteger lo dulce de adentro, como la vida misma» (pacifico), «Tengo tanto ácido que si me tocas, te arderán los dedos» (drastico) o «Pregúntale al fuego lo que quiera saber» (drastico).
+  3. El tercero pregunta «Si el árbol que te dio la vida supiera el destino que te aguarda en este círculo, ¿te habría dejado caer al suelo o te habría retenido en sus ramas?»; respuestas: «Todo fruto cae cuando está listo para cumplir su propósito, incluso si ese propósito es este misterio» (pacifico), «Me habría guardado en una canasta lejos de ustedes y de este fuego absurdo» (drastico) o dar un pequeño bote y exhalar vapor cítrico sin responder (drastico).
+- Cada respuesta da exactamente un punto a su camino. Tras tres turnos, dos o más puntos pacificos producen el final 1 «El Camino de la Iluminación»; dos o más drásticos producen el final 2 «El Sacrificio Cítrico».
+- En el final 1, el líder acepta al limón como oráculo peregrino y habilita la recogida y colocación de los tres palitos. Solo entonces se puede encender la hoguera y, cuando termina la animación, recoger con un clic la semilla turquesa de Rambla.
+- En el final 2, los encapuchados gritan «¡Alimenta la hoguera!» y comienza una prueba urgente de reflejos para rodar cuesta abajo: el jugador pulsa cuando el indicador entra en la franja segura. Hay tres intentos por tanda; después puede reiniciar la prueba. Con movimiento reducido se ofrece un control manual en lugar del indicador animado.
+- Superar la prueba permite escapar y revela una semilla turquesa clicable en el sendero como ruta alternativa para completar Rambla; sin superarla no se desbloquea ni se recoge esa semilla.
+
+## [x] Pausa narrativa antes de la tirada del final 2
+- Tras el final 2 aparece lentamente un cuadro de texto que advierte que la secta va a atacar al protagonista y que debe rodar cuesta abajo para escapar.
+- La prueba de reflejos no comienza mientras aparece el aviso; después de leerlo, el jugador inicia la tirada con una acción deliberada para preservar el ritmo de la escena.
+
+## [x] Activación de la conversación al llegar al círculo
+- Al entrar en Rambla no aparece la conversación. Primero el jugador mueve al limón; el diálogo con los encapuchados se activa solo cuando el limón ha caminado hasta el círculo de la hoguera y termina su movimiento allí.
+- Antes de llegar no se muestra ningún texto que revele que el círculo es el objetivo. El jugador descubre el lugar explorando; mientras tanto siguen disponibles los controles de movimiento. Durante la conversación, el limón permanece en el círculo.
+
+## [x] Tres palitos y gestos automáticos en Rambla
+- La rama pacífica ofrece exactamente tres palitos marrones, más pequeños en pantalla. Al pulsar un palito, el limón camina hasta él y lo recoge sin una segunda pulsación.
+- Con un palito cargado, basta pulsar el centro de la hoguera: el limón recorre la senda y lo deposita allí automáticamente. Los callbacks conservan las comprobaciones de proximidad y movimiento para evitar recogidas o depósitos remotos.
+- Cuando las tres ramas están colocadas, pulsar la hoguera inicia una animación final más fluida, con tres leños pequeños y una llama pixelada más detallada.
+- El texto de apoyo evita instrucciones literales como «acerca el palito al centro» y usa mensajes poéticos e indirectos.
+
 ## [x] Recoger cada semilla con un clic y distinguir sus colores
 - La semilla de «Ventana al sendero», la de «Raíces» y la de «Rambla» se recogen pulsando directamente sobre cada semilla; los cuadros de texto pueden indicar la acción, pero no sustituyen el clic en el objeto.
-- Cada semilla física tiene un color propio y consistente en su escena y en el Libro de Semillas; el color no es la única señal de disponibilidad ni el único modo de distinguirla. «Intro» continúa desbloqueándose con el portal y no se presenta como una semilla física.
+- Cada semilla física tiene un color propio y consistente en su escena y en el Libro de Semillas; el color no es la única señal de disponibilidad ni el único modo de distinguirla. «Aurora» (identificador interno `intro`) continúa desbloqueándose con el portal y no se presenta como una semilla física.
+
+## [x] Repetir minijuegos desde el Libro de Semillas
+- Al pulsar el icono de una canción/semilla desbloqueada, el Libro se cierra y el juego abre la pantalla que contiene su minijuego para poder jugarlo de nuevo.
+- La repetición reinicia el estado de esa pantalla, pero conserva las semillas ya descubiertas en el Libro y no revoca el acceso a las demás escenas.
 
 ## [x] Guitarra y amplificador visibles como en el storyboard
 - El recorte de la Stratocaster conserva completa la punta izquierda del cuerpo, sin que quede amputada ni pegada al borde del sprite.

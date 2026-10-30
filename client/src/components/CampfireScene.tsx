@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import { LemonSprite } from "./GameSprites";
+import { CampfireFlame } from "./CampfireFlame";
 import { SeedGlyph } from "./SeedGlyph";
+import { RamblaAttackWarning, RamblaConversation, RamblaSkillCheck } from "./RamblaConversation";
+import type { RamblaOutcome, RamblaPath } from "./ramblaConversationRules";
+import { CAMPFIRE_CENTER, CAMPFIRE_DROP_POINT, CAMPFIRE_STICK_COUNT, isLemonNearCampfireCenter, type CampfirePoint } from "./campfireMovementRules";
 import "./campfire-scene.css";
 
 export type CampfireFireStage = "unlit" | "lighting" | "seed";
-export const CAMPFIRE_STICK_COUNT = 4;
 
-const WALK_DURATION_MS = 3000;
+const WALK_DURATION_MS = 1600;
 
 type StickSpot = {
   id: number;
@@ -15,17 +18,17 @@ type StickSpot = {
   rotation: number;
 };
 
-type WalkPoint = { x: number; y: number };
+type WalkPoint = CampfirePoint;
 type PathBound = { y: number; left: number; right: number };
 
 const STICK_SPOTS: StickSpot[] = [
   { id: 1, left: 17, top: 78, rotation: -28 },
   { id: 2, left: 83, top: 79, rotation: 23 },
   { id: 3, left: 44, top: 86, rotation: 38 },
-  { id: 4, left: 78, top: 89, rotation: -35 },
 ];
 
 const WALKABLE_PATH: readonly PathBound[] = [
+  { y: 64, left: 44, right: 56 },
   { y: 74, left: 18, right: 82 },
   { y: 80, left: 12, right: 88 },
   { y: 88, left: 7, right: 93 },
@@ -33,14 +36,21 @@ const WALKABLE_PATH: readonly PathBound[] = [
 ];
 
 type CampfireSceneProps = {
+  conversationStep: number;
+  conversationOutcome: RamblaOutcome | null;
+  skillFailures: number;
+  escapeSucceeded: boolean;
   placedStickIds: number[];
   selectedStickId: number | null;
   fireStage: CampfireFireStage;
   seedCollected: boolean;
-  onPickStick: (stickId: number) => void;
-  onPlaceStick: () => void;
+  onPickStick: (stickId: number, lemonPoint: CampfirePoint, stickPoint: CampfirePoint, isWalking: boolean) => void;
+  onPlaceStick: (lemonPoint: CampfirePoint, isWalking: boolean) => void;
   onIgnite: () => void;
   onCollectSeed: () => void;
+  onChooseConversation: (path: RamblaPath) => void;
+  onSkillAttempt: (success: boolean) => void;
+  onRetrySkill: () => void;
 };
 
 function pathBoundsAt(y: number) {
@@ -78,6 +88,10 @@ function motionDuration(duration: number) {
 }
 
 export function CampfireScene({
+  conversationStep,
+  conversationOutcome,
+  skillFailures,
+  escapeSucceeded,
   placedStickIds,
   selectedStickId,
   fireStage,
@@ -86,40 +100,115 @@ export function CampfireScene({
   onPlaceStick,
   onIgnite,
   onCollectSeed,
+  onChooseConversation,
+  onSkillAttempt,
+  onRetrySkill,
 }: CampfireSceneProps) {
   const worldRef = useRef<HTMLDivElement>(null);
   const walkTimer = useRef<number | null>(null);
   const [lemonPoint, setLemonPoint] = useState<WalkPoint>({ x: 22, y: 86 });
   const [walking, setWalking] = useState(false);
+  const [skillCheckStarted, setSkillCheckStarted] = useState(false);
+  const [warningReady, setWarningReady] = useState(false);
   const allSticksPlaced = placedStickIds.length >= CAMPFIRE_STICK_COUNT;
+  const sticksUnlocked = conversationOutcome === 1;
+  const escapeSeedAvailable = conversationOutcome === 2 && escapeSucceeded;
+  const seedAvailable = (sticksUnlocked && fireStage === "seed") || escapeSeedAvailable;
+  const nearCampfireCenter = isLemonNearCampfireCenter(lemonPoint);
+  const conversationApproachRequired = conversationOutcome === null && !seedCollected;
+  const conversationReady = conversationApproachRequired && nearCampfireCenter && !walking;
+  const skillCheckActive = conversationOutcome === 2 && !escapeSucceeded;
+  const showCampfireStatus = sticksUnlocked || escapeSeedAvailable || seedCollected || fireStage !== "unlit";
   const status = seedCollected
     ? "La semilla de «Rambla» ya está en el Libro de Semillas."
+    : escapeSeedAvailable
+      ? "Una luz turquesa espera donde termina la caída."
     : fireStage === "lighting"
-      ? "La hoguera empieza a prender."
-      : fireStage === "seed"
-        ? "Una semilla turquesa brilla sobre la hoguera. Pulsa la semilla para guardarla."
-        : selectedStickId !== null
-          ? `Lleva el palito al centro de la reunión · ${placedStickIds.length} de ${CAMPFIRE_STICK_COUNT}.`
+      ? "La llama aprende a respirar."
+    : fireStage === "seed"
+      ? "Una semilla turquesa late entre las brasas."
+    : selectedStickId !== null
+      ? "Un fragmento del bosque viaja con el limón."
+    : sticksUnlocked
+        ? walking
+          ? "La noche sigue los pasos del limón."
           : allSticksPlaced
-            ? "La leña está lista en el centro. Enciende la hoguera."
-            : `Busca los palitos y llévalos al centro · ${placedStickIds.length} de ${CAMPFIRE_STICK_COUNT}.`;
+            ? "Tres ramas duermen en el círculo de piedra."
+            : "La brasa sueña con el bosque."
+      : "Rambla";
+  const statusDetail = seedCollected
+    ? "La canción ya encontró su lugar en el herbario sonoro."
+    : escapeSeedAvailable
+      ? "La brisa trae un destello desde el sendero oscuro."
+      : fireStage === "lighting"
+        ? "Las sombras retroceden al calor recién nacido."
+    : fireStage === "seed"
+      ? "La canción aguarda en el resplandor turquesa."
+    : selectedStickId !== null
+      ? walking
+        ? "La senda se curva hacia el calor."
+        : "La madera conserva el perfume de la lluvia."
+      : sticksUnlocked
+        ? allSticksPlaced
+          ? "Una chispa puede cambiar el curso de la noche."
+          : "La luna guarda tres recuerdos de madera."
+        : "";
 
   useEffect(() => () => {
     if (walkTimer.current !== null) window.clearTimeout(walkTimer.current);
   }, []);
 
-  function moveLemon(point: WalkPoint) {
+  useEffect(() => {
+    if (conversationOutcome !== 2 || escapeSucceeded) {
+      setSkillCheckStarted(false);
+      setWarningReady(false);
+      return;
+    }
+    setSkillCheckStarted(false);
+    setWarningReady(false);
+    const warningTimer = window.setTimeout(() => setWarningReady(true), motionDuration(2400));
+    return () => window.clearTimeout(warningTimer);
+  }, [conversationOutcome, escapeSucceeded]);
+
+  function moveLemon(point: WalkPoint, onArrival?: () => void) {
     if (walkTimer.current !== null) window.clearTimeout(walkTimer.current);
     setLemonPoint(point);
+    const duration = motionDuration(WALK_DURATION_MS);
+    if (duration === 0) {
+      setWalking(false);
+      onArrival?.();
+      return;
+    }
     setWalking(true);
     walkTimer.current = window.setTimeout(() => {
       setWalking(false);
       walkTimer.current = null;
-    }, motionDuration(WALK_DURATION_MS));
+      onArrival?.();
+    }, duration);
+  }
+
+  function pickStickAutomatically(stick: StickSpot) {
+    if (!sticksUnlocked || walking || selectedStickId !== null || fireStage !== "unlit" || placedStickIds.includes(stick.id)) return;
+    const stickPoint = { x: stick.left, y: stick.top };
+    if (!pathSegmentIsWalkable(lemonPoint, stickPoint)) return;
+    moveLemon(stickPoint, () => onPickStick(stick.id, stickPoint, stickPoint, false));
+  }
+
+  function handleCampfireTargetClick() {
+    if (walking || fireStage !== "unlit") return;
+    if (selectedStickId !== null) {
+      const dropPoint = { ...CAMPFIRE_DROP_POINT };
+      if (!pathSegmentIsWalkable(lemonPoint, dropPoint)) return;
+      moveLemon(dropPoint, () => onPlaceStick(dropPoint, false));
+    } else if (allSticksPlaced) {
+      onIgnite();
+    }
   }
 
   function handleWorldClick(event: MouseEvent<HTMLDivElement>) {
-    if (event.target instanceof Element && event.target.closest("button, .campfire-lemon, .campfire-flame, .campfire-stack")) return;
+    if (escapeSucceeded || conversationReady || skillCheckActive || selectedStickId !== null) return;
+    if (walking) return;
+    if (event.target instanceof Element && event.target.closest("button, .campfire-lemon, .campfire-flame, .campfire-stack, .rambla-overlay")) return;
     const world = worldRef.current;
     if (!world) return;
     const bounds = world.getBoundingClientRect();
@@ -132,7 +221,9 @@ export function CampfireScene({
   }
 
   function handleWorldKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.target instanceof Element && event.target.closest("button")) return;
+    if (escapeSucceeded || conversationReady || skillCheckActive || selectedStickId !== null) return;
+    if (walking) return;
+    if (event.target instanceof Element && event.target.closest("button, input, .rambla-overlay")) return;
     const next = { ...lemonPoint };
     const step = event.shiftKey ? 9 : 5;
     if (event.key === "ArrowLeft") next.x -= step;
@@ -152,29 +243,32 @@ export function CampfireScene({
         ref={worldRef}
         role="group"
         tabIndex={0}
-        aria-label="Valle nocturno. Haz clic en el camino o usa las flechas para mover al limón."
+        aria-label="Valle nocturno. Escenario de juego interactivo."
         onClick={handleWorldClick}
         onKeyDown={handleWorldKeyDown}
       >
-        <p className="campfire-status" role="status" aria-live="polite">
+        {showCampfireStatus && <p className="campfire-status" role="status" aria-live="polite">
           <span>{status}</span>
-          <small>Haz clic en el camino para mover al limón · también puedes usar las flechas.</small>
-        </p>
+          <small>{statusDetail || "La noche guarda silencio alrededor de la hoguera."}</small>
+        </p>}
 
-        {STICK_SPOTS.map(stick => {
+        {conversationReady && <RamblaConversation step={conversationStep} onChoose={onChooseConversation} />}
+        {skillCheckActive && !skillCheckStarted && <RamblaAttackWarning ready={warningReady} onStart={() => setSkillCheckStarted(true)} />}
+        {skillCheckActive && skillCheckStarted && <RamblaSkillCheck failedAttempts={skillFailures} onAttempt={onSkillAttempt} onRetry={onRetrySkill} />}
+
+        {sticksUnlocked && fireStage === "unlit" && STICK_SPOTS.map(stick => {
           const placed = placedStickIds.includes(stick.id);
-          const selected = selectedStickId === stick.id;
-          if (placed) return null;
+          const canStartPickup = selectedStickId === null && !walking;
+          if (placed || selectedStickId === stick.id) return null;
           return (
             <button
               key={stick.id}
-              className={`campfire-stick${selected ? " is-selected" : ""}`}
+              className={`campfire-stick${!canStartPickup ? " is-waiting" : ""}`}
               type="button"
               style={{ left: `${stick.left}%`, top: `${stick.top}%` }}
-              aria-label={`${selected ? "Dejar de llevar el" : "Recoger el"} palito ${stick.id} de ${CAMPFIRE_STICK_COUNT}`}
-              aria-pressed={selected}
-              disabled={fireStage !== "unlit"}
-              onClick={() => onPickStick(stick.id)}
+              aria-label={`Recoger palito seco ${stick.id}`}
+              disabled={!canStartPickup || !sticksUnlocked || fireStage !== "unlit"}
+              onClick={() => pickStickAutomatically(stick)}
             >
               <span className="campfire-stick-art" aria-hidden="true" style={{ transform: `rotate(${stick.rotation}deg)` }} />
             </button>
@@ -182,50 +276,42 @@ export function CampfireScene({
         })}
 
         <div
-          className={`campfire-lemon lemon-actor lemon-free${walking ? " walking" : ""}`}
+          className={`campfire-lemon lemon-actor lemon-free${walking ? " walking" : ""}${escapeSucceeded ? " campfire-lemon-escaping" : ""}`}
           style={{ left: `${lemonPoint.x}%`, bottom: `${100 - lemonPoint.y}%` }}
           aria-hidden="true"
         >
           <LemonSprite />
         </div>
-        {selectedStickId !== null && fireStage === "unlit" && <span className="campfire-carried-stick" aria-hidden="true" style={{ left: `${lemonPoint.x}%`, bottom: `${100 - lemonPoint.y + 13}%` }} />}
+        {sticksUnlocked && selectedStickId !== null && fireStage === "unlit" && <span className="campfire-carried-stick" aria-hidden="true" style={{ left: `${lemonPoint.x}%`, bottom: `${100 - lemonPoint.y + 13}%` }} />}
 
-        {fireStage === "unlit" && (
+        {sticksUnlocked && fireStage === "unlit" && (
           <button
-            className={`campfire-center-target${selectedStickId !== null ? " is-ready" : ""}`}
+            className={`campfire-center-target${selectedStickId !== null || allSticksPlaced ? " is-ready" : ""}${selectedStickId === null && !allSticksPlaced || walking ? " is-walk-through" : ""}`}
             type="button"
-            disabled={selectedStickId === null}
-            onClick={onPlaceStick}
-            aria-label={selectedStickId === null ? `Centro de la reunión, ${placedStickIds.length} de ${CAMPFIRE_STICK_COUNT} palitos colocados` : "Llevar el palito al centro de la reunión"}
+            disabled={selectedStickId === null && !allSticksPlaced || walking}
+            onClick={handleCampfireTargetClick}
+            aria-label={selectedStickId === null
+              ? allSticksPlaced ? "Encender la hoguera" : "Círculo de piedra junto a la hoguera"
+              : "Dejar la rama junto a las brasas"}
           >
-            <span className="sr-only">Colocar palito en el centro</span>
+            <span className="sr-only">{selectedStickId !== null ? "Dejar la rama junto a las brasas" : allSticksPlaced ? "Encender la hoguera" : "Centro de la hoguera"}</span>
           </button>
         )}
 
-        {placedStickIds.length > 0 && fireStage === "unlit" && (
+        {sticksUnlocked && placedStickIds.length > 0 && fireStage === "unlit" && (
           <div className="campfire-stack" aria-hidden="true">
-            {placedStickIds.map((stickId, index) => <span className="campfire-stack-log" key={stickId} style={{ transform: `translate(-50%, -50%) rotate(${[-24, 22, 8, -8][index % 4]}deg)` }} />)}
+            {placedStickIds.map((stickId, index) => <span className="campfire-stack-log" key={stickId} style={{ transform: `translate(-50%, -50%) rotate(${[-18, 17, 6][index % 3]}deg)` }} />)}
           </div>
         )}
 
-        {allSticksPlaced && fireStage === "unlit" && (
-          <button className="campfire-ignite" type="button" onClick={onIgnite}>Encender hoguera</button>
-        )}
-
-        {fireStage !== "unlit" && (
+        {sticksUnlocked && fireStage !== "unlit" && (
           <div className={`campfire-flame campfire-flame-${fireStage}`} aria-hidden="true">
-            <svg viewBox="0 0 64 64" shapeRendering="crispEdges">
-              <rect x="10" y="47" width="44" height="9" fill="#684631" stroke="#2b2029" strokeWidth="3" />
-              <path d="M15 47 25 39h7l5 7h8l7-6 4 7z" fill="#80533a" stroke="#2b2029" strokeWidth="3" />
-              <path d="M22 46v-9h-6v-9h7v-9h7v10h7v-8h7v10h7v9h-7v6z" fill="#ee7840" />
-              <path d="M27 45v-9h-5v-6h7v-8h5v11h7v7h-6v5z" fill="#f4bd4f" />
-              <rect x="31" y="35" width="6" height="9" fill="#fff0a4" />
-            </svg>
+            <CampfireFlame />
           </div>
         )}
 
-        {fireStage === "seed" && !seedCollected && (
-          <button className="campfire-seed seed-rambla" type="button" onClick={onCollectSeed} aria-label="Recoger la semilla turquesa de Rambla y añadirla al Libro de Semillas">
+        {seedAvailable && !seedCollected && (
+          <button className={`campfire-seed seed-rambla${escapeSeedAvailable ? " campfire-seed-escape" : ""}`} type="button" onClick={onCollectSeed} aria-label="Recoger la semilla turquesa de Rambla y añadirla al Libro de Semillas">
             <SeedGlyph seed="rambla" />
           </button>
         )}

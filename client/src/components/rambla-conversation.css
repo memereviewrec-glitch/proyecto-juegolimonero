@@ -1,0 +1,166 @@
+.rambla-overlay {
+  position: absolute;
+  z-index: 15;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  overflow: hidden;
+  background: rgb(5 7 12 / 54%);
+  cursor: default;
+  overscroll-behavior: contain;
+}
+
+.rambla-panel {
+  width: min(100%, 360px);
+  max-height: 96%;
+  overflow-y: auto;
+  padding: 10px;
+  border: 3px solid #b8a37c;
+  background: #1b1a28;
+  box-shadow: 4px 4px 0 #080910, inset 0 0 0 2px #303040;
+  color: #f5ecd7;
+  font-family: 'DM Mono', monospace;
+  scrollbar-color: #ab8c5c #1b1a28;
+}
+
+.rambla-panel-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  color: #e5cb8b;
+  font-size: 8px;
+  line-height: 1.4;
+  letter-spacing: .06em;
+}
+
+.rambla-panel h3 {
+  margin: 7px 0 5px;
+  color: #fff0c9;
+  font: 700 12px/1.25 'DM Mono', monospace;
+  text-shadow: 2px 2px #2d2533;
+}
+
+.rambla-dialogue-line {
+  margin: 0 0 8px;
+  color: #f4ecd9;
+  font: 10px/1.45 'DM Mono', monospace;
+}
+
+.rambla-choice-list { display: grid; gap: 6px; }
+
+.rambla-choice-button {
+  display: grid;
+  grid-template-columns: 19px 1fr;
+  gap: 6px;
+  align-items: start;
+  width: 100%;
+  min-height: 44px;
+  padding: 7px 8px;
+  border: 2px solid #786c7a;
+  background: #332d3c;
+  box-shadow: 2px 2px 0 #0c0b12;
+  color: #fff5e1;
+  font: 9px/1.4 'DM Mono', monospace;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rambla-choice-button:hover { border-color: #e5cb8b; background: #473b4b; }
+.rambla-choice-button:focus-visible,
+.rambla-roll-button:focus-visible { outline: 3px dashed #fff0a9; outline-offset: 3px; }
+.rambla-choice-marker { color: #e9cb82; font-weight: 700; }
+
+.rambla-roll-instruction,
+.rambla-roll-feedback {
+  margin: 6px 0;
+  color: #f4ecd9;
+  font: 9px/1.4 'DM Mono', monospace;
+}
+
+.rambla-roll-meter {
+  position: relative;
+  width: 100%;
+  height: 28px;
+  margin: 10px 0;
+  overflow: hidden;
+  border: 3px solid #0c0b12;
+  background: repeating-linear-gradient(90deg, #59525e 0 8px, #4b4552 8px 12px);
+  box-shadow: inset 0 0 0 2px #86757e, 2px 2px 0 #090910;
+}
+
+.rambla-roll-safe-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 43%;
+  width: 24%;
+  border-right: 2px solid #e9ffc0;
+  border-left: 2px solid #e9ffc0;
+  background: #78a85d;
+  box-shadow: inset 0 0 0 2px rgb(216 245 165 / 46%);
+}
+
+.rambla-roll-marker {
+  position: absolute;
+  z-index: 2;
+  top: -2px;
+  bottom: -2px;
+  width: 6px;
+  transform: translateX(-50%);
+  border: 1px solid #fff4cf;
+  background: #f3d26f;
+  box-shadow: 0 0 5px #ffe9a2;
+}
+
+.rambla-manual-control { display: grid; gap: 3px; color: #dcd2c5; font: 8px/1.4 'DM Mono', monospace; }
+.rambla-manual-control input { width: 100%; min-height: 44px; margin: 0; accent-color: #92bd6b; touch-action: pan-x; }
+
+.rambla-roll-button {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 7px;
+  border: 3px solid #2b2631;
+  background: #edc96d;
+  box-shadow: 3px 3px 0 #090910;
+  color: #302638;
+  font: 700 11px/1.2 'DM Mono', monospace;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rambla-roll-button:hover { background: #f5dc94; }
+.rambla-roll-feedback { min-height: 13px; margin-bottom: 0; color: #e5cb8b; }
+
+.rambla-warning-panel { animation: rambla-warning-reveal 2400ms cubic-bezier(.18,.62,.28,1) both; }
+.rambla-warning-panel .rambla-dialogue-line { min-height: 4.2em; }
+.rambla-warning-action { animation: rambla-warning-action-in 360ms steps(4,end) both; }
+
+@keyframes rambla-warning-reveal {
+  from { opacity: 0; transform: translateY(12px); }
+  35% { opacity: .42; }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rambla-warning-action-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rambla-warning-panel,
+  .rambla-warning-action { animation: none; opacity: 1; transform: none; }
+}
+
+@media (max-width: 600px) {
+  .rambla-overlay { padding: 6px; }
+  .rambla-panel { max-height: 97%; padding: 8px; }
+  .rambla-panel-kicker { font-size: 7px; }
+  .rambla-panel h3 { margin-top: 5px; font-size: 11px; }
+  .rambla-dialogue-line { margin-bottom: 6px; font-size: 9px; }
+  .rambla-choice-list { gap: 5px; }
+  .rambla-choice-button { min-height: 43px; padding: 6px; font-size: 8px; }
+  .rambla-roll-meter { height: 25px; }
+}

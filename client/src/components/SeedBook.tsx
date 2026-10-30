@@ -15,7 +15,7 @@ export type SeedSongId = SongResource["id"];
 // Los recursos externos se mantienen separados por canción y tipo. Se completarán
 // con los archivos y enlaces oficiales del grupo cuando estén disponibles.
 export const SONG_CATALOG: readonly SongResource[] = [
-  { id: "intro", title: "Intro", mp3FragmentUrl: null, youtubeUrl: null, wavDownloadUrl: null },
+  { id: "intro", title: "Aurora", mp3FragmentUrl: null, youtubeUrl: null, wavDownloadUrl: null },
   { id: "ventana", title: "Ventana al sendero", mp3FragmentUrl: null, youtubeUrl: null, wavDownloadUrl: null },
   { id: "raices", title: "Raíces", mp3FragmentUrl: null, youtubeUrl: null, wavDownloadUrl: null },
   { id: "rambla", title: "Rambla", mp3FragmentUrl: null, youtubeUrl: null, wavDownloadUrl: null },
@@ -31,9 +31,10 @@ type SeedBookProps = {
   discoveredSongIds: SeedSongId[];
   onClose: () => void;
   onRestart: () => void;
+  onReplaySong: (songId: SeedSongId) => void;
 };
 
-export function SeedBook({ discoveredSongIds, onClose, onRestart }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, onClose, onRestart, onReplaySong }: SeedBookProps) {
   const [playingSongId, setPlayingSongId] = useState<SeedSongId | null>(null);
   const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -178,11 +179,11 @@ export function SeedBook({ discoveredSongIds, onClose, onRestart }: SeedBookProp
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{song.title}</h3>
                   {seedId ? (
-                    <span className="seedbook-collected seedbook-colored-seed" role="img" aria-label={`Semilla ${PHYSICAL_SEED_COLORS[seedId].name} descubierta`}>
+                    <button className="seedbook-collected seedbook-colored-seed seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
                       <SeedGlyph seed={seedId} />
-                    </span>
+                    </button>
                   ) : (
-                    <span className="seedbook-collected" role="img" aria-label="Intro desbloqueada, sin semilla física">✦</span>
+                    <button className="seedbook-collected seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>✦</button>
                   )}
                 </div>
                 <div className="seedbook-metadata" aria-label={`Recursos de ${song.title}`}>

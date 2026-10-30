@@ -24,13 +24,13 @@
 }
 
 .ruins-puzzle[data-side="left"] .ruins-puzzle-stage {
-  background-image: linear-gradient(180deg, rgb(21 22 21 / 4%), rgb(24 24 21 / 12%)), url("/ruins-column-left-inscribed-v2.png");
+  background-image: linear-gradient(180deg, rgb(21 22 21 / 4%), rgb(24 24 21 / 12%)), url("/ruins-column-left-inscribed-pixelated.png");
   background-size: 100% 100%, auto 360%;
   background-position: center, 32% 32%;
 }
 
 .ruins-puzzle[data-side="right"] .ruins-puzzle-stage {
-  background-image: linear-gradient(180deg, rgb(21 22 21 / 4%), rgb(24 24 21 / 12%)), url("/ruins-column-right-inscribed-v2.png");
+  background-image: linear-gradient(180deg, rgb(21 22 21 / 4%), rgb(24 24 21 / 12%)), url("/ruins-column-right-inscribed-pixelated.png");
   background-size: 100% 100%, auto 360%;
   background-position: center, 37% 60%;
 }

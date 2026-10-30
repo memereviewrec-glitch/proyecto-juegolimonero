@@ -3,7 +3,10 @@ import { AmpCloseup, CableCloseup, CableSceneArt, GuitarCloseup, type FretSelect
 import { LemonSprite } from "../components/GameSprites";
 import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColumnPuzzle";
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
-import { CampfireScene, CAMPFIRE_STICK_COUNT, type CampfireFireStage } from "../components/CampfireScene";
+import { CampfireScene, type CampfireFireStage } from "../components/CampfireScene";
+import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
+import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
+import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import "./home.css";
@@ -15,6 +18,13 @@ type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "a
 type RoomView = "scene" | "cable" | "amp" | "guitar";
 type Branch = "A" | "B";
 type Response = "restart" | Branch;
+
+const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
+  intro: "room",
+  ventana: "dawn",
+  raices: "ruins",
+  rambla: "gathering",
+};
 
 const WALK_DURATION_MS = 3800;
 const PORTAL_TRANSIT_DURATION_MS = 2800;
@@ -156,6 +166,7 @@ export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
   const [seedBookOpen, setSeedBookOpen] = useState(false);
   const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(readStoredSeedBookIds);
+  const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
   const [roomView, setRoomView] = useState<RoomView>("scene");
   const [pluggedGuitar, setPluggedGuitar] = useState(false);
@@ -196,6 +207,12 @@ export default function Home() {
   const [selectedStickId, setSelectedStickId] = useState<number | null>(null);
   const [campfireFireStage, setCampfireFireStage] = useState<CampfireFireStage>(() => persistedSeedIds.includes("rambla") ? "seed" : "unlit");
   const [campfireSeedCollected, setCampfireSeedCollected] = useState(() => persistedSeedIds.includes("rambla"));
+  const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
+  const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
+  const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
+  const [ramblaOutcome, setRamblaOutcome] = useState<RamblaOutcome | null>(null);
+  const [ramblaSkillFailures, setRamblaSkillFailures] = useState(0);
+  const [ramblaEscapeSucceeded, setRamblaEscapeSucceeded] = useState(false);
   const [lemonWhistling, setLemonWhistling] = useState(false);
   const [notice, setNotice] = useState("");
 
@@ -216,7 +233,7 @@ export default function Home() {
     if (campfireFireStage !== "lighting") return;
     const timer = window.setTimeout(() => {
       setCampfireFireStage("seed");
-      setNotice("La hoguera queda encendida. Una semilla brilla sobre las llamas.");
+      setNotice("La hoguera respira bajo la luna; algo turquesa despierta entre las llamas.");
     }, motionDuration(CAMPFIRE_LIGHT_DURATION_MS));
     return () => window.clearTimeout(timer);
   }, [campfireFireStage]);
@@ -378,7 +395,7 @@ export default function Home() {
       setIntroStarted(true);
       setRoomPhase("portal");
       setRoomView("scene");
-      setNotice("Acorde válido de Do♯ menor. El portal se abre y empieza la Intro.");
+      setNotice("Acorde válido de Do♯ menor. El portal se abre y empieza «Aurora».");
       return;
     }
     setNotice(`Ese conjunto (${selectedFrets.map(note => note.label).join(" · ")}) no abre el portal: usa Do♯ y solo notas de Do♯ menor.`);
@@ -514,45 +531,153 @@ export default function Home() {
     setNotice("La tercera semilla, «Raíces», queda en tu equipaje.");
   }
 
-  function pickCampfireStick(stickId: number) {
-    if (campfireFireStage !== "unlit" || campfirePlacedStickIds.includes(stickId)) return;
-    setSelectedStickId(current => current === stickId ? null : stickId);
-    setNotice("Palito recogido. Llévalo al centro de la reunión.");
+  function pickCampfireStick(stickId: number, lemonPoint: CampfirePoint, stickPoint: CampfirePoint, isWalking: boolean) {
+    if (ramblaOutcome !== 1 || campfireFireStage !== "unlit" || selectedStickId !== null || campfirePlacedStickIds.includes(stickId)) return;
+    if (!canCollectCampfireStick(lemonPoint, stickPoint, isWalking)) return;
+    setSelectedStickId(stickId);
+    setNotice("La madera cruje entre las manos del limón.");
   }
 
-  function placeCampfireStick() {
-    if (campfireFireStage !== "unlit" || selectedStickId === null || campfirePlacedStickIds.length >= CAMPFIRE_STICK_COUNT) return;
+  function placeCampfireStick(lemonPoint: CampfirePoint, isWalking: boolean) {
+    if (ramblaOutcome !== 1 || campfireFireStage !== "unlit" || selectedStickId === null || campfirePlacedStickIds.length >= CAMPFIRE_STICK_COUNT) return;
+    if (!canPlaceCampfireStick(lemonPoint, isWalking)) return;
     if (!campfirePlacedStickIds.includes(selectedStickId)) {
       setCampfirePlacedStickIds(current => current.includes(selectedStickId) ? current : [...current, selectedStickId]);
     }
     setSelectedStickId(null);
-    setNotice(`Palito colocado en el centro: ${Math.min(campfirePlacedStickIds.length + 1, CAMPFIRE_STICK_COUNT)} de ${CAMPFIRE_STICK_COUNT}.`);
+    setNotice(campfirePlacedStickIds.length + 1 >= CAMPFIRE_STICK_COUNT
+      ? "Tres ramas duermen en el círculo de piedra."
+      : "Una rama encuentra su lugar junto a las brasas.");
   }
 
   function igniteCampfire() {
-    if (campfireFireStage !== "unlit" || campfirePlacedStickIds.length < CAMPFIRE_STICK_COUNT) return;
+    if (ramblaOutcome !== 1 || campfireFireStage !== "unlit" || campfirePlacedStickIds.length < CAMPFIRE_STICK_COUNT) return;
     setCampfireFireStage("lighting");
-    setNotice("La reunión empieza a encender la hoguera.");
+    setNotice("Una chispa despierta en el corazón de la noche.");
   }
 
   function collectCampfireSeed() {
-    if (campfireFireStage !== "seed" || campfireSeedCollected) return;
+    const fireRouteSeedReady = ramblaOutcome === 1 && campfireFireStage === "seed";
+    const escapeRouteSeedReady = ramblaOutcome === 2 && ramblaEscapeSucceeded;
+    if ((!fireRouteSeedReady && !escapeRouteSeedReady) || campfireSeedCollected) return;
     setCampfireSeedCollected(true);
     setNotice("Semilla de «Rambla» recogida y añadida al Libro de Semillas.");
+  }
+
+  function chooseRamblaResponse(path: RamblaPath) {
+    if (ramblaOutcome !== null || campfireSeedCollected) return;
+    const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
+    const nextDrastic = ramblaDrasticPoints + (path === "drastico" ? 1 : 0);
+    setRamblaPacificPoints(nextPacific);
+    setRamblaDrasticPoints(nextDrastic);
+
+    if (ramblaConversationStep < RAMBLA_CONVERSATION.length - 1) {
+      setRamblaConversationStep(step => step + 1);
+      return;
+    }
+
+    const outcome = resolveRamblaOutcome(nextPacific, nextDrastic);
+    setRamblaOutcome(outcome);
+    setNotice(outcome === 1
+      ? "El líder ríe secamente y acepta al limón como oráculo peregrino. El fuego reconoce tres recuerdos del bosque."
+      : "Los encapuchados gritan «¡Alimenta la hoguera!». El sendero tiembla bajo la sombra de la secta.");
+  }
+
+  function attemptRamblaEscape(success: boolean) {
+    if (ramblaOutcome !== 2 || ramblaEscapeSucceeded || ramblaSkillFailures >= 3) return;
+    if (success) {
+      setRamblaEscapeSucceeded(true);
+      setNotice("El limón se pierde cuesta abajo. Un brillo turquesa tiembla entre las piedras.");
+      return;
+    }
+    const failures = ramblaSkillFailures + 1;
+    setRamblaSkillFailures(failures);
+    setNotice(failures >= 3
+      ? "La bajada se complica; puedes reintentar la tirada de habilidad."
+      : `La rueda patina. Fallo ${failures} de 3; busca el momento justo y vuelve a rodar.`);
+  }
+
+  function retryRamblaEscape() {
+    if (ramblaOutcome !== 2 || ramblaEscapeSucceeded || ramblaSkillFailures < 3) return;
+    setRamblaSkillFailures(0);
+    setNotice("La tirada vuelve a empezar. Espera la franja segura y rueda.");
   }
 
   function setVisitedScene(nextScene: Scene) {
     if (portalTransit || arrivalPortal) return;
     if (nextScene === "room" && scene !== "room") return;
-    if (nextScene === "dawn" && (!portalOpen || scene === "ruins" || scene === "gathering")) return;
-    if (nextScene === "ruins" && !seedCollected) return;
-    if (nextScene === "gathering" && !rootsSeedCollected) return;
+    if (nextScene === "dawn" && (!(portalOpen || persistedSeedIds.includes("intro")) || scene === "ruins" || scene === "gathering")) return;
+    if (nextScene === "ruins" && !(seedCollected || persistedSeedIds.includes("ventana"))) return;
+    if (nextScene === "gathering" && !(rootsSeedCollected || persistedSeedIds.includes("raices"))) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
     setRoomAction(null);
     setRuinsAction(null);
     setRuinsView("scene");
+  }
+
+  function replaySong(songId: SeedSongId) {
+    const targetScene = REPLAY_TARGETS[songId];
+    if (!targetScene) return;
+
+    stopGameAudio();
+    setSeedBookOpen(false);
+    setScene(targetScene);
+    setSceneReplayNonce(version => version + 1);
+    setNotice("");
+    setPortalTransit(false);
+    setArrivalPortal(false);
+    setRoomView("scene");
+    setRoomAction(null);
+    setRuinsView("scene");
+    setRuinsAction(null);
+    setLemonWhistling(false);
+    setDawnIsMoving(false);
+    setLemonFloorPoint(null);
+    setIsMoving(false);
+
+    if (songId === "intro") {
+      setRoomPhase("guitar-cable");
+      setPluggedGuitar(false);
+      setPluggedAmp(false);
+      setAmpOn(false);
+      setSelectedFrets([]);
+      setPortalOpen(false);
+      setIntroStarted(false);
+      setLemonPosition("lemon-left");
+    } else if (songId === "ventana") {
+      setDawnLemonPoint(null);
+      setDialogueStarted(false);
+      setShowDialogueChoices(false);
+      setDialogueTurn(0);
+      setScoreA(0);
+      setScoreB(0);
+      setBranch(null);
+      setPendingBranch(null);
+      setBirdsPassed(false);
+      setDawnOutcomeAnimationRunning(false);
+      setSunRisen(false);
+      setFlowerOpen(false);
+      setSeedAvailable(false);
+      setSeedCollected(false);
+    } else if (songId === "raices") {
+      setLeftColumnRevealed(false);
+      setRightColumnRevealed(false);
+      setRuinsFlowerStage("hidden");
+      setRootsSeedCollected(false);
+    } else if (songId === "rambla") {
+      setCampfirePlacedStickIds([]);
+      setSelectedStickId(null);
+      setCampfireFireStage("unlit");
+      setCampfireSeedCollected(false);
+      setRamblaConversationStep(0);
+      setRamblaPacificPoints(0);
+      setRamblaDrasticPoints(0);
+      setRamblaOutcome(null);
+      setRamblaSkillFailures(0);
+      setRamblaEscapeSucceeded(false);
+    }
   }
 
   const discoveredSongIds = useMemo(() => {
@@ -623,16 +748,16 @@ export default function Home() {
 
       <nav className="screen-nav" aria-label="Seleccionar pantalla">
         <button className={`screen-tab ${scene === "room" ? "active" : ""}`} onClick={() => setVisitedScene("room")} disabled={scene !== "room" || portalTransit || arrivalPortal}>
-          <span className="tab-number">01</span><span><strong>El local de ensayo</strong><small>La Intro · antes del portal</small></span><span className="tab-mark">{portalOpen ? "✓" : "•"}</span>
+          <span className="tab-number">01</span><span><strong>El local de ensayo</strong><small>Aurora · antes del portal</small></span><span className="tab-mark">{portalOpen ? "✓" : "•"}</span>
         </button>
-        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen || scene === "ruins" || scene === "gathering" || portalTransit || arrivalPortal}>
-          <span className="tab-number">02</span><span><strong>El Cuchillo al amanecer</strong><small>Ventana al sendero</small></span><span className="tab-mark">{seedCollected ? "✓" : portalOpen ? "↗" : "⌑"}</span>
+        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!discoveredSongIds.includes("intro") || scene === "ruins" || scene === "gathering" || portalTransit || arrivalPortal}>
+          <span className="tab-number">02</span><span><strong>El Cuchillo al amanecer</strong><small>Ventana al sendero</small></span><span className="tab-mark">{discoveredSongIds.includes("ventana") ? "✓" : discoveredSongIds.includes("intro") ? "↗" : "⌑"}</span>
         </button>
-        <button className={`screen-tab ${scene === "ruins" ? "active" : ""}`} onClick={() => setVisitedScene("ruins")} disabled={!seedCollected || portalTransit || arrivalPortal}>
-          <span className="tab-number">03</span><span><strong>Ruinas invadidas</strong><small>Raíces · las dos columnas</small></span><span className="tab-mark">{rootsSeedCollected ? "✓" : seedCollected ? "↗" : "⌑"}</span>
+        <button className={`screen-tab ${scene === "ruins" ? "active" : ""}`} onClick={() => setVisitedScene("ruins")} disabled={!discoveredSongIds.includes("ventana") || portalTransit || arrivalPortal}>
+          <span className="tab-number">03</span><span><strong>Ruinas invadidas</strong><small>Raíces · las dos columnas</small></span><span className="tab-mark">{discoveredSongIds.includes("raices") ? "✓" : discoveredSongIds.includes("ventana") ? "↗" : "⌑"}</span>
         </button>
-        <button className={`screen-tab ${scene === "gathering" ? "active" : ""}`} onClick={() => setVisitedScene("gathering")} disabled={!rootsSeedCollected || portalTransit || arrivalPortal}>
-          <span className="tab-number">04</span><span><strong>Encuentro bajo la luna</strong><small>Rambla · la hoguera</small></span><span className="tab-mark">{campfireSeedCollected ? "✓" : rootsSeedCollected ? "↗" : "⌑"}</span>
+        <button className={`screen-tab ${scene === "gathering" ? "active" : ""}`} onClick={() => setVisitedScene("gathering")} disabled={!discoveredSongIds.includes("raices") || portalTransit || arrivalPortal}>
+          <span className="tab-number">04</span><span><strong>Encuentro bajo la luna</strong><small>Rambla · la hoguera</small></span><span className="tab-mark">{discoveredSongIds.includes("rambla") ? "✓" : discoveredSongIds.includes("raices") ? "↗" : "⌑"}</span>
         </button>
       </nav>
 
@@ -656,7 +781,7 @@ export default function Home() {
               <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" />
               <b aria-hidden="true">{discoveredSongIds.length}/10</b>
             </button>
-            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} onRestart={restartGame} />}
+            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} onRestart={restartGame} onReplaySong={replaySong} />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
@@ -692,6 +817,7 @@ export default function Home() {
             </div>
           ) : scene === "ruins" ? (
             <RuinsScene
+              key={`ruins-${sceneReplayNonce}`}
               leftRevealed={leftColumnRevealed}
               rightRevealed={rightColumnRevealed}
               flowerStage={ruinsFlowerStage}
@@ -702,6 +828,11 @@ export default function Home() {
             />
           ) : (
             <CampfireScene
+              key={`rambla-${sceneReplayNonce}`}
+              conversationStep={ramblaConversationStep}
+              conversationOutcome={ramblaOutcome}
+              skillFailures={ramblaSkillFailures}
+              escapeSucceeded={ramblaEscapeSucceeded}
               placedStickIds={campfirePlacedStickIds}
               selectedStickId={selectedStickId}
               fireStage={campfireFireStage}
@@ -710,6 +841,9 @@ export default function Home() {
               onPlaceStick={placeCampfireStick}
               onIgnite={igniteCampfire}
               onCollectSeed={collectCampfireSeed}
+              onChooseConversation={chooseRamblaResponse}
+              onSkillAttempt={attemptRamblaEscape}
+              onRetrySkill={retryRamblaEscape}
             />
           )}
 
@@ -725,7 +859,7 @@ export default function Home() {
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
               {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
-              {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div></div>}
+              {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">CANCIÓN</span><h4>{introStarted ? "Aurora activada" : "Aurora"}</h4></div></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label={dialogueTurn === DIALOGUE.length - 1 ? "Dos opciones finales" : "Tres respuestas posibles"}>

@@ -1,7 +1,7 @@
 # TODO · Explorador de pantallas Limonero Fuzz
 
 ## [x] Acceso informal mediante contraseña
-- Antes de mostrar el juego aparece una pantalla de acceso que solicita `0123456789`; al acertarla permite entrar durante la sesión del navegador. Es una barrera informal de interfaz y no una protección de servidor.
+- Antes de mostrar el juego aparece una pantalla de acceso cuya clave se define en `client/src/components/PasswordGate.tsx`; al acertarla permite entrar durante la sesión del navegador. Es una barrera informal de interfaz y no una protección de servidor.
 
 ## [x] Escena del colibrí y canción «Ponzoña»
 - La diapositiva narrativa posterior al incendio termina en «Entonces comenzó a conversar con Limón…»; no añade la explicación de amor, sabiduría y consuelo.

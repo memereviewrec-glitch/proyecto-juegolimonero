@@ -39,7 +39,7 @@ button { font:inherit; }
 .stage-column { min-width:0; position:relative; }
 .playfield { position:relative; width:100%; --seedbook-safe-top:92px; }
 .story-interlude { position:absolute; z-index:100; inset:0; display:flex; justify-content:center; align-items:flex-start; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; padding:clamp(16px,5vh,42px) 0; background:#050509; color:#fff; image-rendering:pixelated; scrollbar-color:#aaa4b5 #17151d; scrollbar-width:thin; }
-.story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; margin-block:auto; }
+.story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; margin-block:auto; padding-top:152px; }
 .story-interlude p { max-width:680px; margin:0; color:#fff; font:500 clamp(16px,2.1vw,25px)/1.65 'DM Mono',monospace; text-wrap:balance; text-shadow:2px 2px 0 #25222d; }
 .story-interlude button { border:2px solid #fff; background:#050509; color:#fff; padding:8px 12px; font:10px 'DM Mono',monospace; text-transform:lowercase; cursor:pointer; box-shadow:3px 3px 0 #6c6875; }
 .story-interlude button:hover,.story-interlude button:focus-visible { background:#fff; color:#050509; outline:2px dashed #fff; outline-offset:4px; }
@@ -56,7 +56,7 @@ button { font:inherit; }
 @keyframes story-seed-pulse { to { transform:scale(1.07) rotate(-2deg); } }
 .story-continue-button { align-self:center; }
 @media (max-width:600px) {
-  .story-interlude-inner { width:88%; gap:10px; }
+  .story-interlude-inner { width:88%; gap:10px; padding-top:132px; }
   .story-interlude p { max-width:100%; font-size:15px; line-height:1.5; }
   .story-seed-button { width:78px; height:86px; }
   .story-seed-glyph { width:54px; height:74px; }

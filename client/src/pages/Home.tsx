@@ -347,6 +347,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   }
 
   function toggleFret(note: FretSelection) {
+    playFrequencies([note.frequency]);
     setSelectedFrets(current => current.some(item => item.key === note.key)
       ? current.filter(item => item.key !== note.key)
       : [...current.filter(item => item.stringIndex !== note.stringIndex), note]);

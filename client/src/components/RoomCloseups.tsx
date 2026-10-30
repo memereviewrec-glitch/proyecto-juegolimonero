@@ -285,7 +285,7 @@ export function GuitarCloseup({
 
   return (
     <div className="room-closeup guitar-closeup" role="dialog" aria-label="Primer plano del mástil de guitarra">
-      <p className="guitar-whisper">hay acordes que abren otras realidades...</p>
+      <p className="guitar-whisper">Toca cada posición para escuchar la nota; hay acordes que abren otras realidades...</p>
       <div className="fretboard-scroll">
         <svg className="guitar-fretboard-svg" viewBox="0 0 1080 414" role="group" aria-label="Mástil de guitarra con la pala y los primeros nueve trastes">
           <defs>

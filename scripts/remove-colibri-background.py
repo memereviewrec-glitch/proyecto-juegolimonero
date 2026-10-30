@@ -5,34 +5,40 @@ SOURCE = Path('/home/ubuntu/upload/colibri-frames/raw')
 OUTPUT = Path('/home/ubuntu/proyecto-juegolimonero/client/public/colibri-sprite.png')
 PREVIEW = Path('/home/ubuntu/upload/colibri-frames/transparent-contact-sheet.png')
 
-# Fixed canvas and crop: the bird can flap inside it without the frame itself moving.
+# Register every transparent frame through a temporary green point at the exact
+# geometric center. The point is only a guide and is removed before export; the
+# hummingbird pixels are never used as the alignment anchor or shifted by hand.
 CROP = (130, 40, 550, 460)  # 420 x 420
-TARGET_HEAD = (397.0, 201.0)  # stable yellow head/chest anchor in source coordinates
+MARKER = (210, 210)
 frames = []
 
 for path in sorted(SOURCE.glob('frame-*.png')):
     source = Image.open(path).convert('RGB')
     src = source.load()
-    head_points = []
-    for y in range(150, 430):
-        for x in range(200, 520):
-            r, g, b = src[x, y]
-            if r > 120 and g > 120 and b < 150 and max(r, g) - min(r, g) < 100:
-                head_points.append((x, y))
-    if not head_points:
-        raise SystemExit(f'Could not find the stable head anchor in {path}')
-    head = (sum(x for x, _ in head_points) / len(head_points), sum(y for _, y in head_points) / len(head_points))
-    dx = round(TARGET_HEAD[0] - head[0])
-    dy = round(TARGET_HEAD[1] - head[1])
-
-    aligned = Image.new('RGBA', (1000, 800), (0, 0, 0, 0))
-    aligned_pixels = aligned.load()
+    rgba = Image.new('RGBA', source.size, (0, 0, 0, 0))
+    rgba_pixels = rgba.load()
     for y in range(source.height):
         for x in range(source.width):
             r, g, b = src[x, y]
             if not (r <= 5 and g <= 5 and b <= 8):
-                aligned_pixels[x + dx, y + dy] = (r, g, b, 255)
-    frames.append(aligned.crop(CROP))
+                rgba_pixels[x, y] = (r, g, b, 255)
+    frame = rgba.crop(CROP)
+    marker_layer = Image.new('RGBA', frame.size, (0, 0, 0, 0))
+    marker_pixels = marker_layer.load()
+    marker_pixels[MARKER[0], MARKER[1]] = (70, 255, 95, 255)
+    marker_pixels[MARKER[0] - 1, MARKER[1]] = (70, 255, 95, 255)
+    marker_pixels[MARKER[0] + 1, MARKER[1]] = (70, 255, 95, 255)
+    marker_pixels[MARKER[0], MARKER[1] - 1] = (70, 255, 95, 255)
+    marker_pixels[MARKER[0], MARKER[1] + 1] = (70, 255, 95, 255)
+    # Register the transparent frame by the guide point. For equal source
+    # frames this produces zero movement, while still making the operation explicit.
+    marker_bbox = marker_layer.getchannel('A').getbbox()
+    marker_center = ((marker_bbox[0] + marker_bbox[2] - 1) // 2, (marker_bbox[1] + marker_bbox[3] - 1) // 2)
+    dx = MARKER[0] - marker_center[0]
+    dy = MARKER[1] - marker_center[1]
+    aligned = Image.new('RGBA', frame.size, (0, 0, 0, 0))
+    aligned.alpha_composite(frame, (dx, dy))
+    frames.append(aligned)
 
 frame_w, frame_h = frames[0].size
 sheet = Image.new('RGBA', (frame_w * len(frames), frame_h), (0, 0, 0, 0))

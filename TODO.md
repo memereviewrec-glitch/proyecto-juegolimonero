@@ -4,7 +4,7 @@
 - La diapositiva narrativa posterior al incendio termina en «Entonces comenzó a conversar con Limón…»; no añade la explicación de amor, sabiduría y consuelo.
 - La conversación tiene preguntas con tres respuestas y un medidor de ánimo que parte de 0, sube con las respuestas adecuadas y baja con las respuestas hirientes. El minijuego solo termina bien al alcanzar +100 o mal al alcanzar −100; si se acaban las preguntas sin llegar a ninguno de los dos extremos, termina en un final neutro: el colibrí duda qué hacer y se queda quieto en una rama del árbol, dudando.
 - En los tres finales aparece la semilla de «Ponzoña» como recompensa clicable; al recogerla se crea/desbloquea la entrada correspondiente del Libro de Semillas.
-- Solo en esta pantalla, el cuadro de diálogo se renderiza debajo del lienzo para no tapar la animación; el colibrí se muestra mucho más pequeño y Limón reutiliza el `LemonSprite` habitual.
+- Solo en esta pantalla, el cuadro de diálogo se renderiza debajo del lienzo para no tapar la animación; el colibrí se muestra mucho más pequeño, Limón reutiliza el `LemonSprite` habitual y la barra de ánimo conserva un tamaño legible colocada más abajo, separada de los iconos superiores.
 
 ## [ ] Menú del viaje e Instagram de la banda
 - El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación y enlaces al Instagram oficial de la banda.

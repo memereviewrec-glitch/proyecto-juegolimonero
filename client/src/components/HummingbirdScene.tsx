@@ -71,12 +71,6 @@ const QUESTIONS: readonly HummingbirdQuestion[] = [
   },
 ];
 
-function moodLabel(mood: number) {
-  if (mood > 0) return "esperanza";
-  if (mood < 0) return "dolor";
-  return "silencio";
-}
-
 function outcomeText(outcome: HummingbirdOutcome) {
   if (outcome === "good") return "No sé dónde terminará este viaje, pero quizá pueda descubrirlo contigo.";
   if (outcome === "bad") return "Tus palabras pesan más que las cenizas. No puedo quedarme aquí.";
@@ -131,9 +125,9 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
       </picture>
       <div className="hummingbird-lemon" aria-hidden="true"><LemonSprite /></div>
       <div className="hummingbird-meter" aria-label={`Ánimo del colibrí: ${mood} de 100`}>
-        <div className="hummingbird-meter-heading"><span>ÁNIMO DEL COLIBRÍ</span><strong>{mood > 0 ? "+" : ""}{mood}</strong></div>
+        <div className="hummingbird-meter-heading"><strong>{mood > 0 ? "+" : ""}{mood}</strong></div>
         <div className="hummingbird-meter-track"><span className={moodTone} style={{ width: `${progress}%` }} /><i /></div>
-        <div className="hummingbird-meter-labels"><span>−100 · se va</span><span>{moodLabel(mood)}</span><span>+100 · se queda</span></div>
+        <div className="hummingbird-meter-labels"><span>−100</span><span>0</span><span>+100</span></div>
       </div>
       </div>
       <div className="hummingbird-dialogue" role="status" aria-live="polite">

@@ -109,16 +109,22 @@ function FlowerSprite({ open }: { open: boolean }) {
   );
 }
 
-export default function Home() {
+type HomeProps = {
+  openWorldExplorer?: boolean;
+};
+
+export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   const [scene, setScene] = useState<Scene>("room");
-  const [storyBeat, setStoryBeat] = useState<StoryBeat | null>("opening");
+  const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer ? null : "opening");
   const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
-  const [seedBookOpen, setSeedBookOpen] = useState(false);
+  const [seedBookOpen, setSeedBookOpen] = useState(openWorldExplorer);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
-  const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(() => readStoredSeedBookIds(SONG_CATALOG.map(song => song.id)));
+  const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(() => openWorldExplorer
+    ? SONG_CATALOG.map(song => song.id)
+    : readStoredSeedBookIds(SONG_CATALOG.map(song => song.id)));
   const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
   const [roomView, setRoomView] = useState<RoomView>("scene");

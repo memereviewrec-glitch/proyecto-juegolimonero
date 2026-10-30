@@ -3,6 +3,14 @@
 .el-rio-world::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 53% 5%, #d8fff477, transparent 28%), repeating-linear-gradient(90deg, transparent 0 15%, #b9ffff12 16% 17%, transparent 18% 31%); opacity: .8; }
 .el-rio-light { position: absolute; inset: 0; background: linear-gradient(125deg, transparent 0 35%, #9ee8e51f 36% 39%, transparent 40% 54%, #e3fff52a 55% 59%, transparent 60%); transform: translateX(-4%); }
 .el-rio-current { position: absolute; z-index: 1; inset: 23% 5% 10%; background: radial-gradient(ellipse at 45% 55%, #8bf4dc22, transparent 54%); box-shadow: inset 0 10px 0 #d2fff51f, inset 0 -15px 0 #042a3d66; }
+.el-rio-fish-counter { position:absolute; z-index:16; top:2%; left:50%; display:flex; align-items:center; gap:8px; transform:translateX(-50%); padding:5px 9px; border:2px solid #9fc5c4; background:#061a2be8; box-shadow:2px 2px 0 #04111c; color:#e4fff0; font:9px 'DM Mono',monospace; pointer-events:none; }
+.el-rio-fish-counter-dot { display:block; width:13px; height:13px; flex:0 0 auto; border:2px solid var(--counter-color); border-radius:50%; background:transparent; opacity:.72; }
+.el-rio-counter-verde { --counter-color:#6ed39b; }
+.el-rio-counter-azul { --counter-color:#6b9de0; }
+.el-rio-counter-rojo { --counter-color:#e96863; }
+.el-rio-counter-amarillo { --counter-color:#f5c957; }
+.el-rio-fish-counter-heard { background:var(--counter-color); opacity:1; box-shadow:0 0 7px var(--counter-color); }
+.el-rio-fish-counter span { min-width:20px; margin-left:2px; text-align:right; }
 .el-rio-bed { position: absolute; z-index: 2; left: -5%; right: -5%; bottom: -5%; height: 27%; background: #194c4a; clip-path: polygon(0 40%, 18% 22%, 34% 35%, 48% 12%, 67% 30%, 81% 16%, 100% 32%, 100% 100%, 0 100%); box-shadow: inset 0 13px #75b98733; }
 .el-rio-bed::after { content: ""; position: absolute; inset: 25% 12% 12%; background: repeating-linear-gradient(90deg, transparent 0 8%, #c0d88744 9% 10%, transparent 11% 19%); }
 .el-rio-fish { position: absolute; z-index: 4; width: 70px; height: 36px; padding: 0; border: 0; background: transparent; cursor: pointer; animation: fish-swim 12s linear infinite; }
@@ -42,11 +50,11 @@
 .el-rio-dialogue button b { color: #d7ffe4; }
 .el-rio-choices { display: flex; gap: 7px; flex-wrap: wrap; }
 .el-rio-choices button { flex: 1; min-width: 150px; text-align: left; background: #f5faea; color: #263840; border-color: #56757b; }
-.el-rio-progress { display: block; color: #56757b; font: 9px 'DM Mono', monospace; }
 .el-rio-black-thought { color: #405661 !important; font-style: italic; }
 .el-rio-seed-reward { display: flex; align-items: center; gap: 9px; color: #45666f; font: 9px 'DM Mono', monospace; }
 .el-rio-seed-reward .seed-glyph { width: 29px; height: 38px; }
 @media (max-width: 600px) { .el-rio-dialogue { width: 90%; max-height: 32%; padding: 9px 11px 8px; } .el-rio-dialogue p { font-size: 9px; line-height: 1.3; } .el-rio-dialogue .el-rio-black-thought { font-size: 8px; line-height: 1.2; } .el-rio-fish-green,.el-rio-fish-red { transform: scale(.75); } .el-rio-fish-blue { transform: scale(-.54,.54); } .el-rio-fish-yellow { transform: scale(-.48,.48); } .el-rio-fish-white { transform: scaleX(-1); } .el-rio-fish-black { transform: scaleX(-1.1) scaleY(1.1); } }
+@media (max-width: 600px) { .el-rio-fish-counter { gap:6px; padding:4px 7px; font-size:8px; } .el-rio-fish-counter-dot { width:11px; height:11px; } }
 @media (prefers-reduced-motion: reduce) {
   .el-rio-fish, .el-rio-fish-white { animation: none; min-width: 72px; min-height: 44px; }
   .el-rio-fish-green { left: 12%; right: auto; }

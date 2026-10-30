@@ -795,9 +795,9 @@ export default function Home() {
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
     ? roomView === "scene" && Boolean(roomAction)
     : scene === "dawn"
-      ? !dawnOutcomeAnimationRunning && (dialogueStarted || branch !== null || sunRisen || seedAvailable)
+      ? !dawnOutcomeAnimationRunning && !seedCollected && (dialogueStarted || branch !== null || sunRisen || seedAvailable)
       : scene === "ruins"
-        ? ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed")
+        ? ruinsView === "scene" && (Boolean(ruinsAction) || (ruinsFlowerStage === "seed" && !rootsSeedCollected))
         : false);
 
   function advanceStory() {

@@ -531,8 +531,30 @@ export default function Home() {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
-            <button className="seedbook-toggle" type="button" onClick={() => setSeedBookOpen(open => !open)} aria-expanded={seedBookOpen} aria-controls="seedbook-panel">
-              <span className="seedbook-toggle-icon" aria-hidden="true">✳</span><span className="seedbook-toggle-label">Libro de semillas</span><b>{discoveredSongIds.length}/{10}</b>
+            <button
+              className="seedbook-toggle"
+              type="button"
+              onClick={() => setSeedBookOpen(open => !open)}
+              aria-label={`${seedBookOpen ? "Cerrar" : "Abrir"} Libro de semillas. ${discoveredSongIds.length} de 10 semillas descubiertas.`}
+              aria-haspopup="dialog"
+              aria-expanded={seedBookOpen}
+              aria-controls="seedbook-panel"
+            >
+              <svg className="seedbook-toggle-icon" viewBox="0 0 36 36" aria-hidden="true" focusable="false" shapeRendering="crispEdges">
+                <path fill="#302638" d="M3 9h10c3 0 5 1 7 3 2-2 4-3 7-3h6v20h-9c-2 0-3 1-4 2-1-1-2-2-4-2H3z" />
+                <path fill="#f1e5c7" d="M6 12h7c3 0 5 1 6 2v12c-1-1-3-2-6-2H6z" />
+                <path fill="#fff7e4" d="M21 14c1-1 3-2 5-2h4v12h-4c-2 0-4 1-5 2z" />
+                <rect x="19" y="14" width="2" height="13" fill="#a97756" />
+                <path d="M8 16h8v1H8zm0 4h8v1H8zm12-1h7v1h-7z" fill="#bdac8d" />
+                <rect x="17" y="7" width="2" height="7" fill="#39754f" />
+                <rect x="14" y="8" width="3" height="2" fill="#67a96e" />
+                <rect x="12" y="6" width="3" height="2" fill="#67a96e" />
+                <rect x="20" y="6" width="3" height="2" fill="#67a96e" />
+                <rect x="23" y="4" width="2" height="2" fill="#67a96e" />
+                <rect x="17" y="13" width="3" height="2" fill="#d5a849" />
+              </svg>
+              <span className="seedbook-toggle-label">Libro de semillas</span>
+              <b aria-hidden="true">{discoveredSongIds.length}/{10}</b>
             </button>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}
           {scene === "room" ? (

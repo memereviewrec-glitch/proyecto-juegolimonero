@@ -675,14 +675,14 @@ body { background:#08070d; }
 .continue-path-button:hover { transform:translate(-2px,-2px); background:#f5d98a; box-shadow:6px 6px 0 #2b2631; }
 .continue-path-button:active { transform:translate(2px,2px); box-shadow:2px 2px 0 #2b2631; }
 .continue-path-button:focus-visible { outline:3px dashed #fff0bb; outline-offset:3px; box-shadow:0 0 0 2px #302638,4px 4px 0 #2b2631; }
-.continue-path-compact { top:4px !important; bottom:auto !important; right:4px !important; left:auto !important; width:max-content !important; min-width:0 !important; max-width:118px !important; min-height:22px !important; height:22px !important; max-height:22px !important; padding:2px 4px !important; gap:3px !important; border-width:2px !important; outline-offset:-5px; box-shadow:2px 2px 0 #2b2631; font-size:6px; line-height:1; white-space:nowrap; }
-.continue-path-compact svg { width:10px; height:9px; }
+.continue-path-compact { top:4px !important; bottom:auto !important; right:4px !important; left:auto !important; width:max-content !important; min-width:0 !important; max-width:130px !important; min-height:27px !important; height:27px !important; max-height:27px !important; padding:3px 5px !important; gap:4px !important; border-width:2px !important; outline-offset:-5px; box-shadow:2px 2px 0 #2b2631; font-size:7px; line-height:1; white-space:nowrap; }
+.continue-path-compact svg { width:12px; height:10px; }
 .continue-path-portal { background:#e8bb8d; }
 .continue-path-portal:hover { background:#f1cda4; }
 @media (max-width:600px) {
  .continue-path-button { right:calc(env(safe-area-inset-right,0px) + 8px); bottom:calc(env(safe-area-inset-bottom,0px) + 8px); min-height:46px; gap:7px; padding:8px 10px; font-size:9px; }
  .continue-path-button svg { width:16px; }
- .continue-path-compact { top:3px !important; right:3px !important; min-height:20px !important; height:20px !important; max-height:20px !important; max-width:112px !important; padding:2px 3px !important; font-size:6px; }
+ .continue-path-compact { top:3px !important; right:3px !important; min-height:25px !important; height:25px !important; max-height:25px !important; max-width:124px !important; padding:3px 4px !important; font-size:7px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

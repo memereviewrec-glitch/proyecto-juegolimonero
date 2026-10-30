@@ -119,7 +119,10 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
       <div className="scene-stage game-screen hummingbird-stage">
       <div className="hummingbird-sky" aria-hidden="true" />
       <div className="hummingbird-branch" aria-hidden="true" />
-      <div className="hummingbird-sprite" aria-label="Colibrí animado" role="img" />
+      <picture className="hummingbird-sprite">
+        <source media="(prefers-reduced-motion: reduce)" srcSet="/colibri-still.png" />
+        <img src={outcome === "neutral" ? "/colibri-still.png" : "/colibri.gif"} alt="Colibrí animado" />
+      </picture>
       <div className="hummingbird-lemon" aria-hidden="true"><LemonSprite /></div>
       <div className="hummingbird-meter" aria-label={`Ánimo del colibrí: ${mood} de 100`}>
         <div className="hummingbird-meter-heading"><span>ÁNIMO DEL COLIBRÍ</span><strong>{mood > 0 ? "+" : ""}{mood}</strong></div>

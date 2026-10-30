@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./hummingbird-scene.css";
 import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
@@ -87,6 +87,12 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
   const [mood, setMood] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
+  const [entryComplete, setEntryComplete] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setEntryComplete(true), 2200);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const question = QUESTIONS[questionIndex];
   const answer = (delta: number) => {
@@ -115,7 +121,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
   const moodTone = mood >= 0 ? "positive" : "negative";
 
   return (
-    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}`}>
+    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}`}>
       <div className="scene-stage game-screen hummingbird-stage">
       <div className="hummingbird-sky" aria-hidden="true" />
       <div className="hummingbird-branch" aria-hidden="true" />

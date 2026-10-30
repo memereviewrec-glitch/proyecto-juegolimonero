@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import { LemonSprite } from "./GameSprites";
 import "./password-gate.css";
 
-const PASSWORD = "0123456789";
+const PASSWORD = "limondrakofuzz";
 const ACCESS_KEY = "limonero-access-granted";
 
 function hasAccess() {
@@ -48,7 +48,9 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
           <input
             id="game-password"
             type="password"
-            inputMode="numeric"
+            inputMode="text"
+            autoCapitalize="none"
+            spellCheck={false}
             autoComplete="off"
             value={password}
             onChange={event => { setPassword(event.target.value); setError(false); }}

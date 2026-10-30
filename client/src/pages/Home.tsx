@@ -4,6 +4,7 @@ import { LemonSprite } from "../components/GameSprites";
 import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColumnPuzzle";
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
 import { CampfireScene, type CampfireFireStage } from "../components/CampfireScene";
+import { RiverMirrorScene } from "../components/RiverMirrorScene";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
@@ -11,7 +12,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins" | "gathering";
+type Scene = "room" | "dawn" | "ruins" | "gathering" | "river";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -35,6 +36,7 @@ const LEMON_WHISTLE_DURATION_MS = 2200;
 const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
+const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
 
 function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
@@ -52,10 +54,21 @@ function readStoredSeedBookIds(): SeedSongId[] {
   }
 }
 
+function readStoredRamblaOutcome(): RamblaOutcome | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = window.localStorage.getItem(RAMBLA_ROUTE_STORAGE_KEY);
+    return value === "1" || value === "2" ? Number(value) as RamblaOutcome : null;
+  } catch {
+    return null;
+  }
+}
+
 function restartGame() {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(SEED_BOOK_STORAGE_KEY);
+    window.localStorage.removeItem(RAMBLA_ROUTE_STORAGE_KEY);
   } catch {
     window.alert("No se pudo borrar el progreso guardado. Comprueba los permisos de almacenamiento del navegador.");
     return;
@@ -210,7 +223,7 @@ export default function Home() {
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
-  const [ramblaOutcome, setRamblaOutcome] = useState<RamblaOutcome | null>(null);
+  const [ramblaOutcome, setRamblaOutcome] = useState<RamblaOutcome | null>(readStoredRamblaOutcome);
   const [ramblaSkillFailures, setRamblaSkillFailures] = useState(0);
   const [ramblaEscapeSucceeded, setRamblaEscapeSucceeded] = useState(false);
   const [lemonWhistling, setLemonWhistling] = useState(false);
@@ -578,6 +591,11 @@ export default function Home() {
 
     const outcome = resolveRamblaOutcome(nextPacific, nextDrastic);
     setRamblaOutcome(outcome);
+    try {
+      window.localStorage.setItem(RAMBLA_ROUTE_STORAGE_KEY, String(outcome));
+    } catch {
+      // La ruta sigue disponible durante la sesión si el almacenamiento está bloqueado.
+    }
     setNotice(outcome === 1
       ? "El líder ríe secamente y acepta al limón como oráculo peregrino. El fuego reconoce tres recuerdos del bosque."
       : "Los encapuchados gritan «¡Alimenta la hoguera!». El sendero tiembla bajo la sombra de la secta.");
@@ -609,6 +627,7 @@ export default function Home() {
     if (nextScene === "dawn" && (!(portalOpen || persistedSeedIds.includes("intro")) || scene === "ruins" || scene === "gathering")) return;
     if (nextScene === "ruins" && !(seedCollected || persistedSeedIds.includes("ventana"))) return;
     if (nextScene === "gathering" && !(rootsSeedCollected || persistedSeedIds.includes("raices"))) return;
+    if (nextScene === "river" && !(campfireSeedCollected || persistedSeedIds.includes("rambla"))) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -705,6 +724,7 @@ export default function Home() {
     (scene === "room" && roomView === "scene" && portalOpen)
     || (scene === "dawn" && seedCollected)
     || (scene === "ruins" && ruinsView === "scene" && rootsSeedCollected)
+    || (scene === "gathering" && campfireSeedCollected)
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
@@ -720,6 +740,7 @@ export default function Home() {
     if (scene === "room") enterDawn();
     else if (scene === "dawn") setVisitedScene("ruins");
     else if (scene === "ruins") setVisitedScene("gathering");
+    else if (scene === "gathering") setVisitedScene("river");
   }
 
   return (
@@ -738,11 +759,11 @@ export default function Home() {
       <section className="intro-band" id="inicio">
         <div className="intro-copy">
           <div className="eyebrow"><span>DISCO · 10 CANCIONES</span><span className="eyebrow-line" /></div>
-          <h1>Cuatro pantallas.<br /><em>Un camino de vuelta.</em></h1>
-          <p>Del primer acorde en el local vacío al amanecer, las ruinas y una hoguera bajo la luna.</p>
+          <h1>Cinco pantallas.<br /><em>Un camino de vuelta.</em></h1>
+          <p>Del primer acorde en el local vacío al amanecer, las ruinas, la hoguera y el río que devuelve las preguntas.</p>
         </div>
         <div className="intro-stamp" aria-label="Cuatro pantallas disponibles">
-          <span className="stamp-big">04</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
+          <span className="stamp-big">05</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
         </div>
       </section>
 
@@ -759,13 +780,16 @@ export default function Home() {
         <button className={`screen-tab ${scene === "gathering" ? "active" : ""}`} onClick={() => setVisitedScene("gathering")} disabled={!discoveredSongIds.includes("raices") || portalTransit || arrivalPortal}>
           <span className="tab-number">04</span><span><strong>Encuentro bajo la luna</strong><small>Rambla · la hoguera</small></span><span className="tab-mark">{discoveredSongIds.includes("rambla") ? "✓" : discoveredSongIds.includes("raices") ? "↗" : "⌑"}</span>
         </button>
+        <button className={`screen-tab ${scene === "river" ? "active" : ""}`} onClick={() => setVisitedScene("river")} disabled={!discoveredSongIds.includes("rambla") || portalTransit || arrivalPortal}>
+          <span className="tab-number">05</span><span><strong>La Orilla del Río Espejo</strong><small>Los espíritus del río</small></span><span className="tab-mark">{discoveredSongIds.includes("rambla") ? "↗" : "⌑"}</span>
+        </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : "04"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : "Encuentro bajo la luna"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : "VALLE · NOCHE DE LUNA"}</span>}
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : "05"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : "La Orilla del Río Espejo"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : "RÍO ESPEJO · DESPUÉS DEL FUEGO"}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
@@ -826,7 +850,7 @@ export default function Home() {
               onApproachColumn={setRuinsAction}
               onCollectSeed={collectRootsSeed}
             />
-          ) : (
+          ) : scene === "gathering" ? (
             <CampfireScene
               key={`rambla-${sceneReplayNonce}`}
               conversationStep={ramblaConversationStep}
@@ -845,6 +869,8 @@ export default function Home() {
               onSkillAttempt={attemptRamblaEscape}
               onRetrySkill={retryRamblaEscape}
             />
+          ) : (
+            <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} />
           )}
 
           {scene === "ruins" && ruinsView !== "scene" && <div className="scene-stage game-screen roots-closeup-stage">

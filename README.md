@@ -31,6 +31,7 @@ pnpm build:static
 2. **Ventana al sendero** presenta las animaciones de pájaros y silbido. Los cuadros de diálogo deben esperar a que terminen para no cubrirlas.
 3. **Raíces** pide apartar cuatro hojas de cada primer plano. Las inscripciones integradas en la piedra son exactamente `as above` y `so below`; descubrirlas ambas desbloquea la semilla y la canción de Raíces.
 4. **Rambla** comienza su conversación solo cuando el limón termina de caminar dentro del círculo de la hoguera. Tres decisiones se puntúan por mayoría: dos de tres determinan el desenlace. La ruta pacífica habilita exactamente tres palitos; un clic en un palito hace que el limón camine y lo recoja, y un clic en la hoguera mientras lleva una rama hace que la deposite en el centro. Al completar las tres, otro clic enciende el fuego. La ruta drástica muestra primero una advertencia narrativa lenta sobre el ataque de la secta y luego permite iniciar la tirada de habilidad para rodar.
+5. **La Orilla del Río Espejo** se desbloquea al recoger «Rambla». Los tres Espíritus del Río presentan una conversación de cuatro pasos: llegada, pregunta, respuesta del limón y revelación. La ruta pacífica cuestiona la ilusión de la secta y la drástica convierte la confusión en impulso para seguir viajando; ambas terminan con un desenlace visual distinto.
 
 En Rambla se prefieren textos evocadores a instrucciones literales. No añadir pistas que expliquen directamente dónde caminar o qué objeto mover, salvo que una necesidad de accesibilidad lo requiera.
 
@@ -51,9 +52,12 @@ Al cambiar nombres visibles de canciones, conservar los IDs que ya estén persis
 | `client/src/components/RamblaConversation.tsx` | Paneles de diálogo, advertencia previa y medidor de la tirada de habilidad. |
 | `client/src/components/ramblaConversationRules.ts` | Preguntas, respuestas y puntuación de los tres turnos de conversación. |
 | `client/src/components/CampfireFlame.tsx` | Sprite SVG pixelado de la llama y los leños pequeños. |
+| `client/src/components/RiverMirrorScene.tsx` | Escena 05 de la orilla, diálogo ramificado y desenlaces de los Espíritus del Río. |
+| `client/src/components/river-mirror-scene.css` | Fondo, espíritus, corriente plateada y transiciones de la escena 05. |
 | `client/src/components/ruins-column-puzzle.css` | Encuadre, zoom e interacción de los primeros planos de Raíces. |
 | `client/public/ruins-column-left-inscribed-pixelated.png` | Ilustración izquierda con `as above` tallado en la piedra. |
 | `client/public/ruins-column-right-inscribed-pixelated.png` | Ilustración derecha con `so below` tallado en la piedra. |
+| `client/public/river-mirror-background.png` | Fondo pixel art de la Orilla del Río Espejo. |
 | `client/src/components/campfireMovementRules.test.ts` | Pruebas de límites y movimiento de la escena de Rambla. |
 | `client/src/components/ramblaConversationRules.test.ts` | Pruebas de puntuación y desenlaces conversacionales. |
 | `TODO.md` | Lista de requisitos, estado de implementación y pendientes del proyecto. |

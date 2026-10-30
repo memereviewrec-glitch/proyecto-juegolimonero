@@ -1,0 +1,37 @@
+.river-mirror-stage { position: relative; overflow: hidden; border-color: #8e9fb2; background: #0d1627; image-rendering: pixelated; }
+.river-mirror-world { position: absolute; inset: 0; overflow: hidden; background: #0d1627 url("/river-mirror-background.png") center / cover no-repeat; }
+.river-mirror-world::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgb(13 18 39 / 30%), transparent 35%, rgb(74 177 193 / 9%) 72%, rgb(8 14 27 / 35%)); mix-blend-mode: screen; }
+.river-mist { position: absolute; z-index: 2; left: 8%; width: 84%; height: 8%; border-radius: 50%; background: rgb(201 235 231 / 24%); filter: blur(3px); animation: river-mist-drift 9s ease-in-out infinite alternate; pointer-events: none; }
+.river-mist-one { top: 42%; }
+.river-mist-two { top: 51%; opacity: .55; animation-delay: -4s; }
+@keyframes river-mist-drift { to { transform: translateX(5%) scaleX(1.08); opacity: .42; } }
+.river-spirits { position: absolute; z-index: 4; top: 23%; left: 50%; width: 53%; height: 31%; transform: translateX(-50%); opacity: 1; transition: opacity 1.2s ease; }
+.river-spirit { position: absolute; bottom: 0; width: 21%; height: 84%; background: linear-gradient(180deg, #e9ffff 0 8%, #9fdad8 28%, #477e9b 76%, transparent); border: 2px solid #c4f5ec; border-bottom: 0; border-radius: 52% 48% 22% 24% / 38% 34% 66% 62%; box-shadow: 0 0 14px #b3fff4aa, inset 5px 0 #f2ffff55; animation: spirit-breathe 3.8s ease-in-out infinite alternate; }
+.river-spirit::before { content: ""; position: absolute; top: 23%; left: 29%; width: 6px; height: 6px; background: #f5ffff; box-shadow: 15px 0 #f5ffff; }
+.river-spirit::after { content: ""; position: absolute; left: -22%; right: -22%; bottom: -5%; height: 25%; border-radius: 50%; background: #9be4df66; }
+.river-spirit-one { left: 5%; transform: scale(.82); animation-delay: -.9s; }
+.river-spirit-two { left: 39%; height: 100%; z-index: 2; }
+.river-spirit-three { right: 5%; transform: scale(.9); animation-delay: -1.7s; }
+@keyframes spirit-breathe { to { transform: translateY(-5px) scaleX(.96); filter: brightness(1.18); } }
+.river-current { position: absolute; z-index: 3; left: 6%; right: 6%; top: 60%; height: 15%; border-top: 2px solid #d8ffffaa; border-bottom: 1px solid #85d7d766; background: repeating-linear-gradient(0deg, transparent 0 12px, #baf7ed55 13px 15px, transparent 16px 28px); opacity: .8; animation: current-shimmer 3.2s steps(5, end) infinite alternate; }
+.river-current-guiding { top: 64%; height: 22%; border-color: #f3ffdc; background: repeating-linear-gradient(0deg, transparent 0 11px, #f1f6bd99 12px 15px, transparent 16px 27px); box-shadow: 0 -4px 18px #b7fff777; }
+@keyframes current-shimmer { to { transform: translateX(3%); opacity: .56; } }
+.river-lemon { position: absolute; z-index: 7; left: 28%; bottom: 12%; width: 12%; min-width: 54px; max-width: 92px; aspect-ratio: 48 / 56; transition: left 2.8s cubic-bezier(.2,.72,.24,1), bottom 2.8s cubic-bezier(.2,.72,.24,1), transform 1s ease; }
+.river-lemon-resolved { left: 69%; bottom: 24%; transform: rotate(12deg); animation: river-lemon-roll 2.8s ease-in-out both; }
+@keyframes river-lemon-roll { 0% { left: 28%; bottom: 12%; transform: rotate(0); } 100% { left: 69%; bottom: 24%; transform: rotate(360deg); } }
+.river-splash { position: absolute; z-index: 8; left: 27%; bottom: 22%; width: 23%; height: 15%; pointer-events: none; }
+.river-splash i { position: absolute; width: 5px; height: 16px; background: #d8ffff; border: 1px solid #557f9c; transform: rotate(35deg); animation: splash-rise 1.2s steps(4, end) both; }
+.river-splash i:nth-child(1) { left: 10%; top: 30%; } .river-splash i:nth-child(2) { left: 35%; top: 4%; animation-delay: .12s; } .river-splash i:nth-child(3) { left: 57%; top: 27%; animation-delay: .22s; } .river-splash i:nth-child(4) { left: 79%; top: 15%; animation-delay: .3s; }
+@keyframes splash-rise { from { opacity: 0; transform: translateY(10px) rotate(35deg); } to { opacity: 1; transform: translateY(-8px) rotate(35deg); } }
+.river-coordinate { position: absolute; z-index: 10; right: 14px; bottom: 12px; color: #edf9ed; font: 8px 'DM Mono', monospace; letter-spacing: .1em; opacity: .78; }
+.river-dialogue { position: absolute; z-index: 15; top: 3%; left: 3%; width: min(57%, 440px); max-height: 48%; overflow: auto; padding: 14px 16px 12px; border: 4px solid #1a2431; background: rgb(239 244 225 / 96%); box-shadow: 5px 5px 0 #15202f, inset 0 0 0 3px #a8b6a7; animation: river-dialogue-enter 1.2s ease-out both; }
+.river-dialogue p { margin: 7px 0 10px; color: #202d38; font: 12px/1.48 'DM Mono', monospace; }
+.river-dialogue .river-answer { color: #425c69; font-style: italic; }
+.river-speaker { color: #557e80; font: 8px 'DM Mono', monospace; letter-spacing: .12em; }
+.river-route-note { display: block; margin-top: 6px; color: #6b8580; font: 9px 'DM Mono', monospace; }
+.river-dialogue-next { float: right; min-height: 40px; border: 3px solid #1c2a35; background: #3e6873; color: #f5ffe8; padding: 9px 12px; font: 10px 'DM Mono', monospace; cursor: pointer; box-shadow: 3px 3px 0 #8fa49a; }
+.river-dialogue-next:hover { background: #527e84; }
+.river-dialogue-next span { color: #d5f7cb; }
+@keyframes river-dialogue-enter { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { .river-dialogue { width: 72%; max-height: 53%; padding: 11px 12px 10px; } .river-dialogue p { font-size: 10px; } .river-speaker { font-size: 7px; } .river-spirit { border-width: 1px; } }
+@media (prefers-reduced-motion: reduce) { .river-mist, .river-current, .river-spirit, .river-lemon-resolved, .river-splash i { animation: none; } .river-lemon { transition: none; } }

@@ -1,5 +1,5 @@
 .el-rio-stage { position: relative; overflow: hidden; border-color: #639ca8; background: #061a2b; image-rendering: pixelated; }
-.el-rio-world { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, #123e62, #0a526b 52%, #063541 100%); }
+.el-rio-world { position: absolute; inset: 0; overflow: hidden; background: #08384a url("/el-rio-background-pixel.png") center / cover no-repeat; }
 .el-rio-world::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 53% 5%, #d8fff477, transparent 28%), repeating-linear-gradient(90deg, transparent 0 15%, #b9ffff12 16% 17%, transparent 18% 31%); opacity: .8; }
 .el-rio-light { position: absolute; inset: 0; background: linear-gradient(125deg, transparent 0 35%, #9ee8e51f 36% 39%, transparent 40% 54%, #e3fff52a 55% 59%, transparent 60%); transform: translateX(-4%); }
 .el-rio-current { position: absolute; z-index: 1; inset: 23% 5% 10%; background: radial-gradient(ellipse at 45% 55%, #8bf4dc22, transparent 54%); box-shadow: inset 0 10px 0 #d2fff51f, inset 0 -15px 0 #042a3d66; }
@@ -16,8 +16,6 @@
 .el-rio-fish-white { --fish: #f4fff7; --fish-dark: #b7d9df; left: 58%; top: 39%; animation: fish-white-breathe 2.5s ease-in-out infinite alternate; filter: drop-shadow(0 0 8px #effff4); }
 .el-rio-fish-white-heard { --fish: #e8fff0; animation: none; opacity: .8; }
 .el-rio-fish-black { --fish: #26333d; --fish-dark: #090f18; left: 67%; top: 67%; animation-delay: -10s; pointer-events: none; filter: drop-shadow(0 0 4px #b4d2d755); }
-.el-rio-fish-talking .el-rio-fish { animation-play-state: paused; }
-.el-rio-fish-talking .el-rio-fish:not(.el-rio-fish-black) { pointer-events: none; }
 .el-rio-fish:hover, .el-rio-fish:focus-visible { outline: 3px dashed #efffe8; outline-offset: 4px; filter: brightness(1.2) drop-shadow(0 0 5px #efffe8); }
 @keyframes fish-white-breathe { to { transform: translateY(-7px) scale(1.06); } }
 @keyframes fish-swim { from { translate: -18% 0; } to { translate: 160% 0; } }

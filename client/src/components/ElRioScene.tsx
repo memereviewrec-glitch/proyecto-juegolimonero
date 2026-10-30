@@ -35,40 +35,35 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
   const [heardFish, setHeardFish] = useState<FishColor[]>([]);
   const [thought, setThought] = useState<string | null>(null);
   const [blackThought, setBlackThought] = useState<string | null>(null);
-  const [fishTalking, setFishTalking] = useState(false);
   const [whiteHeard, setWhiteHeard] = useState(seedCollected);
   const whiteUnlocked = heardFish.length === 4;
 
   useEffect(() => {
     setThought("Pez negro: Todo río nace antes de que alguien lo nombre y muere antes de que alguien lo comprenda.");
     setBlackThought(null);
-    setFishTalking(true);
   }, []);
 
   function hearFish(color: FishColor) {
     if (!heardFish.includes(color)) setHeardFish(current => [...current, color]);
     setThought(`Pez ${color}: ${FISH_THOUGHTS[color]}`);
     setBlackThought(BLACK_RESPONSES[color]);
-    setFishTalking(true);
   }
 
   function hearWhiteFish() {
     setWhiteHeard(true);
     setThought("Pez blanco: La paz no es silencio; es dejar que todos los colores compartan el mismo cauce.");
     setBlackThought("Pez negro: Por un instante, la muerte no separa nada.");
-    setFishTalking(true);
     onCollectSeed();
   }
 
   function closeFishThought() {
     setThought(null);
     setBlackThought(null);
-    setFishTalking(false);
   }
 
   return (
     <div className="scene-stage game-screen el-rio-stage">
-      <div className={`el-rio-world ${fishTalking ? "el-rio-fish-talking" : ""}`} role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
+      <div className="el-rio-world" role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
         <div className="el-rio-light" aria-hidden="true" />
         <div className="el-rio-current" aria-hidden="true" />
         <button className="el-rio-fish el-rio-fish-green" type="button" onClick={() => hearFish("verde")} aria-label={FISH_LABELS.verde}><i /></button>

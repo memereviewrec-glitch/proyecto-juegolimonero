@@ -64,6 +64,7 @@ Al cambiar nombres visibles de canciones, conservar los IDs que ya estén persis
 | `client/public/ruins-column-left-inscribed-pixelated.png` | Ilustración izquierda con `as above` tallado en la piedra. |
 | `client/public/ruins-column-right-inscribed-pixelated.png` | Ilustración derecha con `so below` tallado en la piedra. |
 | `client/public/river-mirror-background.png` | Fondo pixel art de la Orilla del Río Espejo. |
+| `client/public/el-rio-background-pixel.png` | Fondo submarino pixel art de El Río, con profundidad, raíces, vegetación y haces de luz. |
 | `client/src/components/campfireMovementRules.test.ts` | Pruebas de límites y movimiento de la escena de Rambla. |
 | `client/src/components/ramblaConversationRules.test.ts` | Pruebas de puntuación y desenlaces conversacionales. |
 | `TODO.md` | Lista de requisitos, estado de implementación y pendientes del proyecto. |

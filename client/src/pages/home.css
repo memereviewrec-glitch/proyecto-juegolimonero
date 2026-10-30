@@ -534,7 +534,7 @@ button { font:inherit; }
 .seedbook-toggle b { position:absolute; right:-8px; bottom:-7px; display:grid; place-items:center; min-width:38px; min-height:26px; padding:0 5px; border:2px solid #2b2631; background:#e8dfce; color:#302638; font:600 10px 'DM Mono',monospace; line-height:1; box-shadow:2px 2px #2b263166; }
 .seedbook-layer { position:absolute; inset:0; z-index:100; isolation:isolate; }
 .seedbook-scrim { position:absolute; inset:0; width:100%; height:100%; border:0; background:#211d2b9c; cursor:default; }
-.seedbook-panel { position:absolute; top:58px; right:10px; bottom:10px; width:min(440px,calc(100% - 20px)); display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
+.seedbook-panel { position:absolute; top:16px; right:10px; bottom:8px; width:min(440px,calc(100% - 20px)); display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
 @keyframes seedbook-open { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
 .seedbook-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:18px; border-bottom:2px dashed #d9d0c0; }
 .seedbook-heading { display:flex; min-width:0; align-items:center; gap:12px; }
@@ -609,7 +609,7 @@ button { font:inherit; }
  .seedbook-toggle-icon { width:58px; height:58px; }
  .seedbook-toggle b { right:-7px; bottom:-6px; min-width:36px; min-height:25px; }
  .seed-spark { width:46px; height:50px; padding:7px; }
- .seedbook-panel { top:62px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
+ .seedbook-panel { top:8px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }

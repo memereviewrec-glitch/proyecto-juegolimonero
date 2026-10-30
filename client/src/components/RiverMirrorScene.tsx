@@ -65,14 +65,18 @@ const NEXT_LABEL: Partial<Record<RiverStep, string>> = {
 export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
   const [stoneStatus, setStoneStatus] = useState<"ground" | "throwing" | "thrown">("ground");
+  const [rippleVisible, setRippleVisible] = useState(false);
+  const [spiritsAwake, setSpiritsAwake] = useState(false);
   const [lemonPoint, setLemonPoint] = useState({ x: 28, bottom: 25 });
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const throwTimer = useRef<number | null>(null);
+  const revealTimer = useRef<number | null>(null);
   const dialogue = RIVER_DIALOGUE[route];
   const resolved = step === "ending";
 
   useEffect(() => () => {
     if (throwTimer.current !== null) window.clearTimeout(throwTimer.current);
+    if (revealTimer.current !== null) window.clearTimeout(revealTimer.current);
   }, []);
 
   function moveAlongShore(event: MouseEvent<HTMLDivElement>) {
@@ -89,7 +93,13 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
     const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 900;
     throwTimer.current = window.setTimeout(() => {
       setStoneStatus("thrown");
-      setStep("spirits-1");
+      setRippleVisible(true);
+      revealTimer.current = window.setTimeout(() => {
+        setRippleVisible(false);
+        setSpiritsAwake(true);
+        setStep("spirits-1");
+        revealTimer.current = null;
+      }, 6000);
       throwTimer.current = null;
     }, duration);
   }
@@ -115,7 +125,7 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
       <div className="river-mirror-world" role="group" tabIndex={0} aria-label="La Orilla del Río Espejo. La franja de arena junto al agua se puede recorrer." onClick={moveAlongShore}>
         <div className="river-mist river-mist-one" aria-hidden="true" />
         <div className="river-mist river-mist-two" aria-hidden="true" />
-        <div className={`river-spirits ${stoneStatus === "thrown" ? "river-spirits-awake" : ""}`} aria-label="Tres Espíritus del Río" aria-hidden={stoneStatus !== "thrown"}>
+        <div className={`river-spirits ${spiritsAwake ? "river-spirits-awake" : ""}`} aria-label="Tres Espíritus del Río" aria-hidden={!spiritsAwake}>
           <span className="river-spirit river-spirit-one" /><span className="river-spirit river-spirit-two" /><span className="river-spirit river-spirit-three" />
         </div>
         <div className={`river-current ${resolved ? "river-current-guiding" : ""}`} aria-hidden="true" />
@@ -124,7 +134,7 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
         </div>
         {stoneStatus === "ground" && <button className="river-stone river-stone-ground" type="button" onClick={collectStone} aria-label="Piedra junto a la orilla" />}
         {stoneStatus === "throwing" && <span className="river-stone river-stone-flight" aria-hidden="true" />}
-        {stoneStatus === "thrown" && <img className="river-ripples" src="/river-stone-ripples.gif" alt="" aria-hidden="true" />}
+        {rippleVisible && <img className="river-ripples" src="/river-stone-ripples.gif" alt="" aria-hidden="true" />}
         {resolved && !seedCollected && <button className="river-seed" type="button" onClick={onCollectSeed} aria-label="Recoger la semilla plateada de Espíritus del río"><SeedGlyph seed="espiritus-del-rio" /></button>}
         <div className="river-coordinate">LF · 05</div>
       </div>
@@ -134,7 +144,7 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
         {step === "answer" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">{dialogue.answerPrompt}</p><div className="river-choice-list" aria-label="Respuestas posibles del limón">{dialogue.choices.map(choice => <button key={choice} type="button" onClick={() => chooseAnswer(choice)}>{choice}</button>)}</div></>}
         {step.startsWith("revelation-") && <><span className="river-speaker">{step === "revelation-1" ? "EL LIMÓN" : "ESPÍRITUS DEL RÍO"}</span><p className={step === "revelation-1" ? "river-answer" : ""}>{step === "revelation-1" ? `“${selectedAnswer}”` : dialogue.revelationLines[1]}</p>{step === "revelation-1" && <p>{dialogue.revelationLines[0]}</p>}</>}
         {step === "ending" && <><span className="river-speaker">EL RÍO ESPEJO</span><p>{dialogue.ending}</p><small className="river-route-note">{seedCollected ? "La semilla ya descansa en el Libro." : "Algo plateado espera entre el agua y la orilla."}</small></>}
-        {!resolved && stoneStatus === "thrown" && step !== "answer" && <button className="river-dialogue-next" type="button" onClick={advance}>{NEXT_LABEL[step] ?? "..."} <span aria-hidden="true">▶</span></button>}
+        {!resolved && spiritsAwake && step !== "answer" && <button className="river-dialogue-next" type="button" onClick={advance}>{NEXT_LABEL[step] ?? "..."} <span aria-hidden="true">▶</span></button>}
       </div>
     </div>
   );

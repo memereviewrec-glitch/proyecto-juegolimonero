@@ -18,23 +18,20 @@
 .river-current-guiding { top: 64%; height: 22%; border-color: #f3ffdc; background: repeating-linear-gradient(0deg, transparent 0 11px, #f1f6bd99 12px 15px, transparent 16px 27px); box-shadow: 0 -4px 18px #b7fff777; }
 .river-lemon { position: absolute; z-index: 7; left: 28%; bottom: 12%; width: 12%; min-width: 54px; max-width: 92px; aspect-ratio: 48 / 56; transition: left 2.8s cubic-bezier(.2,.72,.24,1), bottom 2.8s cubic-bezier(.2,.72,.24,1), transform 1s ease; }
 .river-lemon-resolved { left: 69%; bottom: 24%; transform: rotate(12deg); animation: river-lemon-roll 2.8s ease-in-out both; }
-.river-lemon-carried::after { content: ""; position: absolute; right: -2px; top: 20%; width: 8px; height: 7px; background: #858c95; border: 1px solid #283644; transform: rotate(18deg); box-shadow: 1px 1px 0 #d6e2d0; }
-.river-lemon-thrown { animation: river-lemon-throw 1s steps(5, end) both; }
+.river-lemon-throwing::after { content: ""; position: absolute; right: -2px; top: 20%; width: 8px; height: 7px; background: #858c95; border: 1px solid #283644; transform: rotate(18deg); box-shadow: 1px 1px 0 #d6e2d0; }
+.river-lemon-throwing { animation: river-lemon-throwing 900ms steps(6, end) both; }
+.river-lemon-thrown { transform: translate(38px, 2px) rotate(4deg); }
 .river-lemon-thrown.river-lemon-resolved { animation: river-lemon-roll 2.8s ease-in-out both; }
 @keyframes river-lemon-throw { 0% { transform: translate(0, 0); } 45% { transform: translate(22px, -8px) rotate(-8deg); } 100% { transform: translate(38px, 2px); } }
+@keyframes river-lemon-throwing { 0% { transform: translate(0, 0) rotate(0); } 45% { transform: translate(22px, -10px) rotate(-10deg); } 100% { transform: translate(38px, 2px) rotate(4deg); } }
 @keyframes river-lemon-roll { 0% { left: 28%; bottom: 12%; transform: rotate(0); } 100% { left: 69%; bottom: 24%; transform: rotate(360deg); } }
-.river-splash { position: absolute; z-index: 8; left: 27%; bottom: 22%; width: 23%; height: 15%; pointer-events: none; }
-.river-splash i { position: absolute; width: 5px; height: 16px; background: #d8ffff; border: 1px solid #557f9c; transform: rotate(35deg); animation: splash-rise 1.2s steps(4, end) both; }
-.river-splash i:nth-child(1) { left: 10%; top: 30%; } .river-splash i:nth-child(2) { left: 35%; top: 4%; animation-delay: .12s; } .river-splash i:nth-child(3) { left: 57%; top: 27%; animation-delay: .22s; } .river-splash i:nth-child(4) { left: 79%; top: 15%; animation-delay: .3s; }
-@keyframes splash-rise { from { opacity: 0; transform: translateY(10px) rotate(35deg); } to { opacity: 1; transform: translateY(-8px) rotate(35deg); } }
+.river-ripples { position: absolute; z-index: 8; left: 37%; top: 47%; width: 27%; height: auto; image-rendering: pixelated; pointer-events: none; }
 .river-stone { position: absolute; z-index: 11; display: block; padding: 0; border: 1px solid #334353; background: radial-gradient(circle at 28% 25%, #d7dfd1 0 12%, transparent 13%), linear-gradient(145deg, #b2b5ad 0 28%, #767f87 29% 68%, #4e5b69 69%); box-shadow: 2px 2px 0 #283644, inset -2px -2px 0 #465361; image-rendering: pixelated; cursor: pointer; clip-path: polygon(9% 35%, 25% 8%, 65% 5%, 94% 28%, 87% 76%, 62% 94%, 21% 86%, 3% 61%); }
 .river-stone::before { content: ""; position: absolute; left: 30%; top: 30%; width: 34%; height: 16%; background: #e5e6cc99; transform: rotate(-18deg); }
 .river-stone-ground { left: 17%; bottom: 28%; width: 27px; height: 18px; transform: rotate(-12deg); }
 .river-stone-ground:hover, .river-stone-ground:focus-visible { outline: 2px dashed #e4ffdb; outline-offset: 5px; filter: brightness(1.18); }
 .river-stone-flight { left: 47%; top: 53%; width: 8px; height: 7px; transform: rotate(22deg); animation: river-stone-skip 1s steps(5, end) both; pointer-events: none; }
 @keyframes river-stone-skip { 0% { opacity: 1; transform: translate(-24px, 42px) rotate(0); } 100% { opacity: 0; transform: translate(2px, 0) rotate(140deg); } }
-.river-target { position: absolute; z-index: 10; left: 40%; top: 56%; width: 28%; height: 22%; border: 2px dashed transparent; background: transparent; cursor: pointer; }
-.river-target:hover, .river-target:focus-visible { border-color: #dfffe6aa; outline: 2px dashed #e4ffdb; outline-offset: 3px; background: #d5ffef12; }
 .river-seed { position: absolute; z-index: 14; left: 77%; bottom: 31%; display: grid; width: 58px; height: 64px; padding: 8px; place-items: center; border: 0; background: transparent; cursor: pointer; filter: drop-shadow(0 0 5px #c6fff0); animation: river-seed-glow 1.8s steps(4, end) infinite alternate; }
 .river-seed:hover, .river-seed:focus-visible { outline: 3px dashed #efffdb; outline-offset: 4px; }
 .river-seed .seed-glyph { width: 100%; height: 100%; }
@@ -53,4 +50,4 @@
 .river-dialogue-next span { color: #d5f7cb; }
 @keyframes river-dialogue-enter { from { opacity: 0; transform: translate(-50%, 5px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (max-width: 600px) { .river-dialogue { width: 90%; max-height: 25%; padding: 9px 11px 8px; } .river-dialogue p { font-size: 9px; } .river-speaker { font-size: 7px; } .river-spirit { border-width: 1px; } }
-@media (prefers-reduced-motion: reduce) { .river-mist, .river-current, .river-spirit, .river-lemon-resolved, .river-lemon-thrown, .river-splash i, .river-stone-flight, .river-seed { animation: none; } .river-lemon { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .river-mist, .river-current, .river-spirit, .river-lemon-resolved, .river-lemon-throwing, .river-lemon-thrown, .river-stone-flight, .river-seed { animation: none; } .river-lemon { transition: none; } }

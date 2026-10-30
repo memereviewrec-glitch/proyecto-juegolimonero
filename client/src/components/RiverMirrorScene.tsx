@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
 import "./river-mirror-scene.css";
@@ -64,11 +64,16 @@ const NEXT_LABEL: Partial<Record<RiverStep, string>> = {
 
 export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
-  const [stoneStatus, setStoneStatus] = useState<"ground" | "carried" | "thrown">("ground");
+  const [stoneStatus, setStoneStatus] = useState<"ground" | "throwing" | "thrown">("ground");
   const [lemonPoint, setLemonPoint] = useState({ x: 28, bottom: 25 });
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const throwTimer = useRef<number | null>(null);
   const dialogue = RIVER_DIALOGUE[route];
   const resolved = step === "ending";
+
+  useEffect(() => () => {
+    if (throwTimer.current !== null) window.clearTimeout(throwTimer.current);
+  }, []);
 
   function moveAlongShore(event: MouseEvent<HTMLDivElement>) {
     if (event.target instanceof Element && event.target.closest("button, .river-stone")) return;
@@ -80,13 +85,13 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
 
   function collectStone() {
     if (stoneStatus !== "ground") return;
-    setStoneStatus("carried");
-  }
-
-  function throwStone() {
-    if (stoneStatus !== "carried") return;
-    setStoneStatus("thrown");
-    setStep("spirits-1");
+    setStoneStatus("throwing");
+    const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 900;
+    throwTimer.current = window.setTimeout(() => {
+      setStoneStatus("thrown");
+      setStep("spirits-1");
+      throwTimer.current = null;
+    }, duration);
   }
 
   function advance() {
@@ -114,14 +119,13 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
           <span className="river-spirit river-spirit-one" /><span className="river-spirit river-spirit-two" /><span className="river-spirit river-spirit-three" />
         </div>
         <div className={`river-current ${resolved ? "river-current-guiding" : ""}`} aria-hidden="true" />
-        <div className={`river-lemon ${stoneStatus === "carried" ? "river-lemon-carried" : ""} ${stoneStatus === "thrown" ? "river-lemon-thrown" : ""} ${resolved ? "river-lemon-resolved" : ""}`} style={{ left: `${lemonPoint.x}%`, bottom: `${lemonPoint.bottom}%` }} aria-label="El limón">
+        <div className={`river-lemon ${stoneStatus === "throwing" ? "river-lemon-throwing" : ""} ${stoneStatus === "thrown" ? "river-lemon-thrown" : ""} ${resolved ? "river-lemon-resolved" : ""}`} style={{ left: `${lemonPoint.x}%`, bottom: `${lemonPoint.bottom}%` }} aria-label="El limón">
           <LemonSprite />
         </div>
         {stoneStatus === "ground" && <button className="river-stone river-stone-ground" type="button" onClick={collectStone} aria-label="Piedra junto a la orilla" />}
-        {stoneStatus === "carried" && <button className="river-target" type="button" onClick={throwStone} aria-label="Agua quieta y plateada" />}
-        {stoneStatus === "thrown" && <span className="river-stone river-stone-flight" aria-hidden="true" />}
+        {stoneStatus === "throwing" && <span className="river-stone river-stone-flight" aria-hidden="true" />}
+        {stoneStatus === "thrown" && <img className="river-ripples" src="/river-stone-ripples.gif" alt="" aria-hidden="true" />}
         {resolved && !seedCollected && <button className="river-seed" type="button" onClick={onCollectSeed} aria-label="Recoger la semilla plateada de Espíritus del río"><SeedGlyph seed="espiritus-del-rio" /></button>}
-        {resolved && <div className="river-splash" aria-hidden="true"><i /><i /><i /><i /></div>}
         <div className="river-coordinate">LF · 05</div>
       </div>
       <div className="river-dialogue" role="status" aria-live="polite">

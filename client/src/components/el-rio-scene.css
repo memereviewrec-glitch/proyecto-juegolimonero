@@ -15,6 +15,9 @@
 .el-rio-fish-yellow { --fish: #f5c957; --fish-dark: #d87455; left: -28%; top: 74%; animation-delay: -3s; transform: scale(.64); }
 .el-rio-fish-white { --fish: #f4fff7; --fish-dark: #b7d9df; left: 58%; top: 39%; animation: fish-white-breathe 2.5s ease-in-out infinite alternate; filter: drop-shadow(0 0 8px #effff4); }
 .el-rio-fish-white-heard { --fish: #e8fff0; animation: none; opacity: .8; }
+.el-rio-fish-black { --fish: #26333d; --fish-dark: #090f18; left: 67%; top: 67%; animation-delay: -10s; pointer-events: none; filter: drop-shadow(0 0 4px #b4d2d755); }
+.el-rio-fish-talking .el-rio-fish { animation-play-state: paused; }
+.el-rio-fish-talking .el-rio-fish:not(.el-rio-fish-black) { pointer-events: none; }
 .el-rio-fish:hover, .el-rio-fish:focus-visible { outline: 3px dashed #efffe8; outline-offset: 4px; filter: brightness(1.2) drop-shadow(0 0 5px #efffe8); }
 @keyframes fish-white-breathe { to { transform: translateY(-7px) scale(1.06); } }
 @keyframes fish-swim { from { translate: -18% 0; } to { translate: 160% 0; } }
@@ -29,6 +32,7 @@
 .el-rio-choices { display: flex; gap: 7px; flex-wrap: wrap; }
 .el-rio-choices button { flex: 1; min-width: 150px; text-align: left; background: #f5faea; color: #263840; border-color: #56757b; }
 .el-rio-progress { display: block; color: #56757b; font: 9px 'DM Mono', monospace; }
+.el-rio-black-thought { color: #405661 !important; font-style: italic; }
 .el-rio-seed-reward { display: flex; align-items: center; gap: 9px; color: #45666f; font: 9px 'DM Mono', monospace; }
 .el-rio-seed-reward .seed-glyph { width: 29px; height: 38px; }
 @media (max-width: 600px) { .el-rio-dialogue { width: 90%; max-height: 25%; padding: 9px 11px 8px; } .el-rio-dialogue p { font-size: 9px; } .el-rio-fish { transform: scale(.75); } }

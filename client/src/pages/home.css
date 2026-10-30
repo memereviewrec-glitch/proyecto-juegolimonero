@@ -55,6 +55,13 @@ button { font:inherit; }
 .story-seed-el-rio { filter:drop-shadow(0 0 10px #dce9f0); }
 @keyframes story-seed-pulse { to { transform:scale(1.07) rotate(-2deg); } }
 .story-continue-button { align-self:center; }
+@media (max-width:600px) {
+  .story-interlude-inner { width:88%; gap:10px; }
+  .story-interlude p { max-width:100%; font-size:11px; line-height:1.42; }
+  .story-seed-button { width:78px; height:86px; }
+  .story-seed-glyph { width:54px; height:74px; }
+  .story-continue-button { padding:7px 9px; font-size:8px; }
+}
 .playfield-portrait,.playfield-room { width:min(100%,760px); margin-inline:auto; }
 .stage-heading { display:flex; justify-content:space-between; align-items:end; margin:0 0 16px; gap:20px; }
 .stage-heading h2,.storyboard-heading h2 { margin:5px 0 0; font-size:22px; letter-spacing:-.055em; font-weight:600; }

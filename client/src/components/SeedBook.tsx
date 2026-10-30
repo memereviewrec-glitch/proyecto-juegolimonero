@@ -227,13 +227,13 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 </>;
               })()}
             </article>
-            <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
-              <button type="button" onClick={() => setPageIndex(index => index - 1)} disabled={pageIndex === 0}>← anterior</button>
-              <button type="button" onClick={() => setPageIndex(index => index + 1)} disabled={pageIndex === visibleSongs.length - 1}>siguiente →</button>
-            </nav>
           </>
         ) : null}
         </div>
+        {visibleSongs.length > 0 && <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
+          <button type="button" onClick={() => setPageIndex(index => index - 1)} disabled={pageIndex === 0}>← anterior</button>
+          <button type="button" onClick={() => setPageIndex(index => index + 1)} disabled={pageIndex === visibleSongs.length - 1}>siguiente →</button>
+        </nav>}
         {audioError && <p className="seedbook-error" role="status">No se pudo reproducir el MP3. Comprueba que el archivo esté disponible.</p>}
       </aside>
     </div>

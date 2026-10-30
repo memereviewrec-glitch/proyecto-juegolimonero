@@ -544,7 +544,7 @@ button { font:inherit; }
 .seedbook-header p { margin:0; color:#61546c; font:10px 'DM Mono',monospace; }
 .seedbook-close { width:34px; height:34px; flex:0 0 auto; border:2px solid #2b2631; background:#eee7d8; color:#2b2631; font-size:22px; line-height:1; cursor:pointer; }
 .seedbook-restart-area { margin:14px 0 18px; padding:12px; border:2px dashed #d98470; background:#fffdf7; }
-.seedbook-page { order:1; flex:1 1 auto; width:96%; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:flex-start; overflow-y:auto; overflow-x:hidden; scrollbar-color:#9a879d #eee7d8; }
+.seedbook-page { order:2; flex:1 1 auto; width:96%; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:flex-start; overflow-y:auto; overflow-x:hidden; scrollbar-color:#9a879d #eee7d8; }
 .seedbook-restart-area { order:4; flex:0 0 auto; margin:6px 0 0; padding:5px 7px; }
 .seedbook-restart-button,.seedbook-restart-actions button { display:inline-flex; min-height:28px; align-items:center; justify-content:center; padding:5px 8px; border:2px solid #3c3346; color:#3c3346; font:600 8px 'DM Mono',monospace; cursor:pointer; }
 .seedbook-restart-button { width:100%; background:#eee7d8; }
@@ -595,8 +595,8 @@ button { font:inherit; }
 .seedbook-empty small,.seedbook-footnote,.seedbook-error { color:#706a73; font-size:11px; line-height:1.5; }
 .seedbook-footnote { margin:18px 0 0; padding-top:12px; border-top:1px solid #d9d0c0; }
 .seedbook-error { order:2; color:#9a4639; }
-.seedbook-pagination { display:flex; justify-content:space-between; gap:10px; margin-top:12px; }
-.seedbook-pagination button { flex:1; min-height:34px; border:2px solid #3c3346; background:#eee7d8; color:#3c3346; font:9px 'DM Mono',monospace; cursor:pointer; }
+.seedbook-pagination { order:1; display:flex; justify-content:space-between; gap:6px; flex:0 0 auto; width:96%; margin:0 auto 5px; }
+.seedbook-pagination button { flex:1; min-height:26px; padding:4px 6px; border:1px solid #3c3346; background:#eee7d8; color:#3c3346; font:8px 'DM Mono',monospace; cursor:pointer; }
 .seedbook-pagination button:hover:not(:disabled),.seedbook-pagination button:focus-visible { background:#fffdf7; outline:2px solid #d98470; outline-offset:1px; }
 .seedbook-pagination button:disabled { border-color:#d9d0c0; color:#aaa1a5; cursor:not-allowed; }
 .seedbook-footnote { order:3; }

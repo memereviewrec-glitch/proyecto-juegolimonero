@@ -1,4 +1,11 @@
 export const PHYSICAL_SEED_COLORS = {
+  intro: {
+    body: "#b99cff",
+    highlight: "#f0e8ff",
+    leaf: "#7864c4",
+    outline: "#33284f",
+    name: "violeta aurora",
+  },
   ventana: {
     body: "#efc547",
     highlight: "#fff0a2",
@@ -40,6 +47,7 @@ export type PhysicalSeedId = keyof typeof PHYSICAL_SEED_COLORS;
 
 export function getPhysicalSeedId(songId: string): PhysicalSeedId | null {
   switch (songId) {
+    case "intro":
     case "ventana":
     case "raices":
     case "rambla":

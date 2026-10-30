@@ -29,12 +29,13 @@ export const SONG_CATALOG: readonly SongResource[] = [
 
 type SeedBookProps = {
   discoveredSongIds: SeedSongId[];
+  previewSongId?: SeedSongId | null;
   onClose: () => void;
   onRestart: () => void;
   onReplaySong: (songId: SeedSongId) => void;
 };
 
-export function SeedBook({ discoveredSongIds, onClose, onRestart, onReplaySong }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onRestart, onReplaySong }: SeedBookProps) {
   const [playingSongId, setPlayingSongId] = useState<SeedSongId | null>(null);
   const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -46,6 +47,8 @@ export function SeedBook({ discoveredSongIds, onClose, onRestart, onReplaySong }
   const restartCancelRef = useRef<HTMLButtonElement | null>(null);
   const restoreRestartFocusRef = useRef(false);
   const discoveredSongs = SONG_CATALOG.filter(song => discoveredSongIds.includes(song.id));
+  const previewSong = previewSongId && !discoveredSongIds.includes(previewSongId) ? SONG_CATALOG.find(song => song.id === previewSongId) ?? null : null;
+  const visibleSongs = previewSong ? [...discoveredSongs, previewSong] : discoveredSongs;
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -164,7 +167,7 @@ export function SeedBook({ discoveredSongIds, onClose, onRestart, onReplaySong }
           )}
         </div>
 
-        {discoveredSongs.length === 0 ? (
+        {visibleSongs.length === 0 ? (
           <div className="seedbook-empty">
             <span aria-hidden="true">✳</span>
             <p>Aún no hay semillas en el libro.</p>
@@ -172,18 +175,19 @@ export function SeedBook({ discoveredSongIds, onClose, onRestart, onReplaySong }
           </div>
         ) : (
           <ol className="seedbook-list">
-            {discoveredSongs.map(song => {
+            {visibleSongs.map(song => {
+              const isPreview = song.id === previewSong?.id;
               const seedId = getPhysicalSeedId(song.id);
-              return <li className="seedbook-entry" key={song.id}>
+              return <li className={`seedbook-entry${isPreview ? " seedbook-preview-entry" : ""}`} key={song.id}>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{song.title}</h3>
                   {seedId ? (
-                    <button className="seedbook-collected seedbook-colored-seed seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
+                      <button className="seedbook-collected seedbook-colored-seed seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
                       <SeedGlyph seed={seedId} />
                     </button>
                   ) : (
-                    <button className="seedbook-collected seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>✦</button>
+                    <button className="seedbook-collected seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>✦</button>
                   )}
                 </div>
                 <div className="seedbook-metadata" aria-label={`Recursos de ${song.title}`}>

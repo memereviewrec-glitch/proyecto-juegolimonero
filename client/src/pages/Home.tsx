@@ -13,6 +13,7 @@ import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaC
 import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
+import type { PhysicalSeedId } from "../components/seed-colors";
 import "./home.css";
 
 type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio";
@@ -58,6 +59,15 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
   return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. El limón se preparó para buscar la siguiente semilla en el fondo del cauce.";
 }
+
+const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
+  portal: "intro",
+  ruins: "ventana",
+  sect: "raices",
+  "river-arrival": "rambla",
+  "spirits-challenge": "espiritus-del-rio",
+  "el-rio": "el-rio",
+};
 
 function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
@@ -199,6 +209,8 @@ function dawnWalkableTop(x: number) {
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
   const [storyBeat, setStoryBeat] = useState<StoryBeat | null>("opening");
+  const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
+  const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
   const [seedBookOpen, setSeedBookOpen] = useState(false);
   const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(readStoredSeedBookIds);
   const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
@@ -683,6 +695,8 @@ export default function Home() {
     stopGameAudio();
     setSeedBookOpen(false);
     setStoryBeat(null);
+    setStorySeedBookOpened(false);
+    setStorySeedPreview(null);
     setScene(targetScene);
     setSceneReplayNonce(version => version + 1);
     setNotice("");
@@ -774,7 +788,7 @@ export default function Home() {
     || (scene === "dawn" && seedCollected)
     || (scene === "ruins" && ruinsView === "scene" && rootsSeedCollected)
     || (scene === "gathering" && campfireSeedCollected)
-    || (scene === "river" && riverConversationComplete)
+    || (scene === "river" && riverConversationComplete && riverSeedCollected)
     || (scene === "river-challenge" && riverChallengeComplete)
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
@@ -811,21 +825,33 @@ export default function Home() {
     setRuinsView("scene");
   }
 
+  function showStory(beat: StoryBeat) {
+    setStorySeedBookOpened(false);
+    setStorySeedPreview(null);
+    setStoryBeat(beat);
+  }
+
+  function openStorySeedBook(seed: PhysicalSeedId | undefined) {
+    setStorySeedBookOpened(true);
+    setStorySeedPreview(seed ?? null);
+    setSeedBookOpen(true);
+  }
+
   function continueAlongPath() {
     if (!canContinue) return;
     if (scene === "room") {
       enterDawn();
-      setStoryBeat("portal");
+      showStory("portal");
     } else if (scene === "dawn") {
-      setStoryBeat("ruins");
+      showStory("ruins");
     } else if (scene === "ruins") {
-      setStoryBeat("sect");
+      showStory("sect");
     } else if (scene === "gathering") {
-      setStoryBeat("river-arrival");
+      showStory("river-arrival");
     } else if (scene === "river") {
-      setStoryBeat("spirits-challenge");
+      showStory("spirits-challenge");
     } else if (scene === "river-challenge") {
-      setStoryBeat("el-rio");
+      showStory("el-rio");
     }
   }
 
@@ -885,7 +911,7 @@ export default function Home() {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
-            {storyBeat && <StoryInterlude text={storyText(storyBeat, ramblaOutcome)} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             <button
               className="seedbook-toggle"
               type="button"
@@ -898,7 +924,7 @@ export default function Home() {
               <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" />
               <b aria-hidden="true">{discoveredSongIds.length}/10</b>
             </button>
-            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} onRestart={restartGame} onReplaySong={replaySong} />}
+            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onRestart={restartGame} onReplaySong={replaySong} />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
@@ -984,7 +1010,6 @@ export default function Home() {
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
               {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomAction === "examine-cable" || roomAction === "examine" ? "Examinar" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
-              {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">CANCIÓN</span><h4>{introStarted ? "Aurora activada" : "Aurora"}</h4></div></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label={dialogueTurn === DIALOGUE.length - 1 ? "Dos opciones finales" : "Tres respuestas posibles"}>
@@ -1002,11 +1027,9 @@ export default function Home() {
               {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={() => listenToBirds()}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
               {seedAvailable && !seedCollected && <div className="context-card seed-card seed-instruction-card" role="status"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. Pulsa su semilla dorada para guardarla." : "La flor se abre y me entrega una semilla. Pulsa la semilla para recogerla."}</p></div></div>}
-              {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div></div>}
             </> : scene === "ruins" ? <>
               {ruinsAction && <div key={`column-${ruinsAction}`} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{ruinsAction === "left" ? "Unas hojas secas se aferran a esta columna." : "Las hojas se enredan entre las raíces de piedra."}</p></div><button className="action-button" onClick={openRuinsPuzzle}>Examinar</button></div>}
               {ruinsFlowerStage === "seed" && !rootsSeedCollected && <div className="context-card seed-card seed-instruction-card" role="status"><div className="thought-bubble"><span>EL LIMÓN</span><p>La planta ha florecido. Pulsa la semilla verde que brilla entre las raíces.</p></div></div>}
-              {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div></div>}
             </> : null}
           </aside>}
           {canContinue && <button

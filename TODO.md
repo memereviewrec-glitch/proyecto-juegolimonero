@@ -86,9 +86,9 @@
 ## [x] Arte original del Libro de Semillas
 - La misma ilustración original de pixel art de un libro de semillas encantado aparece en el encabezado del panel y como icono visible del botón que abre el libro. El recurso conserva el estilo de las escenas existentes, tiene fondo transparente, se incluye en `client/public/seedbook-art.png`, se carga desde el propio juego y conserva legibilidad en escritorio y móvil.
 
-## [x] Acceso al Libro de semillas más grande y accesible
-- El botón de acceso muestra el texto «Libro de semillas» y el número de semillas descubiertas junto a un icono pixel-art reconocible de libro abierto con brote; el icono no sustituye el nombre visible.
-- En escritorio y móvil, el botón proporciona una zona táctil de al menos 48 × 48 px, contraste legible y un indicador de foco de teclado claro. Expone el estado abierto/cerrado y el diálogo que controla mediante atributos ARIA.
+## [x] Acceso al Libro de semillas: icono grande sin texto visible
+- El control aparece en la esquina superior izquierda del lienzo y muestra solo la ilustración pixel-art del libro y el contador numérico de progreso; no muestra las palabras «Libro de semillas» hasta que el panel se abre.
+- El icono mide al menos 58 × 58 px y el botón ofrece una zona táctil mínima de 64 × 64 px en escritorio y móvil. Conserva contraste, foco de teclado claro y un nombre accesible con el estado/progreso, además de `aria-expanded`, `aria-haspopup` y `aria-controls`.
 
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.

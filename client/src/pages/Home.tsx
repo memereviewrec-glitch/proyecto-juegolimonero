@@ -541,7 +541,6 @@ export default function Home() {
               aria-controls="seedbook-panel"
             >
               <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" />
-              <span className="seedbook-toggle-label">Libro de semillas</span>
               <b aria-hidden="true">{discoveredSongIds.length}/{10}</b>
             </button>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}

@@ -7,6 +7,7 @@ import { CampfireScene, type CampfireFireStage } from "../components/CampfireSce
 import { RiverMirrorScene } from "../components/RiverMirrorScene";
 import { RiverChallengeScene } from "../components/RiverChallengeScene";
 import { ElRioScene } from "../components/ElRioScene";
+import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
@@ -15,6 +16,7 @@ import { SeedGlyph } from "../components/SeedGlyph";
 import "./home.css";
 
 type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio";
+type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -41,6 +43,31 @@ const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
+
+const STORY_FRAME_NUMBERS: Record<StoryBeat, string> = {
+  opening: "00",
+  portal: "01",
+  ruins: "02",
+  sect: "03",
+  "river-arrival": "04",
+  "spirits-challenge": "05",
+  "el-rio": "06",
+};
+
+function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
+  if (beat === "opening") return "Había una vez un limón que quería descubrir los secretos de...";
+  if (beat === "portal") return "El limón tomó la semilla del conocimiento que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otra dimensión. Pero allí se encontró muy solo.";
+  if (beat === "ruins") return "Sin saber todavía cómo volver, el limón comenzó a andar por las ruinas. Cada piedra parecía guardar una pregunta y cada raíz, un camino que no figuraba en ningún mapa.";
+  if (beat === "sect") return "Tras las ruinas encontró a la secta del conocimiento oculto. Sus encapuchados hablaban de una verdad reservada para unos pocos y aguardaban junto a una hoguera, como si el fuego pudiera responder por ellos.";
+  if (beat === "river-arrival") {
+    const arrival = ramblaOutcome === 2
+      ? "El limón escapó de la secta rodando colina abajo y llegó al río con la cáscara raspada. Seguía vivo, pero se sentía aburrido y solo después de huir."
+      : "El limón creyó que la secta lo había iluminado y llegó andando hasta el río. Poseía, según él, el conocimiento supremo; aun así, se sentía aburrido y solo con tanta verdad quieta.";
+    return `${arrival} Así que decidió lanzar piedras al agua, para ver si algo le respondía desde el fondo.`;
+  }
+  if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
+  return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. El limón se preparó para buscar la siguiente semilla en el fondo del cauce.";
+}
 
 function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
@@ -181,6 +208,7 @@ function dawnWalkableTop(x: number) {
 
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
+  const [storyBeat, setStoryBeat] = useState<StoryBeat | null>("opening");
   const [seedBookOpen, setSeedBookOpen] = useState(false);
   const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(readStoredSeedBookIds);
   const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
@@ -641,7 +669,7 @@ export default function Home() {
   }
 
   function setVisitedScene(nextScene: Scene) {
-    if (portalTransit || arrivalPortal) return;
+    if (portalTransit || arrivalPortal || storyBeat) return;
     if (nextScene === "room" && scene !== "room") return;
     if (nextScene === "dawn" && (!(portalOpen || persistedSeedIds.includes("intro")) || scene === "ruins" || scene === "gathering")) return;
     if (nextScene === "ruins" && !(seedCollected || persistedSeedIds.includes("ventana"))) return;
@@ -663,6 +691,7 @@ export default function Home() {
 
     stopGameAudio();
     setSeedBookOpen(false);
+    setStoryBeat(null);
     setScene(targetScene);
     setSceneReplayNonce(version => version + 1);
     setNotice("");
@@ -748,7 +777,7 @@ export default function Home() {
     setPersistedSeedIds(current => current.length === merged.length && current.every((id, index) => id === merged[index]) ? current : merged);
   }, [discoveredSongIds, persistedSeedIds]);
 
-  const canContinue = !seedBookOpen && !portalTransit && !arrivalPortal && (
+  const canContinue = !storyBeat && !seedBookOpen && !portalTransit && !arrivalPortal && (
     (scene === "room" && roomView === "scene" && portalOpen)
     || (scene === "dawn" && seedCollected)
     || (scene === "ruins" && ruinsView === "scene" && rootsSeedCollected)
@@ -765,14 +794,47 @@ export default function Home() {
         ? ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed" || rootsSeedCollected)
         : false);
 
+  function advanceStory() {
+    if (!storyBeat) return;
+    if (storyBeat === "opening") {
+      setStoryBeat(null);
+      return;
+    }
+    const nextScene: Scene = storyBeat === "portal"
+      ? "dawn"
+      : storyBeat === "ruins"
+        ? "ruins"
+        : storyBeat === "sect"
+          ? "gathering"
+          : storyBeat === "river-arrival"
+            ? "river"
+            : storyBeat === "spirits-challenge"
+              ? "river-challenge"
+              : "el-rio";
+    setScene(nextScene);
+    setStoryBeat(null);
+    setRoomView("scene");
+    setRoomAction(null);
+    setRuinsAction(null);
+    setRuinsView("scene");
+  }
+
   function continueAlongPath() {
     if (!canContinue) return;
-    if (scene === "room") enterDawn();
-    else if (scene === "dawn") setVisitedScene("ruins");
-    else if (scene === "ruins") setVisitedScene("gathering");
-    else if (scene === "gathering") setVisitedScene("river");
-    else if (scene === "river") setVisitedScene("river-challenge");
-    else if (scene === "river-challenge") setVisitedScene("el-rio");
+    if (scene === "room") {
+      enterDawn();
+      setStoryBeat("portal");
+    } else if (scene === "dawn") {
+      setStoryBeat("ruins");
+    } else if (scene === "ruins") {
+      setStoryBeat("sect");
+    } else if (scene === "gathering") {
+      setStoryBeat("river-arrival");
+    } else if (scene === "river") {
+      setStoryBeat("spirits-challenge");
+    } else if (scene === "river-challenge") {
+      setStoryBeat("el-rio");
+    }
   }
 
   return (
@@ -831,6 +893,7 @@ export default function Home() {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
+            {storyBeat && <StoryInterlude frame={STORY_FRAME_NUMBERS[storyBeat]} text={storyText(storyBeat, ramblaOutcome)} onContinue={advanceStory} />}
             <button
               className="seedbook-toggle"
               type="button"

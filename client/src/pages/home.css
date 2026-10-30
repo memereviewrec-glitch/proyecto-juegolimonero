@@ -556,3 +556,86 @@ button { font:inherit; }
  .seedbook-actions { display:grid; grid-template-columns:1fr; }
  .seedbook-action { justify-content:flex-start; font-size:10px; }
 }
+
+
+/* Luz ambiental psicodélica: lenta, tenue y siempre dentro del lienzo del juego. */
+.room-stage::before,
+.dawn-stage::before,
+.ruins-stage::before,
+.roots-closeup-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background-size: 190% 190%, 210% 210%, 180% 180%;
+  background-repeat: no-repeat;
+}
+
+.room-stage::before {
+  opacity: .16;
+  background-image:
+    radial-gradient(ellipse at 20% 26%, rgb(240 77 196 / 58%) 0%, transparent 42%),
+    radial-gradient(ellipse at 77% 74%, rgb(69 222 197 / 48%) 0%, transparent 43%),
+    linear-gradient(124deg, rgb(245 200 95 / 18%), transparent 46%, rgb(116 96 224 / 24%));
+  animation: limon-room-light 38s ease-in-out infinite alternate;
+}
+
+.dawn-stage::before {
+  opacity: .16;
+  background-image:
+    radial-gradient(ellipse at 34% 32%, rgb(255 197 112 / 48%) 0%, transparent 43%),
+    radial-gradient(ellipse at 78% 60%, rgb(245 116 172 / 42%) 0%, transparent 44%),
+    linear-gradient(118deg, rgb(81 206 196 / 18%), transparent 50%, rgb(255 218 136 / 20%));
+  animation: limon-dawn-light 46s ease-in-out infinite alternate;
+}
+
+.ruins-stage::before,
+.roots-closeup-stage::before {
+  opacity: .13;
+  background-image:
+    radial-gradient(ellipse at 22% 68%, rgb(142 222 91 / 42%) 0%, transparent 44%),
+    radial-gradient(ellipse at 79% 24%, rgb(189 93 226 / 38%) 0%, transparent 43%),
+    linear-gradient(116deg, rgb(243 190 94 / 17%), transparent 48%, rgb(92 185 165 / 18%));
+  animation: limon-roots-light 54s ease-in-out infinite alternate;
+}
+
+.roots-closeup-stage::before {
+  opacity: .09;
+  background-image:
+    radial-gradient(ellipse at 17% 26%, rgb(140 176 229 / 34%) 0%, transparent 44%),
+    radial-gradient(ellipse at 82% 78%, rgb(229 207 123 / 28%) 0%, transparent 43%),
+    linear-gradient(128deg, rgb(187 107 211 / 14%), transparent 48%, rgb(94 204 188 / 15%));
+  animation: limon-roots-closeup-light 58s ease-in-out infinite alternate;
+}
+
+@keyframes limon-room-light {
+  from { background-position: 0% 35%, 100% 70%, 20% 50%; opacity: .12; }
+  to { background-position: 100% 68%, 5% 22%, 82% 38%; opacity: .2; }
+}
+
+@keyframes limon-dawn-light {
+  from { background-position: 8% 78%, 94% 24%, 5% 46%; opacity: .11; }
+  to { background-position: 92% 22%, 12% 82%, 96% 58%; opacity: .2; }
+}
+
+@keyframes limon-roots-light {
+  from { background-position: 5% 30%, 96% 72%, 15% 80%; opacity: .1; }
+  to { background-position: 88% 80%, 6% 18%, 90% 14%; opacity: .18; }
+}
+
+@keyframes limon-roots-closeup-light {
+  from { background-position: 0% 20%, 100% 86%, 10% 42%; opacity: .08; }
+  to { background-position: 94% 78%, 12% 14%, 88% 62%; opacity: .14; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-stage::before,
+  .dawn-stage::before,
+  .ruins-stage::before,
+  .roots-closeup-stage::before {
+    animation: none !important;
+    opacity: .11;
+  }
+}

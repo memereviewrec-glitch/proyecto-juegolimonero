@@ -75,6 +75,14 @@
 ## [x] Libro de semillas desplegable dentro de la ventana de juego
 - Tanto el botón que abre el libro como el panel desplegable están dentro del marco 1180:1333 del juego. El panel se abre sobre la escena, queda contenido por la ventana jugable y se cierra desde ahí; no aparece fijado al viewport ni sobre el encabezado exterior.
 
+## [x] Luz psicodélica lenta y atmosférica
+- Las escenas jugables actuales —local, amanecer y ruinas— y el primer plano de Raíces reciben luces psicodélicas suaves, lentas y distintas: 38 s para el local, 46 s para el amanecer, 54 s para las ruinas y 58 s para el closeup de columnas.
+- El filtro permanece dentro del lienzo del juego, no intercepta interacciones ni reduce la legibilidad de los cuadros y objetos importantes, y respeta `prefers-reduced-motion`.
+
+## [x] Descubrir las inscripciones sin pistas escritas
+- Ningún diálogo o rótulo visible en Raíces dice que una columna esconde una inscripción ni anticipa sus palabras. El limón solo dice que la columna está cubierta de hojas; el jugador descubre el texto al apartarlas.
+- Las palabras permanecen ocultas bajo las hojas y solo quedan visibles en la piedra cuando el jugador las arrastra fuera.
+
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.
 - La flor se abre en pixel art después de comenzar el amanecer y entrega una semilla que cae desde su centro. Solo se ofrece «Coger semilla» después de que termine la caída.

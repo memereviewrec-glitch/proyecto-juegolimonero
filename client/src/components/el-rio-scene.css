@@ -9,16 +9,16 @@
 .el-rio-fish::before { content: ""; position: absolute; left: 18%; top: 20%; width: 54%; height: 55%; border-radius: 55% 45% 45% 55%; background: var(--fish); border: 2px solid #162e42; box-shadow: inset 7px 4px #fff8; }
 .el-rio-fish::after { content: ""; position: absolute; left: 2%; top: 18%; width: 28%; height: 62%; background: var(--fish-dark); clip-path: polygon(100% 50%, 0 0, 0 100%); }
 .el-rio-fish i { position: absolute; z-index: 2; left: 60%; top: 34%; width: 5px; height: 5px; background: #fff; border: 1px solid #1b2d3d; }
-.el-rio-fish-green { --fish: #6ed39b; --fish-dark: #338e77; left: -90px; top: 31%; animation-delay: -1s; }
-.el-rio-fish-blue { --fish: #6b9de0; --fish-dark: #3e5eae; right: -90px; left: auto; top: 47%; animation-name: fish-swim-reverse; animation-delay: -5s; transform: scale(-.72,.72); }
-.el-rio-fish-red { --fish: #e96863; --fish-dark: #a73e55; left: -90px; top: 60%; animation-delay: -8s; transform: scale(1.18); }
-.el-rio-fish-yellow { --fish: #f5c957; --fish-dark: #d87455; right: -90px; left: auto; top: 74%; animation-name: fish-swim-reverse; animation-delay: -3s; transform: scale(-.64,.64); }
-.el-rio-fish-white { --fish: #f4fff7; --fish-dark: #b7d9df; right: -90px; left: auto; top: 39%; animation: fish-swim-reverse 15s linear infinite; transform: scaleX(-1); filter: drop-shadow(0 0 8px #effff4); }
+.el-rio-fish-green { --fish: #6ed39b; --fish-dark: #338e77; left: -90px; top: 31%; animation-delay: -1s; animation-duration: 16s; }
+.el-rio-fish-blue { --fish: #6b9de0; --fish-dark: #3e5eae; right: -90px; left: auto; top: 47%; animation-name: fish-swim-reverse; animation-delay: -5s; animation-duration: 17s; transform: scale(-.72,.72); }
+.el-rio-fish-red { --fish: #e96863; --fish-dark: #a73e55; left: -90px; top: 60%; animation-delay: -8s; animation-duration: 16s; transform: scale(1.18); }
+.el-rio-fish-yellow { --fish: #f5c957; --fish-dark: #d87455; right: -90px; left: auto; top: 60%; animation-name: fish-swim-reverse; animation-delay: -3s; animation-duration: 17s; transform: scale(-.64,.64); }
+.el-rio-fish-white { --fish: #f4fff7; --fish-dark: #b7d9df; right: -90px; left: auto; top: 39%; animation: fish-swim-reverse 19s linear infinite; transform: scaleX(-1); filter: drop-shadow(0 0 8px #effff4); }
 .el-rio-fish-white-heard { --fish: #e8fff0; opacity: .8; }
-.el-rio-fish-black { --fish: #26333d; --fish-dark: #090f18; right: -90px; left: auto; top: 67%; animation-name: fish-swim-reverse; animation-delay: -10s; transform: scaleX(-1); pointer-events: none; filter: drop-shadow(0 0 4px #b4d2d755); }
+.el-rio-fish-black { --fish: #26333d; --fish-dark: #090f18; right: -90px; left: auto; top: 67%; animation-name: fish-swim-reverse; animation-delay: -10s; animation-duration: 17s; transform: scaleX(-1); pointer-events: none; filter: drop-shadow(0 0 4px #b4d2d755); }
 .el-rio-fish:hover, .el-rio-fish:focus-visible { outline: 3px dashed #efffe8; outline-offset: 4px; filter: brightness(1.2) drop-shadow(0 0 5px #efffe8); }
-@keyframes fish-swim { 0% { left: -90px; margin-top: 0; } 25% { margin-top: -3px; } 50% { margin-top: 2px; } 75% { margin-top: -2px; } 100% { left: calc(100% + 90px); margin-top: 0; } }
-@keyframes fish-swim-reverse { 0% { right: -90px; margin-top: 0; } 25% { margin-top: 2px; } 50% { margin-top: -3px; } 75% { margin-top: 1px; } 100% { right: calc(100% + 90px); margin-top: 0; } }
+@keyframes fish-swim { 0% { left: -90px; margin-top: 0; } 30% { margin-top: -6px; } 68% { margin-top: 5px; } 100% { left: calc(100% + 90px); margin-top: 0; } }
+@keyframes fish-swim-reverse { 0% { right: -90px; margin-top: 0; } 30% { margin-top: 5px; } 68% { margin-top: -6px; } 100% { right: calc(100% + 90px); margin-top: 0; } }
 .el-rio-lemon { position: absolute; z-index: 7; left: 47%; bottom: 27%; width: 12%; min-width: 54px; max-width: 92px; aspect-ratio: 48 / 56; }
 .el-rio-dialogue { position: absolute; z-index: 15; left: 50%; bottom: 2%; width: min(78%, 650px); max-height: 24%; overflow: auto; transform: translateX(-50%); padding: 12px 16px 10px; border: 4px solid #142b36; background: rgb(235 248 230 / 96%); box-shadow: 5px 5px 0 #0b1724, inset 0 0 0 3px #8eb8ae; }
 .el-rio-dialogue span { color: #4e7e7d; font: 8px 'DM Mono', monospace; letter-spacing: .12em; }

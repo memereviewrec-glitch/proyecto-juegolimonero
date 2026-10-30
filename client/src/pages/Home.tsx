@@ -16,6 +16,9 @@ import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversation
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
+import { playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredRamblaOutcome, readStoredSeedBookIds, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { C_SHARP_MINOR_SCALE, DIALOGUE, clamp, dawnWalkableTop, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
 type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest" | "hummingbird";
@@ -24,9 +27,6 @@ type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
 type RoomView = "scene" | "cable" | "amp" | "guitar";
-type Branch = "A" | "B";
-type Response = "restart" | Branch;
-
 const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   intro: "room",
   ventana: "dawn",
@@ -46,8 +46,6 @@ const FLOWER_SEED_DROP_MS = 1900;
 const LEMON_WHISTLE_DURATION_MS = 2200;
 const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
-const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
-const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
 const BAND_INSTAGRAM_LINKS = [{ label: "Instagram de la banda", url: null }] as const;
 
 function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
@@ -80,63 +78,15 @@ function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
 }
 
-function readStoredSeedBookIds(): SeedSongId[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const parsed: unknown = JSON.parse(window.localStorage.getItem(SEED_BOOK_STORAGE_KEY) ?? "[]");
-    if (!Array.isArray(parsed)) return [];
-    const knownIds = new Set<SeedSongId>(SONG_CATALOG.map(song => song.id));
-    return [...new Set(parsed.filter((id): id is SeedSongId => typeof id === "string" && knownIds.has(id as SeedSongId)))];
-  } catch {
-    return [];
-  }
-}
-
-function readStoredRamblaOutcome(): RamblaOutcome | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const value = window.localStorage.getItem(RAMBLA_ROUTE_STORAGE_KEY);
-    return value === "1" || value === "2" ? Number(value) as RamblaOutcome : null;
-  } catch {
-    return null;
-  }
-}
-
 function restartGame() {
   if (typeof window === "undefined") return;
-  try {
-    window.localStorage.removeItem(SEED_BOOK_STORAGE_KEY);
-    window.localStorage.removeItem(RAMBLA_ROUTE_STORAGE_KEY);
-  } catch {
+  if (!clearStoredGameProgress()) {
     window.alert("No se pudo borrar el progreso guardado. Comprueba los permisos de almacenamiento del navegador.");
     return;
   }
   stopGameAudio();
   window.location.reload();
 }
-
-const C_SHARP_MINOR_SCALE = new Set(["Do#", "Re#", "Mi", "Fa#", "Sol#", "La", "Si"]);
-
-const DIALOGUE = [
-  {
-    prompt: "¿Hay alguien ahí?",
-    restart: "Repetir la pregunta",
-    a: "Llamar a la sierra",
-    b: "Escuchar en silencio",
-  },
-  {
-    prompt: "No veo a nadie. ¿Estoy solo en esta dimensión?",
-    restart: "Empezar de nuevo",
-    a: "Mirar las ventanas",
-    b: "Escuchar el valle",
-  },
-  {
-    prompt: "¿Hago una señal, o dejo que el mundo conteste?",
-    restart: "Volver al principio",
-    a: "Llamar otra vez",
-    b: "Esperar en silencio",
-  },
-];
 
 function FlowerSprite({ open }: { open: boolean }) {
   return (
@@ -159,60 +109,6 @@ function FlowerSprite({ open }: { open: boolean }) {
   );
 }
 
-const activeGameAudio = new Set<HTMLAudioElement>();
-
-function stopGameAudio() {
-  activeGameAudio.forEach(audio => {
-    audio.pause();
-    audio.currentTime = 0;
-  });
-  activeGameAudio.clear();
-}
-
-function playMp3Sample(source: string, volume: number) {
-  if (typeof window === "undefined") return;
-  const audio = new Audio(source);
-  audio.volume = Math.max(0, Math.min(1, volume));
-  activeGameAudio.add(audio);
-  const remove = () => activeGameAudio.delete(audio);
-  audio.addEventListener("ended", remove, { once: true });
-  void audio.play().catch(remove);
-}
-
-function playFrequencies(frequencies: number[]) {
-  if (typeof window === "undefined" || frequencies.length === 0) return;
-  stopGameAudio();
-  frequencies.forEach(frequency => {
-    const midi = Math.round(69 + 12 * Math.log2(frequency / 440));
-    if (midi < 40 || midi > 73) return;
-    playMp3Sample(`/audio/guitar/guitar-midi-${midi}.mp3`, 0.48 / frequencies.length);
-  });
-}
-
-function playWhistle(source: "lemon" | "birds") {
-  stopGameAudio();
-  playMp3Sample(source === "birds" ? "/audio/bird-whistles.mp3" : "/audio/lemon-whistle.mp3", 0.32);
-}
-
-function clamp(value: number, minimum: number, maximum: number) {
-  return Math.max(minimum, Math.min(maximum, value));
-}
-
-function resolveBranch(scoreA: number, scoreB: number): Branch {
-  const chanceA = clamp(50 + (scoreA - scoreB) * 12, 14, 86);
-  return chanceA > 50 ? "A" : chanceA < 50 ? "B" : Math.random() < 0.5 ? "A" : "B";
-}
-
-function dawnWalkableTop(x: number) {
-  const terrain = [[0, 68], [16, 69], [30, 73], [43, 77], [58, 79], [72, 78], [84, 82], [100, 85]] as const;
-  for (let index = 1; index < terrain.length; index += 1) {
-    const [rightX, rightY] = terrain[index];
-    const [leftX, leftY] = terrain[index - 1];
-    if (x <= rightX) return leftY + (rightY - leftY) * ((x - leftX) / (rightX - leftX));
-  }
-  return terrain[terrain.length - 1][1];
-}
-
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
   const [storyBeat, setStoryBeat] = useState<StoryBeat | null>("opening");
@@ -222,7 +118,7 @@ export default function Home() {
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
-  const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(readStoredSeedBookIds);
+  const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(() => readStoredSeedBookIds(SONG_CATALOG.map(song => song.id)));
   const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
   const [roomView, setRoomView] = useState<RoomView>("scene");
@@ -686,11 +582,7 @@ export default function Home() {
 
     const outcome = resolveRamblaOutcome(nextPacific, nextDrastic);
     setRamblaOutcome(outcome);
-    try {
-      window.localStorage.setItem(RAMBLA_ROUTE_STORAGE_KEY, String(outcome));
-    } catch {
-      // La ruta sigue disponible durante la sesión si el almacenamiento está bloqueado.
-    }
+    saveRamblaOutcome(outcome);
     setNotice(outcome === 1
       ? "El líder ríe secamente y acepta al limón como oráculo peregrino. El fuego reconoce tres recuerdos del bosque."
       : "Los encapuchados gritan «¡Alimenta la hoguera!». El sendero tiembla bajo la sombra de la secta.");
@@ -821,14 +713,8 @@ export default function Home() {
   }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected]);
 
   useEffect(() => {
-    const merged = SONG_CATALOG
-      .filter(song => persistedSeedIds.includes(song.id) || discoveredSongIds.includes(song.id))
-      .map(song => song.id);
-    try {
-      window.localStorage.setItem(SEED_BOOK_STORAGE_KEY, JSON.stringify(merged));
-    } catch {
-      // La colección sigue funcionando durante la sesión si el navegador bloquea el almacenamiento local.
-    }
+    const merged = mergeDiscoveredSeedIds(SONG_CATALOG.map(song => song.id), persistedSeedIds, discoveredSongIds);
+    saveSeedBookIds(merged);
     setPersistedSeedIds(current => current.length === merged.length && current.every((id, index) => id === merged[index]) ? current : merged);
   }, [discoveredSongIds, persistedSeedIds]);
 

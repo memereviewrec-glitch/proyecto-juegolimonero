@@ -47,4 +47,13 @@
 .el-rio-seed-reward { display: flex; align-items: center; gap: 9px; color: #45666f; font: 9px 'DM Mono', monospace; }
 .el-rio-seed-reward .seed-glyph { width: 29px; height: 38px; }
 @media (max-width: 600px) { .el-rio-dialogue { width: 90%; max-height: 32%; padding: 9px 11px 8px; } .el-rio-dialogue p { font-size: 9px; line-height: 1.3; } .el-rio-dialogue .el-rio-black-thought { font-size: 8px; line-height: 1.2; } .el-rio-fish-green,.el-rio-fish-red { transform: scale(.75); } .el-rio-fish-blue { transform: scale(-.54,.54); } .el-rio-fish-yellow { transform: scale(-.48,.48); } .el-rio-fish-white { transform: scaleX(-1); } .el-rio-fish-black { transform: scaleX(-1.1) scaleY(1.1); } }
-@media (prefers-reduced-motion: reduce) { .el-rio-fish, .el-rio-fish-white { animation: none; } .el-rio-lemon { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .el-rio-fish, .el-rio-fish-white { animation: none; min-width: 72px; min-height: 44px; }
+  .el-rio-fish-green { left: 12%; right: auto; }
+  .el-rio-fish-blue { left: 63%; right: auto; }
+  .el-rio-fish-red { left: 32%; right: auto; }
+  .el-rio-fish-yellow { left: 74%; right: auto; }
+  .el-rio-fish-white { left: 48%; right: auto; }
+  .el-rio-fish-black { left: 42%; right: auto; }
+  .el-rio-lemon { transition: none; }
+}

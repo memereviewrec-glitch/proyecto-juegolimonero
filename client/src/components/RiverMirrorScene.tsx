@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
+import { getRiverChoiceConsequence, type RiverRoute } from "./riverChoiceRules";
 import "./river-mirror-scene.css";
 
-export type RiverRoute = "pacifico" | "drastico";
 type RiverStep = "arrival" | "spirits-1" | "spirits-2" | "spirits-3" | "answer" | "revelation-1" | "revelation-2" | "ending";
 
 type RiverMirrorSceneProps = {
@@ -70,10 +70,12 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConver
   const [spiritsAwake, setSpiritsAwake] = useState(false);
   const [lemonPoint, setLemonPoint] = useState({ x: 28, bottom: 25 });
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [selectedChoiceIndex, setSelectedChoiceIndex] = useState<number | null>(null);
   const throwTimer = useRef<number | null>(null);
   const revealTimer = useRef<number | null>(null);
   const dialogue = RIVER_DIALOGUE[route];
   const resolved = step === "ending";
+  const choiceConsequence = selectedChoiceIndex === null ? null : getRiverChoiceConsequence(route, selectedChoiceIndex);
 
   useEffect(() => () => {
     if (throwTimer.current !== null) window.clearTimeout(throwTimer.current);
@@ -117,8 +119,9 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConver
     });
   }
 
-  function chooseAnswer(answer: string) {
+  function chooseAnswer(answer: string, choiceIndex: number) {
     setSelectedAnswer(answer);
+    setSelectedChoiceIndex(choiceIndex);
     setStep("revelation-1");
   }
 
@@ -142,9 +145,9 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConver
       <div className="river-dialogue" role="status" aria-live="polite">
         {step === "arrival" && <><span className="river-speaker">LA ORILLA</span><p>{dialogue.context}</p></>}
         {step.startsWith("spirits-") && <><span className="river-speaker">ESPÍRITUS DEL RÍO</span><p>{dialogue.spiritLines[Number(step.slice(-1)) - 1]}</p></>}
-        {step === "answer" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">{dialogue.answerPrompt}</p><div className="river-choice-list" aria-label="Respuestas posibles del limón">{dialogue.choices.map(choice => <button key={choice} type="button" onClick={() => chooseAnswer(choice)}>{choice}</button>)}</div></>}
-        {step.startsWith("revelation-") && <><span className="river-speaker">{step === "revelation-1" ? "EL LIMÓN" : "ESPÍRITUS DEL RÍO"}</span><p className={step === "revelation-1" ? "river-answer" : ""}>{step === "revelation-1" ? `“${selectedAnswer}”` : dialogue.revelationLines[1]}</p>{step === "revelation-1" && <p>{dialogue.revelationLines[0]}</p>}</>}
-        {step === "ending" && <><span className="river-speaker">EL RÍO ESPEJO</span><p>{dialogue.ending}</p><small className="river-route-note">{seedCollected ? "La semilla ya descansa en el Libro." : "Algo plateado espera entre el agua y la orilla."}</small></>}
+        {step === "answer" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">{dialogue.answerPrompt}</p><div className="river-choice-list" aria-label="Respuestas posibles del limón">{dialogue.choices.map((choice, index) => <button key={choice} type="button" onClick={() => chooseAnswer(choice, index)}>{choice}</button>)}</div></>}
+        {step.startsWith("revelation-") && <><span className="river-speaker">{step === "revelation-1" ? "EL LIMÓN" : "ESPÍRITUS DEL RÍO"}</span><p className={step === "revelation-1" ? "river-answer" : ""}>{step === "revelation-1" ? `“${selectedAnswer}”` : (choiceConsequence?.reply ?? dialogue.revelationLines[1])}</p>{step === "revelation-1" && <p>{dialogue.revelationLines[0]}</p>}</>}
+        {step === "ending" && <><span className="river-speaker">EL RÍO ESPEJO</span><p>{choiceConsequence?.ending ?? dialogue.ending}</p><small className="river-route-note">{seedCollected ? "La semilla ya descansa en el Libro." : "Algo plateado espera entre el agua y la orilla."}</small></>}
         {!resolved && spiritsAwake && step !== "answer" && <button className="river-dialogue-next" type="button" onClick={advance}>{NEXT_LABEL[step] ?? "..."} <span aria-hidden="true">▶</span></button>}
       </div>
     </div>

@@ -21,8 +21,8 @@ export const SONG_CATALOG: readonly SongResource[] = [
   { id: "espiritus-del-rio", title: "Espíritus del río", youtubeUrl: null, wavDownloadUrl: null },
   { id: "el-rio", title: "El río", youtubeUrl: null, wavDownloadUrl: null },
   { id: "el-fuego", title: "El fuego", youtubeUrl: null, wavDownloadUrl: null },
-  { id: "nueve-sentidos", title: "Nueve sentidos", youtubeUrl: null, wavDownloadUrl: null },
   { id: "ponzona", title: "Ponzoña", youtubeUrl: null, wavDownloadUrl: null },
+  { id: "nueve-sentidos", title: "Nueve sentidos", youtubeUrl: null, wavDownloadUrl: null },
   { id: "el-jaguar", title: "El jaguar", youtubeUrl: null, wavDownloadUrl: null },
 ];
 

@@ -24,6 +24,8 @@ const FISH_LABELS: Record<FishColor, string> = {
   amarillo: "pez amarillo",
 };
 
+const FISH_COLORS: readonly FishColor[] = ["verde", "azul", "rojo", "amarillo"];
+
 const BLACK_RESPONSES: Record<FishColor, string> = {
   verde: "La alegría es un comienzo, no una respuesta final.",
   azul: "La tristeza recuerda que todo lo que vive también cambia.",
@@ -90,6 +92,10 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
       <div className="el-rio-world" role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
         <div className="el-rio-light" aria-hidden="true" />
         <div className="el-rio-current" aria-hidden="true" />
+        <div className="el-rio-fish-counter" role="progressbar" aria-label="Peces de colores escuchados" aria-valuemin={0} aria-valuemax={4} aria-valuenow={heardFish.length}>
+          {FISH_COLORS.map(color => <i key={color} className={`el-rio-fish-counter-dot el-rio-counter-${color} ${heardFish.includes(color) ? "el-rio-fish-counter-heard" : ""}`} aria-hidden="true" />)}
+          <span aria-hidden="true">{heardFish.length}/4</span>
+        </div>
         <button className="el-rio-fish el-rio-fish-green" style={{ top: `${fishLanes.green}%` }} type="button" onClick={() => hearFish("verde")} aria-label={FISH_LABELS.verde}><i /></button>
         <button className="el-rio-fish el-rio-fish-blue" style={{ top: `${fishLanes.blue}%` }} type="button" onClick={() => hearFish("azul")} aria-label={FISH_LABELS.azul}><i /></button>
         <button className="el-rio-fish el-rio-fish-red" style={{ top: `${fishLanes.red}%` }} type="button" onClick={() => hearFish("rojo")} aria-label={FISH_LABELS.rojo}><i /></button>
@@ -101,7 +107,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
         <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {thought ? <><span className={`el-rio-speaker el-rio-speaker-${speakerFish ?? "unknown"}`}>PEZ {speakerFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla bloqueada"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span className="el-rio-speaker el-rio-speaker-rio">EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
+        {thought ? <><span className={`el-rio-speaker el-rio-speaker-${speakerFish ?? "unknown"}`}>PEZ {speakerFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla bloqueada"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span className="el-rio-speaker el-rio-speaker-rio">EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p></>}
       </div>
     </div>
   );

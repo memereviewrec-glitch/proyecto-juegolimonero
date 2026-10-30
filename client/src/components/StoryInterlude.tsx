@@ -11,7 +11,7 @@ type StoryInterludeProps = {
 
 export function StoryInterlude({ text, seed, seedBookOpened, onOpenSeedBook, onContinue }: StoryInterludeProps) {
   return (
-    <div className="story-interlude" role="dialog" aria-label="Narración">
+    <div className="story-interlude" role="dialog" aria-label="Narración" tabIndex={0}>
       <div className="story-interlude-inner">
         <p>{text}</p>
         {seed ? (

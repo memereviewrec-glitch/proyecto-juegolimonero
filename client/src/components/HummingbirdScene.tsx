@@ -119,7 +119,6 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
 
   const progress = ((mood + 100) / 200) * 100;
   const moodTone = mood >= 0 ? "positive" : "negative";
-  const hummingbirdAtRest = (entryComplete && !outcome) || outcome === "neutral";
 
   return (
     <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}`}>
@@ -128,7 +127,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
       <div className="hummingbird-branch" aria-hidden="true" />
       <picture className="hummingbird-sprite">
         <source media="(prefers-reduced-motion: reduce)" srcSet="/colibri-still.png" />
-        <img src={hummingbirdAtRest ? "/colibri-still.png" : "/colibri.gif"} alt="Colibrí" />
+        <img src="/colibri.gif" alt="Colibrí" />
       </picture>
       <div className="hummingbird-lemon" aria-hidden="true"><LemonSprite /></div>
       <div className="hummingbird-meter" aria-label={`Ánimo del colibrí: ${mood} de 100`}>

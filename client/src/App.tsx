@@ -13,6 +13,11 @@ function Router() {
   if (new URLSearchParams(window.location.search).get("pantalla") === "colibri") {
     return <HummingbirdPreview />;
   }
+  const appBasePath = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+  const currentPath = window.location.pathname.replace(/\/$/, "") || "/";
+  if (currentPath === appBasePath) {
+    return <Home />;
+  }
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>

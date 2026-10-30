@@ -28,6 +28,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   raices: "ruins",
   rambla: "gathering",
   "espiritus-del-rio": "river",
+  "el-rio": "el-rio",
 };
 
 const WALK_DURATION_MS = 3800;
@@ -225,6 +226,7 @@ export default function Home() {
   const [campfireSeedCollected, setCampfireSeedCollected] = useState(() => persistedSeedIds.includes("rambla"));
   const [riverSeedCollected, setRiverSeedCollected] = useState(() => persistedSeedIds.includes("espiritus-del-rio"));
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
+  const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -588,6 +590,12 @@ export default function Home() {
     setNotice("La semilla plateada de «Espíritus del río» queda en el Libro de Semillas.");
   }
 
+  function collectElRioSeed() {
+    if (elRioSeedCollected) return;
+    setElRioSeedCollected(true);
+    setNotice("El pez blanco entrega la semilla de «El Río» al Libro de Semillas.");
+  }
+
   function chooseRamblaResponse(path: RamblaPath) {
     if (ramblaOutcome !== null || campfireSeedCollected) return;
     const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
@@ -712,6 +720,8 @@ export default function Home() {
     } else if (songId === "espiritus-del-rio") {
       setRiverSeedCollected(false);
       setRiverChallengeComplete(false);
+    } else if (songId === "el-rio") {
+      setElRioSeedCollected(false);
     }
   }
 
@@ -722,8 +732,9 @@ export default function Home() {
     if (rootsSeedCollected) found.add("raices");
     if (campfireSeedCollected) found.add("rambla");
     if (riverSeedCollected) found.add("espiritus-del-rio");
+    if (elRioSeedCollected) found.add("el-rio");
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
-  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected]);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected]);
 
   useEffect(() => {
     const merged = SONG_CATALOG
@@ -902,7 +913,7 @@ export default function Home() {
             ) : scene === "river-challenge" ? (
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={() => setRiverChallengeComplete(true)} />
             ) : (
-              <ElRioScene key={`el-rio-${sceneReplayNonce}`} />
+              <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} />
             )
           )}
 

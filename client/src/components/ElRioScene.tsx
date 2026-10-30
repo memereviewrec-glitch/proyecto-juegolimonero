@@ -1,29 +1,64 @@
 import { useState } from "react";
 import { LemonSprite } from "./GameSprites";
+import { SeedGlyph } from "./SeedGlyph";
 import "./el-rio-scene.css";
 
 type RiverDepth = "shore" | "bed" | "choice";
+type FishColor = "verde" | "azul" | "rojo" | "amarillo";
 
-export function ElRioScene() {
+type ElRioSceneProps = {
+  seedCollected: boolean;
+  onCollectSeed: () => void;
+};
+
+const FISH_THOUGHTS: Record<FishColor, string> = {
+  verde: "La corriente me hace cosquillas. Hoy todo parece posible.",
+  azul: "Nado despacio para que nadie vea cuánto pesa mi tristeza.",
+  rojo: "¡Aparta tus burbujas! El agua también tiene límites.",
+  amarillo: "Cada destello conoce un camino, incluso cuando el fondo parece oscuro.",
+};
+
+const FISH_LABELS: Record<FishColor, string> = {
+  verde: "pez verde",
+  azul: "pez azul",
+  rojo: "pez rojo",
+  amarillo: "pez amarillo",
+};
+
+export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
   const [depth, setDepth] = useState<RiverDepth>("shore");
+  const [heardFish, setHeardFish] = useState<FishColor[]>([]);
+  const [thought, setThought] = useState<string | null>(null);
+  const [whiteHeard, setWhiteHeard] = useState(seedCollected);
+  const whiteUnlocked = heardFish.length === 4;
+
+  function hearFish(color: FishColor) {
+    if (!heardFish.includes(color)) setHeardFish(current => [...current, color]);
+    setThought(`Pez ${color}: ${FISH_THOUGHTS[color]}`);
+  }
+
+  function hearWhiteFish() {
+    setWhiteHeard(true);
+    setThought("Pez blanco: La paz no es silencio; es dejar que todos los colores compartan el mismo cauce.");
+    onCollectSeed();
+  }
 
   return (
     <div className={`scene-stage game-screen el-rio-stage el-rio-${depth}`}>
       <div className="el-rio-world" role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
         <div className="el-rio-light" aria-hidden="true" />
         <div className="el-rio-current" aria-hidden="true" />
-        <div className="el-rio-fish el-rio-fish-one" aria-hidden="true"><i /></div>
-        <div className="el-rio-fish el-rio-fish-two" aria-hidden="true"><i /></div>
-        <div className="el-rio-fish el-rio-fish-three" aria-hidden="true"><i /></div>
-        <div className="el-rio-fish el-rio-fish-four" aria-hidden="true"><i /></div>
+        <button className="el-rio-fish el-rio-fish-green" type="button" onClick={() => hearFish("verde")} aria-label={FISH_LABELS.verde}><i /></button>
+        <button className="el-rio-fish el-rio-fish-blue" type="button" onClick={() => hearFish("azul")} aria-label={FISH_LABELS.azul}><i /></button>
+        <button className="el-rio-fish el-rio-fish-red" type="button" onClick={() => hearFish("rojo")} aria-label={FISH_LABELS.rojo}><i /></button>
+        <button className="el-rio-fish el-rio-fish-yellow" type="button" onClick={() => hearFish("amarillo")} aria-label={FISH_LABELS.amarillo}><i /></button>
+        {whiteUnlocked && <button className={`el-rio-fish el-rio-fish-white ${whiteHeard ? "el-rio-fish-white-heard" : ""}`} type="button" onClick={hearWhiteFish} aria-label="pez blanco de la paz"><i /></button>}
         <div className="el-rio-bed" aria-hidden="true" />
         <div className="el-rio-lemon" aria-hidden="true"><LemonSprite /></div>
-        <div className="river-coordinate">LF · 06</div>
+        <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {depth === "shore" && <><span>EL RÍO</span><p>El camino luminoso termina bajo la superficie. Más abajo, los peces atraviesan el cauce como pensamientos de color.</p><button type="button" onClick={() => setDepth("bed")}>bajar con la corriente <b aria-hidden="true">▶</b></button></>}
-        {depth === "bed" && <><span>EL RÍO</span><p>El limón toca el fondo. Los peces no huyen: pasan a su alrededor y dibujan preguntas en el agua.</p><button type="button" onClick={() => setDepth("choice")}>escuchar el fondo <b aria-hidden="true">▶</b></button></>}
-        {depth === "choice" && <><span>LA CORRIENTE</span><p>Una corriente te lleva hacia dos profundidades. ¿Qué color seguirás?</p><div className="el-rio-choices"><button type="button">El resplandor dorado</button><button type="button">La sombra azul</button></div></>}
+        {thought ? <><span>{thought.startsWith("Pez blanco") ? "PEZ BLANCO" : "PENSAMIENTO DEL PEZ"}</span><p>{thought}</p>{thought.startsWith("Pez blanco") && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}</> : depth === "shore" ? <><span>EL RÍO</span><p>El camino luminoso termina bajo la superficie. Más abajo, los peces atraviesan el cauce como pensamientos de color.</p><button type="button" onClick={() => setDepth("bed")}>bajar con la corriente <b aria-hidden="true">▶</b></button></> : depth === "bed" ? <><span>EL RÍO</span><p>El limón toca el fondo. Los peces no huyen: pasan a su alrededor y dibujan preguntas en el agua.</p><button type="button" onClick={() => setDepth("choice")}>escuchar el fondo <b aria-hidden="true">▶</b></button></> : <><span>LA CORRIENTE</span><p>Una corriente te lleva hacia dos profundidades. Escucha a los peces que cruzan el cauce.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
       </div>
     </div>
   );

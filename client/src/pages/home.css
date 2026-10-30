@@ -513,6 +513,8 @@ button { font:inherit; }
 .seedbook-panel { position:absolute; top:58px; right:10px; bottom:10px; width:min(440px,calc(100% - 20px)); overflow:auto; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
 @keyframes seedbook-open { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
 .seedbook-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:18px; border-bottom:2px dashed #d9d0c0; }
+.seedbook-heading { display:flex; min-width:0; align-items:center; gap:12px; }
+.seedbook-art { display:block; width:72px; height:72px; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; }
 .seedbook-kicker { font:8px 'DM Mono',monospace; letter-spacing:.12em; color:#706a73; }
 .seedbook-header h2 { margin:8px 0 4px; font-size:25px; letter-spacing:-.06em; }
 .seedbook-header p { margin:0; color:#61546c; font:10px 'DM Mono',monospace; }
@@ -548,6 +550,7 @@ button { font:inherit; }
  .seedbook-toggle-icon { font-size:12px; }
  .seedbook-panel { top:51px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }
+ .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }
  .seedbook-metadata { gap:4px; }
  .seedbook-metadata span { padding:5px; }

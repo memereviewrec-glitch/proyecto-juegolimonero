@@ -83,6 +83,9 @@
 - Ningún diálogo o rótulo visible en Raíces dice que una columna esconde una inscripción ni anticipa sus palabras. El limón solo dice que la columna está cubierta de hojas; el jugador descubre el texto al apartarlas.
 - Las palabras permanecen ocultas bajo las hojas y solo quedan visibles en la piedra cuando el jugador las arrastra fuera.
 
+## [x] Arte original del Libro de Semillas
+- El encabezado del panel muestra una ilustración original de pixel art de un libro de semillas encantado, coherente con la paleta y el estilo de las escenas existentes. El recurso tiene fondo transparente, se incluye en `client/public/seedbook-art.png`, se carga desde el propio juego y conserva legibilidad en escritorio y móvil.
+
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.
 - La flor se abre en pixel art después de comenzar el amanecer y entrega una semilla que cae desde su centro. Solo se ofrece «Coger semilla» después de que termine la caída.

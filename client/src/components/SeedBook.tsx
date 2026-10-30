@@ -114,10 +114,13 @@ export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
       <button className="seedbook-scrim" type="button" onClick={onClose} aria-label="Cerrar el Libro de semillas" />
       <aside id="seedbook-panel" ref={panelRef} className="seedbook-panel" role="dialog" aria-modal="true" aria-labelledby="seedbook-title">
         <div className="seedbook-header">
-          <div>
-            <span className="seedbook-kicker">HERBARIO SONORO · LIMONERO FUZZ</span>
-            <h2 id="seedbook-title">Libro de semillas</h2>
-            <p>{discoveredSongs.length} de {SONG_CATALOG.length} semillas descubiertas</p>
+          <div className="seedbook-heading">
+            <img className="seedbook-art" src="/seedbook-art.png" alt="" aria-hidden="true" />
+            <div>
+              <span className="seedbook-kicker">HERBARIO SONORO · LIMONERO FUZZ</span>
+              <h2 id="seedbook-title">Libro de semillas</h2>
+              <p>{discoveredSongs.length} de {SONG_CATALOG.length} semillas descubiertas</p>
+            </div>
           </div>
           <button ref={closeButtonRef} type="button" className="seedbook-close" onClick={onClose} aria-label="Cerrar el Libro de semillas">×</button>
         </div>

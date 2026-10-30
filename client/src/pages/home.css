@@ -38,8 +38,8 @@ button { font:inherit; }
 .workspace { display:block; position:relative; padding:30px clamp(22px,4vw,54px) 38px; max-width:1600px; margin:12px auto 34px; background:#453b50; border:10px solid #2b2631; box-shadow:inset 0 0 0 3px #82758a, 0 10px 0 #27232b; }
 .stage-column { min-width:0; position:relative; }
 .playfield { position:relative; width:100%; --seedbook-safe-top:92px; }
-.story-interlude { position:absolute; z-index:100; inset:0; display:grid; place-items:center; overflow:hidden; background:#050509; color:#fff; image-rendering:pixelated; }
-.story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; }
+.story-interlude { position:absolute; z-index:100; inset:0; display:flex; justify-content:center; align-items:flex-start; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; padding:clamp(16px,5vh,42px) 0; background:#050509; color:#fff; image-rendering:pixelated; scrollbar-color:#aaa4b5 #17151d; scrollbar-width:thin; }
+.story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; margin-block:auto; }
 .story-interlude p { max-width:680px; margin:0; color:#fff; font:500 clamp(16px,2.1vw,25px)/1.65 'DM Mono',monospace; text-wrap:balance; text-shadow:2px 2px 0 #25222d; }
 .story-interlude button { border:2px solid #fff; background:#050509; color:#fff; padding:8px 12px; font:10px 'DM Mono',monospace; text-transform:lowercase; cursor:pointer; box-shadow:3px 3px 0 #6c6875; }
 .story-interlude button:hover,.story-interlude button:focus-visible { background:#fff; color:#050509; outline:2px dashed #fff; outline-offset:4px; }
@@ -551,7 +551,7 @@ button { font:inherit; }
 .journey-restart-confirmation p { margin:2px 3px 8px; color:#706a73; font:9px/1.4 'DM Mono',monospace; }
 .journey-menu-actions { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
 .journey-menu-actions .journey-danger { background:#9a4639; color:#fffdf7; }
-.seedbook-layer { position:absolute; inset:0; z-index:200; isolation:isolate; }
+.seedbook-layer { position:absolute; inset:0; z-index:100; isolation:isolate; }
 .seedbook-scrim { position:absolute; inset:0; width:100%; height:100%; border:0; background:#211d2b9c; cursor:default; }
 .seedbook-panel { position:absolute; top:16px; right:10px; bottom:8px; width:min(440px,calc(100% - 20px)); display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
 @keyframes seedbook-open { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
@@ -622,7 +622,7 @@ button { font:inherit; }
  .journey-menu-toggle { top:86px; left:7px; width:48px; height:38px; }
  .journey-menu-panel { top:86px; left:62px; width:min(240px,calc(100% - 69px)); }
  .seed-spark { width:46px; height:50px; padding:7px; }
- .seedbook-panel { top:8px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
+ .seedbook-panel { top:132px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }

@@ -44,18 +44,8 @@ const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
 
-const STORY_FRAME_NUMBERS: Record<StoryBeat, string> = {
-  opening: "00",
-  portal: "01",
-  ruins: "02",
-  sect: "03",
-  "river-arrival": "04",
-  "spirits-challenge": "05",
-  "el-rio": "06",
-};
-
 function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
-  if (beat === "opening") return "Había una vez un limón que quería descubrir por qué nacen las cosas, qué hace que una vida tenga sentido y si existe un camino para volver a casa.";
+  if (beat === "opening") return "Había una vez un limón que quería explorar los límites del conocimiento y descubrir sus secretos: por qué nacen las cosas, qué hace que una vida tenga sentido y si existe un camino para volver a casa.";
   if (beat === "portal") return "El limón tomó la semilla del conocimiento que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otra dimensión. Pero allí se encontró muy solo.";
   if (beat === "ruins") return "Sin saber todavía cómo volver, el limón comenzó a andar por las ruinas. Cada piedra parecía guardar una pregunta y cada raíz, un camino que no figuraba en ningún mapa.";
   if (beat === "sect") return "Tras las ruinas encontró a la secta del conocimiento oculto. Sus encapuchados hablaban de una verdad reservada para unos pocos y aguardaban junto a una hoguera, como si el fuego pudiera responder por ellos.";
@@ -895,7 +885,7 @@ export default function Home() {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
-            {storyBeat && <StoryInterlude frame={STORY_FRAME_NUMBERS[storyBeat]} text={storyText(storyBeat, ramblaOutcome)} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude text={storyText(storyBeat, ramblaOutcome)} onContinue={advanceStory} />}
             <button
               className="seedbook-toggle"
               type="button"
@@ -993,7 +983,7 @@ export default function Home() {
 
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
-              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
+              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomAction === "examine-cable" || roomAction === "examine" ? "Examinar" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
               {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">CANCIÓN</span><h4>{introStarted ? "Aurora activada" : "Aurora"}</h4></div></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
@@ -1047,8 +1037,8 @@ export default function Home() {
 
 function roomActionLabel(action: Exclude<RoomAction, null>) {
   const labels: Record<Exclude<RoomAction, null>, string> = {
-    "examine-cable": "Examinar cable",
-    examine: "Examinar amplificador",
+    "examine-cable": "Siempre tengo los cables por el suelo... ¿Alguien me echa un cable?",
+    examine: "Tengo que enchufar esto... quizá el amplificador despierte.",
     play: "Tocar la guitarra",
     "guitar-unplugged": "La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.",
     "amp-off": "La guitarra ya está conectada, pero el amplificador sigue apagado. Primero tengo que encenderlo.",

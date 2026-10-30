@@ -40,7 +40,6 @@ button { font:inherit; }
 .playfield { position:relative; width:100%; --seedbook-safe-top:92px; }
 .story-interlude { position:absolute; z-index:100; inset:0; display:grid; place-items:center; overflow:hidden; background:#050509; color:#fff; image-rendering:pixelated; }
 .story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; }
-.story-interlude-frame { color:#8d8997; font:8px 'DM Mono',monospace; letter-spacing:.15em; }
 .story-interlude p { max-width:680px; margin:0; color:#fff; font:500 clamp(16px,2.1vw,25px)/1.65 'DM Mono',monospace; text-wrap:balance; text-shadow:2px 2px 0 #25222d; }
 .story-interlude button { align-self:flex-end; border:2px solid #fff; background:#050509; color:#fff; padding:8px 12px; font:10px 'DM Mono',monospace; text-transform:lowercase; cursor:pointer; box-shadow:3px 3px 0 #6c6875; }
 .story-interlude button:hover,.story-interlude button:focus-visible { background:#fff; color:#050509; outline:2px dashed #fff; outline-offset:4px; }

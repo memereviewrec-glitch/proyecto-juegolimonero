@@ -536,7 +536,7 @@ button { font:inherit; }
 .seedbook-scrim { position:absolute; inset:0; width:100%; height:100%; border:0; background:#211d2b9c; cursor:default; }
 .seedbook-panel { position:absolute; top:16px; right:10px; bottom:8px; width:min(440px,calc(100% - 20px)); display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
 @keyframes seedbook-open { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
-.seedbook-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:18px; border-bottom:2px dashed #d9d0c0; }
+.seedbook-header { order:1; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-top:8px; padding-bottom:24px; border-bottom:2px dashed #b9ad9c; }
 .seedbook-heading { display:flex; min-width:0; align-items:center; gap:12px; }
 .seedbook-art { display:block; width:72px; height:72px; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; }
 .seedbook-kicker { font:8px 'DM Mono',monospace; letter-spacing:.12em; color:#706a73; }
@@ -595,7 +595,7 @@ button { font:inherit; }
 .seedbook-empty small,.seedbook-footnote,.seedbook-error { color:#706a73; font-size:11px; line-height:1.5; }
 .seedbook-footnote { margin:18px 0 0; padding-top:12px; border-top:1px solid #d9d0c0; }
 .seedbook-error { order:2; color:#9a4639; }
-.seedbook-pagination { order:1; display:flex; justify-content:space-between; gap:6px; flex:0 0 auto; width:96%; margin:0 auto 5px; }
+.seedbook-pagination { order:0; display:flex; justify-content:space-between; gap:6px; flex:0 0 auto; width:96%; margin:0 auto 10px; }
 .seedbook-pagination button { flex:1; min-height:26px; padding:4px 6px; border:1px solid #3c3346; background:#eee7d8; color:#3c3346; font:8px 'DM Mono',monospace; cursor:pointer; }
 .seedbook-pagination button:hover:not(:disabled),.seedbook-pagination button:focus-visible { background:#fffdf7; outline:2px solid #d98470; outline-offset:1px; }
 .seedbook-pagination button:disabled { border-color:#d9d0c0; color:#aaa1a5; cursor:not-allowed; }

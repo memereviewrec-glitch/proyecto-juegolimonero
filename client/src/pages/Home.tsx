@@ -5,6 +5,7 @@ import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColu
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
 import { CampfireScene, type CampfireFireStage } from "../components/CampfireScene";
 import { RiverMirrorScene } from "../components/RiverMirrorScene";
+import { RiverChallengeScene } from "../components/RiverChallengeScene";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
@@ -12,7 +13,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins" | "gathering" | "river";
+type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -25,6 +26,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   ventana: "dawn",
   raices: "ruins",
   rambla: "gathering",
+  "espiritus-del-rio": "river",
 };
 
 const WALK_DURATION_MS = 3800;
@@ -220,6 +222,7 @@ export default function Home() {
   const [selectedStickId, setSelectedStickId] = useState<number | null>(null);
   const [campfireFireStage, setCampfireFireStage] = useState<CampfireFireStage>(() => persistedSeedIds.includes("rambla") ? "seed" : "unlit");
   const [campfireSeedCollected, setCampfireSeedCollected] = useState(() => persistedSeedIds.includes("rambla"));
+  const [riverSeedCollected, setRiverSeedCollected] = useState(() => persistedSeedIds.includes("espiritus-del-rio"));
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -577,6 +580,12 @@ export default function Home() {
     setNotice("Semilla de «Rambla» recogida y añadida al Libro de Semillas.");
   }
 
+  function collectRiverSeed() {
+    if (riverSeedCollected) return;
+    setRiverSeedCollected(true);
+    setNotice("La semilla plateada de «Espíritus del río» queda en el Libro de Semillas.");
+  }
+
   function chooseRamblaResponse(path: RamblaPath) {
     if (ramblaOutcome !== null || campfireSeedCollected) return;
     const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
@@ -628,6 +637,7 @@ export default function Home() {
     if (nextScene === "ruins" && !(seedCollected || persistedSeedIds.includes("ventana"))) return;
     if (nextScene === "gathering" && !(rootsSeedCollected || persistedSeedIds.includes("raices"))) return;
     if (nextScene === "river" && !(campfireSeedCollected || persistedSeedIds.includes("rambla"))) return;
+    if (nextScene === "river-challenge" && !(riverSeedCollected || persistedSeedIds.includes("espiritus-del-rio"))) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -696,6 +706,8 @@ export default function Home() {
       setRamblaOutcome(null);
       setRamblaSkillFailures(0);
       setRamblaEscapeSucceeded(false);
+    } else if (songId === "espiritus-del-rio") {
+      setRiverSeedCollected(false);
     }
   }
 
@@ -705,8 +717,9 @@ export default function Home() {
     if (seedCollected) found.add("ventana");
     if (rootsSeedCollected) found.add("raices");
     if (campfireSeedCollected) found.add("rambla");
+    if (riverSeedCollected) found.add("espiritus-del-rio");
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
-  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected]);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected]);
 
   useEffect(() => {
     const merged = SONG_CATALOG
@@ -725,6 +738,7 @@ export default function Home() {
     || (scene === "dawn" && seedCollected)
     || (scene === "ruins" && ruinsView === "scene" && rootsSeedCollected)
     || (scene === "gathering" && campfireSeedCollected)
+    || (scene === "river" && riverSeedCollected)
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
@@ -741,6 +755,7 @@ export default function Home() {
     else if (scene === "dawn") setVisitedScene("ruins");
     else if (scene === "ruins") setVisitedScene("gathering");
     else if (scene === "gathering") setVisitedScene("river");
+    else if (scene === "river") setVisitedScene("river-challenge");
   }
 
   return (
@@ -783,13 +798,16 @@ export default function Home() {
         <button className={`screen-tab ${scene === "river" ? "active" : ""}`} onClick={() => setVisitedScene("river")} disabled={!discoveredSongIds.includes("rambla") || portalTransit || arrivalPortal}>
           <span className="tab-number">05</span><span><strong>La Orilla del Río Espejo</strong><small>Los espíritus del río</small></span><span className="tab-mark">{discoveredSongIds.includes("rambla") ? "↗" : "⌑"}</span>
         </button>
+        <button className={`screen-tab ${scene === "river-challenge" ? "active" : ""}`} onClick={() => setVisitedScene("river-challenge")} disabled={!discoveredSongIds.includes("espiritus-del-rio") || portalTransit || arrivalPortal}>
+          <span className="tab-number">06</span><span><strong>El cauce profundo</strong><small>El reto del río</small></span><span className="tab-mark">{discoveredSongIds.includes("espiritus-del-rio") ? "↗" : "⌑"}</span>
+        </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : "05"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : "La Orilla del Río Espejo"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : "RÍO ESPEJO · DESPUÉS DEL FUEGO"}</span>}
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : "06"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : "El cauce profundo"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : "RÍO ESPEJO · BAJO EL AGUA"}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
@@ -870,7 +888,11 @@ export default function Home() {
               onRetrySkill={retryRamblaEscape}
             />
           ) : (
-            <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} />
+            scene === "river" ? (
+              <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} />
+            ) : (
+              <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} />
+            )
           )}
 
           {scene === "ruins" && ruinsView !== "scene" && <div className="scene-stage game-screen roots-closeup-stage">

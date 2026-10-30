@@ -14,9 +14,8 @@
 .river-spirit-two { left: 39%; height: 100%; z-index: 2; }
 .river-spirit-three { right: 5%; transform: scale(.9); animation-delay: -1.7s; }
 @keyframes spirit-breathe { to { transform: translateY(-5px) scaleX(.96); filter: brightness(1.18); } }
-.river-current { position: absolute; z-index: 3; left: 6%; right: 6%; top: 60%; height: 15%; border-top: 2px solid #d8ffffaa; border-bottom: 1px solid #85d7d766; background: repeating-linear-gradient(0deg, transparent 0 12px, #baf7ed55 13px 15px, transparent 16px 28px); opacity: .8; animation: current-shimmer 3.2s steps(5, end) infinite alternate; }
+.river-current { position: absolute; z-index: 3; left: 6%; right: 6%; top: 60%; height: 15%; border-top: 2px solid #d8ffffaa; border-bottom: 1px solid #85d7d766; background: linear-gradient(180deg, transparent, #baf7ed22 46%, transparent); opacity: .8; }
 .river-current-guiding { top: 64%; height: 22%; border-color: #f3ffdc; background: repeating-linear-gradient(0deg, transparent 0 11px, #f1f6bd99 12px 15px, transparent 16px 27px); box-shadow: 0 -4px 18px #b7fff777; }
-@keyframes current-shimmer { to { transform: translateX(3%); opacity: .56; } }
 .river-lemon { position: absolute; z-index: 7; left: 28%; bottom: 12%; width: 12%; min-width: 54px; max-width: 92px; aspect-ratio: 48 / 56; transition: left 2.8s cubic-bezier(.2,.72,.24,1), bottom 2.8s cubic-bezier(.2,.72,.24,1), transform 1s ease; }
 .river-lemon-resolved { left: 69%; bottom: 24%; transform: rotate(12deg); animation: river-lemon-roll 2.8s ease-in-out both; }
 .river-lemon-carried::after { content: ""; position: absolute; right: -2px; top: 20%; width: 8px; height: 7px; background: #858c95; border: 1px solid #283644; transform: rotate(18deg); box-shadow: 1px 1px 0 #d6e2d0; }
@@ -36,6 +35,10 @@
 @keyframes river-stone-skip { 0% { opacity: 1; transform: translate(-24px, 42px) rotate(0); } 100% { opacity: 0; transform: translate(2px, 0) rotate(140deg); } }
 .river-target { position: absolute; z-index: 10; left: 40%; top: 56%; width: 28%; height: 22%; border: 2px dashed transparent; background: transparent; cursor: pointer; }
 .river-target:hover, .river-target:focus-visible { border-color: #dfffe6aa; outline: 2px dashed #e4ffdb; outline-offset: 3px; background: #d5ffef12; }
+.river-seed { position: absolute; z-index: 14; left: 77%; bottom: 31%; display: grid; width: 58px; height: 64px; padding: 8px; place-items: center; border: 0; background: transparent; cursor: pointer; filter: drop-shadow(0 0 5px #c6fff0); animation: river-seed-glow 1.8s steps(4, end) infinite alternate; }
+.river-seed:hover, .river-seed:focus-visible { outline: 3px dashed #efffdb; outline-offset: 4px; }
+.river-seed .seed-glyph { width: 100%; height: 100%; }
+@keyframes river-seed-glow { from { transform: translateY(2px); filter: drop-shadow(0 0 3px #c6fff0); } to { transform: translateY(-4px); filter: drop-shadow(0 0 11px #c6fff0); } }
 .river-coordinate { position: absolute; z-index: 10; right: 14px; bottom: 12px; color: #edf9ed; font: 8px 'DM Mono', monospace; letter-spacing: .1em; opacity: .78; }
 .river-dialogue { position: absolute; z-index: 15; top: auto; bottom: 2%; left: 50%; width: min(78%, 650px); max-height: 24%; overflow: auto; transform: translateX(-50%); padding: 12px 16px 10px; border: 4px solid #1a2431; background: rgb(239 244 225 / 96%); box-shadow: 5px 5px 0 #15202f, inset 0 0 0 3px #a8b6a7; animation: river-dialogue-enter 1.2s ease-out both; }
 .river-dialogue p { margin: 7px 0 10px; color: #202d38; font: 12px/1.48 'DM Mono', monospace; }
@@ -50,4 +53,4 @@
 .river-dialogue-next span { color: #d5f7cb; }
 @keyframes river-dialogue-enter { from { opacity: 0; transform: translate(-50%, 5px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (max-width: 600px) { .river-dialogue { width: 90%; max-height: 25%; padding: 9px 11px 8px; } .river-dialogue p { font-size: 9px; } .river-speaker { font-size: 7px; } .river-spirit { border-width: 1px; } }
-@media (prefers-reduced-motion: reduce) { .river-mist, .river-current, .river-spirit, .river-lemon-resolved, .river-lemon-thrown, .river-splash i, .river-stone-flight { animation: none; } .river-lemon { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .river-mist, .river-current, .river-spirit, .river-lemon-resolved, .river-lemon-thrown, .river-splash i, .river-stone-flight, .river-seed { animation: none; } .river-lemon { transition: none; } }

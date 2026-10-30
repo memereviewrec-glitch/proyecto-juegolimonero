@@ -2,12 +2,17 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
+import { useState } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { HummingbirdScene } from "./components/HummingbirdScene";
 import PasswordGate from "./components/PasswordGate";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 
 function Router() {
+  if (new URLSearchParams(window.location.search).get("pantalla") === "colibri") {
+    return <HummingbirdPreview />;
+  }
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
@@ -17,6 +22,11 @@ function Router() {
       <Route component={NotFound} />
     </Switch>
   );
+}
+
+function HummingbirdPreview() {
+  const [seedCollected, setSeedCollected] = useState(false);
+  return <HummingbirdScene seedCollected={seedCollected} onCollectSeed={() => setSeedCollected(true)} />;
 }
 
 // NOTE: About Theme

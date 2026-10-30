@@ -532,7 +532,7 @@ export default function Home() {
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
             <button className="seedbook-toggle" type="button" onClick={() => setSeedBookOpen(open => !open)} aria-expanded={seedBookOpen} aria-controls="seedbook-panel">
-              <span className="seedbook-toggle-icon" aria-hidden="true">✳</span><span className="seedbook-toggle-label">Libro de semillas</span><b>{discoveredSongIds.length}/{10}</b>
+              <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" /><span className="seedbook-toggle-label">Libro de semillas</span><b>{discoveredSongIds.length}/{10}</b>
             </button>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}
           {scene === "room" ? (

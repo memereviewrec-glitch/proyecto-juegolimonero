@@ -506,7 +506,7 @@ button { font:inherit; }
 
 .seedbook-toggle { position:absolute; z-index:60; top:10px; right:10px; display:inline-flex; align-items:center; gap:7px; padding:7px 10px; border:2px solid #2b2631; background:#fbf7eced; color:var(--plum-dark); font:500 9px 'DM Mono',monospace; box-shadow:3px 3px #2b263166; cursor:pointer; }
 .seedbook-toggle:hover,.seedbook-toggle:focus-visible { background:#f0e7d6; outline:2px solid #d98470; outline-offset:2px; }
-.seedbook-toggle-icon { color:#d19a3a; font-size:14px; }
+.seedbook-toggle-icon { display:block; width:24px; height:24px; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; }
 .seedbook-toggle b { padding:2px 5px; background:#e8dfce; font-size:9px; }
 .seedbook-layer { position:absolute; inset:0; z-index:100; isolation:isolate; }
 .seedbook-scrim { position:absolute; inset:0; width:100%; height:100%; border:0; background:#211d2b9c; cursor:default; }
@@ -547,7 +547,7 @@ button { font:inherit; }
  .topbar-right { gap:7px; }
  .topbar-right .status-dot,.topbar-right .status-copy,.topbar-right .top-link { display:none; }
  .seedbook-toggle { top:7px; right:7px; gap:5px; padding:6px 7px; font-size:8px; }
- .seedbook-toggle-icon { font-size:12px; }
+ .seedbook-toggle-icon { width:20px; height:20px; }
  .seedbook-panel { top:51px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }

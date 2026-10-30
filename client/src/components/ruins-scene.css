@@ -138,16 +138,15 @@
   top: 57%;
   width: 52px;
   height: 58px;
-  padding: 11px;
-  border: 2px solid #c9e98d;
+  padding: 6px;
+  border: 0;
   border-radius: 50%;
-  background: rgb(34 43 33 / 62%);
+  background: transparent;
   cursor: pointer;
-  box-shadow: 0 0 0 5px rgb(127 188 97 / 22%), 0 0 16px rgb(162 224 123 / 70%);
-  animation: seed-breathe 1.8s ease-in-out infinite alternate;
+  box-shadow: none;
   pointer-events: auto;
 }
-.ruins-seed-pickup .seed-glyph { width: 100%; height: 100%; filter: drop-shadow(0 0 3px #d6f09d); }
+.ruins-seed-pickup .seed-glyph { width: 100%; height: 100%; filter: drop-shadow(0 0 3px rgb(116 199 83 / 78%)); }
 
 .ruins-seed-pickup:focus-visible {
   outline: 3px dashed #fff0bb;

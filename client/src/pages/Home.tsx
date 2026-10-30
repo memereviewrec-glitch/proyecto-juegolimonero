@@ -22,6 +22,7 @@ const PORTAL_ARRIVAL_DURATION_MS = 4800;
 const DAWN_FLOWER_DELAY_MS = 2600;
 const FLOWER_SEED_DROP_MS = 1900;
 const LEMON_WHISTLE_DURATION_MS = 2200;
+const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 
@@ -180,6 +181,7 @@ export default function Home() {
   const [branch, setBranch] = useState<Branch | null>(null);
   const [pendingBranch, setPendingBranch] = useState<Branch | null>(null);
   const [birdsPassed, setBirdsPassed] = useState(false);
+  const [dawnOutcomeAnimationRunning, setDawnOutcomeAnimationRunning] = useState(false);
   const [sunRisen, setSunRisen] = useState(false);
   const [flowerOpen, setFlowerOpen] = useState(false);
   const [seedAvailable, setSeedAvailable] = useState(false);
@@ -466,18 +468,26 @@ export default function Home() {
 
   function whistle(outcome: Branch | null = branch) {
     if (outcome !== "A" || sunRisen) return;
+    const animationDuration = motionDuration(LEMON_WHISTLE_DURATION_MS);
     setBranch(outcome);
+    setDawnOutcomeAnimationRunning(animationDuration > 0);
     playWhistle("lemon");
     setLemonWhistling(true);
-    window.setTimeout(() => setLemonWhistling(false), motionDuration(LEMON_WHISTLE_DURATION_MS));
+    window.setTimeout(() => {
+      setLemonWhistling(false);
+      setDawnOutcomeAnimationRunning(false);
+    }, animationDuration);
     beginSunrise("El limón silba. El cielo empieza a iluminarse y la flor se prepara para abrirse.");
   }
 
   function listenToBirds(outcome: Branch | null = branch) {
     if (outcome !== "B" || birdsPassed || sunRisen) return;
+    const animationDuration = motionDuration(BIRD_FLYBY_DURATION_MS);
     setBranch(outcome);
+    setDawnOutcomeAnimationRunning(animationDuration > 0);
     playWhistle("birds");
     setBirdsPassed(true);
+    window.setTimeout(() => setDawnOutcomeAnimationRunning(false), animationDuration);
     beginSunrise("El limón mira al cielo. Los pájaros silban mientras el amanecer ilumina la sierra.");
   }
 
@@ -566,14 +576,26 @@ export default function Home() {
     setPersistedSeedIds(current => current.length === merged.length && current.every((id, index) => id === merged[index]) ? current : merged);
   }, [discoveredSongIds, persistedSeedIds]);
 
+  const canContinue = !seedBookOpen && !portalTransit && !arrivalPortal && (
+    (scene === "room" && roomView === "scene" && portalOpen)
+    || (scene === "dawn" && seedCollected)
+    || (scene === "ruins" && ruinsView === "scene" && rootsSeedCollected)
+  );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
     ? roomView === "scene" && (Boolean(roomAction) || portalOpen)
     : scene === "dawn"
-      ? dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected
+      ? !dawnOutcomeAnimationRunning && (dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected)
       : scene === "ruins"
         ? ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed" || rootsSeedCollected)
         : false);
+
+  function continueAlongPath() {
+    if (!canContinue) return;
+    if (scene === "room") enterDawn();
+    else if (scene === "dawn") setVisitedScene("ruins");
+    else if (scene === "ruins") setVisitedScene("gathering");
+  }
 
   return (
     <main className="explorer-shell">
@@ -703,7 +725,7 @@ export default function Home() {
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
               {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
-              {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div><button className="action-button" onClick={enterDawn}>Cruzar <span>→</span></button></div>}
+              {portalOpen && <div className="unlock-card"><span className="unlock-icon">◉</span><div><span className="context-kicker">INTRO</span><h4>{introStarted ? "Intro activada" : "Intro"}</h4></div></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label={dialogueTurn === DIALOGUE.length - 1 ? "Dos opciones finales" : "Tres respuestas posibles"}>
@@ -721,13 +743,22 @@ export default function Home() {
               {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={() => listenToBirds()}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
               {seedAvailable && !seedCollected && <div className="context-card seed-card seed-instruction-card" role="status"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. Pulsa su semilla dorada para guardarla." : "La flor se abre y me entrega una semilla. Pulsa la semilla para recogerla."}</p></div></div>}
-              {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("ruins")}>Siguiente: Raíces</button></div>}
+              {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div></div>}
             </> : scene === "ruins" ? <>
               {ruinsAction && <div key={`column-${ruinsAction}`} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{ruinsAction === "left" ? "Unas hojas secas se aferran a esta columna." : "Las hojas se enredan entre las raíces de piedra."}</p></div><button className="action-button" onClick={openRuinsPuzzle}>Examinar</button></div>}
               {ruinsFlowerStage === "seed" && !rootsSeedCollected && <div className="context-card seed-card seed-instruction-card" role="status"><div className="thought-bubble"><span>EL LIMÓN</span><p>La planta ha florecido. Pulsa la semilla verde que brilla entre las raíces.</p></div></div>}
-              {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div><button className="text-button" onClick={() => setVisitedScene("gathering")}>Siguiente: reunión nocturna</button></div>}
+              {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div></div>}
             </> : null}
           </aside>}
+          {canContinue && <button
+            className={`continue-path-button ${scene === "room" ? "continue-path-portal" : ""}`}
+            type="button"
+            onClick={continueAlongPath}
+            aria-label={scene === "room" ? "Atravesar la ventana y continuar al amanecer" : "Continuar el sendero a la siguiente pantalla"}
+          >
+            <span>{scene === "room" ? "atravesar la ventana" : "continuar el sendero"}</span>
+            <svg viewBox="0 0 18 16" aria-hidden="true" shapeRendering="crispEdges"><path d="M1 6h8V2h2v2h2v2h3v4h-3v2h-2v2H9v-4H1z" fill="currentColor" /></svg>
+          </button>}
           </div>
           <span className="sr-only" aria-live="polite" aria-atomic="true">{notice}</span>
         </div>

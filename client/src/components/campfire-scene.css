@@ -201,20 +201,20 @@
   display: grid;
   width: 52px;
   height: 58px;
-  padding: 9px;
+  padding: 5px;
   place-items: center;
   transform: translate(-50%, -50%);
-  border: 2px solid #ffdf81;
-  background: rgb(32 24 32 / 75%);
-  box-shadow: 0 0 0 5px rgb(237 193 92 / 22%), 0 0 22px rgb(255 205 93 / 70%);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
-  animation: campfire-seed-glow 1.2s steps(2, end) infinite alternate;
   touch-action: manipulation;
 }
 
 .campfire-seed svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
-.campfire-seed.seed-rambla { border-color: #9af4e8; box-shadow: 0 0 0 5px rgb(86 205 193 / 25%), 0 0 22px rgb(86 205 193 / 76%); }
-.campfire-seed.seed-rambla .seed-glyph { filter: drop-shadow(0 0 3px #d1fff5); }
+.campfire-seed.seed-rambla { border: 0; background: transparent; box-shadow: none; }
+.campfire-seed.seed-rambla .seed-glyph { filter: drop-shadow(0 0 3px rgb(86 205 193 / 78%)); }
 
 @keyframes campfire-seed-glow {
   from { box-shadow: 0 0 0 3px rgb(86 205 193 / 20%), 0 0 14px rgb(86 205 193 / 56%); }

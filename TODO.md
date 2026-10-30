@@ -39,6 +39,19 @@
 - La última pregunta muestra exactamente dos respuestas: volver al principio o ejecutar el resultado acumulado. Si predomina A, la segunda respuesta es «Silbar» y solo silba el limón; si predomina B, es «Escuchar a los pájaros silbar» y silba la bandada, no el limón.
 - Elegir la salida de la rama inicia directamente el amanecer; no aparece una tercera respuesta ni se reabre el conjunto normal de tres opciones.
 
+## [x] Escena 02: reproducir primero el desenlace visual
+- Al elegir «Silbar» o «Escuchar a los pájaros silbar», el cuadro de texto se oculta mientras se reproduce, sin obstrucción, la animación correspondiente del silbido del limón o del vuelo de la bandada.
+- El cuadro con el resultado vuelve a aparecer solo cuando termina la animación. Si el jugador prefiere reducir el movimiento, el juego no añade una espera artificial antes de mostrar el resultado.
+
+## [x] Página a pantalla completa: solo el juego
+- Todo el contenido visible de la página es la pantalla del juego, adaptada al viewport sin deformar el lienzo ni obligar a desplazarse por la página.
+- Se quitan de la vista la marca y cabecera del sitio, el título/intro, las pestañas para elegir pantalla, los encabezados de documentación, el storyboard y el pie de página. Se conservan dentro del lienzo los controles y cuadros que forman parte del juego.
+
+## [x] Avance del sendero entre pantallas
+- Cuando se desbloquea el portal de la Intro, aparece abajo a la derecha un botón pixel art con el texto «atravesar la ventana»; solo permite entrar en «Ventana al sendero» después de resolver el acorde y abrir el portal.
+- Tras recoger la semilla de «Ventana al sendero», aparece abajo a la derecha un botón pixel art con el texto «continuar el sendero» que abre «Raíces»; tras recoger la semilla de «Raíces», el mismo botón abre la reunión nocturna de «Rambla».
+- El botón permanece dentro del lienzo, no se muestra mientras el destino siga bloqueado ni cuando está abierto el Libro de semillas, y no se superpone con los cuadros de diálogo.
+
 ## [x] Legibilidad y limpieza de las respuestas en la pantalla 2
 - Los cuadros de diálogo de «Ventana al sendero» muestran las respuestas con tipografía mayor y fácil de leer.
 - No aparece ningún símbolo, icono o código junto a la respuesta elegible: se quitan, entre otros, el símbolo de reinicio y las letras A y B; las opciones conservan su texto y su comportamiento.
@@ -58,6 +71,11 @@
 - En cada primer plano, el jugador arrastra las hojas que cubren la piedra para apartarlas. Al despejar la columna izquierda aparece exactamente «as above»; al despejar la derecha, exactamente «so below».
 - Cada columna tiene exactamente cuatro hojas, algo mayores que las actuales. El plano principal muestra las columnas más cerca y el primer plano presenta una inscripción de aspecto más detallado, conservando exactamente «as above» y «so below».
 - Tras descubrir ambas inscripciones, una planta crece hasta florecer y entrega la tercera semilla, que desbloquea la tercera canción «Raíces».
+
+## [x] Primer plano agrietado e inscripciones integradas en Raíces
+- Al apartar las hojas, cada columna se muestra en un primer plano mucho más cercano: la piedra llena el encuadre y sus grietas se distinguen claramente.
+- «as above» y «so below» forman parte de la ilustración tallada en la piedra; no se presentan como texto o rótulo superpuesto a la escena.
+- Las semillas físicas se muestran sin recuadro ni fondo sólido, con transparencia y, como máximo, un resplandor pequeño del color propio de cada semilla.
 
 ## [x] Pantalla 4: encuentro nocturno y hoguera
 - El fondo se basa en el panel oficial 04: cielo estrellado con luna creciente, valle rocoso y figuras reunidas alrededor de un símbolo central, en el mismo pixel art deliberado del juego y la proporción estrecha del mundo de la escena 03. El limón no queda pintado en el fondo: es un actor separado que el jugador puede mover.

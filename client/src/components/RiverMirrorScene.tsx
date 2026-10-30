@@ -128,7 +128,6 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed }: RiverM
         <div className={`river-spirits ${spiritsAwake ? "river-spirits-awake" : ""}`} aria-label="Tres Espíritus del Río" aria-hidden={!spiritsAwake}>
           <span className="river-spirit river-spirit-one" /><span className="river-spirit river-spirit-two" /><span className="river-spirit river-spirit-three" />
         </div>
-        <div className={`river-current ${resolved ? "river-current-guiding" : ""}`} aria-hidden="true" />
         <div className={`river-lemon ${stoneStatus === "throwing" ? "river-lemon-throwing" : ""} ${stoneStatus === "thrown" ? "river-lemon-thrown" : ""} ${resolved ? "river-lemon-resolved" : ""}`} style={{ left: `${lemonPoint.x}%`, bottom: `${lemonPoint.bottom}%` }} aria-label="El limón">
           <LemonSprite />
         </div>

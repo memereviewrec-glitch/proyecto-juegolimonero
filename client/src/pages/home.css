@@ -675,6 +675,7 @@ body { background:#08070d; }
 .continue-path-button:hover { transform:translate(-2px,-2px); background:#f5d98a; box-shadow:6px 6px 0 #2b2631; }
 .continue-path-button:active { transform:translate(2px,2px); box-shadow:2px 2px 0 #2b2631; }
 .continue-path-button:focus-visible { outline:3px dashed #fff0bb; outline-offset:3px; box-shadow:0 0 0 2px #302638,4px 4px 0 #2b2631; }
+.continue-path-river { top:12px; bottom:auto; }
 .continue-path-portal { background:#e8bb8d; }
 .continue-path-portal:hover { background:#f1cda4; }
 @media (max-width:600px) {

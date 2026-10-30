@@ -182,6 +182,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, onClose, onR
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{song.title}</h3>
+                  {isPreview && <span className="seedbook-locked">bloqueada</span>}
                   {seedId ? (
                       <button className="seedbook-collected seedbook-colored-seed seedbook-replay-icon" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
                       <SeedGlyph seed={seedId} />

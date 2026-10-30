@@ -57,7 +57,7 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
     return `${arrival} Así que decidió lanzar piedras al agua, para ver si algo le respondía desde el fondo.`;
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
-  return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. El limón se preparó para buscar la siguiente semilla en el fondo del cauce.";
+  return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
 }
 
 const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {

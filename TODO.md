@@ -9,9 +9,16 @@
 - En los tres finales aparece la semilla de «Ponzoña» como recompensa clicable; al recogerla se crea/desbloquea la entrada correspondiente del Libro de Semillas.
 - Solo en esta pantalla, el cuadro de diálogo se renderiza debajo del lienzo para no tapar la animación; el colibrí se muestra mucho más pequeño, Limón reutiliza el `LemonSprite` habitual y la barra de ánimo conserva un tamaño legible colocada más abajo, separada de los iconos superiores.
 
+## [ ] Arco final: nueve sentidos y enemigo Jaguar
+- El Jaguar es el enemigo final del viaje y la décima entrada del catálogo; el acceso a su escena se desbloquea al reunir las nueve semillas anteriores, asociadas a los nueve sentidos.
+- La escena del colibrí modifica la ayuda disponible en el final: con el final positivo, el colibrí ayuda mucho; con el final neutro, ayuda un poco; con el final negativo, no ayuda. Esta consecuencia debe persistir al cambiar de pantalla y al recargar la partida.
+- La ayuda del colibrí debe cambiar la resolución del enfrentamiento final, no solo un texto decorativo: se reservarán variantes de dificultad, pistas o acciones disponibles para que el jugador perciba que su decisión tuvo consecuencias.
+- Si Limón consigue hacerse amigo del colibrí —final positivo de la conversación—, el colibrí lo acompaña durante «Nueve sentidos». El final neutro permitirá una presencia o ayuda limitada, y el final negativo hará que Limón continúe sin su compañía.
+- La semilla de «El Jaguar» se obtiene al completar el final, mientras que las nueve semillas anteriores funcionan como las llaves narrativas que permiten llegar hasta él.
+
 ## [ ] Menú del viaje e Instagram de la banda
-- El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación y enlaces al Instagram oficial de la banda.
-- Los enlaces de Instagram permanecen pendientes hasta recibir las URLs oficiales; no se inventan handles ni destinos.
+- El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación.
+- Los enlaces de Instagram se dejan para la fase final de publicación; no se inventan handles ni destinos durante el desarrollo.
 
 ## [x] Acceso inicial al Libro y texto del minijuego de guitarra
 - El Libro de semillas permanece oculto durante el local y el minijuego de la guitarra; se habilita después de completar el primer cruce del portal y obtener la semilla inicial de «Aurora». En partidas ya guardadas con esa semilla, el acceso se conserva.
@@ -196,11 +203,11 @@
 - Los cuadros de diálogo y de acción comparten marco pixel art, pueden variar en ubicación y tamaño según la escena para no tapar elementos importantes, y avanzan con «Siguiente» antes de presentar respuestas.
 - Los cuadros aparecen mediante un fundido suave de 1,45 s. La llegada, caminata y amanecer respetan `prefers-reduced-motion`.
 
-## [ ] Libro de semillas y canciones
+## [ ] Libro de semillas y canciones · recursos finales aplazados
 - Un panel desplegable «Libro de semillas» permanece accesible durante la partida y añade cada semilla al descubrirla. Muestra el título y metadatos independientes de las semillas encontradas.
 - Cada entrada ofrece únicamente dos acciones separadas: abrir el enlace del vídeo de YouTube y descargar la canción completa; no existe espacio ni reproductor para MP3 dentro del Libro.
 - La colección incluye las diez canciones en el orden facilitado por el grupo y solo muestra como descubiertas las semillas que el jugador ya haya encontrado.
-- Si un archivo o enlace oficial aún no está disponible, su campo y acción aparecen pendientes/deshabilitados; no se inventan canciones, enlaces ni archivos.
+- Los enlaces oficiales de YouTube y las descargas WAV se añadirán únicamente en la fase final, cuando el grupo entregue los destinos definitivos; no se inventan canciones, enlaces ni archivos durante el desarrollo.
 
 ## [x] Notas y efectos de sonido en MP3
 - Las notas seleccionadas en el mástil, de E2 a C#5 dentro de los nueve primeros trastes, y los dos silbidos del limón y los pájaros se reproducen desde archivos MP3; el juego no sintetiza estas notas mediante osciladores Web Audio.

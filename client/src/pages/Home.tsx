@@ -793,11 +793,11 @@ export default function Home() {
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
-    ? roomView === "scene" && (Boolean(roomAction) || portalOpen)
+    ? roomView === "scene" && Boolean(roomAction)
     : scene === "dawn"
-      ? !dawnOutcomeAnimationRunning && (dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected)
+      ? !dawnOutcomeAnimationRunning && (dialogueStarted || branch !== null || sunRisen || seedAvailable)
       : scene === "ruins"
-        ? ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed" || rootsSeedCollected)
+        ? ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed")
         : false);
 
   function advanceStory() {

@@ -955,7 +955,7 @@ export default function Home() {
             </> : null}
           </aside>}
           {canContinue && <button
-            className={`continue-path-button ${scene === "room" ? "continue-path-portal" : ""} ${scene === "river" || scene === "river-challenge" ? "continue-path-river" : ""}`}
+            className={`continue-path-button ${scene === "room" ? "continue-path-portal" : "continue-path-compact"}`}
             type="button"
             onClick={continueAlongPath}
             aria-label={scene === "room" ? "Atravesar la ventana y continuar al amanecer" : "Continuar el sendero a la siguiente pantalla"}

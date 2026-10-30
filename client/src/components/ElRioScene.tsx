@@ -25,40 +25,45 @@ const FISH_LABELS: Record<FishColor, string> = {
 };
 
 const BLACK_RESPONSES: Record<FishColor, string> = {
-  verde: "Pez negro: La alegría es un comienzo, no una respuesta final.",
-  azul: "Pez negro: La tristeza recuerda que todo lo que vive también cambia.",
-  rojo: "Pez negro: Incluso la ira guarda miedo a desaparecer.",
-  amarillo: "Pez negro: La sabiduría empieza cuando aceptamos que no poseemos el principio.",
+  verde: "La alegría es un comienzo, no una respuesta final.",
+  azul: "La tristeza recuerda que todo lo que vive también cambia.",
+  rojo: "Incluso la ira guarda miedo a desaparecer.",
+  amarillo: "La sabiduría empieza cuando aceptamos que no poseemos el principio.",
 };
 
 export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
   const [heardFish, setHeardFish] = useState<FishColor[]>([]);
   const [thought, setThought] = useState<string | null>(null);
   const [blackThought, setBlackThought] = useState<string | null>(null);
+  const [activeFish, setActiveFish] = useState<FishColor | "blanco" | "negro" | null>(null);
   const [whiteHeard, setWhiteHeard] = useState(seedCollected);
   const whiteUnlocked = heardFish.length === 4;
 
   useEffect(() => {
-    setThought("Pez negro: Todo río nace antes de que alguien lo nombre y muere antes de que alguien lo comprenda.");
+    setThought("Todo río nace antes de que alguien lo nombre y muere antes de que alguien lo comprenda.");
     setBlackThought(null);
+    setActiveFish("negro");
   }, []);
 
   function hearFish(color: FishColor) {
     if (!heardFish.includes(color)) setHeardFish(current => [...current, color]);
-    setThought(`Pez ${color}: ${FISH_THOUGHTS[color]}`);
+    setThought(FISH_THOUGHTS[color]);
     setBlackThought(BLACK_RESPONSES[color]);
+    setActiveFish(color);
   }
 
   function hearWhiteFish() {
     setWhiteHeard(true);
-    setThought("Pez blanco: La paz no es silencio; es dejar que todos los colores compartan el mismo cauce.");
-    setBlackThought("Pez negro: Por un instante, la muerte no separa nada.");
+    setThought("La paz no es silencio; es dejar que todos los colores compartan el mismo cauce.");
+    setBlackThought("Por un instante, la muerte no separa nada.");
+    setActiveFish("blanco");
     onCollectSeed();
   }
 
   function closeFishThought() {
     setThought(null);
     setBlackThought(null);
+    setActiveFish(null);
   }
 
   return (
@@ -77,7 +82,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
         <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {thought ? <><span>{thought.startsWith("Pez blanco") ? "PEZ BLANCO" : thought.startsWith("Pez negro") ? "PEZ NEGRO" : "PENSAMIENTO DEL PEZ"}</span><p>{thought}</p>{blackThought && <><span>PEZ NEGRO</span><p className="el-rio-black-thought">{blackThought}</p></>}{thought.startsWith("Pez blanco") && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}<button type="button" onClick={closeFishThought}>continuar <b aria-hidden="true">▶</b></button></> : <><span>EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
+        {thought ? <><span>PEZ {activeFish?.toUpperCase()}</span><p>{thought}</p>{blackThought && <><span>PEZ NEGRO</span><p className="el-rio-black-thought">{blackThought}</p></>}{activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}<button type="button" onClick={closeFishThought}>continuar <b aria-hidden="true">▶</b></button></> : <><span>EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
       </div>
     </div>
   );

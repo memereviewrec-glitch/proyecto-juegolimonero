@@ -139,7 +139,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   const [dawnIsMoving, setDawnIsMoving] = useState(false);
   const [selectedFrets, setSelectedFrets] = useState<FretSelection[]>([]);
   const [portalOpen, setPortalOpen] = useState(() => persistedSeedIds.includes("intro"));
-  const [portalCrossed, setPortalCrossed] = useState(() => persistedSeedIds.includes("intro"));
   const [portalTransit, setPortalTransit] = useState(false);
   const [arrivalPortal, setArrivalPortal] = useState(false);
   const [introStarted, setIntroStarted] = useState(false);
@@ -391,7 +390,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       setDawnIsMoving(false);
       setScene("dawn");
       setPortalTransit(false);
-      setPortalCrossed(true);
       setStorySeedBookOpened(false);
       setStorySeedPreview(null);
       setStoryBeat("portal");
@@ -869,7 +867,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
-            {portalCrossed && <div ref={journeyMenuRef} className="journey-menu-anchor">
+            <div ref={journeyMenuRef} className="journey-menu-anchor">
             <button
               className="seedbook-toggle"
               type="button"
@@ -913,7 +911,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
                 <button key={link.label} type="button" role="menuitem" disabled>◎ {link.label} · pendiente</button>
               ))}
             </aside>}
-            </div>}
+            </div>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>

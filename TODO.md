@@ -99,9 +99,12 @@
 - La misma ilustración original de pixel art de un libro de semillas encantado aparece en el encabezado del panel y como icono visible del botón que abre el libro. El recurso conserva el estilo de las escenas existentes, tiene fondo transparente, se incluye en `client/public/seedbook-art.png`, se carga desde el propio juego y conserva legibilidad en escritorio y móvil.
 
 ## [x] Acceso al Libro de semillas: icono grande sin texto visible
-- El control aparece en la esquina superior izquierda del lienzo y muestra solo la ilustración pixel-art del libro y el contador numérico de progreso; no muestra las palabras «Libro de semillas» hasta que el panel se abre.
+- El control aparece en la esquina superior izquierda, dentro de la pantalla jugable, y muestra solo la ilustración pixel-art del libro y el contador numérico de progreso; no aparece en la franja exterior ni muestra las palabras «Libro de semillas» hasta que el panel se abre.
 - En ninguna escena ni tamaño de pantalla el icono del libro tapa texto, opciones o controles de un cuadro. Todas las cajas y controles permanecen dentro del área visible del lienzo, con separación visible del icono; no se desplaza ningún cuadro fuera del marco para resolver el solapamiento.
 - El icono mide al menos 58 × 58 px y el botón ofrece una zona táctil mínima de 64 × 64 px en escritorio y móvil. Conserva contraste, foco de teclado claro y un nombre accesible con el estado/progreso, además de `aria-expanded`, `aria-haspopup` y `aria-controls`.
+
+## [x] Reiniciar partida desde el Libro de Semillas
+- Dentro del panel hay un botón «Reiniciar juego». Al pulsarlo se pide confirmación; confirmar borra las semillas guardadas en este navegador, cierra todos los acertijos y vuelve al inicio con el portal cerrado. Cancelar conserva el progreso y la escena actual.
 
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.

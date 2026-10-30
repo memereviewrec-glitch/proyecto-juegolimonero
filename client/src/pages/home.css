@@ -37,7 +37,7 @@ button { font:inherit; }
 .tab-mark { color:var(--leaf); margin-left:auto; font-size:14px; }
 .workspace { display:block; position:relative; padding:30px clamp(22px,4vw,54px) 38px; max-width:1600px; margin:12px auto 34px; background:#453b50; border:10px solid #2b2631; box-shadow:inset 0 0 0 3px #82758a, 0 10px 0 #27232b; }
 .stage-column { min-width:0; position:relative; }
-.playfield { position:relative; width:100%; --scene-inset:104px; padding-top:var(--scene-inset); }
+.playfield { position:relative; width:100%; --seedbook-safe-top:92px; }
 .playfield-portrait,.playfield-room { width:min(100%,760px); margin-inline:auto; }
 .stage-heading { display:flex; justify-content:space-between; align-items:end; margin:0 0 16px; gap:20px; }
 .stage-heading h2,.storyboard-heading h2 { margin:5px 0 0; font-size:22px; letter-spacing:-.055em; font-weight:600; }
@@ -151,7 +151,7 @@ button { font:inherit; }
 .birds-visible { opacity:1; animation:birds-cross 6.2s steps(12,end) forwards; }
 .bird-flock span { display:inline-block; margin-right:9px; transform:scaleX(1.4); }
 @keyframes birds-cross { from { left:-25%; } to { left:110%; } }
-.control-column { position:absolute; z-index:12; top:calc(var(--scene-inset, 104px) + 8px); bottom:auto; left:3%; right:auto; width:56%; max-height:48%; overflow:auto; border:4px solid #201c28; padding:15px 18px; min-width:0; background:rgba(247,239,220,.97); box-shadow:5px 5px 0 #201c28, inset 0 0 0 3px #a99780; scrollbar-color:#9a879d transparent; image-rendering:pixelated; pointer-events:none; animation:text-box-enter 1.45s ease-out both; }
+.control-column { position:absolute; z-index:12; top:calc(var(--seedbook-safe-top, 92px) + 8px); bottom:auto; left:3%; right:auto; width:56%; max-height:48%; overflow:auto; border:4px solid #201c28; padding:15px 18px; min-width:0; background:rgba(247,239,220,.97); box-shadow:5px 5px 0 #201c28, inset 0 0 0 3px #a99780; scrollbar-color:#9a879d transparent; image-rendering:pixelated; pointer-events:none; animation:text-box-enter 1.45s ease-out both; }
 @keyframes text-box-enter { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
 .control-column button { pointer-events:auto; }
 .control-column .context-card,.control-column .chord-panel,.control-column .dialogue-card,.control-column .branch-card,.control-column .unlock-card { border:0; background:transparent; box-shadow:none; padding:0; margin:0; }
@@ -165,8 +165,8 @@ button { font:inherit; }
 .control-column .choice-list strong { flex:1; }
 .control-column .unlock-card .action-button { flex-basis:auto; width:auto; }
 .control-column .song-card { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.room-controls { top:calc(var(--scene-inset, 104px) + 8px); left:3%; right:auto; bottom:auto; width:min(56%,430px); max-height:48%; }
-.dawn-controls { top:calc(var(--scene-inset, 104px) + 8px); left:auto; right:3%; bottom:auto; width:min(64%,520px); max-height:58%; }
+.room-controls { top:calc(var(--seedbook-safe-top, 92px) + 8px); left:3%; right:auto; bottom:auto; width:min(56%,430px); max-height:48%; }
+.dawn-controls { top:calc(var(--seedbook-safe-top, 92px) + 8px); left:auto; right:3%; bottom:auto; width:min(64%,520px); max-height:58%; }
 .control-column.dawn-controls .choice-list { grid-template-columns:1fr; gap:8px; }
 .control-column.dawn-controls .choice-list button { display:flex; width:100%; min-height:54px; align-items:center; justify-content:flex-start; padding:10px 14px; }
 .control-column.dawn-controls .choice-list strong { display:block; min-width:0; overflow-wrap:anywhere; font:600 16px/1.35 'DM Mono',monospace; text-align:left; }
@@ -286,11 +286,11 @@ button { font:inherit; }
  .screen-nav { padding:0 14px; overflow:auto; }
  .screen-tab { min-width:225px; min-height:68px; gap:9px; padding-right:12px; }
  .workspace { margin:10px 10px 28px; padding:13px; border-width:6px; }
- .playfield { --scene-inset:92px; padding-top:var(--scene-inset); }
+ .playfield { --seedbook-safe-top:79px; }
  .stage-heading { align-items:start; flex-direction:column; gap:5px; }
  .stage-location { text-align:left; }
  .dawn-stage { min-height:unset; }
- .control-column { top:calc(var(--scene-inset, 92px) + 8px); bottom:auto; left:3%; right:auto; max-height:54%; padding:10px 11px; border-width:3px; }
+ .control-column { top:calc(var(--seedbook-safe-top, 79px) + 8px); bottom:auto; left:3%; right:auto; max-height:54%; padding:10px 11px; border-width:3px; }
  .room-controls { width:92%; max-height:54%; }
  .dawn-controls { left:3%; right:auto; width:70%; max-height:45%; }
  .control-column .dialogue-card,.control-column .action-card,.control-column .seed-card { grid-template-columns:1fr; gap:5px; }
@@ -525,6 +525,16 @@ button { font:inherit; }
 .seedbook-header h2 { margin:8px 0 4px; font-size:25px; letter-spacing:-.06em; }
 .seedbook-header p { margin:0; color:#61546c; font:10px 'DM Mono',monospace; }
 .seedbook-close { width:34px; height:34px; flex:0 0 auto; border:2px solid #2b2631; background:#eee7d8; color:#2b2631; font-size:22px; line-height:1; cursor:pointer; }
+.seedbook-restart-area { margin:14px 0 18px; padding:12px; border:2px dashed #d98470; background:#fffdf7; }
+.seedbook-restart-button,.seedbook-restart-actions button { display:inline-flex; min-height:38px; align-items:center; justify-content:center; padding:8px 12px; border:2px solid #3c3346; color:#3c3346; font:600 10px 'DM Mono',monospace; cursor:pointer; }
+.seedbook-restart-button { width:100%; background:#eee7d8; }
+.seedbook-restart-confirmation h3 { margin:0; font-size:16px; }
+.seedbook-restart-copy p { margin:6px 0 12px; color:#706a73; font:10px/1.45 'DM Mono',monospace; }
+.seedbook-restart-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
+.seedbook-restart-cancel { background:#f7f3e9; }
+.seedbook-restart-confirm { background:#9a4639; color:#fffdf7 !important; }
+.seedbook-restart-button:hover,.seedbook-restart-actions button:hover { outline:2px solid #d98470; outline-offset:1px; }
+.seedbook-restart-button:focus-visible,.seedbook-restart-actions button:focus-visible { outline:3px solid #d98470; outline-offset:2px; }
 .seedbook-list { display:grid; gap:14px; margin:18px 0; padding:0; list-style:none; }
 .seedbook-entry { padding:14px; border:2px solid #d9d0c0; background:#fffdf7; box-shadow:3px 3px #eee7d8; }
 .seedbook-entry-heading { display:flex; align-items:center; gap:9px; margin-bottom:12px; }

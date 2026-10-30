@@ -30,20 +30,34 @@ export const SONG_CATALOG: readonly SongResource[] = [
 type SeedBookProps = {
   discoveredSongIds: SeedSongId[];
   onClose: () => void;
+  onRestart: () => void;
 };
 
-export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, onClose, onRestart }: SeedBookProps) {
   const [playingSongId, setPlayingSongId] = useState<SeedSongId | null>(null);
   const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
+  const [restartConfirmationOpen, setRestartConfirmationOpen] = useState(false);
+  const restartTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const restartCancelRef = useRef<HTMLButtonElement | null>(null);
+  const restoreRestartFocusRef = useRef(false);
   const discoveredSongs = SONG_CATALOG.filter(song => discoveredSongIds.includes(song.id));
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
+
+  useEffect(() => {
+    if (restartConfirmationOpen) {
+      restartCancelRef.current?.focus();
+    } else if (restoreRestartFocusRef.current) {
+      restoreRestartFocusRef.current = false;
+      restartTriggerRef.current?.focus();
+    }
+  }, [restartConfirmationOpen]);
 
   useEffect(() => {
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -111,6 +125,11 @@ export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
     });
   }
 
+  function cancelRestartConfirmation() {
+    restoreRestartFocusRef.current = true;
+    setRestartConfirmationOpen(false);
+  }
+
   return (
     <div className="seedbook-layer">
       <button className="seedbook-scrim" type="button" onClick={onClose} aria-label="Cerrar el Libro de semillas" />
@@ -125,6 +144,23 @@ export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
             </div>
           </div>
           <button ref={closeButtonRef} type="button" className="seedbook-close" onClick={onClose} aria-label="Cerrar el Libro de semillas">×</button>
+        </div>
+
+        <div className="seedbook-restart-area">
+          {restartConfirmationOpen ? (
+            <div className="seedbook-restart-confirmation" role="group" aria-labelledby="seedbook-restart-title" aria-describedby="seedbook-restart-description">
+              <div className="seedbook-restart-copy">
+                <h3 id="seedbook-restart-title">¿Reiniciar el juego?</h3>
+                <p id="seedbook-restart-description">Se borrarán las semillas guardadas en este navegador y la partida volverá al inicio, con el portal cerrado.</p>
+              </div>
+              <div className="seedbook-restart-actions">
+                <button ref={restartCancelRef} type="button" className="seedbook-restart-cancel" onClick={cancelRestartConfirmation}>Cancelar</button>
+                <button type="button" className="seedbook-restart-confirm" onClick={onRestart}>Sí, reiniciar</button>
+              </div>
+            </div>
+          ) : (
+            <button ref={restartTriggerRef} type="button" className="seedbook-restart-button" onClick={() => setRestartConfirmationOpen(true)}>↻ Reiniciar juego</button>
+          )}
         </div>
 
         {discoveredSongs.length === 0 ? (

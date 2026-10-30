@@ -41,6 +41,18 @@ function readStoredSeedBookIds(): SeedSongId[] {
   }
 }
 
+function restartGame() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(SEED_BOOK_STORAGE_KEY);
+  } catch {
+    window.alert("No se pudo borrar el progreso guardado. Comprueba los permisos de almacenamiento del navegador.");
+    return;
+  }
+  stopGameAudio();
+  window.location.reload();
+}
+
 const C_SHARP_MINOR_SCALE = new Set(["Do#", "Re#", "Mi", "Fa#", "Sol#", "La", "Si"]);
 
 const DIALOGUE = [
@@ -620,9 +632,9 @@ export default function Home() {
               aria-controls="seedbook-panel"
             >
               <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" />
-              <b aria-hidden="true">{discoveredSongIds.length}/{10}</b>
+              <b aria-hidden="true">{discoveredSongIds.length}/10</b>
             </button>
-            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} />}
+            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} onClose={() => setSeedBookOpen(false)} onRestart={restartGame} />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">

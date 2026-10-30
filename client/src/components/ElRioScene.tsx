@@ -44,6 +44,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
   const [thought, setThought] = useState<string | null>(null);
   const [blackThought, setBlackThought] = useState<string | null>(null);
   const [activeFish, setActiveFish] = useState<FishColor | "blanco" | "negro" | null>(null);
+  const [showingBlackReply, setShowingBlackReply] = useState(false);
   const [whiteHeard, setWhiteHeard] = useState(seedCollected);
   const whiteUnlocked = heardFish.length === 4;
 
@@ -51,6 +52,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
     setThought("Todo río nace antes de que alguien lo nombre y muere antes de que alguien lo comprenda.");
     setBlackThought(null);
     setActiveFish("negro");
+    setShowingBlackReply(false);
   }, []);
 
   function hearFish(color: FishColor) {
@@ -58,6 +60,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
     setThought(FISH_THOUGHTS[color]);
     setBlackThought(BLACK_RESPONSES[color]);
     setActiveFish(color);
+    setShowingBlackReply(false);
   }
 
   function hearWhiteFish() {
@@ -65,6 +68,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
     setThought("La paz no es silencio; es dejar que todos los colores compartan el mismo cauce.");
     setBlackThought("Por un instante, la muerte no separa nada.");
     setActiveFish("blanco");
+    setShowingBlackReply(false);
     onCollectSeed();
   }
 
@@ -72,6 +76,11 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
     setThought(null);
     setBlackThought(null);
     setActiveFish(null);
+    setShowingBlackReply(false);
+  }
+
+  function showBlackReply() {
+    setShowingBlackReply(true);
   }
 
   return (
@@ -90,7 +99,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
         <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {thought ? <><span>PEZ {activeFish?.toUpperCase()}</span><p>{thought}</p>{blackThought && <><span>PEZ NEGRO</span><p className="el-rio-black-thought">{blackThought}</p></>}{activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}<button type="button" onClick={closeFishThought}>continuar <b aria-hidden="true">▶</b></button></> : <><span>EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
+        {thought ? <><span>PEZ {showingBlackReply && blackThought ? "NEGRO" : activeFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span>EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
       </div>
     </div>
   );

@@ -165,7 +165,7 @@ export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
           </ol>
         )}
         {audioError && <p className="seedbook-error" role="status">No se pudo reproducir el MP3. Comprueba que el archivo esté disponible.</p>}
-        <p className="seedbook-footnote">Los enlaces se activarán al incorporar los archivos oficiales del disco.</p>
+        <p className="seedbook-footnote">Las semillas descubiertas se guardan en este navegador. Los enlaces se activarán al incorporar los archivos oficiales del disco.</p>
       </aside>
     </div>
   );

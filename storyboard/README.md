@@ -1,6 +1,6 @@
 # Storyboard — Limonero Fuzz
 
-Carpeta de referencia narrativa y visual del juego. Las imágenes aquí son copias organizadas de assets ya existentes en `client/public`; los originales se mantienen en su ubicación porque la aplicación los utiliza.
+Carpeta de referencia narrativa y visual del juego. Incluye copias de paneles oficiales en `referencias/` y enlaces a los fondos finales que la aplicación utiliza desde `client/public`.
 
 ## Secuencia
 
@@ -16,11 +16,17 @@ El limón llega a un camino entre montañas al amanecer. La conversación ramifi
 
 En unas ruinas cubiertas de vegetación, el limón recorre un sendero de piedra y examina dos columnas. Aparta las hojas y revela las inscripciones «as above» y «so below». Al descubrir ambas, florece una planta y aparece la tercera semilla, que desbloquea «Raíces».
 
+### 04 — Encuentro bajo la luna
+
+Después de encontrar la semilla de «Raíces», el limón llega a una reunión nocturna en un valle rocoso. El jugador recoge cuatro palitos, los lleva uno por uno al centro del círculo y enciende la hoguera. Al terminar la animación del fuego aparece la semilla de «Rambla»; hay que pulsarla para añadirla al Libro de Semillas.
+
 ## Referencias visuales
 
 - [Pantallas 01–02](referencias/pantallas-01-02.png): composición del local y escena del camino al amanecer.
 - [Amanecer](referencias/amanecer.png): referencia ampliada de la escena y el motivo de la flor.
 - La implementación de la escena 03 se guía por las referencias de las ruinas y columnas de `client/public/ruins-background.png` y `client/public/ruins-column-*.png`.
+- [Panel oficial 04](referencias/panel-04.png): composición de la reunión nocturna compartida para el desarrollo de la nueva escena.
+- [Fondo pixel art 04](../client/public/scene-04-background.png): arte final integrado, ajustado a la proporción del mundo jugable.
 
 ## Dirección de arte y experiencia
 

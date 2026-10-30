@@ -3,10 +3,11 @@ import { AmpCloseup, CableCloseup, CableSceneArt, GuitarCloseup, type FretSelect
 import { LemonSprite } from "../components/GameSprites";
 import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColumnPuzzle";
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
-import { SeedBook, type SeedSongId } from "../components/SeedBook";
+import { CampfireScene, CAMPFIRE_STICK_COUNT, type CampfireFireStage } from "../components/CampfireScene";
+import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins";
+type Scene = "room" | "dawn" | "ruins" | "gathering";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -20,9 +21,23 @@ const PORTAL_ARRIVAL_DURATION_MS = 4800;
 const DAWN_FLOWER_DELAY_MS = 2600;
 const FLOWER_SEED_DROP_MS = 1900;
 const LEMON_WHISTLE_DURATION_MS = 2200;
+const CAMPFIRE_LIGHT_DURATION_MS = 2200;
+const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 
 function motionDuration(duration: number) {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : duration;
+}
+
+function readStoredSeedBookIds(): SeedSongId[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(SEED_BOOK_STORAGE_KEY) ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    const knownIds = new Set<SeedSongId>(SONG_CATALOG.map(song => song.id));
+    return [...new Set(parsed.filter((id): id is SeedSongId => typeof id === "string" && knownIds.has(id as SeedSongId)))];
+  } catch {
+    return [];
+  }
 }
 
 const C_SHARP_MINOR_SCALE = new Set(["Do#", "Re#", "Mi", "Fa#", "Sol#", "La", "Si"]);
@@ -126,6 +141,7 @@ function dawnWalkableTop(x: number) {
 export default function Home() {
   const [scene, setScene] = useState<Scene>("room");
   const [seedBookOpen, setSeedBookOpen] = useState(false);
+  const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(readStoredSeedBookIds);
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
   const [roomView, setRoomView] = useState<RoomView>("scene");
   const [pluggedGuitar, setPluggedGuitar] = useState(false);
@@ -138,7 +154,7 @@ export default function Home() {
   const [dawnLemonPoint, setDawnLemonPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [dawnIsMoving, setDawnIsMoving] = useState(false);
   const [selectedFrets, setSelectedFrets] = useState<FretSelection[]>([]);
-  const [portalOpen, setPortalOpen] = useState(false);
+  const [portalOpen, setPortalOpen] = useState(() => persistedSeedIds.includes("intro"));
   const [portalTransit, setPortalTransit] = useState(false);
   const [arrivalPortal, setArrivalPortal] = useState(false);
   const [introStarted, setIntroStarted] = useState(false);
@@ -154,13 +170,17 @@ export default function Home() {
   const [sunRisen, setSunRisen] = useState(false);
   const [flowerOpen, setFlowerOpen] = useState(false);
   const [seedAvailable, setSeedAvailable] = useState(false);
-  const [seedCollected, setSeedCollected] = useState(false);
+  const [seedCollected, setSeedCollected] = useState(() => persistedSeedIds.includes("ventana"));
   const [leftColumnRevealed, setLeftColumnRevealed] = useState(false);
   const [rightColumnRevealed, setRightColumnRevealed] = useState(false);
   const [ruinsView, setRuinsView] = useState<"scene" | RuinsColumnSide>("scene");
   const [ruinsAction, setRuinsAction] = useState<RuinsColumnSide | null>(null);
   const [ruinsFlowerStage, setRuinsFlowerStage] = useState<RuinsFlowerStage>("hidden");
-  const [rootsSeedCollected, setRootsSeedCollected] = useState(false);
+  const [rootsSeedCollected, setRootsSeedCollected] = useState(() => persistedSeedIds.includes("raices"));
+  const [campfirePlacedStickIds, setCampfirePlacedStickIds] = useState<number[]>([]);
+  const [selectedStickId, setSelectedStickId] = useState<number | null>(null);
+  const [campfireFireStage, setCampfireFireStage] = useState<CampfireFireStage>(() => persistedSeedIds.includes("rambla") ? "seed" : "unlit");
+  const [campfireSeedCollected, setCampfireSeedCollected] = useState(() => persistedSeedIds.includes("rambla"));
   const [lemonWhistling, setLemonWhistling] = useState(false);
   const [notice, setNotice] = useState("");
 
@@ -176,6 +196,15 @@ export default function Home() {
       window.clearTimeout(seedTimer);
     };
   }, [leftColumnRevealed, rightColumnRevealed]);
+
+  useEffect(() => {
+    if (campfireFireStage !== "lighting") return;
+    const timer = window.setTimeout(() => {
+      setCampfireFireStage("seed");
+      setNotice("La hoguera queda encendida. Una semilla brilla sobre las llamas.");
+    }, motionDuration(CAMPFIRE_LIGHT_DURATION_MS));
+    return () => window.clearTimeout(timer);
+  }, [campfireFireStage]);
 
   const validChord = useMemo(
     () => {
@@ -373,7 +402,6 @@ export default function Home() {
     setSunRisen(false);
     setFlowerOpen(false);
     setSeedAvailable(false);
-    setSeedCollected(false);
     setLemonWhistling(false);
     setNotice("El limón inicia una conversación consigo mismo.");
   }
@@ -463,29 +491,76 @@ export default function Home() {
     setNotice("La tercera semilla, «Raíces», queda en tu equipaje.");
   }
 
+  function pickCampfireStick(stickId: number) {
+    if (campfireFireStage !== "unlit" || campfirePlacedStickIds.includes(stickId)) return;
+    setSelectedStickId(current => current === stickId ? null : stickId);
+    setNotice("Palito recogido. Llévalo al centro de la reunión.");
+  }
+
+  function placeCampfireStick() {
+    if (campfireFireStage !== "unlit" || selectedStickId === null || campfirePlacedStickIds.length >= CAMPFIRE_STICK_COUNT) return;
+    if (!campfirePlacedStickIds.includes(selectedStickId)) {
+      setCampfirePlacedStickIds(current => current.includes(selectedStickId) ? current : [...current, selectedStickId]);
+    }
+    setSelectedStickId(null);
+    setNotice(`Palito colocado en el centro: ${Math.min(campfirePlacedStickIds.length + 1, CAMPFIRE_STICK_COUNT)} de ${CAMPFIRE_STICK_COUNT}.`);
+  }
+
+  function igniteCampfire() {
+    if (campfireFireStage !== "unlit" || campfirePlacedStickIds.length < CAMPFIRE_STICK_COUNT) return;
+    setCampfireFireStage("lighting");
+    setNotice("La reunión empieza a encender la hoguera.");
+  }
+
+  function collectCampfireSeed() {
+    if (campfireFireStage !== "seed" || campfireSeedCollected) return;
+    setCampfireSeedCollected(true);
+    setNotice("Semilla de «Rambla» recogida y añadida al Libro de Semillas.");
+  }
+
   function setVisitedScene(nextScene: Scene) {
     if (portalTransit || arrivalPortal) return;
     if (nextScene === "room" && scene !== "room") return;
-    if (nextScene === "dawn" && (!portalOpen || scene === "ruins")) return;
+    if (nextScene === "dawn" && (!portalOpen || scene === "ruins" || scene === "gathering")) return;
     if (nextScene === "ruins" && !seedCollected) return;
+    if (nextScene === "gathering" && !rootsSeedCollected) return;
     setScene(nextScene);
-    if (nextScene === "ruins") setNotice("");
+    if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
     setRoomAction(null);
     setRuinsAction(null);
     setRuinsView("scene");
   }
 
-  const discoveredSongIds: SeedSongId[] = [];
-  if (portalOpen) discoveredSongIds.push("intro");
-  if (seedCollected) discoveredSongIds.push("ventana");
-  if (rootsSeedCollected) discoveredSongIds.push("raices");
+  const discoveredSongIds = useMemo(() => {
+    const found = new Set<SeedSongId>(persistedSeedIds);
+    if (portalOpen) found.add("intro");
+    if (seedCollected) found.add("ventana");
+    if (rootsSeedCollected) found.add("raices");
+    if (campfireSeedCollected) found.add("rambla");
+    return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected]);
+
+  useEffect(() => {
+    const merged = SONG_CATALOG
+      .filter(song => persistedSeedIds.includes(song.id) || discoveredSongIds.includes(song.id))
+      .map(song => song.id);
+    try {
+      window.localStorage.setItem(SEED_BOOK_STORAGE_KEY, JSON.stringify(merged));
+    } catch {
+      // La colección sigue funcionando durante la sesión si el navegador bloquea el almacenamiento local.
+    }
+    setPersistedSeedIds(current => current.length === merged.length && current.every((id, index) => id === merged[index]) ? current : merged);
+  }, [discoveredSongIds, persistedSeedIds]);
+
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
     ? roomView === "scene" && (Boolean(roomAction) || portalOpen)
     : scene === "dawn"
       ? dialogueStarted || branch !== null || sunRisen || seedAvailable || seedCollected
-      : ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed" || rootsSeedCollected));
+      : scene === "ruins"
+        ? ruinsView === "scene" && (Boolean(ruinsAction) || ruinsFlowerStage === "seed" || rootsSeedCollected)
+        : false);
 
   return (
     <main className="explorer-shell">
@@ -503,11 +578,11 @@ export default function Home() {
       <section className="intro-band" id="inicio">
         <div className="intro-copy">
           <div className="eyebrow"><span>DISCO · 10 CANCIONES</span><span className="eyebrow-line" /></div>
-          <h1>Tres pantallas.<br /><em>Un camino de vuelta.</em></h1>
-          <p>Del primer acorde en el local vacío al amanecer de El Cuchillo y las ruinas cubiertas de raíces.</p>
+          <h1>Cuatro pantallas.<br /><em>Un camino de vuelta.</em></h1>
+          <p>Del primer acorde en el local vacío al amanecer, las ruinas y una hoguera bajo la luna.</p>
         </div>
-        <div className="intro-stamp" aria-label="Tres pantallas disponibles">
-          <span className="stamp-big">03</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
+        <div className="intro-stamp" aria-label="Cuatro pantallas disponibles">
+          <span className="stamp-big">04</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
         </div>
       </section>
 
@@ -515,19 +590,22 @@ export default function Home() {
         <button className={`screen-tab ${scene === "room" ? "active" : ""}`} onClick={() => setVisitedScene("room")} disabled={scene !== "room" || portalTransit || arrivalPortal}>
           <span className="tab-number">01</span><span><strong>El local de ensayo</strong><small>La Intro · antes del portal</small></span><span className="tab-mark">{portalOpen ? "✓" : "•"}</span>
         </button>
-        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen || scene === "ruins" || portalTransit || arrivalPortal}>
+        <button className={`screen-tab ${scene === "dawn" ? "active" : ""}`} onClick={() => setVisitedScene("dawn")} disabled={!portalOpen || scene === "ruins" || scene === "gathering" || portalTransit || arrivalPortal}>
           <span className="tab-number">02</span><span><strong>El Cuchillo al amanecer</strong><small>Ventana al sendero</small></span><span className="tab-mark">{seedCollected ? "✓" : portalOpen ? "↗" : "⌑"}</span>
         </button>
         <button className={`screen-tab ${scene === "ruins" ? "active" : ""}`} onClick={() => setVisitedScene("ruins")} disabled={!seedCollected || portalTransit || arrivalPortal}>
           <span className="tab-number">03</span><span><strong>Ruinas invadidas</strong><small>Raíces · las dos columnas</small></span><span className="tab-mark">{rootsSeedCollected ? "✓" : seedCollected ? "↗" : "⌑"}</span>
+        </button>
+        <button className={`screen-tab ${scene === "gathering" ? "active" : ""}`} onClick={() => setVisitedScene("gathering")} disabled={!rootsSeedCollected || portalTransit || arrivalPortal}>
+          <span className="tab-number">04</span><span><strong>Encuentro bajo la luna</strong><small>Rambla · la hoguera</small></span><span className="tab-mark">{campfireSeedCollected ? "✓" : rootsSeedCollected ? "↗" : "⌑"}</span>
         </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : "03"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : "Ruinas invadidas por raíces"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : "EL CAMINO · DOS COLUMNAS"}</span>}
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : "04"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : "Encuentro bajo la luna"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : "VALLE · NOCHE DE LUNA"}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
@@ -575,7 +653,7 @@ export default function Home() {
               <span className={`seed-spark ${flowerOpen ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} aria-hidden="true" />
               <span className="stage-coordinate">LF · 02</span>
             </div>
-          ) : (
+          ) : scene === "ruins" ? (
             <RuinsScene
               leftRevealed={leftColumnRevealed}
               rightRevealed={rightColumnRevealed}
@@ -584,6 +662,17 @@ export default function Home() {
               puzzleOpen={ruinsView !== "scene"}
               onApproachColumn={setRuinsAction}
               onCollectSeed={collectRootsSeed}
+            />
+          ) : (
+            <CampfireScene
+              placedStickIds={campfirePlacedStickIds}
+              selectedStickId={selectedStickId}
+              fireStage={campfireFireStage}
+              seedCollected={campfireSeedCollected}
+              onPickStick={pickCampfireStick}
+              onPlaceStick={placeCampfireStick}
+              onIgnite={igniteCampfire}
+              onCollectSeed={collectCampfireSeed}
             />
           )}
 
@@ -618,11 +707,11 @@ export default function Home() {
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
               {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla</button></div>}
               {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("ruins")}>Siguiente: Raíces</button></div>}
-            </> : <>
+            </> : scene === "ruins" ? <>
               {ruinsAction && <div key={`column-${ruinsAction}`} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{ruinsAction === "left" ? "Unas hojas secas se aferran a esta columna." : "Las hojas se enredan entre las raíces de piedra."}</p></div><button className="action-button" onClick={openRuinsPuzzle}>Examinar</button></div>}
               {ruinsFlowerStage === "seed" && !rootsSeedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>La planta ha florecido y deja una semilla entre las raíces.</p></div><button className="action-button" onClick={collectRootsSeed}>Coger semilla</button></div>}
-              {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div><span className="roots-seed-note">La tercera semilla</span></div>}
-            </>}
+              {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div><button className="text-button" onClick={() => setVisitedScene("gathering")}>Siguiente: reunión nocturna</button></div>}
+            </> : null}
           </aside>}
           </div>
           <span className="sr-only" aria-live="polite" aria-atomic="true">{notice}</span>
@@ -630,9 +719,10 @@ export default function Home() {
       </section>
 
       <section className="storyboard-section" id="storyboard">
-        <div className="storyboard-heading"><div><span className="stage-kicker">DOCUMENTO DE PREPRODUCCIÓN</span><h2>El storyboard original</h2></div><span>REFERENCIA VISUAL · PANTALLAS 01–03</span></div>
+        <div className="storyboard-heading"><div><span className="stage-kicker">DOCUMENTO DE PREPRODUCCIÓN</span><h2>El storyboard original</h2></div><span>REFERENCIA VISUAL · PANTALLAS 01–04</span></div>
         <figure className="storyboard-frame"><img src="/storyboard-pantallas-01-02.png" alt="Storyboard conceptual: el local de ensayo vacío y el limón ante El Cuchillo de Albatera al amanecer." /><figcaption><span>01 · Local de ensayo</span><span>02 · El Cuchillo al amanecer</span></figcaption></figure>
         <figure className="storyboard-frame storyboard-frame-roots"><img src="/ruins-background.png" alt="Fondo de las ruinas invadidas por raíces, basado en el panel 03 del storyboard v02." /><figcaption><span>03 · Ruinas y arco de piedra</span><span>Fondo adaptado del panel 03 · storyboard v02</span></figcaption></figure>
+        <figure className="storyboard-frame storyboard-frame-campfire"><img src="/scene-04-background.png" alt="Fondo pixel art del encuentro nocturno: el limón llega a una reunión junto a un símbolo luminoso en un valle rocoso." /><figcaption><span>04 · Encuentro bajo la luna</span><span>La reunión, la hoguera y la semilla de «Rambla»</span></figcaption></figure>
       </section>
 
       <footer className="site-footer"><div className="footer-mark">LF<span>✳</span></div><p>Un guion se vuelve paisaje, un clic cada vez.</p><span>PREPRODUCCIÓN · VERSIÓN 0.5</span></footer>

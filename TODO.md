@@ -57,6 +57,12 @@
 - En cada primer plano, el jugador arrastra las hojas que cubren la piedra para apartarlas. Al despejar la columna izquierda aparece exactamente «as above»; al despejar la derecha, exactamente «so below».
 - Tras descubrir ambas inscripciones, una planta crece hasta florecer y entrega la tercera semilla, que desbloquea la tercera canción «Raíces».
 
+## [x] Pantalla 4: encuentro nocturno y hoguera
+- El fondo se basa en el panel oficial 04: cielo estrellado con luna creciente, valle rocoso, figuras reunidas alrededor de un símbolo central y el limón en primer plano, en el mismo pixel art deliberado del juego y la proporción estrecha del mundo de la escena 03.
+- La pantalla 04 solo se desbloquea después de recoger la semilla de «Raíces». El jugador recoge cuatro palitos y lleva cada uno al centro de la reunión; la hoguera no se puede encender hasta que todos estén allí.
+- Al encenderla comienza una animación legible del fuego que respeta `prefers-reduced-motion`. Cuando termina, aparece una semilla como control clicable y accesible; la cuarta canción «Rambla» no se añade al Libro de Semillas hasta que el jugador pulsa esa semilla.
+- Las semillas descubiertas, incluida «Rambla», permanecen en el Libro de Semillas al cambiar de escena y después de recargar el juego, mediante persistencia local del navegador.
+
 ## [x] Guitarra y amplificador visibles como en el storyboard
 - El recorte de la Stratocaster conserva completa la punta izquierda del cuerpo, sin que quede amputada ni pegada al borde del sprite.
 - En la escena principal el amplificador se ve más claro y legible, siguiendo los valores y detalles visibles en el storyboard original.

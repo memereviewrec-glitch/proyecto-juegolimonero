@@ -89,4 +89,4 @@ Los estilos globales y de escena están junto a cada componente; `client/src/pag
 5. Ejecutar `pnpm check`, `pnpm test` y `pnpm build:static`; revisar también `git diff --check`.
 6. No copiar secretos al cliente. `server/_core/publicConfig.ts` solo debe exponer valores expresamente públicos; las claves privadas permanecen en el servidor. Las opciones de plataforma se consultan en `webdev.config`.
 
-Los enlaces de MP3, YouTube y WAV del Libro siguen siendo marcadores de posición hasta que se incorporen los archivos y URLs oficiales del disco; no inventar ni reemplazar esos recursos.
+Los enlaces de YouTube y descarga del Libro siguen siendo marcadores de posición hasta que se incorporen las URLs y archivos oficiales del disco; no inventar ni reemplazar esos recursos. El Libro no incluye reproductor ni espacio para MP3.

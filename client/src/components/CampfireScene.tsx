@@ -118,10 +118,8 @@ export function CampfireScene({
   const conversationApproachRequired = conversationOutcome === null && !seedCollected;
   const conversationReady = conversationApproachRequired && nearCampfireCenter && !walking;
   const skillCheckActive = conversationOutcome === 2 && !escapeSucceeded;
-  const showCampfireStatus = sticksUnlocked || escapeSeedAvailable || seedCollected || fireStage !== "unlit";
-  const status = seedCollected
-    ? "La semilla de «Rambla» ya está en el Libro de Semillas."
-    : escapeSeedAvailable
+  const showCampfireStatus = !seedCollected && (sticksUnlocked || escapeSeedAvailable || fireStage !== "unlit");
+  const status = escapeSeedAvailable
       ? "Una luz turquesa espera donde termina la caída."
     : fireStage === "lighting"
       ? "La llama aprende a respirar."
@@ -136,9 +134,7 @@ export function CampfireScene({
             ? "Tres ramas duermen en el círculo de piedra."
             : "La brasa sueña con el bosque."
       : "Rambla";
-  const statusDetail = seedCollected
-    ? "La canción ya encontró su lugar en el herbario sonoro."
-    : escapeSeedAvailable
+  const statusDetail = escapeSeedAvailable
       ? "La brisa trae un destello desde el sendero oscuro."
       : fireStage === "lighting"
         ? "Las sombras retroceden al calor recién nacido."

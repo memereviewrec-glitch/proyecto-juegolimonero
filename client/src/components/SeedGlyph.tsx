@@ -13,6 +13,7 @@ const BODY_PATHS: Record<PhysicalSeedId, string> = {
   "espiritus-del-rio": "M10 1h5l2 6 4 4v9l-3 3v6l-5 2-5-3-4-6 2-8 3-4z",
   "el-rio": "M8 3h8l3 4 3 7-2 9-4 1v5l-5 2-4-4-5-2 1-9 3-4z",
   "el-fuego": "M9 2h6l1 5 5 4-2 8-3 3v6l-5 2-5-4-4-7 2-8z",
+  ponzona: "M10 1h5l2 5 4 5-2 9-4 2-1 7-5 2-4-5-3-6 2-8z",
 };
 
 export function SeedGlyph({ seed, className = "" }: Props) {

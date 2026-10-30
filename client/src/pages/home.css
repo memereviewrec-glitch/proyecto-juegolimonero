@@ -57,7 +57,7 @@ button { font:inherit; }
 .story-continue-button { align-self:center; }
 @media (max-width:600px) {
   .story-interlude-inner { width:88%; gap:10px; }
-  .story-interlude p { max-width:100%; font-size:11px; line-height:1.42; }
+  .story-interlude p { max-width:100%; font-size:15px; line-height:1.5; }
   .story-seed-button { width:78px; height:86px; }
   .story-seed-glyph { width:54px; height:74px; }
   .story-continue-button { padding:7px 9px; font-size:8px; }
@@ -104,6 +104,9 @@ button { font:inherit; }
 .lemon-portal { left:82%; bottom:43%; }
 .lemon-portal-leap { z-index:9; transform-origin:center bottom; transition:left 2.8s cubic-bezier(.35,.1,.75,.2),bottom 2.8s cubic-bezier(.35,.1,.75,.2); animation:lemon-portal-leap 2.8s ease-in-out forwards; }
 @keyframes lemon-portal-leap { 0% { transform:translate(0,0) scale(1); opacity:1; } 28% { transform:translate(-2vw,-6vh) scale(1.12); opacity:1; } 68% { transform:translate(0,-2vh) scale(.82); opacity:1; } 100% { transform:translate(1vw,-3vh) scale(.15); opacity:0; } }
+.room-object-art { position:absolute; z-index:3; pointer-events:none; }
+.guitar-art { left:8%; top:52%; width:25%; height:36%; }
+.amp-art { left:71%; top:54%; width:27%; height:35%; }
 .hotspot { position:absolute; z-index:7; display:block; border:0; background:transparent; padding:0; color:inherit; cursor:pointer; }
 .hotspot:disabled { cursor:default; }
 .guitar-hotspot { left:8%; top:52%; width:25%; height:36%; }
@@ -117,7 +120,7 @@ button { font:inherit; }
 .cable-line::before { left:0; }
 .cable-line.cable-at-amp::before,.cable-line.cable-at-guitar span { background:#efc647; }
 .cable-line span { right:0; }
-.amp-is-on .amp-hotspot .amp-sprite { filter:drop-shadow(0 0 7px #efc64799); }
+.amp-is-on .amp-art-sprite { filter:drop-shadow(0 0 7px #efc64799); }
 .amp-closeup { position:absolute; z-index:7; inset:0; background:#665c70; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; border:9px solid #514759; }
 .closeup-label { font:8px 'DM Mono',monospace; color:#e9dfc9; letter-spacing:.13em; }
 .power-switch { display:flex; align-items:center; gap:8px; background:#f7f1de; color:#28252c; border:2px solid #29252d; padding:8px 12px; font:10px 'DM Mono',monospace; letter-spacing:.06em; box-shadow:3px 3px #39323f; }
@@ -395,6 +398,7 @@ button { font:inherit; }
 .cable-progress .done { color:#fae197; border-color:#e6ca70; }
 .cable-closeup-footer .closeup-back { grid-column:1/-1; justify-self:center; }
 .guitar-closeup { justify-content:flex-start; padding-top:clamp(14px,3vh,30px); }
+.guitar-whisper { margin:0; color:#f4e4c8; font:11px/1.4 'DM Mono',monospace; text-align:center; letter-spacing:.04em; }
 .fretboard-scroll { width:min(100%,980px); overflow-x:auto; overscroll-behavior-inline:contain; scrollbar-color:#c1a87d #37313b; }
 .guitar-fretboard-svg { display:block; width:100%; min-width:680px; height:auto; background:#211d25; border:4px solid #1a171e; box-shadow:4px 5px 0 #17141a; }
 .guitar-fretboard-svg .fret-number { fill:#f3e2bd; font:600 17px 'DM Mono',monospace; }
@@ -408,7 +412,8 @@ button { font:inherit; }
 .guitar-closeup-footer p { margin:0; color:#f4e4c8; font:9px/1.5 'DM Mono',monospace; }
 .guitar-closeup-footer p strong { color:#f4d16d; }
 .fretboard-actions { display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
-.room-closeup .fretboard-actions .action-button { width:auto; min-width:160px; min-height:40px; border:3px solid #211d25; padding:9px 12px; font-size:9px; cursor:pointer; }
+.room-closeup .fretboard-actions .action-button { width:52px; min-width:52px; min-height:40px; border:3px solid #211d25; padding:7px 10px; font-size:16px; cursor:pointer; }
+.room-closeup .fretboard-actions .closeup-back { min-width:52px; padding:7px 10px; font-size:16px; }
 @media (max-width:600px) {
  .lemon-cable { left:53%; }
  .hotspot.cable-hotspot { left:31%; top:72%; width:55%; height:22%; }
@@ -532,6 +537,20 @@ button { font:inherit; }
 .seedbook-toggle:active { transform:translate(2px,2px); box-shadow:1px 1px #2b263166; }
 .seedbook-toggle-icon { display:block; width:62px; height:62px; object-fit:contain; image-rendering:pixelated; }
 .seedbook-toggle b { position:absolute; right:-8px; bottom:-7px; display:grid; place-items:center; min-width:38px; min-height:26px; padding:0 5px; border:2px solid #2b2631; background:#e8dfce; color:#302638; font:600 10px 'DM Mono',monospace; line-height:1; box-shadow:2px 2px #2b263166; }
+.journey-menu-toggle { position:absolute; z-index:61; top:101px; left:10px; display:grid; place-items:center; width:48px; height:42px; border:2px solid #2b263188; background:#fbf7ec66; color:#302638cc; box-shadow:2px 2px #2b263133; cursor:pointer; opacity:.72; }
+.journey-menu-toggle:hover,.journey-menu-toggle-open { background:#f0e7d699; opacity:1; }
+.journey-menu-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; }
+.journey-menu-toggle span { font:700 25px/1 'DM Mono',monospace; transform:rotate(90deg); }
+.journey-menu-panel { position:absolute; z-index:62; top:101px; left:67px; width:min(260px,calc(100% - 77px)); padding:10px; border:3px solid #2b2631cc; background:#fbf7eceb; color:#302638; box-shadow:4px 4px #2b263166; image-rendering:pixelated; }
+.journey-menu-heading { padding:2px 3px 7px; color:#706a73; font:8px 'DM Mono',monospace; letter-spacing:.12em; }
+.journey-menu-panel button,.journey-menu-panel a { display:flex; width:100%; min-height:32px; align-items:center; padding:7px 8px; border:1px solid #61546c88; background:#fffdf766; color:#3c3346; text-decoration:none; font:9px 'DM Mono',monospace; cursor:pointer; }
+.journey-menu-panel button:hover:not(:disabled),.journey-menu-panel a:hover,.journey-menu-panel button:focus-visible,.journey-menu-panel a:focus-visible { outline:2px solid #d98470; outline-offset:1px; background:#fffdf7; }
+.journey-menu-panel button:disabled { color:#918a8d; border-color:#d9d0c0; cursor:not-allowed; }
+.journey-restart-button { border-color:#9a463988 !important; color:#7f3e36 !important; }
+.journey-menu-divider { height:1px; margin:8px 0; background:#b9ad9c; }
+.journey-restart-confirmation p { margin:2px 3px 8px; color:#706a73; font:9px/1.4 'DM Mono',monospace; }
+.journey-menu-actions { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.journey-menu-actions .journey-danger { background:#9a4639; color:#fffdf7; }
 .seedbook-layer { position:absolute; inset:0; z-index:100; isolation:isolate; }
 .seedbook-scrim { position:absolute; inset:0; width:100%; height:100%; border:0; background:#211d2b9c; cursor:default; }
 .seedbook-panel { position:absolute; top:16px; right:10px; bottom:8px; width:min(440px,calc(100% - 20px)); display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
@@ -545,16 +564,6 @@ button { font:inherit; }
 .seedbook-close { min-width:82px; height:34px; flex:0 0 auto; padding:0 8px; border:2px solid #2b2631; background:#eee7d8; color:#2b2631; font:8px 'DM Mono',monospace; letter-spacing:.04em; text-transform:lowercase; line-height:1; cursor:pointer; }
 .seedbook-restart-area { margin:14px 0 18px; padding:12px; border:2px dashed #d98470; background:#fffdf7; }
 .seedbook-page { order:2; flex:1 1 auto; width:96%; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:flex-start; overflow-y:auto; overflow-x:hidden; scrollbar-color:#9a879d #eee7d8; }
-.seedbook-restart-area { order:4; flex:0 0 auto; margin:6px 0 0; padding:5px 7px; }
-.seedbook-restart-button,.seedbook-restart-actions button { display:inline-flex; min-height:28px; align-items:center; justify-content:center; padding:5px 8px; border:2px solid #3c3346; color:#3c3346; font:600 8px 'DM Mono',monospace; cursor:pointer; }
-.seedbook-restart-button { width:100%; background:#eee7d8; }
-.seedbook-restart-confirmation h3 { margin:0; font-size:16px; }
-.seedbook-restart-copy p { margin:6px 0 12px; color:#706a73; font:10px/1.45 'DM Mono',monospace; }
-.seedbook-restart-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
-.seedbook-restart-cancel { background:#f7f3e9; }
-.seedbook-restart-confirm { background:#9a4639; color:#fffdf7 !important; }
-.seedbook-restart-button:hover,.seedbook-restart-actions button:hover { outline:2px solid #d98470; outline-offset:1px; }
-.seedbook-restart-button:focus-visible,.seedbook-restart-actions button:focus-visible { outline:3px solid #d98470; outline-offset:2px; }
 .seedbook-page-indicator { margin:16px 0 8px; color:#706a73; text-align:center; font:9px 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
 .seedbook-entry { padding:14px; border:2px solid #d9d0c0; background:#fffdf7; box-shadow:3px 3px #eee7d8; }
 .seedbook-preview-entry { border-style:dashed; background:#f7fbf5; }
@@ -589,7 +598,6 @@ button { font:inherit; }
 .seedbook-metadata small { margin-top:4px; color:#706a73; font-size:9px; line-height:1.3; }
 .seedbook-actions { display:flex; flex-wrap:wrap; gap:6px; }
 .seedbook-action { display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:6px 8px; border:1px solid #61546c; background:#f7f3e9; color:#3c3346; text-decoration:none; font:9px 'DM Mono',monospace; cursor:pointer; }
-.seedbook-play { background:#61546c; color:#fffdf7; }
 .seedbook-action:hover:not(:disabled),.seedbook-action:focus-visible { outline:2px solid #d98470; outline-offset:1px; }
 .seedbook-action:disabled { border-color:#d9d0c0; background:#f1ecdf; color:#918a8d; cursor:not-allowed; }
 .seedbook-empty { display:grid; place-items:center; min-height:230px; padding:28px; text-align:center; }
@@ -611,6 +619,8 @@ button { font:inherit; }
  .seedbook-toggle { top:7px; left:7px; width:72px; min-width:72px; height:72px; min-height:72px; padding:4px; }
  .seedbook-toggle-icon { width:58px; height:58px; }
  .seedbook-toggle b { right:-7px; bottom:-6px; min-width:36px; min-height:25px; }
+ .journey-menu-toggle { top:86px; left:7px; width:48px; height:38px; }
+ .journey-menu-panel { top:86px; left:62px; width:min(240px,calc(100% - 69px)); }
  .seed-spark { width:46px; height:50px; padding:7px; }
  .seedbook-panel { top:8px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }

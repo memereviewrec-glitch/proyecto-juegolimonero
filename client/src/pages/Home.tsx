@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { AmpCloseup, CableCloseup, CableSceneArt, GuitarCloseup, type FretSelection } from "../components/RoomCloseups";
 import { LemonSprite } from "../components/GameSprites";
 import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColumnPuzzle";
@@ -8,6 +8,7 @@ import { RiverMirrorScene } from "../components/RiverMirrorScene";
 import { RiverChallengeScene } from "../components/RiverChallengeScene";
 import { ElRioScene } from "../components/ElRioScene";
 import { FireForestScene } from "../components/FireForestScene";
+import { HummingbirdScene } from "../components/HummingbirdScene";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
@@ -17,8 +18,8 @@ import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest";
-type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest";
+type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest" | "hummingbird";
+type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -34,6 +35,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   "espiritus-del-rio": "river",
   "el-rio": "el-rio",
   "el-fuego": "fire-forest",
+  ponzona: "hummingbird",
 };
 
 const WALK_DURATION_MS = 3800;
@@ -46,6 +48,7 @@ const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
+const BAND_INSTAGRAM_LINKS = [{ label: "Instagram de la banda", url: null }] as const;
 
 function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   if (beat === "opening") return "Había una vez un limón que quería descubrir los límites del conocimiento y la realidad.";
@@ -60,6 +63,7 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
   if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
+  if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";
   return "En el fondo del río, el limón encontró otra señal del camino. La corriente lo llevó hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
 }
 
@@ -70,7 +74,6 @@ const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
   "river-arrival": "rambla",
   "spirits-challenge": "espiritus-del-rio",
   "el-rio": "el-rio",
-  "fire-forest": "el-fuego",
 };
 
 function motionDuration(duration: number) {
@@ -216,6 +219,9 @@ export default function Home() {
   const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
   const [seedBookOpen, setSeedBookOpen] = useState(false);
+  const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
+  const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
+  const journeyMenuRef = useRef<HTMLDivElement | null>(null);
   const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(readStoredSeedBookIds);
   const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
   const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
@@ -231,6 +237,7 @@ export default function Home() {
   const [dawnIsMoving, setDawnIsMoving] = useState(false);
   const [selectedFrets, setSelectedFrets] = useState<FretSelection[]>([]);
   const [portalOpen, setPortalOpen] = useState(() => persistedSeedIds.includes("intro"));
+  const [portalCrossed, setPortalCrossed] = useState(() => persistedSeedIds.includes("intro"));
   const [portalTransit, setPortalTransit] = useState(false);
   const [arrivalPortal, setArrivalPortal] = useState(false);
   const [introStarted, setIntroStarted] = useState(false);
@@ -263,6 +270,7 @@ export default function Home() {
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
   const [fireSeedCollected, setFireSeedCollected] = useState(() => persistedSeedIds.includes("el-fuego"));
+  const [ponzonaSeedCollected, setPonzonaSeedCollected] = useState(() => persistedSeedIds.includes("ponzona"));
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -271,6 +279,18 @@ export default function Home() {
   const [ramblaEscapeSucceeded, setRamblaEscapeSucceeded] = useState(false);
   const [lemonWhistling, setLemonWhistling] = useState(false);
   const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (!journeyMenuOpen) return;
+    const handlePointerDown = (event: globalThis.PointerEvent) => {
+      if (journeyMenuRef.current && !journeyMenuRef.current.contains(event.target as Node)) {
+        setJourneyMenuOpen(false);
+        setJourneyRestartConfirm(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [journeyMenuOpen]);
 
   useEffect(() => {
     if (!leftColumnRevealed || !rightColumnRevealed) return;
@@ -469,6 +489,10 @@ export default function Home() {
       setDawnIsMoving(false);
       setScene("dawn");
       setPortalTransit(false);
+      setPortalCrossed(true);
+      setStorySeedBookOpened(false);
+      setStorySeedPreview(null);
+      setStoryBeat("portal");
       setLemonPosition("lemon-left");
       setLemonFloorPoint(null);
       setRoomAction(null);
@@ -636,6 +660,16 @@ export default function Home() {
     if (fireSeedCollected) return;
     setFireSeedCollected(true);
     setNotice("La semilla negra y quemada queda en el Libro de Semillas.");
+    setJourneyMenuOpen(false);
+    openStorySeedBook("el-fuego");
+  }
+
+  function collectPonzonaSeed() {
+    if (ponzonaSeedCollected) return;
+    setPonzonaSeedCollected(true);
+    setNotice("La semilla de «Ponzoña» queda en el Libro de Semillas.");
+    setJourneyMenuOpen(false);
+    openStorySeedBook("ponzona");
   }
 
   function chooseRamblaResponse(path: RamblaPath) {
@@ -692,6 +726,7 @@ export default function Home() {
     if (nextScene === "river-challenge" && !(riverSeedCollected || persistedSeedIds.includes("espiritus-del-rio"))) return;
     if (nextScene === "el-rio" && !riverChallengeComplete) return;
     if (nextScene === "fire-forest" && !elRioSeedCollected) return;
+    if (nextScene === "hummingbird" && !fireSeedCollected) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -781,8 +816,9 @@ export default function Home() {
     if (riverSeedCollected) found.add("espiritus-del-rio");
     if (elRioSeedCollected) found.add("el-rio");
     if (fireSeedCollected) found.add("el-fuego");
+    if (ponzonaSeedCollected) found.add("ponzona");
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
-  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected]);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected]);
 
   useEffect(() => {
     const merged = SONG_CATALOG
@@ -804,6 +840,8 @@ export default function Home() {
     || (scene === "river" && riverConversationComplete && riverSeedCollected)
     || (scene === "river-challenge" && riverChallengeComplete)
     || (scene === "el-rio" && elRioSeedCollected)
+    || (scene === "fire-forest" && fireSeedCollected)
+    || (scene === "hummingbird" && ponzonaSeedCollected)
   );
   const currentDialogue = DIALOGUE[Math.min(dialogueTurn, DIALOGUE.length - 1)];
   const showOverlay = !portalTransit && !arrivalPortal && (scene === "room"
@@ -832,7 +870,9 @@ export default function Home() {
               ? "river-challenge"
               : storyBeat === "el-rio"
                 ? "el-rio"
-                : "fire-forest";
+                : storyBeat === "ponzona"
+                  ? "hummingbird"
+                  : "fire-forest";
     setScene(nextScene);
     setStoryBeat(null);
     setRoomView("scene");
@@ -857,7 +897,6 @@ export default function Home() {
     if (!canContinue) return;
     if (scene === "room") {
       enterDawn();
-      showStory("portal");
     } else if (scene === "dawn") {
       showStory("ruins");
     } else if (scene === "ruins") {
@@ -870,6 +909,8 @@ export default function Home() {
       showStory("el-rio");
     } else if (scene === "el-rio") {
       showStory("fire-forest");
+    } else if (scene === "fire-forest") {
+      showStory("ponzona");
     }
   }
 
@@ -922,17 +963,21 @@ export default function Home() {
         <button className={`screen-tab ${scene === "fire-forest" ? "active" : ""}`} onClick={() => setVisitedScene("fire-forest")} disabled={!elRioSeedCollected || portalTransit || arrivalPortal}>
           <span className="tab-number">08</span><span><strong>El bosque ardiendo</strong><small>El fuego · después de la lluvia</small></span><span className="tab-mark">{fireSeedCollected ? "✓" : elRioSeedCollected ? "↗" : "⌑"}</span>
         </button>
+        <button className={`screen-tab ${scene === "hummingbird" ? "active" : ""}`} onClick={() => setVisitedScene("hummingbird")} disabled={!fireSeedCollected || portalTransit || arrivalPortal}>
+          <span className="tab-number">09</span><span><strong>El colibrí</strong><small>Ponzoña · la rama quemada</small></span><span className="tab-mark">{ponzonaSeedCollected ? "✓" : fireSeedCollected ? "↗" : "⌑"}</span>
+        </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : scene === "river-challenge" ? "06" : scene === "el-rio" ? "07" : "08"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : scene === "river-challenge" ? "El reto del río" : scene === "el-rio" ? "El Río" : "El bosque ardiendo"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : scene === "river-challenge" ? "RÍO ESPEJO · LA PRUEBA" : scene === "el-rio" ? "RÍO ESPEJO · FONDO DEL CAUCE" : "BOSQUE · DESPUÉS DEL INCENDIO"}</span>}
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : scene === "river-challenge" ? "06" : scene === "el-rio" ? "07" : scene === "fire-forest" ? "08" : "09"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : scene === "river-challenge" ? "El reto del río" : scene === "el-rio" ? "El Río" : scene === "fire-forest" ? "El bosque ardiendo" : "El colibrí"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : scene === "river-challenge" ? "RÍO ESPEJO · LA PRUEBA" : scene === "el-rio" ? "RÍO ESPEJO · FONDO DEL CAUCE" : scene === "fire-forest" ? "BOSQUE · DESPUÉS DEL INCENDIO" : "BOSQUE QUEMADO · LA RAMA"}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {portalCrossed && <div ref={journeyMenuRef} className="journey-menu-anchor">
             <button
               className="seedbook-toggle"
               type="button"
@@ -945,21 +990,55 @@ export default function Home() {
               <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" />
               <b aria-hidden="true">{discoveredSongIds.length}/10</b>
             </button>
-            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onRestart={restartGame} onReplaySong={replaySong} />}
+            <button
+              className={`journey-menu-toggle${journeyMenuOpen ? " journey-menu-toggle-open" : ""}`}
+              type="button"
+              onClick={() => { setJourneyMenuOpen(open => !open); setSeedBookOpen(false); }}
+              aria-label={`${journeyMenuOpen ? "Cerrar" : "Abrir"} menú del viaje`}
+              aria-haspopup="menu"
+              aria-expanded={journeyMenuOpen}
+              aria-controls="journey-menu-panel"
+            >
+              <span aria-hidden="true">☷</span>
+            </button>
+            {journeyMenuOpen && <aside id="journey-menu-panel" className="journey-menu-panel" role="menu" aria-label="Menú del viaje">
+              <div className="journey-menu-heading">MÁS OPCIONES</div>
+              {journeyRestartConfirm ? (
+                <div className="journey-restart-confirmation" role="group" aria-label="Confirmar reinicio del juego">
+                  <p>Se borrarán las semillas guardadas y el viaje volverá al inicio.</p>
+                  <div className="journey-menu-actions">
+                    <button type="button" role="menuitem" onClick={() => setJourneyRestartConfirm(false)}>cancelar</button>
+                    <button type="button" role="menuitem" className="journey-danger" onClick={restartGame}>sí, reiniciar</button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" role="menuitem" className="journey-restart-button" onClick={() => setJourneyRestartConfirm(true)}>↻ reiniciar juego</button>
+              )}
+              <div className="journey-menu-divider" />
+              {BAND_INSTAGRAM_LINKS.map(link => link.url ? (
+                <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" role="menuitem">◎ {link.label}</a>
+              ) : (
+                <button key={link.label} type="button" role="menuitem" disabled>◎ {link.label} · pendiente</button>
+              ))}
+            </aside>}
+            </div>}
+            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
               {roomView === "scene" && <div className="room-world">
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className="cable-art-layer" aria-hidden="true"><CableSceneArt pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} /></div>
+                <div className="room-object-art guitar-art" aria-hidden="true"><img className="guitar-sprite" src="/guitar-sprite-recut-v2.png" alt="" /></div>
+                <div className="room-object-art amp-art" aria-hidden="true"><img className="amp-sprite amp-art-sprite" src="/amp-sprite-light.png" alt="" /></div>
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
                 <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
                   <span className="sr-only">Cable en el suelo</span>
                 </button>
                 <button type="button" className="hotspot guitar-hotspot" aria-label="Guitarra eléctrica roja" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || portalOpen}>
-                  <img className="guitar-sprite" src="/guitar-sprite-recut-v2.png" alt="" />
+                  <span className="sr-only">Guitarra eléctrica roja</span>
                 </button>
                 <button type="button" className="hotspot amp-hotspot" aria-label="Amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || !pluggedGuitar || !pluggedAmp || portalOpen}>
-                  <img className="amp-sprite" src="/amp-sprite-light.png" alt="" />
+                  <span className="sr-only">Amplificador</span>
                 </button>
               </div>}
               {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} />}
@@ -1016,8 +1095,10 @@ export default function Home() {
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={() => setRiverChallengeComplete(true)} />
             ) : scene === "el-rio" ? (
               <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} />
-            ) : (
+            ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
+            ) : (
+              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} />
             )
           )}
 
@@ -1032,7 +1113,7 @@ export default function Home() {
 
           {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
-              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomAction === "examine-cable" || roomAction === "examine" ? "Examinar" : roomActionLabel(roomAction)} <span aria-hidden="true">→</span></button></div>}
+              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomAction === "examine-cable" || roomAction === "examine" ? "Examinar" : "Tocar la guitarra"} <span aria-hidden="true">→</span></button></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label={dialogueTurn === DIALOGUE.length - 1 ? "Dos opciones finales" : "Tres respuestas posibles"}>
@@ -1085,7 +1166,7 @@ function roomActionLabel(action: Exclude<RoomAction, null>) {
   const labels: Record<Exclude<RoomAction, null>, string> = {
     "examine-cable": "Siempre tengo los cables por el suelo... ¿Alguien me echa un cable?",
     examine: "Tengo que enchufar esto... quizá el amplificador despierte.",
-    play: "Tocar la guitarra",
+    play: "hay alguna frecuencia más bella que otra?",
     "guitar-unplugged": "La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.",
     "amp-off": "La guitarra ya está conectada, pero el amplificador sigue apagado. Primero tengo que encenderlo.",
   };

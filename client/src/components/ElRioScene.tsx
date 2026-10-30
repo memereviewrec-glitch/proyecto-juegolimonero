@@ -83,6 +83,8 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
     setShowingBlackReply(true);
   }
 
+  const speakerFish = showingBlackReply && blackThought ? "negro" : activeFish;
+
   return (
     <div className="scene-stage game-screen el-rio-stage">
       <div className="el-rio-world" role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
@@ -99,7 +101,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
         <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {thought ? <><span>PEZ {showingBlackReply && blackThought ? "NEGRO" : activeFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla bloqueada"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span>EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
+        {thought ? <><span className={`el-rio-speaker el-rio-speaker-${speakerFish ?? "unknown"}`}>PEZ {speakerFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla bloqueada"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span className="el-rio-speaker el-rio-speaker-rio">EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
       </div>
     </div>
   );

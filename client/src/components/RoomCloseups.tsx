@@ -285,7 +285,7 @@ export function GuitarCloseup({
 
   return (
     <div className="room-closeup guitar-closeup" role="dialog" aria-label="Primer plano del mástil de guitarra">
-      <div className="closeup-heading"><span>INSTRUMENTO · AFINACIÓN ESTÁNDAR</span><h3>Seis cuerdas, nueve trastes</h3><p>De abajo arriba: Mi–La–Re–Sol–Si–Mi (E2–A2–D3–G3–B3–E4)</p></div>
+      <p className="guitar-whisper">hay acordes que abren otras realidades...</p>
       <div className="fretboard-scroll">
         <svg className="guitar-fretboard-svg" viewBox="0 0 1080 414" role="group" aria-label="Mástil de guitarra con la pala y los primeros nueve trastes">
           <defs>
@@ -350,8 +350,7 @@ export function GuitarCloseup({
         </svg>
       </div>
       <div className="guitar-closeup-footer">
-        <p>Notas elegidas: <strong>{selectedPositions.length}</strong>. Cada posición reproduce la altura real de su cuerda y traste.</p>
-        <div className="fretboard-actions"><button className="action-button play-button" onClick={onPlay}>Tocar selección <span>♫</span></button><button className="closeup-back" onClick={onClose}>Volver al local <span>↗</span></button></div>
+        <div className="fretboard-actions"><button className="action-button play-button" onClick={onPlay} aria-label={`Tocar selección de ${selectedPositions.length} posiciones`} title="Tocar selección">♫</button><button className="closeup-back" onClick={onClose} aria-label="Volver al local" title="Volver al local">↗</button></div>
       </div>
     </div>
   );

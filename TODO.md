@@ -1,7 +1,29 @@
 # TODO · Explorador de pantallas Limonero Fuzz
 
+## [x] Escena del colibrí y canción «Ponzoña»
+- La diapositiva narrativa posterior al incendio termina en «Entonces comenzó a conversar con Limón…»; no añade la explicación de amor, sabiduría y consuelo.
+- La conversación tiene preguntas con tres respuestas y un medidor de ánimo que parte de 0, sube con las respuestas adecuadas y baja con las respuestas hirientes. El minijuego solo termina bien al alcanzar +100 o mal al alcanzar −100; si se acaban las preguntas sin llegar a ninguno de los dos extremos, termina en un final neutro: el colibrí duda qué hacer y se queda quieto en una rama del árbol, dudando.
+- En los tres finales aparece la semilla de «Ponzoña» como recompensa clicable; al recogerla se crea/desbloquea la entrada correspondiente del Libro de Semillas.
+- Solo en esta pantalla, el cuadro de diálogo se renderiza debajo del lienzo para no tapar la animación; el colibrí se muestra mucho más pequeño y Limón reutiliza el `LemonSprite` habitual.
+
+## [ ] Menú del viaje e Instagram de la banda
+- El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación y enlaces al Instagram oficial de la banda.
+- Los enlaces de Instagram permanecen pendientes hasta recibir las URLs oficiales; no se inventan handles ni destinos.
+
+## [x] Acceso inicial al Libro y texto del minijuego de guitarra
+- El Libro de semillas permanece oculto durante el local y el minijuego de la guitarra; se habilita después de completar el primer cruce del portal y obtener la semilla inicial de «Aurora». En partidas ya guardadas con esa semilla, el acceso se conserva.
+- En el primer plano de la guitarra, la única frase narrativa visible es exactamente «hay acordes que abren otras realidades...». Se conservan las marcas visuales del mástil y controles de tocar/volver como interfaz funcional, con etiquetas accesibles no visibles.
+
+## [x] Transición al bosque en llamas y fuego pixel art
+- La semilla blanca del pez blanco sigue visible como recompensa de «El Río». La diapositiva narrativa inmediatamente anterior al bosque en llamas no muestra la semilla negra de «El fuego»: contiene solo texto y el botón de avance.
+- El incendio usa una única hoja de fondos completos (`fire-forest-burning-frames.png`): fotograma 1 con mucho fuego, fotograma 2 con menos fuego, y la secuencia repite 1, 2, 1, 2 rápidamente con `steps(2)`; no existe ninguna capa de llamas superpuesta.
+- Cuando comienza la lluvia, la hoja de fondos incendiados inicia una transición progresiva hacia `fire-forest-background-after.png`, con el bosque seco, silencioso y cubierto de ceniza; la lluvia está compuesta por gotas pixeladas individuales, desfasadas y animadas con pasos discretos, sin gradientes repetidos ni líneas diagonales continuas.
+- Cuando la semilla negra aparece al final, es un botón clicable; al recogerla se añade «El fuego» al Libro y se abre directamente esa nueva entrada.
+- Durante los 22 segundos de la escena se cuenta la historia en cinco pasos, dejando un segundo adicional entre cambios para facilitar la lectura: los animales intentan llevar agua del río al bosque sin conseguirlo; un jaguar se ríe de sus vanos intentos; se anuncia «Al tiempo, llegó la lluvia» y en ese instante comienzan las gotas; después la lluvia apaga el incendio y aparece la semilla en una zona clicable por encima del diálogo.
+
 ## [x] Pantalla 1: fondo y flujo de juego
 - La pantalla 1 conserva la composición del local y el portal del storyboard; la guitarra y el amplificador mantienen sus posiciones y perspectiva. El limón se dibuja como actor independiente para poder caminar.
+- En la escena principal, el arte visible de la guitarra, el cable y el amplificador queda detrás del actor limón; sus hotspots transparentes se mantienen separados por encima para conservar la interacción y la accesibilidad.
 - La secuencia es conectar el cable primero a la guitarra y luego al amplificador; examinar el amplificador, encenderlo y tocar la guitarra.
 - Para cruzar basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; cuentan las díadas. Se admiten inversiones y extensiones dentro de la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
@@ -98,6 +120,7 @@
 - En el final 1, el líder acepta al limón como oráculo peregrino y habilita la recogida y colocación de los tres palitos. Solo entonces se puede encender la hoguera y, cuando termina la animación, recoger con un clic la semilla turquesa de Rambla.
 - En el final 2, los encapuchados gritan «¡Alimenta la hoguera!» y comienza una prueba urgente de reflejos para rodar cuesta abajo: el jugador pulsa cuando el indicador entra en la franja segura. Hay tres intentos por tanda; después puede reiniciar la prueba. Con movimiento reducido se ofrece un control manual en lugar del indicador animado.
 - Superar la prueba permite escapar y revela una semilla turquesa clicable en el sendero como ruta alternativa para completar Rambla; sin superarla no se desbloquea ni se recoge esa semilla.
+- Después de recoger la semilla turquesa, se oculta el recuadro de estado de Rambla; la recogida y la persistencia en el Libro se mantienen.
 
 ## [x] Pausa narrativa antes de la tirada del final 2
 - Tras el final 2 aparece lentamente un cuadro de texto que advierte que la secta va a atacar al protagonista y que debe rodar cuesta abajo para escapar.
@@ -172,7 +195,7 @@
 
 ## [ ] Libro de semillas y canciones
 - Un panel desplegable «Libro de semillas» permanece accesible durante la partida y añade cada semilla al descubrirla. Muestra el título y metadatos independientes de las semillas encontradas.
-- Cada entrada ofrece acciones separadas para reproducir el fragmento MP3 dentro del juego, abrir el enlace de YouTube y descargar la canción completa en WAV.
+- Cada entrada ofrece únicamente dos acciones separadas: abrir el enlace del vídeo de YouTube y descargar la canción completa; no existe espacio ni reproductor para MP3 dentro del Libro.
 - La colección incluye las diez canciones en el orden facilitado por el grupo y solo muestra como descubiertas las semillas que el jugador ya haya encontrado.
 - Si un archivo o enlace oficial aún no está disponible, su campo y acción aparecen pendientes/deshabilitados; no se inventan canciones, enlaces ni archivos.
 

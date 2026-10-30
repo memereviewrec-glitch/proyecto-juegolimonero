@@ -93,7 +93,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
         <button className="el-rio-fish el-rio-fish-red" style={{ top: `${fishLanes.red}%` }} type="button" onClick={() => hearFish("rojo")} aria-label={FISH_LABELS.rojo}><i /></button>
         <button className="el-rio-fish el-rio-fish-yellow" style={{ top: `${fishLanes.yellow}%` }} type="button" onClick={() => hearFish("amarillo")} aria-label={FISH_LABELS.amarillo}><i /></button>
         {whiteUnlocked && <button className={`el-rio-fish el-rio-fish-white ${whiteHeard ? "el-rio-fish-white-heard" : ""}`} style={{ top: `${fishLanes.white}%` }} type="button" onClick={hearWhiteFish} aria-label="pez blanco de la paz"><i /></button>}
-        <div className="el-rio-fish el-rio-fish-black" style={{ top: `${fishLanes.black}%` }} aria-label="Pez negro, no interactivo"><i /></div>
+        <div className="el-rio-fish el-rio-fish-black" style={{ top: `${fishLanes.black}%` }} aria-label="Pez negro, no interactivo"><i /><b aria-hidden="true" /><em aria-hidden="true" /></div>
         <div className="el-rio-bed" aria-hidden="true" />
         <div className="el-rio-lemon" aria-hidden="true"><LemonSprite /></div>
         <div className="river-coordinate">LF · 07</div>

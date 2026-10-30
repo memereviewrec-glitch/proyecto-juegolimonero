@@ -157,7 +157,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
               <p id="seedbook-title">{discoveredSongs.length} de {SONG_CATALOG.length} semillas descubiertas</p>
             </div>
           </div>
-          <button ref={closeButtonRef} type="button" className="seedbook-close" onClick={onClose} aria-label="Cerrar el Libro de semillas">×</button>
+          <button ref={closeButtonRef} type="button" className="seedbook-close" onClick={onClose} aria-label="Continuar y cerrar el Libro de semillas">continuar</button>
         </div>
 
         <div className="seedbook-restart-area">

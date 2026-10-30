@@ -542,7 +542,7 @@ button { font:inherit; }
 .seedbook-kicker { font:8px 'DM Mono',monospace; letter-spacing:.12em; color:#706a73; }
 .seedbook-header h2 { margin:8px 0 4px; font-size:25px; letter-spacing:-.06em; }
 .seedbook-header p { margin:0; color:#61546c; font:10px 'DM Mono',monospace; }
-.seedbook-close { width:34px; height:34px; flex:0 0 auto; border:2px solid #2b2631; background:#eee7d8; color:#2b2631; font-size:22px; line-height:1; cursor:pointer; }
+.seedbook-close { min-width:82px; height:34px; flex:0 0 auto; padding:0 8px; border:2px solid #2b2631; background:#eee7d8; color:#2b2631; font:8px 'DM Mono',monospace; letter-spacing:.04em; text-transform:lowercase; line-height:1; cursor:pointer; }
 .seedbook-restart-area { margin:14px 0 18px; padding:12px; border:2px dashed #d98470; background:#fffdf7; }
 .seedbook-page { order:2; flex:1 1 auto; width:96%; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:flex-start; overflow-y:auto; overflow-x:hidden; scrollbar-color:#9a879d #eee7d8; }
 .seedbook-restart-area { order:4; flex:0 0 auto; margin:6px 0 0; padding:5px 7px; }

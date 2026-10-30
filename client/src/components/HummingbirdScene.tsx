@@ -24,7 +24,7 @@ const QUESTIONS: readonly HummingbirdQuestion[] = [
   {
     prompt: "Mi casa estaba en aquel árbol. Ahora solo quedan cenizas. No sé dónde volver.",
     options: [
-      { text: "No tienes que saberlo todo ahora. Primero puedes descansar junto a mí.", delta: 25 },
+      { text: "No tienes que resolverlo todo ahora. Puedes descansar un momento y luego pensamos qué hacer.", delta: 25 },
       { text: "Todos hemos perdido cosas. Tendrás que acostumbrarte.", delta: -30 },
       { text: "Si no tienes casa, busca otra. Quedarte aquí no va a cambiar nada.", delta: -30 },
     ],
@@ -33,7 +33,7 @@ const QUESTIONS: readonly HummingbirdQuestion[] = [
     prompt: "Volaba de árbol en árbol, pero ya no queda ninguno. El cielo es demasiado grande cuando no tienes un lugar al que regresar.",
     options: [
       { text: "El mundo siempre ha sido grande. Eso no significa que tenga que importarte.", delta: -30 },
-      { text: "Aunque el bosque haya desaparecido, todavía puedes encontrar compañía. No estás solo mientras yo esté aquí.", delta: 25 },
+      { text: "Aunque el bosque haya desaparecido, aquí quedan otros animales. Si quieres, podemos buscar a quienes también necesiten ayuda.", delta: 25 },
       { text: "Deja de mirar atrás y vuela. Los pájaros deberían saber hacer eso.", delta: -30 },
     ],
   },
@@ -66,15 +66,15 @@ const QUESTIONS: readonly HummingbirdQuestion[] = [
     options: [
       { text: "Nada. Ya has hecho bastante.", delta: -30 },
       { text: "Seguir volando es lo único que sabes hacer. Hazlo y deja de pensar.", delta: -30 },
-      { text: "Puedes venir conmigo. No puedo devolverte tu casa, pero puedo compartir contigo el camino.", delta: 25 },
+      { text: "No puedo devolverte tu casa, pero puedo ayudarte a encontrar un refugio con los demás animales.", delta: 25 },
     ],
   },
 ];
 
 function outcomeText(outcome: HummingbirdOutcome) {
-  if (outcome === "good") return "No sé dónde terminará este viaje, pero quizá pueda descubrirlo contigo.";
+  if (outcome === "good") return "Gracias por escucharme. Seguiré adelante con un nuevo amigo.";
   if (outcome === "bad") return "Tus palabras pesan más que las cenizas. No puedo quedarme aquí.";
-  return "No sé si puedo ir contigo. El colibrí se queda quieto en una rama, dudando.";
+  return "Aún no sé qué hacer. Me quedaré un momento en esta rama para decidir el siguiente paso.";
 }
 
 export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSceneProps) {
@@ -118,7 +118,6 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
     <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}`}>
       <div className="scene-stage game-screen hummingbird-stage">
       <div className="hummingbird-sky" aria-hidden="true" />
-      <div className="hummingbird-branch" aria-hidden="true" />
       <picture className="hummingbird-sprite">
         <source media="(prefers-reduced-motion: reduce)" srcSet="/colibri-still.png" />
         <img src="/colibri.gif" alt="Colibrí" />

@@ -3,10 +3,6 @@
 .hummingbird-stage { position:relative; overflow:hidden; border-color:#273546; background:#17243a; color:#f7f3e9; image-rendering:pixelated; }
 .hummingbird-sky { position:absolute; inset:0; background:linear-gradient(180deg,#101a3580 0%,#1e365052 54%,#11172380 100%),url("/fire-forest-background-after.png") center / cover no-repeat; }
 .hummingbird-sky::before { content:"✦  ·  ⋆     ·    ✦       ·  ⋆   ·     ✦"; position:absolute; inset:7% 8% auto; color:#d6e8dc; font:16px 'DM Mono',monospace; letter-spacing:1.2em; opacity:.65; white-space:nowrap; }
-.hummingbird-sky::after { content:""; position:absolute; left:9%; right:9%; bottom:29%; height:28%; background:linear-gradient(160deg,transparent 0 32%,#1b2834 33% 53%,transparent 54%),linear-gradient(20deg,transparent 0 37%,#263d42 38% 62%,transparent 63%); opacity:.8; }
-.hummingbird-branch { position:absolute; z-index:2; left:-5%; right:-5%; bottom:21%; height:5%; transform:rotate(-4deg); background:#231921; box-shadow:0 10px 0 #4a2d2a,0 14px 0 #172027; }
-.hummingbird-branch::before,.hummingbird-branch::after { content:""; position:absolute; bottom:70%; width:18%; height:30%; border-left:6px solid #2e4c3a; border-radius:50%; transform:rotate(-32deg); }
-.hummingbird-branch::before { left:18%; } .hummingbird-branch::after { right:19%; transform:rotate(28deg); }
 .hummingbird-sprite { position:absolute; z-index:4; left:8%; bottom:26%; display:block; width:clamp(140px,22%,220px); aspect-ratio:4 / 3; image-rendering:pixelated; filter:drop-shadow(3px 4px 0 #0d1420); transition:left 1.25s ease-out,bottom 1.25s ease-out; }
 .hummingbird-sprite img { display:block; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
 .hummingbird-entering .hummingbird-sprite { animation:hummingbird-arrival 2.2s cubic-bezier(.22,1,.36,1) both; }

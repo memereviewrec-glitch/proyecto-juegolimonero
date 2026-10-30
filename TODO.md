@@ -100,7 +100,7 @@
 
 ## [x] Acceso al Libro de semillas: icono grande sin texto visible
 - El control aparece en la esquina superior izquierda del lienzo y muestra solo la ilustración pixel-art del libro y el contador numérico de progreso; no muestra las palabras «Libro de semillas» hasta que el panel se abre.
-- En ninguna escena ni tamaño de pantalla el icono del libro tapa texto, opciones o controles de un cuadro; se conserva una separación visible y todas las acciones siguen accesibles.
+- En ninguna escena ni tamaño de pantalla el icono del libro tapa texto, opciones o controles de un cuadro. Todas las cajas y controles permanecen dentro del área visible del lienzo, con separación visible del icono; no se desplaza ningún cuadro fuera del marco para resolver el solapamiento.
 - El icono mide al menos 58 × 58 px y el botón ofrece una zona táctil mínima de 64 × 64 px en escritorio y móvil. Conserva contraste, foco de teclado claro y un nombre accesible con el estado/progreso, además de `aria-expanded`, `aria-haspopup` y `aria-controls`.
 
 ## [x] Amanecer, flor y semilla

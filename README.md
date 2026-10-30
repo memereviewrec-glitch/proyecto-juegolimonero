@@ -32,7 +32,7 @@ pnpm build:static
 3. **Raíces** pide apartar cuatro hojas de cada primer plano. Las inscripciones integradas en la piedra son exactamente `as above` y `so below`; descubrirlas ambas desbloquea la semilla y la canción de Raíces.
 4. **Rambla** comienza su conversación solo cuando el limón termina de caminar dentro del círculo de la hoguera. Tres decisiones se puntúan por mayoría: dos de tres determinan el desenlace. La ruta pacífica habilita exactamente tres palitos; un clic en un palito hace que el limón camine y lo recoja, y un clic en la hoguera mientras lleva una rama hace que la deposite en el centro. Al completar las tres, otro clic enciende el fuego. La ruta drástica muestra primero una advertencia narrativa lenta sobre el ataque de la secta y luego permite iniciar la tirada de habilidad para rodar.
 5. **La Orilla del Río Espejo** se desbloquea al recoger «Rambla». La piedra despierta a los Espíritus del Río y la conversación avanza en cuadros breves, con tres respuestas posibles por ruta. Tras la revelación aparece la semilla plateada de «Espíritus del río», que se recoge con un clic y se añade al Libro de Semillas.
-6. **El cauce profundo** se abre al recoger «Espíritus del río». El limón se adentra en el agua y los espíritus le plantean un reto con dos respuestas iniciales, continuando la travesía desde cualquier final de la conversación anterior.
+6. **El Río** se abre al recoger «Espíritus del río». El limón se adentra en el fondo del cauce y los peces de colores atraviesan el agua mientras la corriente plantea la siguiente elección.
 
 En Rambla se prefieren textos evocadores a instrucciones literales. No añadir pistas que expliquen directamente dónde caminar o qué objeto mover, salvo que una necesidad de accesibilidad lo requiera.
 
@@ -55,8 +55,8 @@ Al cambiar nombres visibles de canciones, conservar los IDs que ya estén persis
 | `client/src/components/CampfireFlame.tsx` | Sprite SVG pixelado de la llama y los leños pequeños. |
 | `client/src/components/RiverMirrorScene.tsx` | Escena 05 de la orilla, diálogo ramificado y desenlaces de los Espíritus del Río. |
 | `client/src/components/river-mirror-scene.css` | Fondo, espíritus, corriente plateada y transiciones de la escena 05. |
-| `client/src/components/RiverChallengeScene.tsx` | Escena 06 del cauce profundo, entrada del limón en el agua y reto de los espíritus. |
-| `client/src/components/river-challenge-scene.css` | Agua profunda, espíritus visibles y cuadro de reto de la escena 06. |
+| `client/src/components/ElRioScene.tsx` | Escena 06 de El Río, entrada del limón en el agua y peces de colores. |
+| `client/src/components/el-rio-scene.css` | Agua profunda, peces pixel art y cuadro de diálogo de la escena 06. |
 | `client/src/components/ruins-column-puzzle.css` | Encuadre, zoom e interacción de los primeros planos de Raíces. |
 | `client/public/ruins-column-left-inscribed-pixelated.png` | Ilustración izquierda con `as above` tallado en la piedra. |
 | `client/public/ruins-column-right-inscribed-pixelated.png` | Ilustración derecha con `so below` tallado en la piedra. |

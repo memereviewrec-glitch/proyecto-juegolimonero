@@ -25,7 +25,7 @@
 @keyframes river-lemon-throw { 0% { transform: translate(0, 0); } 45% { transform: translate(22px, -8px) rotate(-8deg); } 100% { transform: translate(38px, 2px); } }
 @keyframes river-lemon-throwing { 0% { transform: translate(0, 0) rotate(0); } 45% { transform: translate(22px, -10px) rotate(-10deg); } 100% { transform: translate(38px, 2px) rotate(4deg); } }
 @keyframes river-lemon-roll { 0% { left: 28%; bottom: 12%; transform: rotate(0); } 100% { left: 69%; bottom: 24%; transform: rotate(360deg); } }
-.river-ripples { position: absolute; z-index: 8; left: 37%; top: 47%; width: 27%; height: auto; image-rendering: pixelated; pointer-events: none; }
+.river-ripples { position: absolute; z-index: 8; left: 40%; top: 51%; width: 19%; height: auto; transform: perspective(300px) rotateX(56deg) scaleY(.62); transform-origin: center bottom; opacity: .82; image-rendering: pixelated; pointer-events: none; }
 .river-stone { position: absolute; z-index: 11; display: block; padding: 0; border: 1px solid #334353; background: radial-gradient(circle at 28% 25%, #d7dfd1 0 12%, transparent 13%), linear-gradient(145deg, #b2b5ad 0 28%, #767f87 29% 68%, #4e5b69 69%); box-shadow: 2px 2px 0 #283644, inset -2px -2px 0 #465361; image-rendering: pixelated; cursor: pointer; clip-path: polygon(9% 35%, 25% 8%, 65% 5%, 94% 28%, 87% 76%, 62% 94%, 21% 86%, 3% 61%); }
 .river-stone::before { content: ""; position: absolute; left: 30%; top: 30%; width: 34%; height: 16%; background: #e5e6cc99; transform: rotate(-18deg); }
 .river-stone-ground { left: 17%; bottom: 28%; width: 27px; height: 18px; transform: rotate(-12deg); }

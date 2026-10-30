@@ -5,7 +5,7 @@ import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColu
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
 import { CampfireScene, type CampfireFireStage } from "../components/CampfireScene";
 import { RiverMirrorScene } from "../components/RiverMirrorScene";
-import { RiverChallengeScene } from "../components/RiverChallengeScene";
+import { ElRioScene } from "../components/ElRioScene";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
@@ -799,15 +799,15 @@ export default function Home() {
           <span className="tab-number">05</span><span><strong>La Orilla del Río Espejo</strong><small>Los espíritus del río</small></span><span className="tab-mark">{discoveredSongIds.includes("rambla") ? "↗" : "⌑"}</span>
         </button>
         <button className={`screen-tab ${scene === "river-challenge" ? "active" : ""}`} onClick={() => setVisitedScene("river-challenge")} disabled={!discoveredSongIds.includes("espiritus-del-rio") || portalTransit || arrivalPortal}>
-          <span className="tab-number">06</span><span><strong>El cauce profundo</strong><small>El reto del río</small></span><span className="tab-mark">{discoveredSongIds.includes("espiritus-del-rio") ? "↗" : "⌑"}</span>
+          <span className="tab-number">06</span><span><strong>El Río</strong><small>El fondo del cauce</small></span><span className="tab-mark">{discoveredSongIds.includes("espiritus-del-rio") ? "↗" : "⌑"}</span>
         </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : "06"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : "El cauce profundo"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : "RÍO ESPEJO · BAJO EL AGUA"}</span>}
+            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : "06"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : "El Río"}</h2></div>
+            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : "RÍO ESPEJO · FONDO DEL CAUCE"}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
@@ -891,7 +891,7 @@ export default function Home() {
             scene === "river" ? (
               <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} />
             ) : (
-              <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} />
+              <ElRioScene key={`el-rio-${sceneReplayNonce}`} />
             )
           )}
 

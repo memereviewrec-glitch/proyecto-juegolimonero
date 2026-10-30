@@ -37,8 +37,20 @@ const NEXT_LABEL: Record<RiverStep, string> = {
 
 export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
+  const [stoneStatus, setStoneStatus] = useState<"ground" | "carried" | "thrown">("ground");
   const dialogue = RIVER_DIALOGUE[route];
   const resolved = step === "ending";
+
+  function collectStone() {
+    if (stoneStatus !== "ground") return;
+    setStoneStatus("carried");
+  }
+
+  function throwStone() {
+    if (stoneStatus !== "carried") return;
+    setStoneStatus("thrown");
+    setStep("spirits");
+  }
 
   function advance() {
     setStep(current => current === "arrival" ? "spirits" : current === "spirits" ? "answer" : current === "answer" ? "revelation" : "ending");
@@ -49,13 +61,16 @@ export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
       <div className="river-mirror-world" role="group" aria-label="La Orilla del Río Espejo">
         <div className="river-mist river-mist-one" aria-hidden="true" />
         <div className="river-mist river-mist-two" aria-hidden="true" />
-        <div className="river-spirits" aria-label="Tres Espíritus del Río" aria-hidden={step === "arrival"}>
+        <div className={`river-spirits ${stoneStatus === "thrown" ? "river-spirits-awake" : ""}`} aria-label="Tres Espíritus del Río" aria-hidden={stoneStatus !== "thrown"}>
           <span className="river-spirit river-spirit-one" /><span className="river-spirit river-spirit-two" /><span className="river-spirit river-spirit-three" />
         </div>
         <div className={`river-current ${resolved ? "river-current-guiding" : ""}`} aria-hidden="true" />
-        <div className={`river-lemon ${resolved ? "river-lemon-resolved" : ""}`} aria-label="El limón">
+        <div className={`river-lemon ${stoneStatus === "carried" ? "river-lemon-carried" : ""} ${stoneStatus === "thrown" ? "river-lemon-thrown" : ""} ${resolved ? "river-lemon-resolved" : ""}`} aria-label="El limón">
           <LemonSprite />
         </div>
+        {stoneStatus === "ground" && <button className="river-stone river-stone-ground" type="button" onClick={collectStone} aria-label="Piedra junto a la orilla" />}
+        {stoneStatus === "carried" && <button className="river-target" type="button" onClick={throwStone} aria-label="Agua quieta y plateada" />}
+        {stoneStatus === "thrown" && <span className="river-stone river-stone-flight" aria-hidden="true" />}
         {resolved && <div className="river-splash" aria-hidden="true"><i /><i /><i /><i /></div>}
         <div className="river-coordinate">LF · 05</div>
       </div>
@@ -65,7 +80,7 @@ export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
         {step === "answer" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">“{dialogue.answer}”</p></>}
         {step === "revelation" && <><span className="river-speaker">ESPÍRITUS DEL RÍO</span><p>{dialogue.revelation}</p></>}
         {step === "ending" && <><span className="river-speaker">EL RÍO ESPEJO</span><p>{dialogue.ending}</p><small className="river-route-note">{route === "pacifico" ? "La ilusión queda atrás." : "El viaje continúa."}</small></>}
-        {!resolved && <button className="river-dialogue-next" type="button" onClick={advance}>{NEXT_LABEL[step]} <span aria-hidden="true">▶</span></button>}
+        {!resolved && stoneStatus === "thrown" && <button className="river-dialogue-next" type="button" onClick={advance}>{NEXT_LABEL[step]} <span aria-hidden="true">▶</span></button>}
       </div>
     </div>
   );

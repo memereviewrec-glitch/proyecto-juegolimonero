@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
 import "./el-rio-scene.css";
@@ -32,6 +32,14 @@ const BLACK_RESPONSES: Record<FishColor, string> = {
 };
 
 export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
+  const fishLanes = useMemo(() => ({
+    green: 22 + Math.random() * 39,
+    blue: 22 + Math.random() * 39,
+    red: 22 + Math.random() * 39,
+    yellow: 22 + Math.random() * 39,
+    white: 22 + Math.random() * 39,
+    black: 22 + Math.random() * 39,
+  }), []);
   const [heardFish, setHeardFish] = useState<FishColor[]>([]);
   const [thought, setThought] = useState<string | null>(null);
   const [blackThought, setBlackThought] = useState<string | null>(null);
@@ -71,12 +79,12 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
       <div className="el-rio-world" role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
         <div className="el-rio-light" aria-hidden="true" />
         <div className="el-rio-current" aria-hidden="true" />
-        <button className="el-rio-fish el-rio-fish-green" type="button" onClick={() => hearFish("verde")} aria-label={FISH_LABELS.verde}><i /></button>
-        <button className="el-rio-fish el-rio-fish-blue" type="button" onClick={() => hearFish("azul")} aria-label={FISH_LABELS.azul}><i /></button>
-        <button className="el-rio-fish el-rio-fish-red" type="button" onClick={() => hearFish("rojo")} aria-label={FISH_LABELS.rojo}><i /></button>
-        <button className="el-rio-fish el-rio-fish-yellow" type="button" onClick={() => hearFish("amarillo")} aria-label={FISH_LABELS.amarillo}><i /></button>
-        {whiteUnlocked && <button className={`el-rio-fish el-rio-fish-white ${whiteHeard ? "el-rio-fish-white-heard" : ""}`} type="button" onClick={hearWhiteFish} aria-label="pez blanco de la paz"><i /></button>}
-        <div className="el-rio-fish el-rio-fish-black" aria-label="Pez negro, no interactivo"><i /></div>
+        <button className="el-rio-fish el-rio-fish-green" style={{ top: `${fishLanes.green}%` }} type="button" onClick={() => hearFish("verde")} aria-label={FISH_LABELS.verde}><i /></button>
+        <button className="el-rio-fish el-rio-fish-blue" style={{ top: `${fishLanes.blue}%` }} type="button" onClick={() => hearFish("azul")} aria-label={FISH_LABELS.azul}><i /></button>
+        <button className="el-rio-fish el-rio-fish-red" style={{ top: `${fishLanes.red}%` }} type="button" onClick={() => hearFish("rojo")} aria-label={FISH_LABELS.rojo}><i /></button>
+        <button className="el-rio-fish el-rio-fish-yellow" style={{ top: `${fishLanes.yellow}%` }} type="button" onClick={() => hearFish("amarillo")} aria-label={FISH_LABELS.amarillo}><i /></button>
+        {whiteUnlocked && <button className={`el-rio-fish el-rio-fish-white ${whiteHeard ? "el-rio-fish-white-heard" : ""}`} style={{ top: `${fishLanes.white}%` }} type="button" onClick={hearWhiteFish} aria-label="pez blanco de la paz"><i /></button>}
+        <div className="el-rio-fish el-rio-fish-black" style={{ top: `${fishLanes.black}%` }} aria-label="Pez negro, no interactivo"><i /></div>
         <div className="el-rio-bed" aria-hidden="true" />
         <div className="el-rio-lemon" aria-hidden="true"><LemonSprite /></div>
         <div className="river-coordinate">LF · 07</div>

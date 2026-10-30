@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { LemonSprite } from "./GameSprites";
+import { SeedGlyph } from "./SeedGlyph";
 import type { RuinsColumnSide } from "./RuinsColumnPuzzle";
 import "./ruins-scene.css";
 
@@ -111,7 +112,7 @@ export function RuinsScene({
 
   function approachColumn(side: RuinsColumnSide) {
     if (walking || (side === "left" ? leftRevealed : rightRevealed)) return;
-    const target = { x: side === "left" ? 34 : 53, y: 82 };
+    const target = { x: side === "left" ? 34 : 77, y: 82 };
     if (!isOnStonePath(target) || !pathSegmentIsWalkable(lemonPoint, target)) return;
     moveLemon(target, () => onApproachColumn(side));
   }
@@ -148,9 +149,9 @@ export function RuinsScene({
               <path className="ruins-bloom" d="M52 49 41 36l3-16 12 9 11-13 9 8-8 15 15 5-3 13-18-4-8 14-11-7z" fill="#e6d9b1" stroke="#493f43" strokeWidth="4" />
               <rect className="ruins-flower-heart" x="52" y="38" width="13" height="13" fill="#efc64d" stroke="#493f43" strokeWidth="3" />
             </svg>
-            {flowerStage === "falling" && <span className="ruins-seed-fall" aria-hidden="true" />}
+            {flowerStage === "falling" && <div className="ruins-seed-fall" aria-hidden="true"><SeedGlyph seed="raices" /></div>}
             {flowerStage === "seed" && !seedCollected && (
-              <button className="ruins-seed-pickup" type="button" onClick={onCollectSeed} aria-label="Coger la semilla de Raíces" />
+              <button className="ruins-seed-pickup" type="button" onClick={onCollectSeed} aria-label="Recoger la semilla verde de Raíces"><SeedGlyph seed="raices" /></button>
             )}
           </div>
         )}

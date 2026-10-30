@@ -16,11 +16,11 @@
 
 .ruins-world {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  height: 100%;
+  height: 115%;
   aspect-ratio: 986 / 1595;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   overflow: hidden;
   background: #394753 url("/ruins-background.png") center / 100% 100% no-repeat;
   image-rendering: pixelated;
@@ -53,10 +53,10 @@
 }
 
 .ruins-column-right {
-  left: 43%;
-  top: 22%;
-  width: 19%;
-  height: 44%;
+  left: 75%;
+  top: 18%;
+  width: 17%;
+  height: 54%;
 }
 
 .ruins-lemon-actor {
@@ -122,25 +122,32 @@
   z-index: 2;
   left: 58%;
   top: 24%;
-  width: 13px;
-  height: 17px;
-  border: 2px solid #483b35;
-  border-radius: 2px 8px 2px 8px;
-  background: #e8c45e;
+  display: grid;
+  width: 23px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   image-rendering: pixelated;
 }
 
-.ruins-seed-fall { animation: ruins-seed-drop 1.1s cubic-bezier(.5, 0, .7, 1) both; }
+.ruins-seed-fall { animation: ruins-seed-drop 1.1s cubic-bezier(.5, 0, .7, 1) both; pointer-events: none; }
+.ruins-seed-fall .seed-glyph { width: 100%; height: 100%; }
 .ruins-seed-pickup {
   top: 57%;
-  width: 24px;
-  height: 28px;
-  padding: 0;
+  width: 52px;
+  height: 58px;
+  padding: 11px;
+  border: 2px solid #c9e98d;
+  border-radius: 50%;
+  background: rgb(34 43 33 / 62%);
   cursor: pointer;
-  box-shadow: 0 0 0 8px rgb(235 205 105 / 20%);
+  box-shadow: 0 0 0 5px rgb(127 188 97 / 22%), 0 0 16px rgb(162 224 123 / 70%);
   animation: seed-breathe 1.8s ease-in-out infinite alternate;
   pointer-events: auto;
 }
+.ruins-seed-pickup .seed-glyph { width: 100%; height: 100%; filter: drop-shadow(0 0 3px #d6f09d); }
 
 .ruins-seed-pickup:focus-visible {
   outline: 3px dashed #fff0bb;

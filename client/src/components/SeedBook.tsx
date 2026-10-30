@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { SeedGlyph } from "./SeedGlyph";
+import { getPhysicalSeedId, PHYSICAL_SEED_COLORS } from "./seed-colors";
 
 type SongResource = {
   id: string;
@@ -133,12 +135,19 @@ export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
           </div>
         ) : (
           <ol className="seedbook-list">
-            {discoveredSongs.map(song => (
-              <li className="seedbook-entry" key={song.id}>
+            {discoveredSongs.map(song => {
+              const seedId = getPhysicalSeedId(song.id);
+              return <li className="seedbook-entry" key={song.id}>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{song.title}</h3>
-                  <span className="seedbook-collected" aria-label="Semilla descubierta">✦</span>
+                  {seedId ? (
+                    <span className="seedbook-collected seedbook-colored-seed" role="img" aria-label={`Semilla ${PHYSICAL_SEED_COLORS[seedId].name} descubierta`}>
+                      <SeedGlyph seed={seedId} />
+                    </span>
+                  ) : (
+                    <span className="seedbook-collected" role="img" aria-label="Intro desbloqueada, sin semilla física">✦</span>
+                  )}
                 </div>
                 <div className="seedbook-metadata" aria-label={`Recursos de ${song.title}`}>
                   <span><b>Fragmento MP3</b><small>{song.mp3FragmentUrl ? "Listo para escuchar" : "Pendiente del archivo"}</small></span>
@@ -160,8 +169,8 @@ export function SeedBook({ discoveredSongIds, onClose }: SeedBookProps) {
                     <button type="button" className="seedbook-action" disabled>WAV pendiente</button>
                   )}
                 </div>
-              </li>
-            ))}
+              </li>;
+            })}
           </ol>
         )}
         {audioError && <p className="seedbook-error" role="status">No se pudo reproducir el MP3. Comprueba que el archivo esté disponible.</p>}

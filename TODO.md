@@ -25,6 +25,7 @@
 ## [x] Tocar en el primer plano del mástil
 - Al elegir «Tocar la guitarra», la escena cambia a un primer plano horizontal del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes visibles y numerados.
 - La afinación estándar se muestra con la cuerda grave Mi abajo. De abajo arriba aparecen Mi–La–Re–Sol–Si–Mi (E2–A2–D3–G3–B3–E4). Se pueden elegir cuerdas/trastes en el mástil y tocar la selección; las notas se oyen según la altura real que corresponde a esa cuerda y traste.
+- Las notas de las cuerdas al aire se muestran sobre la posición explícita de traste 0, antes del primer traste; no deben parecer notas del traste 1.
 - Se conserva la regla del portal: al menos dos notas distintas que formen clases de nota de la escala de Do♯ menor natural, incluido Do♯. Las notas sueltas, dos posiciones de la misma clase de nota y las notas/acordes fuera de la escala no abren el portal.
 
 ## [x] Sustain y legibilidad de las vistas ampliadas
@@ -55,13 +56,18 @@
 - El limón se acerca a las dos columnas de una en una. Al llegar a una columna aparece «Examinar» y se abre una vista extra de primer plano que ocupa el mismo lienzo de juego; no aparece debajo de la escena de las ruinas.
 - Cada minijuego de columna llena ese mismo marco de proporción 1180:1333; la escena de las ruinas queda oculta, pero sigue montada para conservar la posición del limón al volver.
 - En cada primer plano, el jugador arrastra las hojas que cubren la piedra para apartarlas. Al despejar la columna izquierda aparece exactamente «as above»; al despejar la derecha, exactamente «so below».
+- Cada columna tiene exactamente cuatro hojas, algo mayores que las actuales. El plano principal muestra las columnas más cerca y el primer plano presenta una inscripción de aspecto más detallado, conservando exactamente «as above» y «so below».
 - Tras descubrir ambas inscripciones, una planta crece hasta florecer y entrega la tercera semilla, que desbloquea la tercera canción «Raíces».
 
 ## [x] Pantalla 4: encuentro nocturno y hoguera
-- El fondo se basa en el panel oficial 04: cielo estrellado con luna creciente, valle rocoso, figuras reunidas alrededor de un símbolo central y el limón en primer plano, en el mismo pixel art deliberado del juego y la proporción estrecha del mundo de la escena 03.
+- El fondo se basa en el panel oficial 04: cielo estrellado con luna creciente, valle rocoso y figuras reunidas alrededor de un símbolo central, en el mismo pixel art deliberado del juego y la proporción estrecha del mundo de la escena 03. El limón no queda pintado en el fondo: es un actor separado que el jugador puede mover.
 - La pantalla 04 solo se desbloquea después de recoger la semilla de «Raíces». El jugador recoge cuatro palitos y lleva cada uno al centro de la reunión; la hoguera no se puede encender hasta que todos estén allí.
 - Al encenderla comienza una animación legible del fuego que respeta `prefers-reduced-motion`. Cuando termina, aparece una semilla como control clicable y accesible; la cuarta canción «Rambla» no se añade al Libro de Semillas hasta que el jugador pulsa esa semilla.
 - Las semillas descubiertas, incluida «Rambla», permanecen en el Libro de Semillas al cambiar de escena y después de recargar el juego, mediante persistencia local del navegador.
+
+## [x] Recoger cada semilla con un clic y distinguir sus colores
+- La semilla de «Ventana al sendero», la de «Raíces» y la de «Rambla» se recogen pulsando directamente sobre cada semilla; los cuadros de texto pueden indicar la acción, pero no sustituyen el clic en el objeto.
+- Cada semilla física tiene un color propio y consistente en su escena y en el Libro de Semillas; el color no es la única señal de disponibilidad ni el único modo de distinguirla. «Intro» continúa desbloqueándose con el portal y no se presenta como una semilla física.
 
 ## [x] Guitarra y amplificador visibles como en el storyboard
 - El recorte de la Stratocaster conserva completa la punta izquierda del cuerpo, sin que quede amputada ni pegada al borde del sprite.
@@ -94,11 +100,12 @@
 
 ## [x] Acceso al Libro de semillas: icono grande sin texto visible
 - El control aparece en la esquina superior izquierda del lienzo y muestra solo la ilustración pixel-art del libro y el contador numérico de progreso; no muestra las palabras «Libro de semillas» hasta que el panel se abre.
+- En ninguna escena ni tamaño de pantalla el icono del libro tapa texto, opciones o controles de un cuadro; se conserva una separación visible y todas las acciones siguen accesibles.
 - El icono mide al menos 58 × 58 px y el botón ofrece una zona táctil mínima de 64 × 64 px en escritorio y móvil. Conserva contraste, foco de teclado claro y un nombre accesible con el estado/progreso, además de `aria-expanded`, `aria-haspopup` y `aria-controls`.
 
 ## [x] Amanecer, flor y semilla
 - Ambas acciones terminales inician el mismo amanecer: el cielo se ilumina gradualmente y el sol sale.
-- La flor se abre en pixel art después de comenzar el amanecer y entrega una semilla que cae desde su centro. Solo se ofrece «Coger semilla» después de que termine la caída.
+- La flor se abre en pixel art después de comenzar el amanecer y entrega una semilla que cae desde su centro. Cuando termina la caída, la semilla se puede pulsar para recogerla; no se recoge desde el cuadro de texto.
 
 ## [x] Llegada, movimiento y presentación
 - Al cruzar el portal, el limón salta hacia él; en la escena 2 sale del portal, salta y cae en el suelo. El portal gira en ambas dimensiones y aparece delante de la salida del sol.
@@ -120,6 +127,7 @@
 
 ## [x] Validación de la versión actual
 - `pnpm check`, `pnpm build:static` y `git diff --check` pasan; la build incluye el manifiesto de rutas, los fondos PNG, los sprites v2 de guitarra/amplificador, las columnas inscritas y los 36 MP3 de juego.
+- En esta tanda también pasan `pnpm test` (2 archivos, 6 pruebas). Preview confirma cuatro hojas iniciales por columna, grabados ocultos antes de retirarlas, notas abiertas alineadas con traste 0, separación del Libro respecto a los cuadros y movimiento del limón en Rambla con clic y flechas. La build incluye el fondo de escena 04 sin limón estático y los primeros planos revisados.
 - Se incluyen 34 muestras MP3 de guitarra entre E2 y C#5 y dos silbidos MP3; `ffprobe` confirma codec MP3 y una duración aproximada de 2 s para las notas. No quedan `AudioContext` ni osciladores en el código del juego.
 - El sprite `guitar-sprite-recut-v2.png` mide 839 × 1874 px; su alfa deja 25 px libres a la izquierda y no toca ninguno de los cuatro bordes. El asset está incluido en `dist/public`.
 - La ruta del banco de guitarra apunta a `/audio/guitar/`; el panel del libro recibe el foco al abrirse, atrapa Tab/Mayús+Tab, cierra con Escape y devuelve el foco al control que lo abrió.

@@ -268,6 +268,7 @@ export function GuitarCloseup({
   const fretEndX = 1000;
   const scaleLength = (fretEndX - nutX) / (1 - 2 ** (-9 / 12));
   const fretX = Array.from({ length: 10 }, (_, fret) => fret === 0 ? nutX : nutX + scaleLength * (1 - 2 ** (-fret / 12)));
+  const openFretCenter = (nutX + fretX[1]) / 2;
   const stringY = VISUAL_STRING_ORDER.map((_, row) => 143 + row * 34);
   const inlayFrets = [3, 5, 7, 9];
 
@@ -296,6 +297,7 @@ export function GuitarCloseup({
           <path d="M46 134 183 151v124L46 292" fill="#3c3033" opacity=".55" />
           <path d="M177 116h817v223H177z" fill="url(#fretboardWood)" stroke="#2b242b" strokeWidth="9" />
           <path d="M184 125h809v12H184z" fill="#ddd2bb" stroke="#42343a" strokeWidth="3" />
+          <text x={openFretCenter} y="119" className="fret-number fret-number-open" textAnchor="middle">0</text>
           {stringY.map((y, row) => {
             const stringIndex = VISUAL_STRING_ORDER[row];
             const pegX = 56 + row * 17;
@@ -311,7 +313,7 @@ export function GuitarCloseup({
           {Array.from({ length: 9 }, (_, index) => {
             const fret = index + 1;
             const x = fretX[fret];
-            const center = (fretX[fret - 1] + x) / 2;
+            const center = (x + (fret === 9 ? fretEndX : fretX[fret + 1])) / 2;
             return <g key={`fret-${fret}`}>
               <path d={`M ${x} 127 V 334`} stroke="#d8d0c1" strokeWidth="7" />
               <path d={`M ${x + 4} 127 V 334`} stroke="#3d3235" strokeWidth="2" opacity=".75" />
@@ -325,7 +327,7 @@ export function GuitarCloseup({
             return <g key={`string-${stringIndex}`}>
               <path d={`M 184 ${y} H 992`} stroke="#373038" strokeWidth="5" opacity=".65" />
               <path d={`M 184 ${y - 1} H 992`} stroke="url(#stringMetal)" strokeWidth={stringIndex === 0 ? 2.8 : stringIndex === 5 ? 1.2 : 1.7} />
-              <text x="190" y={y - 8} className="open-note-label">{STRINGS[stringIndex].tuning}</text>
+              <text x={openFretCenter} y={y - 8} className="open-note-label" textAnchor="middle">{STRINGS[stringIndex].tuning}</text>
             </g>;
           })}
           {stringY.flatMap((y, row) => {
@@ -337,8 +339,8 @@ export function GuitarCloseup({
               const center = (left + right) / 2;
               const active = selectedPositions.includes(note.key);
               return <g key={note.key}>
-                <rect x={left + 3} y={y - 14} width={Math.max(10, right - left - 6)} height="28" rx="5" fill={active ? "#f1d878" : "transparent"} fillOpacity={active ? ".74" : "0"} stroke={active ? "#f7e8aa" : "transparent"} strokeWidth="2" role="button" tabIndex={0} aria-label={`${STRINGS[stringIndex].tuning}, ${fret === 0 ? "cuerda al aire" : `traste ${fret}`}: ${note.label}`} aria-pressed={active} onClick={() => activate(note)} onKeyDown={event => handleKeyDown(event, note)} />
-                {active && <text x={center} y={y + 5} className="selected-note-label" textAnchor="middle">{note.label}</text>}
+                <rect x={left + 3} y={y - 14} width={Math.max(10, right - left - 6)} height="28" rx="5" fill={active ? "#f1d878" : "transparent"} fillOpacity={active ? ".74" : "0"} stroke={active ? "#f7e8aa" : "transparent"} strokeWidth="2" role="button" tabIndex={0} aria-label={`${STRINGS[stringIndex].tuning}, ${fret === 0 ? "traste 0, cuerda al aire" : `traste ${fret}`}: ${note.label}`} aria-pressed={active} onClick={() => activate(note)} onKeyDown={event => handleKeyDown(event, note)} />
+                {active && <text x={center} y={y + 5} className={`selected-note-label ${fret === 0 ? "open-string-note-label" : ""}`} textAnchor="middle">{note.label}</text>}
               </g>;
             });
           })}

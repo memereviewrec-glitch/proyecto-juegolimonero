@@ -1,7 +1,7 @@
 .campfire-stage {
   border-color: #a8a08c;
   background: #080b14;
-  cursor: default;
+  cursor: crosshair;
 }
 
 .campfire-world {
@@ -14,7 +14,9 @@
   overflow: hidden;
   background: #080b14 url("/scene-04-background.png") center / 100% 100% no-repeat;
   image-rendering: pixelated;
+  cursor: crosshair;
 }
+.campfire-world:focus-visible { outline: 2px dashed #fff0aa; outline-offset: -6px; }
 
 .campfire-status {
   position: absolute;
@@ -33,6 +35,7 @@
   text-align: center;
   pointer-events: none;
 }
+.campfire-status small { display: block; margin-top: 4px; color: #ddd1bd; font: 8px/1.35 'DM Mono', monospace; }
 
 .campfire-stick {
   position: absolute;
@@ -76,10 +79,10 @@
 .campfire-lemon {
   z-index: 5;
   left: 22%;
-  bottom: 8%;
+  bottom: 14%;
   width: clamp(58px, 10%, 82px);
   height: clamp(72px, 12.5%, 118px);
-  transition: none;
+  transition: left 3s cubic-bezier(.2, .72, .24, 1), bottom 3s cubic-bezier(.2, .72, .24, 1), transform .7s ease;
   pointer-events: none;
 }
 
@@ -89,6 +92,7 @@
   left: 22%;
   bottom: 19%;
   transform: translateX(-50%) rotate(-24deg);
+  transition: left 3s cubic-bezier(.2, .72, .24, 1), bottom 3s cubic-bezier(.2, .72, .24, 1);
 }
 
 .campfire-center-target {
@@ -209,10 +213,12 @@
 }
 
 .campfire-seed svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.campfire-seed.seed-rambla { border-color: #9af4e8; box-shadow: 0 0 0 5px rgb(86 205 193 / 25%), 0 0 22px rgb(86 205 193 / 76%); }
+.campfire-seed.seed-rambla .seed-glyph { filter: drop-shadow(0 0 3px #d1fff5); }
 
 @keyframes campfire-seed-glow {
-  from { box-shadow: 0 0 0 3px rgb(237 193 92 / 20%), 0 0 14px rgb(255 205 93 / 56%); }
-  to { box-shadow: 0 0 0 7px rgb(237 193 92 / 32%), 0 0 24px rgb(255 220 113 / 88%); }
+  from { box-shadow: 0 0 0 3px rgb(86 205 193 / 20%), 0 0 14px rgb(86 205 193 / 56%); }
+  to { box-shadow: 0 0 0 7px rgb(86 205 193 / 32%), 0 0 24px rgb(86 205 193 / 88%); }
 }
 
 @media (max-width: 600px) {
@@ -226,4 +232,5 @@
   .campfire-flame-seed,
   .campfire-seed { animation: none; }
   .campfire-flame { filter: drop-shadow(0 0 12px rgb(245 125 53 / 65%)); }
+  .campfire-lemon,.campfire-carried-stick { transition: none; }
 }

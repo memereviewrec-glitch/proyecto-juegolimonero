@@ -25,21 +25,21 @@
 
 .ruins-puzzle[data-side="left"] .ruins-puzzle-stage {
   background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-left-inscribed-v2.png");
-  background-size: 100% 100%, auto 108%;
+  background-size: 100% 100%, auto 115%;
   background-position: center, center;
 }
 
 .ruins-puzzle[data-side="right"] .ruins-puzzle-stage {
   background-image: linear-gradient(180deg, rgb(21 22 21 / 10%), rgb(24 24 21 / 22%)), url("/ruins-column-right-inscribed-v2.png");
-  background-size: 100% 100%, auto 108%;
+  background-size: 100% 100%, auto 115%;
   background-position: center, center;
 }
 
 .ruins-puzzle-leaf {
   position: absolute;
   z-index: 3;
-  width: clamp(76px, 17vw, 132px);
-  height: clamp(68px, 14vw, 104px);
+  width: clamp(92px, 19vw, 152px);
+  height: clamp(82px, 16vw, 122px);
   padding: 7px;
   border: 0;
   border-radius: 50%;
@@ -89,5 +89,5 @@
 }
 
 @media (max-width: 480px) {
-  .ruins-puzzle-leaf { width: clamp(74px, 23vw, 104px); height: clamp(66px, 20vw, 92px); }
+  .ruins-puzzle-leaf { width: clamp(88px, 27vw, 120px); height: clamp(78px, 24vw, 108px); }
 }

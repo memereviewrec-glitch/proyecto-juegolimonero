@@ -37,7 +37,7 @@ button { font:inherit; }
 .tab-mark { color:var(--leaf); margin-left:auto; font-size:14px; }
 .workspace { display:block; position:relative; padding:30px clamp(22px,4vw,54px) 38px; max-width:1600px; margin:12px auto 34px; background:#453b50; border:10px solid #2b2631; box-shadow:inset 0 0 0 3px #82758a, 0 10px 0 #27232b; }
 .stage-column { min-width:0; position:relative; }
-.playfield { position:relative; width:100%; }
+.playfield { position:relative; width:100%; padding-top:104px; }
 .playfield-portrait,.playfield-room { width:min(100%,760px); margin-inline:auto; }
 .stage-heading { display:flex; justify-content:space-between; align-items:end; margin:0 0 16px; gap:20px; }
 .stage-heading h2,.storyboard-heading h2 { margin:5px 0 0; font-size:22px; letter-spacing:-.055em; font-weight:600; }
@@ -140,9 +140,12 @@ button { font:inherit; }
 .flower-bloom-open .flower-heart { animation:flower-heart-appear .35s steps(3,end) 1.15s both; }
 @keyframes flower-unfurl { to { opacity:1; transform:scale(1); } }
 @keyframes flower-heart-appear { to { opacity:1; transform:scale(1); } }
-.seed-spark { position:absolute; z-index:8; left:52.1%; top:79%; width:clamp(12px,1.8vw,16px); height:clamp(16px,2.2vw,21px); background:#f4cb4f; clip-path:polygon(50% 0,100% 48%,51% 100%,0 52%); opacity:0; filter:drop-shadow(1px 1px #483c4e) drop-shadow(0 0 2px #fff1a1); }
+.seed-spark { position:absolute; z-index:8; left:52.1%; top:79%; display:grid; width:52px; height:56px; padding:9px; place-items:center; border:0; background:transparent; opacity:0; filter:drop-shadow(1px 1px #483c4e) drop-shadow(0 0 5px #fff1a1); cursor:pointer; touch-action:manipulation; }
+.seed-spark .seed-glyph { width:100%; height:100%; }
 .seed-spark-visible { animation:seed-drop 1.4s steps(6,end) .35s both; }
-.seed-spark-collected { opacity:0; transform:translateY(16px) scale(.6); animation:none; }
+.seed-spark-collected { opacity:0; transform:translateY(16px) scale(.6); animation:none; pointer-events:none; }
+.seed-spark:focus-visible { outline:3px dashed #fff0bb; outline-offset:2px; }
+.seed-spark:disabled { cursor:default; }
 @keyframes seed-drop { 0% { transform:translateY(-27px); opacity:0; } 35% { opacity:1; } 100% { transform:translateY(5px); opacity:1; } }
 .bird-flock { position:absolute; z-index:4; left:-25%; top:31%; color:#332e39; font-size:11px; opacity:0; white-space:nowrap; }
 .birds-visible { opacity:1; animation:birds-cross 6.2s steps(12,end) forwards; }
@@ -283,6 +286,7 @@ button { font:inherit; }
  .screen-nav { padding:0 14px; overflow:auto; }
  .screen-tab { min-width:225px; min-height:68px; gap:9px; padding-right:12px; }
  .workspace { margin:10px 10px 28px; padding:13px; border-width:6px; }
+ .playfield { padding-top:92px; }
  .stage-heading { align-items:start; flex-direction:column; gap:5px; }
  .stage-location { text-align:left; }
  .dawn-stage { min-height:unset; }
@@ -527,6 +531,11 @@ button { font:inherit; }
 .seedbook-number { color:#d98470; font:10px 'DM Mono',monospace; }
 .seedbook-entry-heading h3 { flex:1; margin:0; font-size:17px; letter-spacing:-.04em; }
 .seedbook-collected { color:#d19a3a; font-size:16px; }
+.seedbook-colored-seed { display:grid; width:24px; height:28px; flex:0 0 auto; place-items:center; }
+.seedbook-colored-seed .seed-glyph { display:block; width:100%; height:100%; }
+.seed-glyph { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.guitar-fretboard-svg .fret-number-open { fill:#f5d77f; font-size:20px; font-weight:900; }
+.guitar-fretboard-svg .open-string-note-label { fill:#fff0a0; font-weight:900; }
 .seedbook-metadata { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:12px; }
 .seedbook-metadata span { min-width:0; padding:7px; background:#f1ecdf; }
 .seedbook-metadata b,.seedbook-metadata small { display:block; }
@@ -551,6 +560,7 @@ button { font:inherit; }
  .seedbook-toggle { top:7px; left:7px; width:72px; min-width:72px; height:72px; min-height:72px; padding:4px; }
  .seedbook-toggle-icon { width:58px; height:58px; }
  .seedbook-toggle b { right:-7px; bottom:-6px; min-width:36px; min-height:25px; }
+ .seed-spark { width:46px; height:50px; padding:7px; }
  .seedbook-panel { top:62px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }

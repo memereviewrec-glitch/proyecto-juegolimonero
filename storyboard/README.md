@@ -19,12 +19,13 @@ En unas ruinas cubiertas de vegetación, el limón recorre un sendero de piedra 
 ### 04 — Encuentro bajo la luna
 
 Después de encontrar la semilla de «Raíces», el limón llega a una reunión nocturna en un valle rocoso. El jugador recoge cuatro palitos, los lleva uno por uno al centro del círculo y enciende la hoguera. Al terminar la animación del fuego aparece la semilla de «Rambla»; hay que pulsarla para añadirla al Libro de Semillas.
+El limón es un actor separado del fondo y se puede mover por el sendero haciendo clic o usando las flechas. La semilla de «Rambla» es turquesa y se recoge directamente al pulsarla.
 
 ## Referencias visuales
 
 - [Pantallas 01–02](referencias/pantallas-01-02.png): composición del local y escena del camino al amanecer.
 - [Amanecer](referencias/amanecer.png): referencia ampliada de la escena y el motivo de la flor.
-- La implementación de la escena 03 se guía por las referencias de las ruinas y columnas de `client/public/ruins-background.png` y `client/public/ruins-column-*.png`.
+- La implementación de la escena 03 se guía por `client/public/ruins-background.png` y los primeros planos `client/public/ruins-column-*-inscribed-v2.png`; las inscripciones se conservan exactamente como «as above» y «so below».
 - [Panel oficial 04](referencias/panel-04.png): composición de la reunión nocturna compartida para el desarrollo de la nueva escena.
 - [Fondo pixel art 04](../client/public/scene-04-background.png): arte final integrado, ajustado a la proporción del mundo jugable.
 

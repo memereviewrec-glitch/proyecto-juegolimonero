@@ -13,14 +13,10 @@ type Props = {
 type Leaf = { id: number; x: number; y: number; rotation: number };
 
 const INITIAL_LEAVES: Leaf[] = [
-  { id: 0, x: 29, y: 24, rotation: -27 },
-  { id: 1, x: 47, y: 25, rotation: 18 },
-  { id: 2, x: 67, y: 28, rotation: 43 },
-  { id: 3, x: 36, y: 37, rotation: 34 },
-  { id: 4, x: 53, y: 42, rotation: -38 },
-  { id: 5, x: 30, y: 58, rotation: 20 },
-  { id: 6, x: 49, y: 59, rotation: -19 },
-  { id: 7, x: 69, y: 61, rotation: 39 },
+  { id: 0, x: 50, y: 39, rotation: -24 },
+  { id: 1, x: 51, y: 60, rotation: 21 },
+  { id: 2, x: 29, y: 68, rotation: 29 },
+  { id: 3, x: 71, y: 68, rotation: -33 },
 ];
 
 export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: Props) {

@@ -5,6 +5,7 @@ import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColu
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
 import { CampfireScene, CAMPFIRE_STICK_COUNT, type CampfireFireStage } from "../components/CampfireScene";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
+import { SeedGlyph } from "../components/SeedGlyph";
 import "./home.css";
 
 type Scene = "room" | "dawn" | "ruins" | "gathering";
@@ -469,7 +470,7 @@ export default function Home() {
   }
 
   function collectSeed() {
-    if (!seedAvailable) return;
+    if (!seedAvailable || seedCollected) return;
     setSeedCollected(true);
     setNotice("Semilla recogida. «Ventana al sendero» queda como recompensa de esta pantalla.");
   }
@@ -486,7 +487,7 @@ export default function Home() {
   }
 
   function collectRootsSeed() {
-    if (ruinsFlowerStage !== "seed") return;
+    if (ruinsFlowerStage !== "seed" || rootsSeedCollected) return;
     setRootsSeedCollected(true);
     setNotice("La tercera semilla, «Raíces», queda en tu equipaje.");
   }
@@ -650,7 +651,9 @@ export default function Home() {
               <div className={`bird-flock ${birdsPassed ? "birds-visible" : ""}`} aria-label={birdsPassed ? "Bandada de pájaros silbando" : undefined}><span>◆</span><span>◆</span><span>◆</span><span>♪</span></div>
               <button type="button" className={`dawn-lemon-actor ${dawnIsMoving ? "walking" : ""} ${arrivalPortal ? "portal-exit-leap" : ""} ${lemonWhistling ? "lemon-whistling" : ""}`} style={dawnLemonPoint ? { left: `${dawnLemonPoint.x}%`, bottom: `${dawnLemonPoint.bottom}%` } : undefined} onClick={startDialogue} aria-label="Hablar con el limón" disabled={dialogueStarted || seedCollected || arrivalPortal}><LemonSprite />{lemonWhistling && <span className="lemon-whistle-note" aria-hidden="true">♪</span>}</button>
               <FlowerSprite open={flowerOpen} />
-              <span className={`seed-spark ${flowerOpen ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} aria-hidden="true" />
+              <button type="button" className={`seed-spark ${seedAvailable ? "seed-spark-visible" : ""} ${seedCollected ? "seed-spark-collected" : ""}`} onClick={collectSeed} disabled={!seedAvailable || seedCollected} aria-label="Recoger la semilla dorada de Ventana al sendero">
+                <SeedGlyph seed="ventana" />
+              </button>
               <span className="stage-coordinate">LF · 02</span>
             </div>
           ) : scene === "ruins" ? (
@@ -705,11 +708,11 @@ export default function Home() {
               {branch === "A" && !sunRisen && <div className="branch-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>Quizá mi silbido alcance el otro lado.</p></div><button className="action-button whistle-button" onClick={() => whistle()}>Silbar</button></div>}
               {branch === "B" && !birdsPassed && <div className="branch-card quiet-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>El silencio se extiende. Miro hacia las ventanas.</p></div><button className="action-button sky-listen-button" onClick={() => listenToBirds()}>Mirar al cielo y escuchar a los pájaros silbar</button></div>}
               {sunRisen && !seedAvailable && <div className="branch-card sunrise-status-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "Los pájaros silban mientras el cielo se ilumina." : "Mi silbido resuena mientras el cielo se ilumina."}</p></div></div>}
-              {seedAvailable && !seedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. La bandada ya no está sola." : "La flor se abre y me entrega una semilla."}</p></div><button className="action-button" onClick={collectSeed}>Coger semilla</button></div>}
+              {seedAvailable && !seedCollected && <div className="context-card seed-card seed-instruction-card" role="status"><div className="thought-bubble"><span>EL LIMÓN</span><p>{branch === "B" ? "La flor se abre. Pulsa su semilla dorada para guardarla." : "La flor se abre y me entrega una semilla. Pulsa la semilla para recogerla."}</p></div></div>}
               {seedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA</span><h4>Ventana al sendero</h4></div><button className="text-button" onClick={() => setVisitedScene("ruins")}>Siguiente: Raíces</button></div>}
             </> : scene === "ruins" ? <>
               {ruinsAction && <div key={`column-${ruinsAction}`} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{ruinsAction === "left" ? "Unas hojas secas se aferran a esta columna." : "Las hojas se enredan entre las raíces de piedra."}</p></div><button className="action-button" onClick={openRuinsPuzzle}>Examinar</button></div>}
-              {ruinsFlowerStage === "seed" && !rootsSeedCollected && <div className="context-card seed-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>La planta ha florecido y deja una semilla entre las raíces.</p></div><button className="action-button" onClick={collectRootsSeed}>Coger semilla</button></div>}
+              {ruinsFlowerStage === "seed" && !rootsSeedCollected && <div className="context-card seed-card seed-instruction-card" role="status"><div className="thought-bubble"><span>EL LIMÓN</span><p>La planta ha florecido. Pulsa la semilla verde que brilla entre las raíces.</p></div></div>}
               {rootsSeedCollected && <div className="unlock-card song-card"><div><span className="context-kicker">CANCIÓN DESBLOQUEADA · 03</span><h4>Raíces</h4></div><button className="text-button" onClick={() => setVisitedScene("gathering")}>Siguiente: reunión nocturna</button></div>}
             </> : null}
           </aside>}
@@ -722,7 +725,7 @@ export default function Home() {
         <div className="storyboard-heading"><div><span className="stage-kicker">DOCUMENTO DE PREPRODUCCIÓN</span><h2>El storyboard original</h2></div><span>REFERENCIA VISUAL · PANTALLAS 01–04</span></div>
         <figure className="storyboard-frame"><img src="/storyboard-pantallas-01-02.png" alt="Storyboard conceptual: el local de ensayo vacío y el limón ante El Cuchillo de Albatera al amanecer." /><figcaption><span>01 · Local de ensayo</span><span>02 · El Cuchillo al amanecer</span></figcaption></figure>
         <figure className="storyboard-frame storyboard-frame-roots"><img src="/ruins-background.png" alt="Fondo de las ruinas invadidas por raíces, basado en el panel 03 del storyboard v02." /><figcaption><span>03 · Ruinas y arco de piedra</span><span>Fondo adaptado del panel 03 · storyboard v02</span></figcaption></figure>
-        <figure className="storyboard-frame storyboard-frame-campfire"><img src="/scene-04-background.png" alt="Fondo pixel art del encuentro nocturno: el limón llega a una reunión junto a un símbolo luminoso en un valle rocoso." /><figcaption><span>04 · Encuentro bajo la luna</span><span>La reunión, la hoguera y la semilla de «Rambla»</span></figcaption></figure>
+        <figure className="storyboard-frame storyboard-frame-campfire"><img src="/scene-04-background.png" alt="Fondo pixel art del encuentro nocturno: una reunión junto a un símbolo luminoso en un valle rocoso; el limón se mueve como actor separado." /><figcaption><span>04 · Encuentro bajo la luna</span><span>La reunión, la hoguera y la semilla de «Rambla»</span></figcaption></figure>
       </section>
 
       <footer className="site-footer"><div className="footer-mark">LF<span>✳</span></div><p>Un guion se vuelve paisaje, un clic cada vez.</p><span>PREPRODUCCIÓN · VERSIÓN 0.5</span></footer>

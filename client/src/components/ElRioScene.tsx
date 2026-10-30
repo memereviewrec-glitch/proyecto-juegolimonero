@@ -3,7 +3,6 @@ import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
 import "./el-rio-scene.css";
 
-type RiverDepth = "shore" | "bed" | "choice";
 type FishColor = "verde" | "azul" | "rojo" | "amarillo";
 
 type ElRioSceneProps = {
@@ -33,7 +32,6 @@ const BLACK_RESPONSES: Record<FishColor, string> = {
 };
 
 export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
-  const [depth, setDepth] = useState<RiverDepth>("shore");
   const [heardFish, setHeardFish] = useState<FishColor[]>([]);
   const [thought, setThought] = useState<string | null>(null);
   const [blackThought, setBlackThought] = useState<string | null>(null);
@@ -42,11 +40,10 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
   const whiteUnlocked = heardFish.length === 4;
 
   useEffect(() => {
-    if (depth !== "choice" || thought) return;
     setThought("Pez negro: Todo río nace antes de que alguien lo nombre y muere antes de que alguien lo comprenda.");
     setBlackThought(null);
     setFishTalking(true);
-  }, [depth]);
+  }, []);
 
   function hearFish(color: FishColor) {
     if (!heardFish.includes(color)) setHeardFish(current => [...current, color]);
@@ -70,7 +67,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
   }
 
   return (
-    <div className={`scene-stage game-screen el-rio-stage el-rio-${depth}`}>
+    <div className="scene-stage game-screen el-rio-stage">
       <div className={`el-rio-world ${fishTalking ? "el-rio-fish-talking" : ""}`} role="group" aria-label="El Río. Un cauce profundo con peces de colores.">
         <div className="el-rio-light" aria-hidden="true" />
         <div className="el-rio-current" aria-hidden="true" />
@@ -85,7 +82,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
         <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {thought ? <><span>{thought.startsWith("Pez blanco") ? "PEZ BLANCO" : thought.startsWith("Pez negro") ? "PEZ NEGRO" : "PENSAMIENTO DEL PEZ"}</span><p>{thought}</p>{blackThought && <><span>PEZ NEGRO</span><p className="el-rio-black-thought">{blackThought}</p></>}{thought.startsWith("Pez blanco") && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}<button type="button" onClick={closeFishThought}>continuar <b aria-hidden="true">▶</b></button></> : depth === "shore" ? <><span>EL RÍO</span><p>El camino luminoso termina bajo la superficie. Más abajo, los peces atraviesan el cauce como pensamientos de color.</p><button type="button" onClick={() => setDepth("bed")}>bajar con la corriente <b aria-hidden="true">▶</b></button></> : depth === "bed" ? <><span>EL RÍO</span><p>El limón toca el fondo. Los peces no huyen: pasan a su alrededor y dibujan preguntas en el agua.</p><button type="button" onClick={() => setDepth("choice")}>escuchar el fondo <b aria-hidden="true">▶</b></button></> : <><span>LA CORRIENTE</span><p>Una corriente te lleva hacia dos profundidades. Escucha a los peces que cruzan el cauce.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
+        {thought ? <><span>{thought.startsWith("Pez blanco") ? "PEZ BLANCO" : thought.startsWith("Pez negro") ? "PEZ NEGRO" : "PENSAMIENTO DEL PEZ"}</span><p>{thought}</p>{blackThought && <><span>PEZ NEGRO</span><p className="el-rio-black-thought">{blackThought}</p></>}{thought.startsWith("Pez blanco") && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla de El Río"}</small></div>}<button type="button" onClick={closeFishThought}>continuar <b aria-hidden="true">▶</b></button></> : <><span>EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p><small className="el-rio-progress">{heardFish.length}/4 colores escuchados</small></>}
       </div>
     </div>
   );

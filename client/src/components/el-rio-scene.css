@@ -21,9 +21,7 @@
 .el-rio-fish:hover, .el-rio-fish:focus-visible { outline: 3px dashed #efffe8; outline-offset: 4px; filter: brightness(1.2) drop-shadow(0 0 5px #efffe8); }
 @keyframes fish-white-breathe { to { transform: translateY(-7px) scale(1.06); } }
 @keyframes fish-swim { from { translate: -18% 0; } to { translate: 160% 0; } }
-.el-rio-lemon { position: absolute; z-index: 7; left: 47%; bottom: 18%; width: 12%; min-width: 54px; max-width: 92px; aspect-ratio: 48 / 56; transition: left 2.2s cubic-bezier(.2,.72,.24,1), bottom 2.2s cubic-bezier(.2,.72,.24,1); }
-.el-rio-stage.el-rio-bed .el-rio-lemon { bottom: 27%; }
-.el-rio-stage.el-rio-bed .el-rio-lemon { transform: translateY(-2px); }
+.el-rio-lemon { position: absolute; z-index: 7; left: 47%; bottom: 27%; width: 12%; min-width: 54px; max-width: 92px; aspect-ratio: 48 / 56; }
 .el-rio-dialogue { position: absolute; z-index: 15; left: 50%; bottom: 2%; width: min(78%, 650px); max-height: 24%; overflow: auto; transform: translateX(-50%); padding: 12px 16px 10px; border: 4px solid #142b36; background: rgb(235 248 230 / 96%); box-shadow: 5px 5px 0 #0b1724, inset 0 0 0 3px #8eb8ae; }
 .el-rio-dialogue span { color: #4e7e7d; font: 8px 'DM Mono', monospace; letter-spacing: .12em; }
 .el-rio-dialogue p { margin: 7px 0 10px; color: #233943; font: 11px/1.45 'DM Mono', monospace; }

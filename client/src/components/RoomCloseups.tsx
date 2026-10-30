@@ -256,12 +256,10 @@ export function CableCloseup({
 export function GuitarCloseup({
   selectedPositions,
   onSelectNote,
-  onPlay,
   onClose,
 }: {
   selectedPositions: string[];
   onSelectNote: (note: FretSelection) => void;
-  onPlay: () => void;
   onClose: () => void;
 }) {
   const nutX = 200;
@@ -285,7 +283,7 @@ export function GuitarCloseup({
 
   return (
     <div className="room-closeup guitar-closeup" role="dialog" aria-label="Primer plano del mástil de guitarra">
-      <p className="guitar-whisper">Toca cada posición para escuchar la nota; hay acordes que abren otras realidades...</p>
+      <p className="guitar-whisper">Toca las posiciones para escuchar cada nota. Al completar el acorde correcto, sonará y abrirá el portal automáticamente.</p>
       <div className="fretboard-scroll">
         <svg className="guitar-fretboard-svg" viewBox="0 0 1080 414" role="group" aria-label="Mástil de guitarra con la pala y los primeros nueve trastes">
           <defs>
@@ -350,7 +348,7 @@ export function GuitarCloseup({
         </svg>
       </div>
       <div className="guitar-closeup-footer">
-        <div className="fretboard-actions"><button className="action-button play-button" onClick={onPlay} aria-label={`Tocar selección de ${selectedPositions.length} posiciones`} title="Tocar selección">♫</button><button className="closeup-back" onClick={onClose} aria-label="Volver al local" title="Volver al local">↗</button></div>
+        <div className="fretboard-actions"><button className="closeup-back" onClick={onClose} aria-label="Volver al local" title="Volver al local">↗</button></div>
       </div>
     </div>
   );

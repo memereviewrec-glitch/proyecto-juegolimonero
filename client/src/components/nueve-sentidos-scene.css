@@ -1,0 +1,9 @@
+.nueve-sentidos-stage { position:relative; overflow:hidden; border-color:#263356; background:#030612; }
+.nueve-sentidos-sky { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 20% 18%, #35477855, transparent 42%), radial-gradient(ellipse at 78% 62%, #263d6a44, transparent 38%), linear-gradient(160deg, #030611 0%, #08142b 57%, #11182e 100%); }
+.nueve-sentidos-sky::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 44%, #7e83cb18, transparent 58%), linear-gradient(180deg, #02040b22, transparent 48%, #06081355); pointer-events:none; }
+.nueve-sentidos-nebula { position:absolute; left:15%; top:25%; width:72%; height:54%; border-radius:50%; background:radial-gradient(ellipse, #8499e31c 0%, #5c8aca12 34%, transparent 72%); filter:blur(24px); }
+.nueve-sentidos-star { position:absolute; z-index:2; display:block; clip-path:polygon(50% 0, 61% 36%, 100% 50%, 61% 64%, 50% 100%, 39% 64%, 0 50%, 39% 36%); animation:nueve-sentidos-glow 3.8s ease-in-out infinite; }
+.nueve-sentidos-star-cool { --star-core:#e4fbff; --star-glow:#a6ddff; background:var(--star-core); filter:drop-shadow(0 0 4px var(--star-glow)) drop-shadow(0 0 12px var(--star-glow)); }
+.nueve-sentidos-star-warm { --star-core:#fff1c9; --star-glow:#ffd98b; background:var(--star-core); filter:drop-shadow(0 0 4px var(--star-glow)) drop-shadow(0 0 11px var(--star-glow)); }
+@keyframes nueve-sentidos-glow { 0%,100% { opacity:.68; transform:scale(.78); } 50% { opacity:1; transform:scale(1.16); } }
+@media (prefers-reduced-motion: reduce) { .nueve-sentidos-star { animation:none; opacity:.95; } }

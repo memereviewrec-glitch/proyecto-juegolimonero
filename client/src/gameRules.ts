@@ -25,6 +25,11 @@ export const DIALOGUE = [
 
 export const C_SHARP_MINOR_SCALE = new Set(["Do#", "Re#", "Mi", "Fa#", "Sol#", "La", "Si"]);
 
+export function isValidCSharpMinorChord(noteIds: readonly string[]) {
+  const pitchClasses = new Set(noteIds);
+  return pitchClasses.size >= 2 && pitchClasses.has("Do#") && [...pitchClasses].every(note => C_SHARP_MINOR_SCALE.has(note));
+}
+
 export function clamp(value: number, minimum: number, maximum: number) {
   return Math.max(minimum, Math.min(maximum, value));
 }

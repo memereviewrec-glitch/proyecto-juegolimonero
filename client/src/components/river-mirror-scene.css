@@ -40,6 +40,9 @@
 .river-dialogue { position: absolute; z-index: 15; top: auto; bottom: 2%; left: 50%; width: min(78%, 650px); max-height: 24%; overflow: auto; transform: translateX(-50%); padding: 12px 16px 10px; border: 4px solid #1a2431; background: rgb(239 244 225 / 96%); box-shadow: 5px 5px 0 #15202f, inset 0 0 0 3px #a8b6a7; animation: river-dialogue-enter 1.2s ease-out both; }
 .river-dialogue p { margin: 7px 0 10px; color: #202d38; font: 12px/1.48 'DM Mono', monospace; }
 .river-dialogue .river-answer { color: #425c69; font-style: italic; }
+.river-choice-list { display: grid; gap: 6px; margin-top: 8px; }
+.river-choice-list button { width: 100%; border: 2px solid #58727a; background: #f7f7e7; color: #263840; padding: 7px 9px; text-align: left; font: 10px/1.35 'DM Mono', monospace; cursor: pointer; box-shadow: 2px 2px 0 #9aa9a0; }
+.river-choice-list button:hover, .river-choice-list button:focus-visible { background: #e6f2e8; border-color: #315c65; outline: 2px dashed #d8ffe2; outline-offset: 2px; }
 .river-speaker { color: #557e80; font: 8px 'DM Mono', monospace; letter-spacing: .12em; }
 .river-route-note { display: block; margin-top: 6px; color: #6b8580; font: 9px 'DM Mono', monospace; }
 .river-dialogue-next { float: right; min-height: 40px; border: 3px solid #1c2a35; background: #3e6873; color: #f5ffe8; padding: 9px 12px; font: 10px 'DM Mono', monospace; cursor: pointer; box-shadow: 3px 3px 0 #8fa49a; }

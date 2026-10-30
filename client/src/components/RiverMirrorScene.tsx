@@ -14,14 +14,24 @@ const RIVER_DIALOGUE = {
   pacifico: {
     context: "El limón llega creyendo que la semilla y las palabras de los encapuchados eran la máxima verdad del universo.",
     spirits: "Pequeño cítrico... tus hojas imaginarias huelen a cera caliente y tu cáscara brilla con el tinte de una falsa aurora. Dices que has encontrado la luz, pero la llama que te cautivó solo busca consumir tu pulpa en silencio. ¿Es real el conocimiento que te ata, o es solo la sombra del fuego reflejada en tu propio jugo?",
-    answer: "Ellos me dieron una semilla... Me dijeron que comprendía el propósito del mundo. La oscuridad ya no me da miedo.",
+    answerPrompt: "El río espera una respuesta.",
+    choices: [
+      "Quizá confundí el calor con la luz. Quiero mirar otra vez.",
+      "No necesito que nadie me diga qué pensar. Mi pulpa sigue siendo mía.",
+      "Ellos me dieron una semilla y yo la tomé por una verdad completa.",
+    ],
     revelation: "Una semilla plantada en cenizas nunca dará frutos, limón. Te han enseñado a adorar el calor que os seca a todos. Mira tu reflejo en nuestras aguas: el verdadero conocimiento fluye, no se quema.",
     ending: "Una ola suave y fresca salpica al limón. El humo de la secta se disipa de su mente; conserva la semilla como recuerdo de lo que casi pierde.",
   },
   drastico: {
     context: "El limón llega cansado, con la cáscara raspada tras haber escapado rodando colina abajo para no ser exprimido en la hoguera.",
     spirits: "Has rodado lejos de las llamas, fugitivo del fuego. Tus costados llevan las marcas del miedo, pero tus ruedas siguen girando. ¿Buscas refugio en nuestras aguas, o solo un lugar donde detener tu carrera?",
-    answer: "Rodé para salvar mi jugo, pero ahora no sé hacia dónde ir. Todo parece oscuro y confuso fuera de esa cueva.",
+    answerPrompt: "El río pregunta hacia dónde quiere rodar el limón.",
+    choices: [
+      "Seguiré rodando aunque todavía no vea el camino.",
+      "Quiero detenerme un momento y escuchar hacia dónde llama la corriente.",
+      "Si el mundo fluye, aprenderé a moverme con él sin volver a la hoguera.",
+    ],
     revelation: "La confusión es el principio de la corriente, pequeño viajero. Quien no se atreve a rodar por los precipicios de lo desconocido, nunca descubre hacia dónde fluyen los ríos. Sigue el curso del agua: el conocimiento no se encuentra quieto junto a una hoguera, sino en el movimiento constante del mundo.",
     ending: "Las corrientes forman un camino brillante sobre la superficie. Los espíritus empujan suavemente al limón con una marea favorable hacia el mundo vasto.",
   },
@@ -39,6 +49,7 @@ export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
   const [stoneStatus, setStoneStatus] = useState<"ground" | "carried" | "thrown">("ground");
   const [lemonPoint, setLemonPoint] = useState({ x: 28, bottom: 25 });
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const dialogue = RIVER_DIALOGUE[route];
   const resolved = step === "ending";
 
@@ -65,6 +76,11 @@ export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
     setStep(current => current === "arrival" ? "spirits" : current === "spirits" ? "answer" : current === "answer" ? "revelation" : "ending");
   }
 
+  function chooseAnswer(answer: string) {
+    setSelectedAnswer(answer);
+    setStep("revelation");
+  }
+
   return (
     <div className={`scene-stage game-screen river-mirror-stage river-route-${route}`}>
       <div className="river-mirror-world" role="group" tabIndex={0} aria-label="La Orilla del Río Espejo. La franja de arena junto al agua se puede recorrer." onClick={moveAlongShore}>
@@ -86,8 +102,8 @@ export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
       <div className="river-dialogue" role="status" aria-live="polite">
         {step === "arrival" && <><span className="river-speaker">LA ORILLA</span><p>{dialogue.context}</p></>}
         {step === "spirits" && <><span className="river-speaker">ESPÍRITUS DEL RÍO</span><p>{dialogue.spirits}</p></>}
-        {step === "answer" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">“{dialogue.answer}”</p></>}
-        {step === "revelation" && <><span className="river-speaker">ESPÍRITUS DEL RÍO</span><p>{dialogue.revelation}</p></>}
+        {step === "answer" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">{dialogue.answerPrompt}</p><div className="river-choice-list" aria-label="Respuestas posibles del limón">{dialogue.choices.map(choice => <button key={choice} type="button" onClick={() => chooseAnswer(choice)}>{choice}</button>)}</div></>}
+        {step === "revelation" && <><span className="river-speaker">EL LIMÓN</span><p className="river-answer">“{selectedAnswer}”</p><span className="river-speaker">ESPÍRITUS DEL RÍO</span><p>{dialogue.revelation}</p></>}
         {step === "ending" && <><span className="river-speaker">EL RÍO ESPEJO</span><p>{dialogue.ending}</p><small className="river-route-note">{route === "pacifico" ? "La ilusión queda atrás." : "El viaje continúa."}</small></>}
         {!resolved && stoneStatus === "thrown" && <button className="river-dialogue-next" type="button" onClick={advance}>{NEXT_LABEL[step]} <span aria-hidden="true">▶</span></button>}
       </div>

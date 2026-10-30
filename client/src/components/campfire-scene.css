@@ -162,7 +162,7 @@
   z-index: 9;
   top: 55%;
   left: 50%;
-  width: clamp(72px, 17%, 128px);
+  width: clamp(58px, 12%, 94px);
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 0 12px rgb(245 125 53 / 65%));
   pointer-events: none;

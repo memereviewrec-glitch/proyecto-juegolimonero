@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { LemonSprite } from "./GameSprites";
 import "./river-mirror-scene.css";
 
@@ -38,8 +38,17 @@ const NEXT_LABEL: Record<RiverStep, string> = {
 export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
   const [stoneStatus, setStoneStatus] = useState<"ground" | "carried" | "thrown">("ground");
+  const [lemonPoint, setLemonPoint] = useState({ x: 28, bottom: 25 });
   const dialogue = RIVER_DIALOGUE[route];
   const resolved = step === "ending";
+
+  function moveAlongShore(event: MouseEvent<HTMLDivElement>) {
+    if (event.target instanceof Element && event.target.closest("button, .river-stone")) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = Math.max(10, Math.min(90, ((event.clientX - bounds.left) / bounds.width) * 100));
+    const y = Math.max(66, Math.min(90, ((event.clientY - bounds.top) / bounds.height) * 100));
+    setLemonPoint({ x, bottom: 100 - y });
+  }
 
   function collectStone() {
     if (stoneStatus !== "ground") return;
@@ -58,14 +67,14 @@ export function RiverMirrorScene({ route }: RiverMirrorSceneProps) {
 
   return (
     <div className={`scene-stage game-screen river-mirror-stage river-route-${route}`}>
-      <div className="river-mirror-world" role="group" aria-label="La Orilla del Río Espejo">
+      <div className="river-mirror-world" role="group" tabIndex={0} aria-label="La Orilla del Río Espejo. La franja de arena junto al agua se puede recorrer." onClick={moveAlongShore}>
         <div className="river-mist river-mist-one" aria-hidden="true" />
         <div className="river-mist river-mist-two" aria-hidden="true" />
         <div className={`river-spirits ${stoneStatus === "thrown" ? "river-spirits-awake" : ""}`} aria-label="Tres Espíritus del Río" aria-hidden={stoneStatus !== "thrown"}>
           <span className="river-spirit river-spirit-one" /><span className="river-spirit river-spirit-two" /><span className="river-spirit river-spirit-three" />
         </div>
         <div className={`river-current ${resolved ? "river-current-guiding" : ""}`} aria-hidden="true" />
-        <div className={`river-lemon ${stoneStatus === "carried" ? "river-lemon-carried" : ""} ${stoneStatus === "thrown" ? "river-lemon-thrown" : ""} ${resolved ? "river-lemon-resolved" : ""}`} aria-label="El limón">
+        <div className={`river-lemon ${stoneStatus === "carried" ? "river-lemon-carried" : ""} ${stoneStatus === "thrown" ? "river-lemon-thrown" : ""} ${resolved ? "river-lemon-resolved" : ""}`} style={{ left: `${lemonPoint.x}%`, bottom: `${lemonPoint.bottom}%` }} aria-label="El limón">
           <LemonSprite />
         </div>
         {stoneStatus === "ground" && <button className="river-stone river-stone-ground" type="button" onClick={collectStone} aria-label="Piedra junto a la orilla" />}

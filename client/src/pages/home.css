@@ -508,7 +508,7 @@ button { font:inherit; }
 .seedbook-toggle:hover,.seedbook-toggle[aria-expanded="true"] { background:#f0e7d6; }
 .seedbook-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; box-shadow:0 0 0 2px #fbf7ec,3px 3px #2b263166; }
 .seedbook-toggle:active { transform:translate(2px,2px); box-shadow:1px 1px #2b263166; }
-.seedbook-toggle-icon { display:block; width:34px; height:34px; flex:0 0 34px; }
+.seedbook-toggle-icon { display:block; width:34px; height:34px; flex:0 0 34px; object-fit:contain; image-rendering:pixelated; }
 .seedbook-toggle-label { font-size:11px; line-height:1.2; }
 .seedbook-toggle b { display:grid; place-items:center; min-width:36px; min-height:34px; padding:0 5px; border:1px solid #d1c5ad; background:#e8dfce; color:#302638; font-size:11px; line-height:1; }
 .seedbook-layer { position:absolute; inset:0; z-index:100; isolation:isolate; }

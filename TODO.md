@@ -84,7 +84,7 @@
 - Las palabras permanecen ocultas bajo las hojas y solo quedan visibles en la piedra cuando el jugador las arrastra fuera.
 
 ## [x] Arte original del Libro de Semillas
-- El encabezado del panel muestra una ilustración original de pixel art de un libro de semillas encantado, coherente con la paleta y el estilo de las escenas existentes. El recurso tiene fondo transparente, se incluye en `client/public/seedbook-art.png`, se carga desde el propio juego y conserva legibilidad en escritorio y móvil.
+- La misma ilustración original de pixel art de un libro de semillas encantado aparece en el encabezado del panel y como icono visible del botón que abre el libro. El recurso conserva el estilo de las escenas existentes, tiene fondo transparente, se incluye en `client/public/seedbook-art.png`, se carga desde el propio juego y conserva legibilidad en escritorio y móvil.
 
 ## [x] Acceso al Libro de semillas más grande y accesible
 - El botón de acceso muestra el texto «Libro de semillas» y el número de semillas descubiertas junto a un icono pixel-art reconocible de libro abierto con brote; el icono no sustituye el nombre visible.

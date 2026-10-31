@@ -9,6 +9,7 @@ import { RiverChallengeScene } from "../components/RiverChallengeScene";
 import { ElRioScene } from "../components/ElRioScene";
 import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene } from "../components/HummingbirdScene";
+import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
@@ -18,10 +19,22 @@ import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
 import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredRamblaOutcome, readStoredSeedBookIds, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
-import { C_SHARP_MINOR_SCALE, DIALOGUE, clamp, dawnWalkableTop, resolveBranch, type Branch, type Response } from "../gameRules";
+import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest" | "hummingbird";
+type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest" | "hummingbird" | "nueve-sentidos";
+const SCENE_PRESENTATION: Record<Scene, { number: string; title: string; location: string | null }> = {
+  room: { number: "01", title: "El local de ensayo", location: null },
+  dawn: { number: "02", title: "El Cuchillo al amanecer", location: "ALBATERA · AMANECER" },
+  ruins: { number: "03", title: "Ruinas invadidas por raíces", location: "EL CAMINO · DOS COLUMNAS" },
+  gathering: { number: "04", title: "Encuentro bajo la luna", location: "VALLE · NOCHE DE LUNA" },
+  river: { number: "05", title: "La Orilla del Río Espejo", location: "RÍO ESPEJO · DESPUÉS DEL FUEGO" },
+  "river-challenge": { number: "06", title: "El reto del río", location: "RÍO ESPEJO · LA PRUEBA" },
+  "el-rio": { number: "07", title: "El Río", location: "RÍO ESPEJO · FONDO DEL CAUCE" },
+  "fire-forest": { number: "08", title: "El bosque ardiendo", location: "BOSQUE · DESPUÉS DEL INCENDIO" },
+  hummingbird: { number: "09", title: "El colibrí", location: "BOSQUE QUEMADO · LA RAMA" },
+  "nueve-sentidos": { number: "10", title: "Nueve sentidos", location: "CIELO NOCTURNO · NUEVE SENTIDOS" },
+};
 type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
@@ -36,6 +49,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   "el-rio": "el-rio",
   "el-fuego": "fire-forest",
   ponzona: "hummingbird",
+  "nueve-sentidos": "nueve-sentidos",
 };
 
 const WALK_DURATION_MS = 3800;
@@ -215,14 +229,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     return () => window.clearTimeout(timer);
   }, [campfireFireStage]);
 
-  const validChord = useMemo(
-    () => {
-      const pitchClasses = new Set(selectedFrets.map(note => note.noteId));
-      return pitchClasses.size >= 2 && pitchClasses.has("Do#") && [...pitchClasses].every(note => C_SHARP_MINOR_SCALE.has(note));
-    },
-    [selectedFrets],
-  );
-
   function moveTo(position: string, callback: () => void) {
     setLemonFloorPoint(null);
     setIsMoving(true);
@@ -347,28 +353,14 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   }
 
   function toggleFret(note: FretSelection) {
-    playFrequencies([note.frequency]);
-    setSelectedFrets(current => current.some(item => item.key === note.key)
-      ? current.filter(item => item.key !== note.key)
-      : [...current.filter(item => item.stringIndex !== note.stringIndex), note]);
-  }
+    const alreadySelected = selectedFrets.some(item => item.key === note.key);
+    const nextFrets = alreadySelected
+      ? selectedFrets.filter(item => item.key !== note.key)
+      : [...selectedFrets.filter(item => item.stringIndex !== note.stringIndex), note];
+    setSelectedFrets(nextFrets);
 
-  function playSelection() {
-    if (selectedFrets.length === 0) {
-      setNotice("Pulsa una posición del mástil antes de tocar.");
-      return;
-    }
-    playFrequencies(selectedFrets.map(note => note.frequency));
-    const pitchClasses = new Set(selectedFrets.map(note => note.noteId));
-    if (selectedFrets.length === 1) {
-      setNotice(`${selectedFrets[0].label}: suena, pero una nota sola no abre el portal.`);
-      return;
-    }
-    if (pitchClasses.size < 2) {
-      setNotice("Las posiciones elegidas repiten la misma clase de nota; añade una nota diferente para formar un acorde.");
-      return;
-    }
-    if (validChord) {
+    if (isValidCSharpMinorChord(nextFrets.map(selectedNote => selectedNote.noteId))) {
+      playFrequencies(nextFrets.map(selectedNote => selectedNote.frequency));
       setPortalOpen(true);
       setIntroStarted(true);
       setRoomPhase("portal");
@@ -376,7 +368,8 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       setNotice("Acorde válido de Do♯ menor. El portal se abre y empieza «Aurora».");
       return;
     }
-    setNotice(`Ese conjunto (${selectedFrets.map(note => note.label).join(" · ")}) no abre el portal: usa Do♯ y solo notas de Do♯ menor.`);
+
+    playFrequencies([note.frequency]);
   }
 
   function enterDawn() {
@@ -624,6 +617,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     if (nextScene === "el-rio" && !riverChallengeComplete) return;
     if (nextScene === "fire-forest" && !elRioSeedCollected) return;
     if (nextScene === "hummingbird" && !fireSeedCollected) return;
+    if (nextScene === "nueve-sentidos" && !ponzonaSeedCollected) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -773,6 +767,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   }
 
   function showStory(beat: StoryBeat) {
+    setJourneyMenuOpen(false);
     setStorySeedBookOpened(false);
     setStorySeedPreview(null);
     setStoryBeat(beat);
@@ -802,6 +797,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       showStory("fire-forest");
     } else if (scene === "fire-forest") {
       showStory("ponzona");
+    } else if (scene === "hummingbird") {
+      setScene("nueve-sentidos");
+      setNotice("El cielo de Nueve sentidos se abre sobre el limón.");
     }
   }
 
@@ -821,11 +819,11 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       <section className="intro-band" id="inicio">
         <div className="intro-copy">
           <div className="eyebrow"><span>DISCO · 10 CANCIONES</span><span className="eyebrow-line" /></div>
-          <h1>Cinco pantallas.<br /><em>Un camino de vuelta.</em></h1>
-          <p>Del primer acorde en el local vacío al amanecer, las ruinas, la hoguera y el río que devuelve las preguntas.</p>
+          <h1>Diez pantallas.<br /><em>Un camino de vuelta.</em></h1>
+          <p>Del primer acorde en el local vacío al cielo nocturno de Nueve sentidos, cada mundo abre otra pregunta en el camino de vuelta.</p>
         </div>
-        <div className="intro-stamp" aria-label="Cuatro pantallas disponibles">
-          <span className="stamp-big">07</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
+        <div className="intro-stamp" aria-label="Diez pantallas en exploración">
+          <span className="stamp-big">10</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
         </div>
       </section>
 
@@ -857,18 +855,24 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
         <button className={`screen-tab ${scene === "hummingbird" ? "active" : ""}`} onClick={() => setVisitedScene("hummingbird")} disabled={!fireSeedCollected || portalTransit || arrivalPortal}>
           <span className="tab-number">09</span><span><strong>El colibrí</strong><small>Ponzoña · la rama quemada</small></span><span className="tab-mark">{ponzonaSeedCollected ? "✓" : fireSeedCollected ? "↗" : "⌑"}</span>
         </button>
+        <button className={`screen-tab ${scene === "nueve-sentidos" ? "active" : ""}`} onClick={() => setVisitedScene("nueve-sentidos")} disabled={!ponzonaSeedCollected || portalTransit || arrivalPortal}>
+          <span className="tab-number">10</span><span><strong>Nueve sentidos</strong><small>Canción 09 · cielo nocturno</small></span><span className="tab-mark">{ponzonaSeedCollected ? "↗" : "⌑"}</span>
+        </button>
       </nav>
 
       <section className="workspace">
         <div className="stage-column">
           <div className="stage-heading">
-            <div><span className="stage-kicker">PANTALLA {scene === "room" ? "01" : scene === "dawn" ? "02" : scene === "ruins" ? "03" : scene === "gathering" ? "04" : scene === "river" ? "05" : scene === "river-challenge" ? "06" : scene === "el-rio" ? "07" : scene === "fire-forest" ? "08" : "09"}</span><h2>{scene === "room" ? "El local de ensayo" : scene === "dawn" ? "El Cuchillo al amanecer" : scene === "ruins" ? "Ruinas invadidas por raíces" : scene === "gathering" ? "Encuentro bajo la luna" : scene === "river" ? "La Orilla del Río Espejo" : scene === "river-challenge" ? "El reto del río" : scene === "el-rio" ? "El Río" : scene === "fire-forest" ? "El bosque ardiendo" : "El colibrí"}</h2></div>
-            {scene !== "room" && <span className="stage-location">{scene === "dawn" ? "ALBATERA · AMANECER" : scene === "ruins" ? "EL CAMINO · DOS COLUMNAS" : scene === "gathering" ? "VALLE · NOCHE DE LUNA" : scene === "river" ? "RÍO ESPEJO · DESPUÉS DEL FUEGO" : scene === "river-challenge" ? "RÍO ESPEJO · LA PRUEBA" : scene === "el-rio" ? "RÍO ESPEJO · FONDO DEL CAUCE" : scene === "fire-forest" ? "BOSQUE · DESPUÉS DEL INCENDIO" : "BOSQUE QUEMADO · LA RAMA"}</span>}
+            <div>
+              <span className="stage-kicker">PANTALLA {SCENE_PRESENTATION[scene].number}</span>
+              <h2>{SCENE_PRESENTATION[scene].title}</h2>
+            </div>
+            {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
-            <div ref={journeyMenuRef} className="journey-menu-anchor">
+            <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}`}>
             <button
               className="seedbook-toggle"
               type="button"
@@ -934,7 +938,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
               </div>}
               {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} />}
               {roomView === "cable" && <CableCloseup pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} onConnect={connectCableEnd} onClose={() => setRoomView("scene")} />}
-              {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onPlay={playSelection} onClose={() => setRoomView("scene")} />}
+              {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onClose={() => setRoomView("scene")} />}
             </div>
           ) : scene === "dawn" ? (
             <div className={`scene-stage game-screen dawn-stage ${sunRisen ? "dawn-stage-sunrise" : ""}`} onClick={handleDawnStageClick}>
@@ -988,8 +992,10 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
               <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} />
             ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
-            ) : (
+            ) : scene === "hummingbird" ? (
               <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} />
+            ) : (
+              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} />
             )
           )}
 

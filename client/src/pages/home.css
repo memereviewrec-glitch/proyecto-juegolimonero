@@ -39,7 +39,7 @@ button { font:inherit; }
 .stage-column { min-width:0; position:relative; }
 .playfield { position:relative; width:100%; --seedbook-safe-top:92px; }
 .story-interlude { position:absolute; z-index:100; inset:0; display:flex; justify-content:center; align-items:flex-start; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; padding:clamp(16px,5vh,42px) 0; background:#050509; color:#fff; image-rendering:pixelated; scrollbar-color:#aaa4b5 #17151d; scrollbar-width:thin; }
-.story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; margin-block:auto; padding-top:152px; }
+.story-interlude-inner { width:min(78%,720px); display:flex; flex-direction:column; align-items:flex-start; gap:22px; margin-block:auto; }
 .story-interlude p { max-width:680px; margin:0; color:#fff; font:500 clamp(16px,2.1vw,25px)/1.65 'DM Mono',monospace; text-wrap:balance; text-shadow:2px 2px 0 #25222d; }
 .story-interlude button { border:2px solid #fff; background:#050509; color:#fff; padding:8px 12px; font:10px 'DM Mono',monospace; text-transform:lowercase; cursor:pointer; box-shadow:3px 3px 0 #6c6875; }
 .story-interlude button:hover,.story-interlude button:focus-visible { background:#fff; color:#050509; outline:2px dashed #fff; outline-offset:4px; }
@@ -56,7 +56,7 @@ button { font:inherit; }
 @keyframes story-seed-pulse { to { transform:scale(1.07) rotate(-2deg); } }
 .story-continue-button { align-self:center; }
 @media (max-width:600px) {
-  .story-interlude-inner { width:88%; gap:10px; padding-top:132px; }
+  .story-interlude-inner { width:88%; gap:10px; }
   .story-interlude p { max-width:100%; font-size:15px; line-height:1.5; }
   .story-seed-button { width:78px; height:86px; }
   .story-seed-glyph { width:54px; height:74px; }
@@ -408,7 +408,7 @@ button { font:inherit; }
 .guitar-fretboard-svg .headstock-caption { fill:#f2d493; font:8px 'DM Mono',monospace; letter-spacing:1px; }
 .guitar-fretboard-svg [role="button"] { cursor:pointer; }
 .guitar-fretboard-svg [role="button"]:focus-visible { fill:#fff4aeaa; stroke:#fff5cf; stroke-width:3px; }
-.guitar-closeup-footer { width:min(100%,980px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; }
+.guitar-closeup-footer { width:min(100%,980px); display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; }
 .guitar-closeup-footer p { margin:0; color:#f4e4c8; font:9px/1.5 'DM Mono',monospace; }
 .guitar-closeup-footer p strong { color:#f4d16d; }
 .fretboard-actions { display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
@@ -541,6 +541,7 @@ button { font:inherit; }
 .journey-menu-toggle:hover,.journey-menu-toggle-open { background:#f0e7d6; opacity:1; }
 .journey-menu-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; }
 .journey-menu-toggle span { font:700 25px/1 'DM Mono',monospace; transform:rotate(90deg); }
+.journey-menu-anchor-story { display:none; }
 .journey-menu-panel { position:absolute; z-index:122; top:101px; left:67px; width:min(260px,calc(100% - 77px)); padding:10px; border:3px solid #2b2631cc; background:#fbf7eceb; color:#302638; box-shadow:4px 4px #2b263166; image-rendering:pixelated; }
 .journey-menu-heading { padding:2px 3px 7px; color:#706a73; font:8px 'DM Mono',monospace; letter-spacing:.12em; }
 .journey-menu-panel button,.journey-menu-panel a { display:flex; width:100%; min-height:32px; align-items:center; padding:7px 8px; border:1px solid #61546c88; background:#fffdf766; color:#3c3346; text-decoration:none; font:9px 'DM Mono',monospace; cursor:pointer; }

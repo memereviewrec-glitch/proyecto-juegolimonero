@@ -84,7 +84,7 @@
   bottom: 14%;
   width: clamp(58px, 10%, 82px);
   height: clamp(72px, 12.5%, 118px);
-  transition: left 1.6s cubic-bezier(.22, .61, .36, 1), bottom 1.6s cubic-bezier(.22, .61, .36, 1), transform .45s ease;
+  transition: left 1.3s cubic-bezier(.22, .61, .36, 1), bottom 1.3s cubic-bezier(.22, .61, .36, 1), transform .45s ease;
   pointer-events: none;
 }
 
@@ -102,7 +102,7 @@
   left: 22%;
   bottom: 19%;
   transform: translateX(-50%) rotate(-24deg);
-  transition: left 1.6s cubic-bezier(.22, .61, .36, 1), bottom 1.6s cubic-bezier(.22, .61, .36, 1);
+  transition: left 1.3s cubic-bezier(.22, .61, .36, 1), bottom 1.3s cubic-bezier(.22, .61, .36, 1);
 }
 
 .campfire-center-target {

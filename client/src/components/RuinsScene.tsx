@@ -17,7 +17,7 @@ type Props = {
 };
 
 type LemonPoint = { x: number; y: number };
-const WALK_DURATION_MS = 3800;
+const WALK_DURATION_MS = 2600;
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));

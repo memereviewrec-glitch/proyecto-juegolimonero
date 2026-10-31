@@ -531,6 +531,8 @@ button { font:inherit; }
  .dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:13px; }
 }
 
+.journey-menu-anchor { position:absolute; inset:0; z-index:130; pointer-events:none; }
+.journey-menu-anchor > .seedbook-toggle,.journey-menu-anchor > .journey-menu-toggle,.journey-menu-anchor > .journey-menu-panel { pointer-events:auto; }
 .seedbook-toggle { position:absolute; z-index:120; top:10px; left:10px; display:grid; place-items:center; width:82px; min-width:82px; height:82px; min-height:82px; padding:5px; border:3px solid #2b2631; background:#fbf7ec; color:#302638; box-shadow:3px 3px #2b263166; cursor:pointer; }
 .seedbook-toggle:hover,.seedbook-toggle[aria-expanded="true"] { background:#f0e7d6; }
 .seedbook-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; box-shadow:0 0 0 2px #fbf7ec,3px 3px #2b263166; }

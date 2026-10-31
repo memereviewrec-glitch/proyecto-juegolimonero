@@ -11,10 +11,11 @@
 .stage-coordinate { position:absolute; z-index:4; right:13px; bottom:11px; font:8px 'DM Mono',monospace; color:#e9e1ef; opacity:.72; letter-spacing:.1em; }
 .nueve-awakening-star { position:absolute; z-index:3; display:grid; width:46px; height:46px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
 .nueve-star-gif { display:block; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
-.nueve-awakening-gif { width:max(22px,calc(var(--star-size) * 3)); height:max(22px,calc(var(--star-size) * 3)); }
+.nueve-awakening-gif { width:max(22px,calc(var(--star-size) * 3)); height:max(22px,calc(var(--star-size) * 3)); transition:opacity .22s ease-out; }
 .nueve-awakening-static-glyph { display:none; width:max(13px,var(--star-size)); height:max(13px,var(--star-size)); clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:#b7c7f1; filter:drop-shadow(0 0 3px #99b9ff); opacity:.55; transition:opacity .3s ease,transform .3s ease,filter .3s ease; }
 .nueve-awakening-star:hover .nueve-awakening-static-glyph,.nueve-awakening-star:focus-visible .nueve-awakening-static-glyph { opacity:.9; transform:scale(1.15); }
-.nueve-awakening-star.is-awake .nueve-awakening-static-glyph { opacity:1; transform:scale(1.2); background:#fff2c5; filter:drop-shadow(0 0 6px #fff0b4) drop-shadow(0 0 14px #93bbff); }
+.nueve-awakening-star.is-extinguished .nueve-awakening-gif { opacity:0; }
+.nueve-awakening-star.is-extinguished .nueve-awakening-static-glyph { display:block; background:#66718e; filter:none; opacity:.14; transform:scale(.82); }
 .nueve-awakening-star:focus-visible,.nueve-rhythm-star:focus-visible,.nueve-white-moon:focus-visible,.nueve-hint-button:focus-visible { outline:3px dashed #fff2bf; outline-offset:3px; }
 .nueve-rhythm-star { position:absolute; z-index:5; display:flex; width:78px; min-height:76px; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:5px 3px; transform:translate(-50%,-50%); border:1px solid #dbe6ff33; background:#07102535; color:#fff; cursor:pointer; touch-action:manipulation; }
 .nueve-rhythm-star:hover:not(:disabled) { background:#ffffff12; }
@@ -56,10 +57,12 @@
   .nueve-sentidos-sky,.nueve-awakening-static-glyph,.nueve-rhythm-static-glyph,.nueve-moon-disc,.nueve-jaguar-trail { transition:none; }
   .nueve-awakening-gif,.nueve-rhythm-gif { display:none; }
   .nueve-awakening-static-glyph,.nueve-rhythm-static-glyph { display:block; opacity:1; transform:none; }
+  .nueve-awakening-star.is-extinguished .nueve-awakening-static-glyph { background:#66718e; filter:none; opacity:.14; transform:none; }
   .nueve-rhythm-speed-note { display:block; }
 }
 @media (max-width:600px) {
   .nueve-phase-card { top:2.5%; width:88%; padding:7px 8px; }
+  .nueve-phase-card[data-phase="awakening"] p { width:calc(100% - 58px); margin-left:auto; }
   .nueve-phase-card h3 { font-size:9px; }
   .nueve-phase-card p { font-size:7px; }
   .nueve-mistake-count { font-size:7px; }

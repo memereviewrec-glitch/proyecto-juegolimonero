@@ -22,13 +22,13 @@ type AwakeningStar = {
 };
 
 const AWAKENING_STARS: readonly AwakeningStar[] = [
-  { x: 14, y: 31, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
+  { x: 30, y: 31, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
   { x: 50, y: 31, size: 6, reflection: "Una luz lejana me recuerda que percibir también es esperar." },
-  { x: 86, y: 31, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
-  { x: 14, y: 47, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
-  { x: 38, y: 47, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
-  { x: 62, y: 47, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
-  { x: 86, y: 47, size: 8, reflection: "Siete luces, siete maneras de sentir la misma noche." },
+  { x: 70, y: 31, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
+  { x: 22, y: 47, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
+  { x: 41, y: 47, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
+  { x: 59, y: 47, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
+  { x: 78, y: 47, size: 8, reflection: "Siete luces, siete maneras de sentir la misma noche." },
 ];
 
 const RHYTHM_LABELS: Record<RhythmColor, string> = {
@@ -51,37 +51,32 @@ const HINTS = [
   "No midas la fuerza de la luz, sino el espacio entre sus latidos: el más breve abre el camino y el más largo lo cierra.",
 ] as const;
 
-const OPENING_HINT = "Cada estrella guarda un pulso. Toca las siete para despertar sus destellos; después, el cielo planteará su pregunta.";
+const OPENING_HINT = "Toca las siete estrellas; cada una apagará su brillo al recibir tu toque. Después, el cielo planteará su pregunta.";
 const MOON_HINT = "Las cuatro luces ya comparten un mismo compás. La luna blanca guarda la semilla que conduce al último canto.";
 
 export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIsFriend }: Props) {
   const [phase, setPhase] = useState<Phase>("awakening");
-  const [awakenedStars, setAwakenedStars] = useState<number[]>([]);
+  const [extinguishedStars, setExtinguishedStars] = useState<number[]>([]);
   const [patternIndex, setPatternIndex] = useState(0);
   const [selectedColors, setSelectedColors] = useState<RhythmColor[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [moonTouched, setMoonTouched] = useState(false);
-  const [dialogue, setDialogue] = useState("Siete luces esperan bajo la noche. Toca cada una y observa cómo despierta su brillo.");
+  const [dialogue, setDialogue] = useState("Siete luces esperan bajo la noche. Toca cada una y verás apagarse su brillo.");
   const [speaker, setSpeaker] = useState<Speaker>("EL CIELO");
 
   const activePattern = RHYTHM_PATTERNS[patternIndex];
   const pathUnlocked = seedCollected || moonTouched;
 
-  function awakenStar(index: number) {
+  function extinguishStar(index: number) {
     if (phase !== "awakening") return;
     const star = AWAKENING_STARS[index];
-    if (!star) return;
-    if (awakenedStars.includes(index)) {
-      setSpeaker("EL LIMÓN");
-      setDialogue(star.reflection);
-      return;
-    }
-    const next = [...awakenedStars, index];
-    setAwakenedStars(next);
+    if (!star || extinguishedStars.includes(index)) return;
+    const next = [...extinguishedStars, index];
+    setExtinguishedStars(next);
     if (next.length === AWAKENING_STARS.length) {
       setPhase("rhythm");
       setSpeaker("EL CIELO");
-      setDialogue("Las siete luces despiertan cuatro pulsos. Ordénalos desde el destello más rápido hasta el más lento.");
+      setDialogue("Al apagarse las siete luces, aparecen cuatro pulsos. Ordénalos desde el destello más rápido hasta el más lento.");
       return;
     }
     setSpeaker("EL LIMÓN");
@@ -145,7 +140,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   const phaseNumber = phase === "awakening" ? "01 / 03" : phase === "rhythm" ? "02 / 03" : "03 / 03";
   const phaseTitle = phase === "awakening" ? "EL DESPERTAR DEL CIELO" : phase === "rhythm" ? "EL RITMO DE LAS CUATRO ESTRELLAS" : "LA LUNA BLANCA";
   const instruction = phase === "awakening"
-    ? `Toca las siete estrellas para despertar sus destellos · ${awakenedStars.length}/${AWAKENING_STARS.length}`
+    ? `Apaga cada estrella al tocarla · ${extinguishedStars.length}/${AWAKENING_STARS.length}`
     : phase === "rhythm"
       ? "Observa sus destellos y actívalas de la más rápida a la más lenta."
       : seedCollected
@@ -160,7 +155,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
         <span className="stage-coordinate">LF · 10</span>
       </div>
 
-      <header className="nueve-phase-card" aria-live="polite">
+      <header className="nueve-phase-card" data-phase={phase} aria-live="polite">
         <span className="nueve-phase-count">{phaseNumber}</span>
         <h3>{phaseTitle}</h3>
         <p>{instruction}</p>
@@ -171,11 +166,12 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
         <button
           key={index}
           type="button"
-          className={`nueve-awakening-star${awakenedStars.includes(index) ? " is-awake" : ""}`}
+          className={`nueve-awakening-star${extinguishedStars.includes(index) ? " is-extinguished" : ""}`}
           style={{ left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${star.size}px` } as CSSProperties}
-          aria-label={`Estrella ${index + 1} de ${AWAKENING_STARS.length}${awakenedStars.includes(index) ? ", destello despierto" : ", pulsar para despertar su destello"}`}
-          aria-pressed={awakenedStars.includes(index)}
-          onClick={() => awakenStar(index)}
+          aria-label={`Estrella ${index + 1} de ${AWAKENING_STARS.length}${extinguishedStars.includes(index) ? ", apagada" : ", pulsar para apagar su brillo"}`}
+          aria-pressed={extinguishedStars.includes(index)}
+          disabled={extinguishedStars.includes(index)}
+          onClick={() => extinguishStar(index)}
         >
           <img className="nueve-star-gif nueve-awakening-gif" src={gameAssetUrl("/star-pulses/awakening-white.gif")} alt="" aria-hidden="true" />
           <span className="nueve-awakening-static-glyph" aria-hidden="true" />

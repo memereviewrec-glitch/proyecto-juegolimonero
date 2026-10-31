@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RAMBLA_CONVERSATION, type RamblaPath } from "./ramblaConversationRules";
+import { RAMBLA_CONVERSATION, type RamblaChoice } from "./ramblaConversationRules";
 import "./rambla-conversation.css";
 
 const ROLL_CYCLE_MS = 2400;
@@ -24,7 +24,7 @@ function usePrefersReducedMotion() {
 
 type RamblaConversationProps = {
   step: number;
-  onChoose: (path: RamblaPath) => void;
+  onChoose: (choice: RamblaChoice) => void;
 };
 
 export function RamblaConversation({ step, onChoose }: RamblaConversationProps) {
@@ -47,7 +47,7 @@ export function RamblaConversation({ step, onChoose }: RamblaConversationProps) 
               className="rambla-choice-button"
               type="button"
               autoFocus={index === 0}
-              onClick={() => onChoose(choice.path)}
+              onClick={() => onChoose(choice)}
             >
               <span className="rambla-choice-marker" aria-hidden="true">{String.fromCharCode(65 + index)}</span>
               <span>{choice.label}</span>

@@ -4,6 +4,7 @@ export type RamblaOutcome = 1 | 2;
 export type RamblaChoice = {
   label: string;
   path: RamblaPath;
+  gesture?: "roll-back" | "citrus-hop";
 };
 
 export type RamblaQuestion = {
@@ -19,7 +20,7 @@ export const RAMBLA_CONVERSATION: RamblaQuestion[] = [
     choices: [
       { label: "«La luz no se busca solo con los ojos, sino con el calor que compartimos.»", path: "pacifico" },
       { label: "«Yo solo soy una fruta intentando no asarme aquí. ¿Podemos ir al grano?»", path: "drastico" },
-      { label: "(Guardar silencio y rodar un poco hacia atrás para huir de la vista.)", path: "drastico" },
+      { label: "(Guardar silencio y rodar un poco hacia atrás para huir de la vista.)", path: "drastico", gesture: "roll-back" },
     ],
   },
   {
@@ -37,7 +38,7 @@ export const RAMBLA_CONVERSATION: RamblaQuestion[] = [
     choices: [
       { label: "«Todo fruto cae cuando está listo para cumplir su propósito, incluso si ese propósito es este misterio.»", path: "pacifico" },
       { label: "«Me habría guardado en una canasta lejos de ustedes y de este fuego absurdo.»", path: "drastico" },
-      { label: "(Dar un pequeño bote y exhalar una bocanada de vapor cítrico sin responder.)", path: "drastico" },
+      { label: "(Dar un pequeño bote y exhalar una bocanada de vapor cítrico sin responder.)", path: "drastico", gesture: "citrus-hop" },
     ],
   },
 ];

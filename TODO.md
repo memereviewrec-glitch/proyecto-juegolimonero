@@ -10,11 +10,11 @@
 - Solo en esta pantalla, el cuadro de diálogo se renderiza debajo del lienzo para no tapar la animación; el colibrí se muestra mucho más pequeño, Limón reutiliza el `LemonSprite` habitual y la barra de ánimo conserva un tamaño legible colocada más abajo, separada de los iconos superiores.
 
 ## [ ] Arco final: nueve sentidos y enemigo Jaguar
-- El Jaguar es el enemigo final del viaje y la décima entrada del catálogo; el acceso a su escena se desbloquea al reunir las nueve semillas anteriores, asociadas a los nueve sentidos.
+- Orden correcto del arco: «Ponzoña» es la canción/semilla 8 y su semilla desbloquea «Nueve Sentidos»; «Nueve Sentidos» es la canción 9 y su semilla desbloquea «El Jaguar»; «El Jaguar» es la canción 10, y su final lleva de vuelta a Casa/el local. El Jaguar es el enemigo final del viaje y la décima entrada del catálogo.
 - La escena del colibrí modifica la ayuda disponible en el final: con el final positivo, el colibrí ayuda mucho; con el final neutro, ayuda un poco; con el final negativo, no ayuda. Esta consecuencia debe persistir al cambiar de pantalla y al recargar la partida.
 - La ayuda del colibrí debe cambiar la resolución del enfrentamiento final, no solo un texto decorativo: se reservarán variantes de dificultad, pistas o acciones disponibles para que el jugador perciba que su decisión tuvo consecuencias.
-- Si Limón consigue hacerse amigo del colibrí —final positivo de la conversación—, el colibrí lo acompaña durante «Nueve sentidos». El final neutro permitirá una presencia o ayuda limitada, y el final negativo hará que Limón continúe sin su compañía.
-- La semilla de «El Jaguar» se obtiene al completar el final, mientras que las nueve semillas anteriores funcionan como las llaves narrativas que permiten llegar hasta él.
+- Si Limón consigue hacerse amigo del colibrí —final positivo de la conversación—, el colibrí lo acompaña durante «Nueve Sentidos». El final neutro permitirá una presencia o ayuda limitada, y el final negativo hará que Limón continúe sin su compañía.
+- La semilla de «El Jaguar» se obtiene al completar el final; las canciones/semillas 1–9 lo preceden y la semilla 9 («Nueve Sentidos») desbloquea su acceso.
 
 ## [ ] Menú del viaje e Instagram de la banda
 - El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación.

@@ -13,7 +13,7 @@ import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
-import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
+import type { RamblaChoice, RamblaOutcome } from "../components/ramblaConversationRules";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
@@ -562,8 +562,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     saveHummingbirdOutcome(outcome);
   }
 
-  function chooseRamblaResponse(path: RamblaPath) {
+  function chooseRamblaResponse(choice: RamblaChoice) {
     if (ramblaOutcome !== null || campfireSeedCollected) return;
+    const path = choice.path;
     const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
     const nextDrastic = ramblaDrasticPoints + (path === "drastico" ? 1 : 0);
     setRamblaPacificPoints(nextPacific);

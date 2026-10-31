@@ -11,7 +11,6 @@ type FireForestSceneProps = {
 type FireForestNarrativeStep = 0 | 1 | 2 | 3 | 4;
 
 const FIRE_FOREST_BACKGROUND = "/fire-forest-burning-frames.png";
-const FIRE_FOREST_REDUCED_MOTION_BACKGROUND = "/fire-forest-background-after.png";
 
 export function FireForestScene({ seedCollected, onCollectSeed }: FireForestSceneProps) {
   const [rainStarted, setRainStarted] = useState(false);
@@ -32,12 +31,9 @@ export function FireForestScene({ seedCollected, onCollectSeed }: FireForestScen
       setBackgroundReady(true);
     };
 
-    const visibleBackground = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? FIRE_FOREST_REDUCED_MOTION_BACKGROUND
-      : FIRE_FOREST_BACKGROUND;
     background.onload = () => finishLoading(true);
     background.onerror = () => finishLoading(false);
-    background.src = gameAssetUrl(visibleBackground);
+    background.src = gameAssetUrl(FIRE_FOREST_BACKGROUND);
     if (background.complete) finishLoading(background.naturalWidth > 0);
 
     return () => {

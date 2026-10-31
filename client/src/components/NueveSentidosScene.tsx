@@ -22,15 +22,13 @@ type AwakeningStar = {
 };
 
 const AWAKENING_STARS: readonly AwakeningStar[] = [
-  { x: 12, y: 20, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
-  { x: 27, y: 31, size: 6, reflection: "Una luz lejana me recuerda que percibir también es esperar." },
-  { x: 43, y: 14, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
-  { x: 63, y: 24, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
-  { x: 82, y: 18, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
-  { x: 91, y: 43, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
-  { x: 18, y: 68, size: 7, reflection: "La luz vuelve distinta cuando dejo de perseguirla." },
-  { x: 46, y: 57, size: 9, reflection: "Mi pulpa reconoce un ritmo antes de entenderlo." },
-  { x: 75, y: 70, size: 8, reflection: "Nueve luces, nueve maneras de sentir la misma noche." },
+  { x: 14, y: 31, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
+  { x: 50, y: 31, size: 6, reflection: "Una luz lejana me recuerda que percibir también es esperar." },
+  { x: 86, y: 31, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
+  { x: 14, y: 47, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
+  { x: 38, y: 47, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
+  { x: 62, y: 47, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
+  { x: 86, y: 47, size: 8, reflection: "Siete luces, siete maneras de sentir la misma noche." },
 ];
 
 const RHYTHM_LABELS: Record<RhythmColor, string> = {
@@ -53,7 +51,7 @@ const HINTS = [
   "No midas la fuerza de la luz, sino el espacio entre sus latidos: el más breve abre el camino y el más largo lo cierra.",
 ] as const;
 
-const OPENING_HINT = "Cada estrella guarda un pulso. Observa sus destellos; cuando las nueve hayan despertado, el cielo planteará su pregunta.";
+const OPENING_HINT = "Cada estrella guarda un pulso. Toca las siete para despertar sus destellos; después, el cielo planteará su pregunta.";
 const MOON_HINT = "Las cuatro luces ya comparten un mismo compás. La luna blanca guarda la semilla que conduce al último canto.";
 
 export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIsFriend }: Props) {
@@ -63,7 +61,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   const [selectedColors, setSelectedColors] = useState<RhythmColor[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [moonTouched, setMoonTouched] = useState(false);
-  const [dialogue, setDialogue] = useState("Nueve luces esperan bajo la noche. Toca cada una y observa cómo despierta su brillo.");
+  const [dialogue, setDialogue] = useState("Siete luces esperan bajo la noche. Toca cada una y observa cómo despierta su brillo.");
   const [speaker, setSpeaker] = useState<Speaker>("EL CIELO");
 
   const activePattern = RHYTHM_PATTERNS[patternIndex];
@@ -83,7 +81,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
     if (next.length === AWAKENING_STARS.length) {
       setPhase("rhythm");
       setSpeaker("EL CIELO");
-      setDialogue("Las nueve luces despiertan cuatro pulsos. Ordénalos desde el destello más rápido hasta el más lento.");
+      setDialogue("Las siete luces despiertan cuatro pulsos. Ordénalos desde el destello más rápido hasta el más lento.");
       return;
     }
     setSpeaker("EL LIMÓN");
@@ -147,7 +145,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   const phaseNumber = phase === "awakening" ? "01 / 03" : phase === "rhythm" ? "02 / 03" : "03 / 03";
   const phaseTitle = phase === "awakening" ? "EL DESPERTAR DEL CIELO" : phase === "rhythm" ? "EL RITMO DE LAS CUATRO ESTRELLAS" : "LA LUNA BLANCA";
   const instruction = phase === "awakening"
-    ? `Toca las nueve estrellas para despertar sus destellos · ${awakenedStars.length}/9`
+    ? `Toca las siete estrellas para despertar sus destellos · ${awakenedStars.length}/${AWAKENING_STARS.length}`
     : phase === "rhythm"
       ? "Observa sus destellos y actívalas de la más rápida a la más lenta."
       : seedCollected
@@ -175,7 +173,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
           type="button"
           className={`nueve-awakening-star${awakenedStars.includes(index) ? " is-awake" : ""}`}
           style={{ left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${star.size}px` } as CSSProperties}
-          aria-label={`Estrella ${index + 1} de 9${awakenedStars.includes(index) ? ", destello despierto" : ", pulsar para despertar su destello"}`}
+          aria-label={`Estrella ${index + 1} de ${AWAKENING_STARS.length}${awakenedStars.includes(index) ? ", destello despierto" : ", pulsar para despertar su destello"}`}
           aria-pressed={awakenedStars.includes(index)}
           onClick={() => awakenStar(index)}
         >

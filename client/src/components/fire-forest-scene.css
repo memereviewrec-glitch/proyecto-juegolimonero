@@ -41,4 +41,29 @@
 @keyframes forest-raindrop { 0% { transform:translateY(-7px); opacity:0; } 12% { opacity:.82; } 72% { opacity:.82; } 100% { transform:translateY(112vh); opacity:0; } }
 @keyframes seed-reveal { to { opacity:.15; transform:scale(1.12); } }
 @media (max-width:600px) { .fire-forest-dialogue { width:90%; max-height:28%; padding:9px 11px 8px; } .fire-forest-dialogue p { font-size:9px; } .fire-forest-rain i { width:2px; height:2px; box-shadow:1px 1px 0 #79b4c8; } }
-@media (prefers-reduced-motion:reduce) { .fire-background-ready .fire-forest-world { animation:none; } .fire-forest-rain i,.burnt-seed::after { animation:none; } .fire-forest-world::after { transition:none; opacity:1; } }
+@media (prefers-reduced-motion:reduce) {
+  .fire-background-ready .fire-forest-world { animation:none; }
+  .fire-forest-rain i,.burnt-seed::after { animation:none; }
+  .fire-rain-started .fire-forest-rain i { top:50%; width:2px; height:10px; background:#bdebf4; box-shadow:1px 1px 0 #79b4c8; opacity:.82; }
+  .fire-rain-started .fire-forest-rain i:nth-child(1) { top:11%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(2) { top:19%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(3) { top:28%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(4) { top:37%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(5) { top:45%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(6) { top:54%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(7) { top:64%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(8) { top:72%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(9) { top:81%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(10) { top:90%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(11) { top:17%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(12) { top:26%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(13) { top:34%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(14) { top:43%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(15) { top:52%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(16) { top:61%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(17) { top:70%; }
+  .fire-rain-started .fire-forest-rain i:nth-child(18) { top:78%; }
+  .fire-forest-world::after { transition:none; opacity:0; }
+  .fire-rain-started .fire-forest-world::after { opacity:.55; }
+  .fire-rain-started.fire-is-out .fire-forest-world::after { opacity:1; }
+}

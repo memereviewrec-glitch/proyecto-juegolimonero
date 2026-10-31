@@ -748,3 +748,27 @@ body { background:#08070d; }
     opacity: .11;
   }
 }
+
+/* Herramientas de prueba fuera del canvas; se reservan 104 px para no tapar el juego. */
+.workspace.workspace-with-dev-tools { inset:0 0 104px; height:auto; }
+.workspace-with-dev-tools .stage-column { width:min(100vw, calc((100dvh - 104px) * .885), 1200px); }
+.dev-playtest-tools { position:fixed; z-index:120; inset:auto 0 0; min-height:104px; display:flex; align-items:center; justify-content:center; gap:18px; padding:10px clamp(12px,3vw,36px); background:#f7f3e9; color:#28252c; border-top:2px solid #61546c; box-shadow:0 -4px 18px #08070d55; }
+.dev-playtest-title { display:block; font:600 12px 'Space Grotesk',system-ui,sans-serif; }
+.dev-playtest-help { margin:4px 0 0; max-width:190px; color:#706a73; font:10px/1.35 'DM Mono',monospace; }
+.dev-playtest-controls { display:flex; align-items:end; gap:10px; }
+.dev-playtest-controls label { display:grid; gap:4px; color:#51475a; font:10px 'DM Mono',monospace; }
+.dev-playtest-controls select,.dev-playtest-controls button { min-height:36px; max-width:min(290px,30vw); padding:6px 9px; border:1px solid #8c8191; border-radius:3px; background:#fffdf7; color:#28252c; font:11px 'Space Grotesk',system-ui,sans-serif; }
+.dev-playtest-controls button { border-color:#3c3346; background:#61546c; color:#fffdf7; cursor:pointer; font-weight:600; }
+.dev-playtest-controls button:hover { background:#3c3346; }
+.dev-playtest-controls button:disabled { opacity:.55; cursor:not-allowed; }
+.dev-playtest-controls :focus-visible { outline:3px solid #d98470; outline-offset:2px; }
+@media (max-width:760px) {
+  .workspace.workspace-with-dev-tools { inset:0 0 146px; }
+  .workspace-with-dev-tools .stage-column { width:min(100vw, calc((100dvh - 146px) * .885), 1200px); }
+  .dev-playtest-tools { min-height:146px; display:block; padding:8px 10px; }
+  .dev-playtest-title { font-size:11px; }
+  .dev-playtest-help { display:none; }
+  .dev-playtest-controls { display:grid; grid-template-columns:1fr auto; align-items:end; gap:6px; }
+  .dev-playtest-controls label:last-child { grid-column:1 / -1; }
+  .dev-playtest-controls select,.dev-playtest-controls button { min-height:32px; max-width:none; width:100%; font-size:10px; }
+}

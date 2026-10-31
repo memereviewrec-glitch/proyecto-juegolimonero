@@ -10,6 +10,13 @@ describe("Rambla conversation rules", () => {
     }
   });
 
+  it("marks only the two physical responses for a visible gesture", () => {
+    const gestures = RAMBLA_CONVERSATION.flatMap(question => question.choices.filter(choice => choice.gesture));
+    expect(gestures).toHaveLength(2);
+    expect(gestures.map(choice => choice.gesture)).toEqual(["roll-back", "citrus-hop"]);
+    expect(gestures.every(choice => choice.path === "drastico")).toBe(true);
+  });
+
   it("selects the illumination ending when at least two answers are peaceful", () => {
     expect(resolveRamblaOutcome(2, 1)).toBe(1);
     expect(resolveRamblaOutcome(3, 0)).toBe(1);

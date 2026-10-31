@@ -10,11 +10,11 @@
 - Solo en esta pantalla, el cuadro de diálogo se renderiza debajo del lienzo para no tapar la animación; el colibrí se muestra mucho más pequeño, Limón reutiliza el `LemonSprite` habitual y la barra de ánimo conserva un tamaño legible colocada más abajo, separada de los iconos superiores.
 
 ## [ ] Arco final: nueve sentidos y enemigo Jaguar
-- El Jaguar es el enemigo final del viaje y la décima entrada del catálogo; el acceso a su escena se desbloquea al reunir las nueve semillas anteriores, asociadas a los nueve sentidos.
+- Orden correcto del arco: «Ponzoña» es la canción/semilla 8 y su semilla desbloquea «Nueve Sentidos»; «Nueve Sentidos» es la canción 9 y su semilla desbloquea «El Jaguar»; «El Jaguar» es la canción 10, y su final lleva de vuelta a Casa/el local. El Jaguar es el enemigo final del viaje y la décima entrada del catálogo.
 - La escena del colibrí modifica la ayuda disponible en el final: con el final positivo, el colibrí ayuda mucho; con el final neutro, ayuda un poco; con el final negativo, no ayuda. Esta consecuencia debe persistir al cambiar de pantalla y al recargar la partida.
 - La ayuda del colibrí debe cambiar la resolución del enfrentamiento final, no solo un texto decorativo: se reservarán variantes de dificultad, pistas o acciones disponibles para que el jugador perciba que su decisión tuvo consecuencias.
-- Si Limón consigue hacerse amigo del colibrí —final positivo de la conversación—, el colibrí lo acompaña durante «Nueve sentidos». El final neutro permitirá una presencia o ayuda limitada, y el final negativo hará que Limón continúe sin su compañía.
-- La semilla de «El Jaguar» se obtiene al completar el final, mientras que las nueve semillas anteriores funcionan como las llaves narrativas que permiten llegar hasta él.
+- Si Limón consigue hacerse amigo del colibrí —final positivo de la conversación—, el colibrí lo acompaña durante «Nueve Sentidos». El final neutro permitirá una presencia o ayuda limitada, y el final negativo hará que Limón continúe sin su compañía.
+- La semilla de «El Jaguar» se obtiene al completar el final; las canciones/semillas 1–9 lo preceden y la semilla 9 («Nueve Sentidos») desbloquea su acceso.
 
 ## [ ] Menú del viaje e Instagram de la banda
 - El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación.
@@ -30,6 +30,7 @@
 - Cuando comienza la lluvia, la hoja de fondos incendiados inicia una transición progresiva hacia `fire-forest-background-after.png`, con el bosque seco, silencioso y cubierto de ceniza; la lluvia está compuesta por gotas pixeladas individuales, desfasadas y animadas con pasos discretos, sin gradientes repetidos ni líneas diagonales continuas.
 - Cuando la semilla negra aparece al final, es un botón clicable; al recogerla se añade «El fuego» al Libro y se abre directamente esa nueva entrada.
 - Durante los 22 segundos de la escena se cuenta la historia en cinco pasos, dejando un segundo adicional entre cambios para facilitar la lectura: los animales intentan llevar agua del río al bosque sin conseguirlo; un jaguar se ríe de sus vanos intentos; se anuncia «Al tiempo, llegó la lluvia» y en ese instante comienzan las gotas; después la lluvia apaga el incendio y aparece la semilla en una zona clicable por encima del diálogo.
+- Con `prefers-reduced-motion`, el relato conserva el mismo orden usando fases estáticas de incendio, lluvia y bosque apagado; no se muestra una lluvia animada.
 
 ## [x] Pantalla 1: fondo y flujo de juego
 - La pantalla 1 conserva la composición del local y el portal del storyboard; la guitarra y el amplificador mantienen sus posiciones y perspectiva. El limón se dibuja como actor independiente para poder caminar.
@@ -167,7 +168,13 @@
 
 ## [x] Camino transitable e inscripciones integradas en Raíces
 - El limón solo puede caminar sobre el camino de piedra visible y puede alcanzar ambas columnas desde el camino; los clics en hierba u otras zonas se ignoran.
-- Las hojas apartables cubren inscripciones que están pintadas/grabadas en la piedra del arte pixelado de cada columna. Al retirar las hojas aparecen exactamente «as above» en la izquierda y «so below» en la derecha, sin un rótulo flotante separado.
+- Las hojas apartables cubren inscripciones que están pintadas/grabadas en la piedra del arte pixelado de cada columna. Al retirar las hojas aparecen exactamente «como es arriba» en la izquierda y «así es abajo» en la derecha, sin un rótulo flotante separado.
+
+## [x] Navegador local para pruebas de escenas
+- Solo en modo de desarrollo aparece un selector de las escenas ya implementadas y el botón «Saltar a escena», que permite entrar sin cumplir requisitos de desbloqueo; no añade ni borra semillas y no modifica el progreso persistente. La vista previa del colibrí puede seguir la partida o forzar temporalmente amigo/sin amistad en Nueve Sentidos, sin guardar ese resultado. El panel no se incluye en la versión de producción.
+
+## [x] Acceso por teclado para apartar hojas en Raíces
+- El arrastre con ratón o tacto se conserva. Cada hoja también se puede enfocar y apartar individualmente con Intro o Espacio; tras cada acción el foco avanza a la siguiente hoja y, al apartar la última, se revela la inscripción una sola vez. Con movimiento reducido se retira sin espera ni animación, y una indicación visible y accesible explica el control.
 
 ## [x] Libro de semillas desplegable dentro de la ventana de juego
 - Tanto el botón que abre el libro como el panel desplegable están dentro del marco 1180:1333 del juego. El panel se abre sobre la escena, queda contenido por la ventana jugable y se cierra desde ahí; no aparece fijado al viewport ni sobre el encabezado exterior.

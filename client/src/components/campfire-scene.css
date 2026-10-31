@@ -89,6 +89,40 @@
 }
 
 .campfire-lemon.campfire-lemon-escaping { animation: campfire-roll-away 1.1s steps(8, end) forwards; }
+.campfire-lemon.campfire-lemon-roll-back { animation: campfire-response-roll 1s steps(6, end) both; }
+.campfire-lemon.campfire-lemon-citrus-hop { animation: campfire-response-hop 1s ease-out both; }
+.campfire-lemon-citrus-hop::after {
+  position: absolute;
+  top: 7%;
+  left: 78%;
+  width: 4px;
+  height: 4px;
+  background: #d9f3d2;
+  box-shadow: 4px -4px 0 #c6e8cf, 8px -2px 0 #d9f3d2, 12px -6px 0 #c6e8cf, 16px -3px 0 #d9f3d2;
+  content: "";
+  opacity: 0;
+  animation: campfire-citrus-vapor .75s ease-out .22s both;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+@keyframes campfire-response-roll {
+  0% { transform: translateX(0) rotate(0); }
+  55% { transform: translateX(-22px) rotate(-180deg); }
+  100% { transform: translateX(-30px) rotate(-360deg); }
+}
+
+@keyframes campfire-response-hop {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  38% { transform: translateY(-34px) rotate(18deg); }
+  68% { transform: translateY(-16px) rotate(-10deg); }
+}
+
+@keyframes campfire-citrus-vapor {
+  0% { transform: translate(0, 8px) scale(.5); opacity: 0; }
+  35% { opacity: .95; }
+  100% { transform: translate(16px, -20px) scale(1.25); opacity: 0; }
+}
 
 @keyframes campfire-roll-away {
   0% { transform: translate(0, 0) rotate(0); opacity: 1; }
@@ -221,7 +255,10 @@
   .campfire-flame-lighting,
   .campfire-flame-seed,
   .campfire-seed,
-  .campfire-lemon-escaping { animation: none; }
+  .campfire-lemon-escaping,
+  .campfire-lemon-roll-back,
+  .campfire-lemon-citrus-hop,
+  .campfire-lemon-citrus-hop::after { animation: none; }
   .campfire-flame { filter: drop-shadow(0 0 12px rgb(245 125 53 / 65%)); }
   .campfire-lemon,.campfire-carried-stick { transition: none; }
 }

@@ -10,10 +10,11 @@ import { ElRioScene } from "../components/ElRioScene";
 import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
+import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
-import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversationRules";
+import type { RamblaChoice, RamblaOutcome } from "../components/ramblaConversationRules";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
@@ -128,7 +129,10 @@ type HomeProps = {
 };
 
 export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
+  const isDevelopment = import.meta.env.DEV;
   const [scene, setScene] = useState<Scene>("room");
+  const [devSelectedScene, setDevSelectedScene] = useState<Scene>("room");
+  const [devFriendPreview, setDevFriendPreview] = useState<DevFriendPreview>("saved");
   const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer ? null : "opening");
   const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
@@ -562,8 +566,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     saveHummingbirdOutcome(outcome);
   }
 
-  function chooseRamblaResponse(path: RamblaPath) {
+  function chooseRamblaResponse(choice: RamblaChoice) {
     if (ramblaOutcome !== null || campfireSeedCollected) return;
+    const path = choice.path;
     const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
     const nextDrastic = ramblaDrasticPoints + (path === "drastico" ? 1 : 0);
     setRamblaPacificPoints(nextPacific);
@@ -691,6 +696,29 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     } else if (songId === "el-rio") {
       setElRioSeedCollected(false);
     }
+  }
+
+  function jumpToDevScene() {
+    if (!isDevelopment || portalTransit || arrivalPortal) return;
+    stopGameAudio();
+    setScene(devSelectedScene);
+    setStoryBeat(null);
+    setStorySeedBookOpened(false);
+    setStorySeedPreview(null);
+    setSeedBookOpen(false);
+    setJourneyMenuOpen(false);
+    setJourneyRestartConfirm(false);
+    setNotice("");
+    setPortalTransit(false);
+    setArrivalPortal(false);
+    setRoomView("scene");
+    setRoomAction(null);
+    setRuinsView("scene");
+    setRuinsAction(null);
+    setLemonWhistling(false);
+    setDawnIsMoving(false);
+    setIsMoving(false);
+    setSceneReplayNonce(version => version + 1);
   }
 
   const discoveredSongIds = useMemo(() => {
@@ -856,7 +884,16 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
         </button>
       </nav>
 
-      <section className="workspace">
+      {isDevelopment && <DevPlaytestTools
+        scenes={(Object.keys(SCENE_PRESENTATION) as Scene[]).map(id => ({ id, ...SCENE_PRESENTATION[id] }))}
+        selectedScene={devSelectedScene}
+        onSceneChange={id => setDevSelectedScene(id as Scene)}
+        onJump={jumpToDevScene}
+        jumpDisabled={portalTransit || arrivalPortal}
+        friendPreview={devFriendPreview}
+        onFriendPreviewChange={setDevFriendPreview}
+      />}
+      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}`}>
         <div className="stage-column">
           <div className="stage-heading">
             <div>
@@ -991,7 +1028,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             ) : scene === "hummingbird" ? (
               <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} />
             ) : (
-              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} hummingbirdIsFriend={hummingbirdIsFriend} />
+              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} hummingbirdIsFriend={devFriendPreview === "saved" ? hummingbirdIsFriend : devFriendPreview === "friend"} />
             )
           )}
 

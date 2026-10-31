@@ -3,13 +3,14 @@ import { LemonSprite } from "./GameSprites";
 import { CampfireFlame } from "./CampfireFlame";
 import { SeedGlyph } from "./SeedGlyph";
 import { RamblaAttackWarning, RamblaConversation, RamblaSkillCheck } from "./RamblaConversation";
-import type { RamblaOutcome, RamblaPath } from "./ramblaConversationRules";
+import type { RamblaChoice, RamblaOutcome } from "./ramblaConversationRules";
 import { CAMPFIRE_CENTER, CAMPFIRE_DROP_POINT, CAMPFIRE_STICK_COUNT, isLemonNearCampfireCenter, type CampfirePoint } from "./campfireMovementRules";
 import "./campfire-scene.css";
 
 export type CampfireFireStage = "unlit" | "lighting" | "seed";
 
 const WALK_DURATION_MS = 1300;
+const RESPONSE_GESTURE_DURATION_MS = 1000;
 
 type StickSpot = {
   id: number;
@@ -48,7 +49,7 @@ type CampfireSceneProps = {
   onPlaceStick: (lemonPoint: CampfirePoint, isWalking: boolean) => void;
   onIgnite: () => void;
   onCollectSeed: () => void;
-  onChooseConversation: (path: RamblaPath) => void;
+  onChooseConversation: (choice: RamblaChoice) => void;
   onSkillAttempt: (success: boolean) => void;
   onRetrySkill: () => void;
 };
@@ -106,10 +107,13 @@ export function CampfireScene({
 }: CampfireSceneProps) {
   const worldRef = useRef<HTMLDivElement>(null);
   const walkTimer = useRef<number | null>(null);
+  const responseTimer = useRef<number | null>(null);
+  const responseLocked = useRef(false);
   const [lemonPoint, setLemonPoint] = useState<WalkPoint>({ x: 22, y: 86 });
   const [walking, setWalking] = useState(false);
   const [skillCheckStarted, setSkillCheckStarted] = useState(false);
   const [warningReady, setWarningReady] = useState(false);
+  const [responseGesture, setResponseGesture] = useState<RamblaChoice["gesture"] | null>(null);
   const allSticksPlaced = placedStickIds.length >= CAMPFIRE_STICK_COUNT;
   const sticksUnlocked = conversationOutcome === 1;
   const escapeSeedAvailable = conversationOutcome === 2 && escapeSucceeded;
@@ -152,7 +156,25 @@ export function CampfireScene({
 
   useEffect(() => () => {
     if (walkTimer.current !== null) window.clearTimeout(walkTimer.current);
+    if (responseTimer.current !== null) window.clearTimeout(responseTimer.current);
   }, []);
+
+  function chooseConversation(choice: RamblaChoice) {
+    if (responseLocked.current) return;
+    if (!choice.gesture) {
+      onChooseConversation(choice);
+      return;
+    }
+    responseLocked.current = true;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reducedMotion) setResponseGesture(choice.gesture);
+    responseTimer.current = window.setTimeout(() => {
+      setResponseGesture(null);
+      responseLocked.current = false;
+      responseTimer.current = null;
+      onChooseConversation(choice);
+    }, reducedMotion ? 0 : RESPONSE_GESTURE_DURATION_MS);
+  }
 
   useEffect(() => {
     if (conversationOutcome !== 2 || escapeSucceeded) {
@@ -248,7 +270,7 @@ export function CampfireScene({
           <small>{statusDetail || "La noche guarda silencio alrededor de la hoguera."}</small>
         </p>}
 
-        {conversationReady && <RamblaConversation step={conversationStep} onChoose={onChooseConversation} />}
+        {conversationReady && !responseGesture && <RamblaConversation step={conversationStep} onChoose={chooseConversation} />}
         {skillCheckActive && !skillCheckStarted && <RamblaAttackWarning ready={warningReady} onStart={() => setSkillCheckStarted(true)} />}
         {skillCheckActive && skillCheckStarted && <RamblaSkillCheck failedAttempts={skillFailures} onAttempt={onSkillAttempt} onRetry={onRetrySkill} />}
 
@@ -272,7 +294,7 @@ export function CampfireScene({
         })}
 
         <div
-          className={`campfire-lemon lemon-actor lemon-free${walking ? " walking" : ""}${escapeSucceeded ? " campfire-lemon-escaping" : ""}`}
+          className={`campfire-lemon lemon-actor lemon-free${walking ? " walking" : ""}${escapeSucceeded ? " campfire-lemon-escaping" : ""}${responseGesture ? ` campfire-lemon-${responseGesture}` : ""}`}
           style={{ left: `${lemonPoint.x}%`, bottom: `${100 - lemonPoint.y}%` }}
           aria-hidden="true"
         >

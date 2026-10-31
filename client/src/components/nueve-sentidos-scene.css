@@ -10,23 +10,25 @@
 .nueve-mistake-count { display:block; margin-top:4px; color:#ffc0a4; font:8px 'DM Mono',monospace; }
 .stage-coordinate { position:absolute; z-index:4; right:13px; bottom:11px; font:8px 'DM Mono',monospace; color:#e9e1ef; opacity:.72; letter-spacing:.1em; }
 .nueve-awakening-star { position:absolute; z-index:3; display:grid; width:46px; height:46px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
-.nueve-awakening-glyph { display:block; width:max(13px,var(--star-size)); height:max(13px,var(--star-size)); clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:#b7c7f1; filter:drop-shadow(0 0 3px #99b9ff); opacity:.27; transform:scale(.82); transition:opacity .3s ease,transform .3s ease,filter .3s ease; }
-.nueve-awakening-star:hover .nueve-awakening-glyph,.nueve-awakening-star:focus-visible .nueve-awakening-glyph { opacity:.88; transform:scale(1.15); }
-.nueve-awakening-star.is-awake .nueve-awakening-glyph { opacity:1; transform:scale(1.2); background:#fff2c5; filter:drop-shadow(0 0 6px #fff0b4) drop-shadow(0 0 14px #93bbff); }
+.nueve-star-gif { display:block; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
+.nueve-awakening-gif { width:max(22px,calc(var(--star-size) * 3)); height:max(22px,calc(var(--star-size) * 3)); }
+.nueve-awakening-static-glyph { display:none; width:max(13px,var(--star-size)); height:max(13px,var(--star-size)); clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:#b7c7f1; filter:drop-shadow(0 0 3px #99b9ff); opacity:.55; transition:opacity .3s ease,transform .3s ease,filter .3s ease; }
+.nueve-awakening-star:hover .nueve-awakening-static-glyph,.nueve-awakening-star:focus-visible .nueve-awakening-static-glyph { opacity:.9; transform:scale(1.15); }
+.nueve-awakening-star.is-awake .nueve-awakening-static-glyph { opacity:1; transform:scale(1.2); background:#fff2c5; filter:drop-shadow(0 0 6px #fff0b4) drop-shadow(0 0 14px #93bbff); }
 .nueve-awakening-star:focus-visible,.nueve-rhythm-star:focus-visible,.nueve-white-moon:focus-visible,.nueve-hint-button:focus-visible { outline:3px dashed #fff2bf; outline-offset:3px; }
 .nueve-rhythm-star { position:absolute; z-index:5; display:flex; width:78px; min-height:76px; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:5px 3px; transform:translate(-50%,-50%); border:1px solid #dbe6ff33; background:#07102535; color:#fff; cursor:pointer; touch-action:manipulation; }
 .nueve-rhythm-star:hover:not(:disabled) { background:#ffffff12; }
 .nueve-rhythm-star:disabled { cursor:default; }
-.nueve-rhythm-glyph { display:block; width:23px; height:23px; clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:currentColor; animation:nueve-rhythm-pulse var(--pulse-duration) steps(2,end) infinite; }
+.nueve-rhythm-gif { width:36px; height:36px; }
+.nueve-rhythm-static-glyph { display:none; width:28px; height:28px; clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:currentColor; }
 .nueve-rhythm-star-red { color:#ff8e8e; }
 .nueve-rhythm-star-green { color:#9ce4a8; }
 .nueve-rhythm-star-blue { color:#9cc7ff; }
 .nueve-rhythm-star-yellow { color:#ffe38c; }
-.nueve-rhythm-star-red .nueve-rhythm-glyph { filter:drop-shadow(0 0 5px #ff6565) drop-shadow(0 0 12px #ff6565); }
-.nueve-rhythm-star-green .nueve-rhythm-glyph { filter:drop-shadow(0 0 5px #71d88b) drop-shadow(0 0 12px #71d88b); }
-.nueve-rhythm-star-blue .nueve-rhythm-glyph { filter:drop-shadow(0 0 5px #77aaff) drop-shadow(0 0 12px #77aaff); }
-.nueve-rhythm-star-yellow .nueve-rhythm-glyph { filter:drop-shadow(0 0 5px #ffe078) drop-shadow(0 0 12px #ffe078); }
-@keyframes nueve-rhythm-pulse { 0%,42% { opacity:1; transform:scale(1); } 50%,100% { opacity:.22; transform:scale(.72); } }
+.nueve-rhythm-star-red .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #ff6565); }
+.nueve-rhythm-star-green .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #71d88b); }
+.nueve-rhythm-star-blue .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #77aaff); }
+.nueve-rhythm-star-yellow .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #ffe078); }
 .nueve-rhythm-color-label { color:#f7f2e9; font:7px 'DM Mono',monospace; letter-spacing:.08em; }
 .nueve-rhythm-order { position:absolute; top:-8px; right:5px; display:grid; width:18px; height:18px; place-items:center; border:1px solid #fff3c7; border-radius:50%; background:#19223d; color:#fff3c7; font:700 9px 'DM Mono',monospace; }
 .nueve-rhythm-speed-note { display:none; color:#dce6ff; font:7px 'DM Mono',monospace; }
@@ -50,8 +52,9 @@
 .nueve-hint-button img { display:block; width:37px; height:28px; object-fit:contain; image-rendering:pixelated; }
 .nueve-hint-button span { font:7px 'DM Mono',monospace; letter-spacing:.1em; }
 @media (prefers-reduced-motion: reduce) {
-  .nueve-sentidos-sky,.nueve-awakening-glyph,.nueve-rhythm-glyph,.nueve-moon-disc,.nueve-jaguar-trail { transition:none; }
-  .nueve-rhythm-glyph { animation:none; opacity:1; transform:none; }
+  .nueve-sentidos-sky,.nueve-awakening-static-glyph,.nueve-rhythm-static-glyph,.nueve-moon-disc,.nueve-jaguar-trail { transition:none; }
+  .nueve-awakening-gif,.nueve-rhythm-gif { display:none; }
+  .nueve-awakening-static-glyph,.nueve-rhythm-static-glyph { display:block; opacity:1; transform:none; }
   .nueve-rhythm-speed-note { display:block; }
 }
 @media (max-width:600px) {

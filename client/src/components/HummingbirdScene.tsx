@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./hummingbird-scene.css";
 import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
+import { gameAssetUrl } from "../gameAudio";
 
 export type HummingbirdOutcome = "good" | "bad" | "neutral";
 
@@ -119,8 +120,8 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
       <div className="scene-stage game-screen hummingbird-stage">
       <div className="hummingbird-sky" aria-hidden="true" />
       <picture className="hummingbird-sprite">
-        <source media="(prefers-reduced-motion: reduce)" srcSet="/colibri-still.png" />
-        <img src="/colibri.gif" alt="Colibrí" />
+        <source media="(prefers-reduced-motion: reduce)" srcSet={gameAssetUrl("/colibri-still.png")} />
+        <img src={gameAssetUrl("/colibri.gif")} alt="Colibrí" />
       </picture>
       <div className="hummingbird-lemon" aria-hidden="true"><LemonSprite /></div>
       <div className="hummingbird-meter" aria-label={`Ánimo del colibrí: ${mood} de 100`}>

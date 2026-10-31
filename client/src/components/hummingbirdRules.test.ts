@@ -2,13 +2,21 @@ import { describe, expect, it } from "vitest";
 import { resolveHummingbirdOutcome } from "./hummingbirdRules";
 
 describe("hummingbird outcome thresholds", () => {
-  it("makes friendship at 80 points or higher", () => {
-    expect(resolveHummingbirdOutcome(80, false)).toBe("good");
-    expect(resolveHummingbirdOutcome(100, true)).toBe("good");
+  it("ends immediately in friendship only when the score reaches 100", () => {
+    expect(resolveHummingbirdOutcome(100, false)).toBe("good");
+    expect(resolveHummingbirdOutcome(99, false)).toBeNull();
+    expect(resolveHummingbirdOutcome(80, false)).toBeNull();
   });
 
-  it("ends badly as soon as the score falls below -80", () => {
-    expect(resolveHummingbirdOutcome(-81, false)).toBe("bad");
+  it("decides a high score of 80 or more at the sixth answer", () => {
+    expect(resolveHummingbirdOutcome(80, true)).toBe("good");
+    expect(resolveHummingbirdOutcome(99, true)).toBe("good");
+  });
+
+  it("keeps a score below -80 in the conversation until the sixth answer", () => {
+    expect(resolveHummingbirdOutcome(-81, false)).toBeNull();
+    expect(resolveHummingbirdOutcome(-90, false)).toBeNull();
+    expect(resolveHummingbirdOutcome(-81, true)).toBe("bad");
     expect(resolveHummingbirdOutcome(-90, true)).toBe("bad");
   });
 

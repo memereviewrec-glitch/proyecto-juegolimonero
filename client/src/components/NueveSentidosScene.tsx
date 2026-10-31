@@ -199,7 +199,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
             disabled={selectedIndex >= 0}
             onClick={() => chooseRhythmStar(color)}
           >
-            <img className="nueve-star-gif nueve-rhythm-gif" src={gameAssetUrl(`/star-pulses/${color}-${pulseMs}.gif`)} alt="" aria-hidden="true" />
+            <img className="nueve-star-gif nueve-rhythm-gif" src={gameAssetUrl(`/star-pulses/60bpm/${color}-${pulseMs}.gif`)} alt="" aria-hidden="true" />
             <span className="nueve-rhythm-static-glyph" aria-hidden="true" />
             <span className="nueve-rhythm-color-label">{RHYTHM_LABELS[color]}</span>
             {selectedIndex >= 0 && <span className="nueve-rhythm-order" aria-hidden="true">{selectedIndex + 1}</span>}

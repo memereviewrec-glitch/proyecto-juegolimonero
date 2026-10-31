@@ -46,7 +46,7 @@
   72% { opacity:.55; transform:translate(-100%,-220%) scale(.28); }
   100% { opacity:0; transform:translate(-150%,-320%) scale(.03); }
 }
-.hummingbird-good.hummingbird-exiting .hummingbird-sprite,.hummingbird-neutral.hummingbird-exiting .hummingbird-sprite { animation:hummingbird-friendship-fly 1.8s cubic-bezier(.42,0,.2,1) forwards; }
+.hummingbird-good.hummingbird-exiting .hummingbird-sprite { animation:hummingbird-friendship-fly 1.8s cubic-bezier(.42,0,.2,1) forwards; }
 .hummingbird-bad.hummingbird-exiting .hummingbird-sprite { animation:hummingbird-flee 1.8s cubic-bezier(.45,0,.9,.55) forwards; }
 .hummingbird-exiting .hummingbird-lemon { animation:hummingbird-lemon-exit 1.8s cubic-bezier(.42,0,.2,1) forwards; }
 @keyframes hummingbird-friendship-fly {
@@ -60,7 +60,7 @@
   100% { right:-40%; bottom:46%; opacity:0; transform:translateY(-18px); }
 }
 @media (max-width:700px) { .hummingbird-scene-shell { gap:8px; padding:8px; } .hummingbird-options { grid-template-columns:1fr; max-height:165px; overflow:auto; } .hummingbird-options button { min-height:38px; } .hummingbird-dialogue { width:100%; max-height:40vh; margin:0; padding:9px 10px; } .hummingbird-dialogue p { font-size:9px; } .hummingbird-sprite { left:8%; bottom:26%; width:clamp(135px,42%,200px); } .hummingbird-lemon { --lemon-start-right:12%; --lemon-start-bottom:27%; width:55px; height:68px; } .hummingbird-meter { bottom:2%; width:90%; } }
-@media (max-width:700px) { .hummingbird-good.hummingbird-exiting .hummingbird-sprite,.hummingbird-neutral.hummingbird-exiting .hummingbird-sprite { animation-name:hummingbird-friendship-fly-mobile; } }
+@media (max-width:700px) { .hummingbird-good.hummingbird-exiting .hummingbird-sprite { animation-name:hummingbird-friendship-fly-mobile; } }
 @keyframes hummingbird-friendship-fly-mobile {
   0% { left:8%; bottom:26%; opacity:1; transform:scale(1) rotate(0); }
   42% { left:28%; bottom:43%; opacity:1; transform:scale(1.1) rotate(8deg); }

@@ -22,6 +22,8 @@ type HummingbirdQuestion = {
   options: readonly HummingbirdOption[];
 };
 
+const FRIENDSHIP_THRESHOLD = 80;
+
 const QUESTIONS: readonly HummingbirdQuestion[] = [
   {
     prompt: "Mi casa estaba en aquel árbol. Ahora solo quedan cenizas. No sé dónde volver.",
@@ -95,8 +97,8 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const answer = (delta: number) => {
     if (outcome || !question) return;
     const nextMood = Math.max(-100, Math.min(100, mood + delta));
-    if (nextMood >= 100) {
-      setMood(100);
+    if (nextMood >= FRIENDSHIP_THRESHOLD) {
+      setMood(nextMood);
       setOutcome("good");
       onOutcome?.("good");
       return;

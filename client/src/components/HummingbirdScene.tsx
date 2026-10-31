@@ -22,6 +22,8 @@ type HummingbirdQuestion = {
   options: readonly HummingbirdOption[];
 };
 
+const FRIENDSHIP_THRESHOLD = 80;
+
 const QUESTIONS: readonly HummingbirdQuestion[] = [
   {
     prompt: "Mi casa estaba en aquel árbol. Ahora solo quedan cenizas. No sé dónde volver.",
@@ -84,6 +86,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const [questionIndex, setQuestionIndex] = useState(0);
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
   const [entryComplete, setEntryComplete] = useState(false);
+  const [exitingScene, setExitingScene] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setEntryComplete(true), 2200);
@@ -94,8 +97,8 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const answer = (delta: number) => {
     if (outcome || !question) return;
     const nextMood = Math.max(-100, Math.min(100, mood + delta));
-    if (nextMood >= 100) {
-      setMood(100);
+    if (nextMood >= FRIENDSHIP_THRESHOLD) {
+      setMood(nextMood);
       setOutcome("good");
       onOutcome?.("good");
       return;
@@ -116,11 +119,21 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
     setQuestionIndex(index => index + 1);
   };
 
+  const continueFromOutcome = () => {
+    if (exitingScene) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onCollectSeed();
+      return;
+    }
+    setExitingScene(true);
+    window.setTimeout(onCollectSeed, 1800);
+  };
+
   const progress = ((mood + 100) / 200) * 100;
   const moodTone = mood >= 0 ? "positive" : "negative";
 
   return (
-    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}`}>
+    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}${exitingScene ? " hummingbird-exiting" : ""}`}>
       <div className="scene-stage game-screen hummingbird-stage">
       <div className="hummingbird-sky" aria-hidden="true" />
       <picture className="hummingbird-sprite">
@@ -139,8 +152,8 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
           <>
             <span>{outcome === "good" ? "AMISTAD" : outcome === "bad" ? "DESPEDIDA" : "DUDA"}</span>
             <p>{outcomeText(outcome)}</p>
-            {!seedCollected && <button type="button" className="hummingbird-seed-button" onClick={onCollectSeed} aria-label="Recoger la semilla de Ponzoña y abrir el Libro de Semillas"><SeedGlyph seed="ponzona" /><b>recoger semilla de Ponzoña</b></button>}
-            {seedCollected && <small>La semilla de Ponzoña ya está en el Libro de Semillas.</small>}
+            {seedCollected && <small>La semilla de Ponzoña ya está en el Libro de Semillas. El desenlace más reciente queda guardado.</small>}
+            <button type="button" className="hummingbird-seed-button" onClick={continueFromOutcome} disabled={exitingScene} aria-label={seedCollected ? "Continuar, salir de la escena y volver al Libro de Semillas" : "Continuar, salir de la escena y recoger la semilla de Ponzoña"}><SeedGlyph seed="ponzona" /><b>{exitingScene ? "saliendo de la escena…" : "Continuar"}</b></button>
           </>
         ) : (
           <>

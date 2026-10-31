@@ -6,7 +6,7 @@
 .hummingbird-sprite { position:absolute; z-index:4; left:8%; bottom:26%; display:block; width:clamp(140px,22%,220px); aspect-ratio:4 / 3; image-rendering:pixelated; filter:drop-shadow(3px 4px 0 #0d1420); transition:left 1.25s ease-out,bottom 1.25s ease-out; }
 .hummingbird-sprite img { display:block; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
 .hummingbird-entering .hummingbird-sprite { animation:hummingbird-arrival 2.2s cubic-bezier(.22,1,.36,1) both; }
-.hummingbird-lemon { position:absolute; z-index:4; right:22%; bottom:26%; width:64px; height:76px; filter:drop-shadow(3px 4px 0 #1d2027); }
+.hummingbird-lemon { --lemon-start-right:22%; --lemon-start-bottom:26%; position:absolute; z-index:4; right:var(--lemon-start-right); bottom:var(--lemon-start-bottom); width:64px; height:76px; filter:drop-shadow(3px 4px 0 #1d2027); }
 .hummingbird-lemon .lemon-sprite { width:100%; height:100%; image-rendering:pixelated; }
 .hummingbird-meter { position:absolute; z-index:8; bottom:3%; left:50%; width:min(80%,560px); transform:translateX(-50%); padding:8px 12px; border:2px solid #c5d7cd; background:#111a2bd9; box-shadow:3px 3px 0 #0a101b; font:8px 'DM Mono',monospace; }
 .hummingbird-meter-heading,.hummingbird-meter-labels { display:flex; justify-content:space-between; gap:10px; }
@@ -28,8 +28,7 @@
 .hummingbird-seed-button svg { width:30px; height:38px; }
 .hummingbird-seed-button:hover,.hummingbird-seed-button:focus-visible { background:#f3c4d7; outline:2px dashed #6f3157; outline-offset:3px; }
 .hummingbird-dialogue small { display:block; text-align:center; color:#74566e; font:8px 'DM Mono',monospace; }
-.hummingbird-good .hummingbird-sprite { left:67%; bottom:15%; }
-.hummingbird-bad .hummingbird-sprite { filter:grayscale(.55) drop-shadow(4px 5px 0 #0d1420); animation:hummingbird-flee 2.6s cubic-bezier(.45,0,.9,.55) forwards; }
+.hummingbird-bad .hummingbird-sprite { filter:grayscale(.55) drop-shadow(4px 5px 0 #0d1420); }
 @keyframes hummingbird-arrival {
   0% { left:-22%; bottom:54%; opacity:0; transform:scale(.55) rotate(-18deg); }
   12% { left:20%; bottom:42%; opacity:1; transform:scale(1.16) rotate(13deg); }
@@ -47,5 +46,30 @@
   72% { opacity:.55; transform:translate(-100%,-220%) scale(.28); }
   100% { opacity:0; transform:translate(-150%,-320%) scale(.03); }
 }
-@media (max-width:700px) { .hummingbird-scene-shell { gap:8px; padding:8px; } .hummingbird-options { grid-template-columns:1fr; max-height:165px; overflow:auto; } .hummingbird-options button { min-height:38px; } .hummingbird-dialogue { width:100%; max-height:40vh; margin:0; padding:9px 10px; } .hummingbird-dialogue p { font-size:9px; } .hummingbird-sprite { left:8%; bottom:26%; width:clamp(135px,42%,200px); } .hummingbird-lemon { right:12%; bottom:27%; width:55px; height:68px; } .hummingbird-meter { bottom:2%; width:90%; } }
-@media (prefers-reduced-motion:reduce) { .hummingbird-sprite { transition:none; } .hummingbird-entering .hummingbird-sprite { animation:none; left:8%; bottom:26%; opacity:1; transform:none; } .hummingbird-bad .hummingbird-sprite { animation:none; opacity:1; transform:none; } .hummingbird-meter-track span { transition:none; } }
+.hummingbird-good.hummingbird-exiting .hummingbird-sprite { animation:hummingbird-friendship-fly 1.8s cubic-bezier(.42,0,.2,1) forwards; }
+.hummingbird-bad.hummingbird-exiting .hummingbird-sprite { animation:hummingbird-flee 1.8s cubic-bezier(.45,0,.9,.55) forwards; }
+.hummingbird-exiting .hummingbird-lemon { animation:hummingbird-lemon-exit 1.8s cubic-bezier(.42,0,.2,1) forwards; }
+@keyframes hummingbird-friendship-fly {
+  0% { left:8%; bottom:26%; opacity:1; transform:scale(1) rotate(0); }
+  28% { left:34%; bottom:34%; opacity:1; transform:scale(1.08) rotate(6deg); }
+  58% { left:68%; bottom:40%; opacity:1; transform:scale(1.12) rotate(8deg); }
+  76% { left:91%; bottom:48%; opacity:1; transform:scale(.92) rotate(10deg); }
+  100% { left:135%; bottom:60%; opacity:0; transform:scale(.55) rotate(12deg); }
+}
+@keyframes hummingbird-lemon-exit {
+  0% { right:var(--lemon-start-right); bottom:var(--lemon-start-bottom); opacity:1; transform:translate(0,0); }
+  28% { right:var(--lemon-start-right); bottom:calc(var(--lemon-start-bottom) + 4%); opacity:1; transform:translateY(-4px); }
+  58% { right:3%; bottom:38%; opacity:1; transform:translateY(-10px); }
+  76% { right:-12%; bottom:43%; opacity:1; transform:translateY(-14px); }
+  100% { right:-40%; bottom:46%; opacity:0; transform:translateY(-18px); }
+}
+@media (max-width:700px) { .hummingbird-scene-shell { gap:8px; padding:8px; } .hummingbird-options { grid-template-columns:1fr; max-height:165px; overflow:auto; } .hummingbird-options button { min-height:38px; } .hummingbird-dialogue { width:100%; max-height:40vh; margin:0; padding:9px 10px; } .hummingbird-dialogue p { font-size:9px; } .hummingbird-sprite { left:8%; bottom:26%; width:clamp(135px,42%,200px); } .hummingbird-lemon { --lemon-start-right:12%; --lemon-start-bottom:27%; width:55px; height:68px; } .hummingbird-meter { bottom:2%; width:90%; } }
+@media (max-width:700px) { .hummingbird-good.hummingbird-exiting .hummingbird-sprite { animation-name:hummingbird-friendship-fly-mobile; } }
+@keyframes hummingbird-friendship-fly-mobile {
+  0% { left:8%; bottom:26%; opacity:1; transform:scale(1) rotate(0); }
+  28% { left:35%; bottom:34%; opacity:1; transform:scale(1.05) rotate(6deg); }
+  58% { left:63%; bottom:40%; opacity:1; transform:scale(1.1) rotate(8deg); }
+  76% { left:80%; bottom:48%; opacity:1; transform:scale(.9) rotate(10deg); }
+  100% { left:135%; bottom:60%; opacity:0; transform:scale(.55) rotate(12deg); }
+}
+@media (prefers-reduced-motion:reduce) { .hummingbird-sprite { transition:none; } .hummingbird-entering .hummingbird-sprite { animation:none; left:8%; bottom:26%; opacity:1; transform:none; } .hummingbird-exiting .hummingbird-sprite,.hummingbird-exiting .hummingbird-lemon { animation:none; opacity:1; transform:none; } .hummingbird-meter-track span { transition:none; } }

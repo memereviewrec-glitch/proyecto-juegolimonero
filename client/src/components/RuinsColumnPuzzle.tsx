@@ -25,7 +25,7 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
   const dragRef = useRef<{ id: number; pointerId: number; dx: number; dy: number } | null>(null);
   const [leaves, setLeaves] = useState<Leaf[]>(() => alreadyRevealed ? [] : INITIAL_LEAVES);
   const [dragging, setDragging] = useState<number | null>(null);
-  const inscription = side === "left" ? "as above" : "so below";
+  const inscription = side === "left" ? "como es arriba" : "así es abajo";
 
   function beginDrag(id: number, event: ReactPointerEvent<HTMLButtonElement>) {
     event.preventDefault();

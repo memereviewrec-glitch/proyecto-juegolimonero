@@ -1,8 +1,9 @@
 .nueve-sentidos-stage { position:relative; overflow:hidden; border-color:#53638e; background:#030612; color:#f8f3e8; }
-.nueve-sentidos-sky { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 20% 18%,#35477855,transparent 42%),radial-gradient(ellipse at 78% 62%,#263d6a44,transparent 38%),linear-gradient(160deg,#030611 0%,#08142b 57%,#11182e 100%); transition:background .8s ease; }
-.nueve-sentidos-sky[data-phase="awakening"] { background:radial-gradient(ellipse at 50% 50%,#121a3060,transparent 58%),linear-gradient(160deg,#02030a 0%,#050a19 58%,#0a1020 100%); }
-.nueve-sentidos-sky::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 44%,#7e83cb18,transparent 58%),linear-gradient(180deg,#02040b22,transparent 48%,#06081355); pointer-events:none; }
-.nueve-sentidos-nebula { position:absolute; left:15%; top:25%; width:72%; height:54%; border-radius:50%; background:radial-gradient(ellipse,#8499e31c 0%,#5c8aca12 34%,transparent 72%); filter:blur(24px); }
+.nueve-sentidos-sky { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 18% 20%,#40538442 0%,transparent 36%),radial-gradient(ellipse at 76% 34%,#76528c24 0%,transparent 34%),radial-gradient(ellipse at 44% 78%,#28627a20 0%,transparent 38%),linear-gradient(160deg,#030611 0%,#08142b 57%,#11182e 100%); transition:background .8s ease; }
+.nueve-sentidos-sky[data-phase="awakening"] { background:radial-gradient(ellipse at 50% 50%,#28335438 0%,transparent 58%),radial-gradient(ellipse at 78% 27%,#563b6c18 0%,transparent 34%),linear-gradient(160deg,#02030a 0%,#050a19 58%,#0a1020 100%); }
+.nueve-sentidos-sky::before { content:""; position:absolute; z-index:1; inset:0; background:radial-gradient(ellipse at 50% 44%,#7e83cb18,transparent 58%),linear-gradient(157deg,transparent 23%,#9aa9e008 34%,#a79bd313 43%,transparent 57%),linear-gradient(180deg,#02040b22,transparent 48%,#06081355); pointer-events:none; }
+.nueve-sentidos-sky::after { content:""; position:absolute; z-index:1; inset:0; background:radial-gradient(circle at 9% 19%,#d5ddff 0 1px,transparent 1.7px),radial-gradient(circle at 19% 68%,#bdcffb 0 1px,transparent 1.8px),radial-gradient(circle at 34% 13%,#e4e8ff 0 1px,transparent 1.6px),radial-gradient(circle at 39% 78%,#aabfe8 0 1px,transparent 1.8px),radial-gradient(circle at 58% 21%,#d1d8ff 0 1px,transparent 1.7px),radial-gradient(circle at 69% 72%,#d2d8f4 0 1px,transparent 1.8px),radial-gradient(circle at 82% 14%,#d8e3ff 0 1px,transparent 1.7px),radial-gradient(circle at 94% 57%,#b5c5ed 0 1px,transparent 1.8px); opacity:.28; pointer-events:none; }
+.nueve-sentidos-nebula { position:absolute; left:7%; top:19%; width:86%; height:62%; border-radius:50%; background:radial-gradient(ellipse at 23% 47%,#697bc32a 0%,transparent 34%),radial-gradient(ellipse at 57% 37%,#a078bb20 0%,transparent 35%),radial-gradient(ellipse at 77% 64%,#39869b1b 0%,transparent 31%),radial-gradient(ellipse,#8499e31c 0%,#5c8aca12 34%,transparent 72%); filter:blur(21px); }
 .stage-coordinate { position:absolute; z-index:4; right:13px; bottom:11px; font:8px 'DM Mono',monospace; color:#e9e1ef; opacity:.72; letter-spacing:.1em; }
 .nueve-awakening-star { position:absolute; z-index:3; display:grid; width:46px; height:46px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
 .nueve-star-gif { display:block; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
@@ -47,24 +48,31 @@
 .nueve-jaguar-trail.is-unlocked { opacity:.88; }
 .nueve-lemon { position:absolute; z-index:4; left:47%; bottom:1%; width:clamp(50px,10%,76px); height:clamp(60px,11%,90px); transform:translateX(-50%); pointer-events:none; filter:drop-shadow(2px 3px 0 #060913); }
 .nueve-lemon .lemon-sprite { display:block; width:100%; height:100%; }
-.nueve-hint-button { position:absolute; z-index:12; left:4%; bottom:4%; display:grid; width:68px; height:62px; padding:3px; place-items:center; transform-origin:center; border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
+.nueve-hint-button { position:absolute; z-index:12; left:calc(47% + clamp(27px,5vw,40px)); bottom:5%; display:grid; width:68px; height:62px; padding:3px; place-items:center; transform-origin:center; border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
 .nueve-hint-button:hover,.nueve-hint-button.is-active { transform:scale(1.08); }
 .nueve-hint-button img { display:block; width:62px; height:48px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 2px 0 #080d1d); }
 .nueve-hint-popover { position:absolute; z-index:11; left:4%; bottom:calc(4% + 68px); width:min(78%,460px); padding:10px 12px; border:2px solid #c2c9dc; background:#11182cf2; box-shadow:3px 3px 0 #02040a9c; color:#fff6e9; font:9px/1.45 'DM Mono',monospace; animation:nueve-hint-appear .16s steps(3,end) both; }
+.nueve-moon-dialogue { position:absolute; z-index:10; left:50%; bottom:12%; width:min(82%,520px); padding:10px 12px; transform:translateX(-50%); border:2px solid #c2c9dc; background:#11182cf5; box-shadow:3px 3px 0 #02040a9c; color:#fff6e9; text-align:center; animation:nueve-moon-appear .2s ease-out both; }
+.nueve-moon-dialogue p { margin:0 0 8px; font:10px/1.45 'DM Mono',monospace; }
+.nueve-moon-dialogue button { min-height:34px; padding:6px 12px; border:1px solid #cbd8f2; background:#27334f; color:#fff6e9; font:8px 'DM Mono',monospace; cursor:pointer; touch-action:manipulation; }
+.nueve-moon-dialogue button:focus-visible { outline:3px dashed #fff2bf; outline-offset:3px; }
 @keyframes nueve-hint-appear { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+@keyframes nueve-moon-appear { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion: reduce) {
   .nueve-sentidos-sky,.nueve-awakening-static-glyph,.nueve-rhythm-static-glyph,.nueve-moon-disc,.nueve-jaguar-trail { transition:none; }
   .nueve-awakening-gif,.nueve-rhythm-gif { display:none; }
   .nueve-awakening-static-glyph,.nueve-rhythm-static-glyph { display:block; opacity:1; transform:none; }
   .nueve-awakening-star.is-extinguished .nueve-awakening-static-glyph { background:#66718e; filter:none; opacity:.14; transform:none; }
   .nueve-seed-drop.is-dropping { animation-duration:1ms; }
-  .nueve-hint-button,.nueve-hint-popover { animation:none; transition:none; }
+  .nueve-hint-button,.nueve-hint-popover,.nueve-moon-dialogue { animation:none; transition:none; }
 }
 @media (max-width:600px) {
   .nueve-rhythm-star { width:56px; height:56px; }
-  .nueve-hint-button { left:3%; bottom:3%; width:64px; height:58px; }
+  .nueve-hint-button { left:calc(47% + 27px); bottom:4%; width:64px; height:58px; }
   .nueve-hint-button img { width:58px; height:44px; }
   .nueve-hint-popover { left:4%; bottom:calc(4% + 64px); width:82%; padding:8px 9px; font-size:8px; }
+  .nueve-moon-dialogue { bottom:14%; width:88%; padding:8px 9px; }
+  .nueve-moon-dialogue p { font-size:8px; }
   .nueve-lemon { bottom:1%; }
   .stage-coordinate { right:7px; bottom:8px; font-size:7px; }
 }

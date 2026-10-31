@@ -1,14 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { applyRhythmPick, evaluateRhythmPick, getFastestToSlowestOrder, getNextRhythmPatternIndex, NOTE_DURATIONS_AT_60_BPM, RHYTHM_COLORS, RHYTHM_PATTERNS } from "./nueveSentidosRules";
+import { applyRhythmPick, evaluateRhythmPick, getSlowestToFastestOrder, getNextRhythmPatternIndex, NOTE_DURATIONS_AT_60_BPM, RHYTHM_COLORS, RHYTHM_PATTERNS } from "./nueveSentidosRules";
 
 describe("reglas de ritmo de Nueve Sentidos", () => {
   it("cada patrón contiene cuatro pulsos diferentes y una ordenación completa", () => {
     const noteDurations = new Set(Object.values(NOTE_DURATIONS_AT_60_BPM));
     RHYTHM_PATTERNS.forEach((pattern, index) => {
       expect(new Set(Object.values(pattern))).toEqual(noteDurations);
-      expect(getFastestToSlowestOrder(index)).toHaveLength(RHYTHM_COLORS.length);
-      expect(new Set(getFastestToSlowestOrder(index))).toEqual(new Set(RHYTHM_COLORS));
+      expect(getSlowestToFastestOrder(index)).toHaveLength(RHYTHM_COLORS.length);
+      expect(new Set(getSlowestToFastestOrder(index))).toEqual(new Set(RHYTHM_COLORS));
     });
+  });
+
+  it("ordena cada patrón de la más lenta a la más rápida", () => {
+    RHYTHM_PATTERNS.forEach((pattern, index) => {
+      const orderedDurations = getSlowestToFastestOrder(index).map(color => pattern[color]);
+      expect(orderedDurations).toEqual([4000, 2000, 1000, 500]);
+    });
+    expect(getSlowestToFastestOrder(0)).toEqual(["red", "green", "blue", "yellow"]);
   });
 
   it("usa una redonda, blanca, negra y corchea exactas a 60 BPM y rota sus colores", () => {
@@ -26,8 +34,8 @@ describe("reglas de ritmo de Nueve Sentidos", () => {
     });
   });
 
-  it("avanza solo con la estrella correcta, en orden de más rápida a más lenta", () => {
-    const order = getFastestToSlowestOrder(0);
+  it("avanza solo con la estrella correcta, de la más lenta a la más rápida", () => {
+    const order = getSlowestToFastestOrder(0);
     expect(evaluateRhythmPick(0, 0, order[0])).toBe("correct");
     expect(evaluateRhythmPick(0, 1, order[1])).toBe("correct");
     expect(evaluateRhythmPick(0, 2, order[2])).toBe("correct");
@@ -36,7 +44,7 @@ describe("reglas de ritmo de Nueve Sentidos", () => {
   });
 
   it("apaga y registra cada estrella correcta hasta completar el orden", () => {
-    const order = getFastestToSlowestOrder(0);
+    const order = getSlowestToFastestOrder(0);
     const first = applyRhythmPick(0, [], order[0]);
     expect(first).toEqual({ result: "correct", patternIndex: 0, selectedColors: [order[0]] });
 
@@ -50,7 +58,7 @@ describe("reglas de ritmo de Nueve Sentidos", () => {
   });
 
   it("al equivocarse vuelve a encender todas las estrellas y cambia el patrón", () => {
-    const order = getFastestToSlowestOrder(0);
+    const order = getSlowestToFastestOrder(0);
     const first = applyRhythmPick(0, [], order[0]);
     const second = applyRhythmPick(first.patternIndex, first.selectedColors, order[1]);
     const retry = applyRhythmPick(second.patternIndex, second.selectedColors, order[3]);

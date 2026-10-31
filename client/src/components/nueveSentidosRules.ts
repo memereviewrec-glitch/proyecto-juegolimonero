@@ -25,9 +25,9 @@ export const RHYTHM_PATTERNS: readonly StarRhythmPattern[] = [
   { red: NOTE_DURATIONS_AT_60_BPM.corchea, green: NOTE_DURATIONS_AT_60_BPM.redonda, blue: NOTE_DURATIONS_AT_60_BPM.blanca, yellow: NOTE_DURATIONS_AT_60_BPM.negra },
 ];
 
-export function getFastestToSlowestOrder(patternIndex: number): RhythmColor[] {
+export function getSlowestToFastestOrder(patternIndex: number): RhythmColor[] {
   const pattern = RHYTHM_PATTERNS[patternIndex] ?? RHYTHM_PATTERNS[0];
-  return [...RHYTHM_COLORS].sort((first, second) => pattern[first] - pattern[second]);
+  return [...RHYTHM_COLORS].sort((first, second) => pattern[second] - pattern[first]);
 }
 
 export function getNextRhythmPatternIndex(currentIndex: number): number {
@@ -36,7 +36,7 @@ export function getNextRhythmPatternIndex(currentIndex: number): number {
 }
 
 export function evaluateRhythmPick(patternIndex: number, selectedCount: number, color: RhythmColor): RhythmPickResult {
-  const order = getFastestToSlowestOrder(patternIndex);
+  const order = getSlowestToFastestOrder(patternIndex);
   if (order[selectedCount] !== color) return "wrong";
   return selectedCount === order.length - 1 ? "complete" : "correct";
 }

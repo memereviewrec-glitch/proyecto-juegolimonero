@@ -47,8 +47,8 @@ const RHYTHM_POSITIONS: Record<RhythmColor, { x: number; y: number }> = {
 
 const HINTS = [
   "El aleteo rápido del colibrí no teme al tiempo; compara cuánto tarda cada destello en volver a encenderse.",
-  "Busca primero el pulso que regresa sin demora. Deja para el final al que duerme más entre un brillo y otro.",
-  "No midas la fuerza de la luz, sino el espacio entre sus latidos: el más breve abre el camino y el más largo lo cierra.",
+  "Busca primero el pulso que tarda más en regresar. Deja para el final al que vuelve sin demora.",
+  "No midas la fuerza de la luz, sino el espacio entre sus latidos: el más largo abre el camino y el más breve lo cierra.",
 ] as const;
 
 const OPENING_HINT = "Toca las siete estrellas; cada una apagará su brillo al recibir tu toque. Después, el cielo planteará su pregunta.";
@@ -76,7 +76,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
     if (next.length === AWAKENING_STARS.length) {
       setPhase("rhythm");
       setSpeaker("EL CIELO");
-      setDialogue("Al apagarse las siete luces, aparecen cuatro pulsos. Ordénalos desde el destello más rápido hasta el más lento.");
+      setDialogue("Al apagarse las siete luces, aparecen cuatro pulsos. Ordénalos desde el destello más lento hasta el más rápido.");
       return;
     }
     setSpeaker("EL LIMÓN");
@@ -106,8 +106,8 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
 
     setSpeaker("EL LIMÓN");
     setDialogue(next.length < 3
-      ? "Ese latido encuentra su lugar. Escuchemos cuál vuelve después."
-      : "Tres pulsos ya se reconocen; falta el que tarda más en regresar.");
+      ? "Ese latido encuentra su lugar. Escuchemos cuál tarda menos en regresar."
+      : "Tres pulsos ya se reconocen; falta el destello que vuelve más rápido.");
   }
 
   function askForHint() {
@@ -142,7 +142,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   const instruction = phase === "awakening"
     ? `Apaga cada estrella al tocarla · ${extinguishedStars.length}/${AWAKENING_STARS.length}`
     : phase === "rhythm"
-      ? "Observa sus destellos y actívalas de la más rápida a la más lenta."
+      ? "Observa sus destellos y actívalas de la más lenta a la más rápida."
       : seedCollected
         ? "La semilla está en el Libro. El camino hacia El Jaguar se ha abierto."
         : "Pulsa la luna blanca para recoger la semilla final.";

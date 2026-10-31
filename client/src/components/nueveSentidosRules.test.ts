@@ -1,12 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { applyRhythmPick, evaluateRhythmPick, getFastestToSlowestOrder, getNextRhythmPatternIndex, RHYTHM_COLORS, RHYTHM_PATTERNS } from "./nueveSentidosRules";
+import { applyRhythmPick, evaluateRhythmPick, getFastestToSlowestOrder, getNextRhythmPatternIndex, NOTE_DURATIONS_AT_60_BPM, RHYTHM_COLORS, RHYTHM_PATTERNS } from "./nueveSentidosRules";
 
 describe("reglas de ritmo de Nueve Sentidos", () => {
   it("cada patrón contiene cuatro pulsos diferentes y una ordenación completa", () => {
+    const noteDurations = new Set(Object.values(NOTE_DURATIONS_AT_60_BPM));
     RHYTHM_PATTERNS.forEach((pattern, index) => {
-      expect(new Set(Object.values(pattern)).size).toBe(RHYTHM_COLORS.length);
+      expect(new Set(Object.values(pattern))).toEqual(noteDurations);
       expect(getFastestToSlowestOrder(index)).toHaveLength(RHYTHM_COLORS.length);
       expect(new Set(getFastestToSlowestOrder(index))).toEqual(new Set(RHYTHM_COLORS));
+    });
+  });
+
+  it("usa una redonda, blanca, negra y corchea exactas a 60 BPM y rota sus colores", () => {
+    expect(NOTE_DURATIONS_AT_60_BPM).toEqual({ redonda: 4000, blanca: 2000, negra: 1000, corchea: 500 });
+    const noteDurations = new Set(Object.values(NOTE_DURATIONS_AT_60_BPM));
+    RHYTHM_COLORS.forEach(color => {
+      expect(new Set(RHYTHM_PATTERNS.map(pattern => pattern[color]))).toEqual(noteDurations);
     });
   });
 

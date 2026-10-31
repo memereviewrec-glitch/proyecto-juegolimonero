@@ -2,6 +2,7 @@ export type RamblaOutcomeValue = 1 | 2;
 
 export const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 export const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
+export const HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY = "limonero-fuzz-hummingbird-friendship-v1";
 
 export function readStoredSeedBookIds<Id extends string>(knownIds: readonly Id[]): Id[] {
   if (typeof window === "undefined") return [];
@@ -22,6 +23,24 @@ export function readStoredRamblaOutcome(): RamblaOutcomeValue | null {
     return value === "1" || value === "2" ? Number(value) as RamblaOutcomeValue : null;
   } catch {
     return null;
+  }
+}
+
+export function readStoredHummingbirdFriendship(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY) === "friend";
+  } catch {
+    return false;
+  }
+}
+
+export function saveHummingbirdFriendship() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, "friend");
+  } catch {
+    // La amistad sigue disponible durante la sesión aunque el almacenamiento esté bloqueado.
   }
 }
 
@@ -53,6 +72,7 @@ export function clearStoredGameProgress(): boolean {
   try {
     window.localStorage.removeItem(SEED_BOOK_STORAGE_KEY);
     window.localStorage.removeItem(RAMBLA_ROUTE_STORAGE_KEY);
+    window.localStorage.removeItem(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY);
     return true;
   } catch {
     return false;

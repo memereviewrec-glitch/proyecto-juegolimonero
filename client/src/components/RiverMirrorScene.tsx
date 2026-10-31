@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { gameAssetUrl } from "../gameAudio";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
 import { getRiverChoiceConsequence, type RiverRoute } from "./riverChoiceRules";
@@ -138,7 +139,7 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConver
         </div>
         {stoneStatus === "ground" && <button className="river-stone river-stone-ground" type="button" onClick={collectStone} aria-label="Piedra junto a la orilla" />}
         {stoneStatus === "throwing" && <span className="river-stone river-stone-flight" aria-hidden="true" />}
-        {rippleVisible && <img className="river-ripples" src="/river-stone-ripples.gif" alt="" aria-hidden="true" />}
+        {rippleVisible && <img className="river-ripples" src={gameAssetUrl("/river-stone-ripples.gif")} alt="" aria-hidden="true" />}
         {resolved && !seedCollected && <button className="river-seed" type="button" onClick={onCollectSeed} aria-label="Recoger la semilla plateada de Espíritus del río"><SeedGlyph seed="espiritus-del-rio" /></button>}
         <div className="river-coordinate">LF · 05</div>
       </div>

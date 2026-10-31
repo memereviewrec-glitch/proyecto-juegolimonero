@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { gameAssetUrl } from "../gameAudio";
 import "./hummingbird-scene.css";
 import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
@@ -9,6 +10,7 @@ export type HummingbirdOutcome = "good" | "bad" | "neutral";
 type HummingbirdSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
+  onOutcome?: (outcome: HummingbirdOutcome) => void;
 };
 
 type HummingbirdOption = {
@@ -78,7 +80,7 @@ function outcomeText(outcome: HummingbirdOutcome) {
   return "Aún no sé qué hacer. Me quedaré un momento en esta rama para decidir el siguiente paso.";
 }
 
-export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSceneProps) {
+export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: HummingbirdSceneProps) {
   const [mood, setMood] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
@@ -96,16 +98,19 @@ export function HummingbirdScene({ seedCollected, onCollectSeed }: HummingbirdSc
     if (nextMood >= 100) {
       setMood(100);
       setOutcome("good");
+      onOutcome?.("good");
       return;
     }
     if (nextMood <= -100) {
       setMood(-100);
       setOutcome("bad");
+      onOutcome?.("bad");
       return;
     }
     if (questionIndex === QUESTIONS.length - 1) {
       setMood(nextMood);
       setOutcome("neutral");
+      onOutcome?.("neutral");
       return;
     }
     setMood(nextMood);

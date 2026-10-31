@@ -55,6 +55,13 @@ export const PHYSICAL_SEED_COLORS = {
     outline: "#291c35",
     name: "magenta",
   },
+  "nueve-sentidos": {
+    body: "#f1f2ed",
+    highlight: "#ffffff",
+    leaf: "#aebcde",
+    outline: "#4b5570",
+    name: "blanca lunar",
+  },
 } as const;
 
 export type PhysicalSeedId = keyof typeof PHYSICAL_SEED_COLORS;
@@ -69,6 +76,7 @@ export function getPhysicalSeedId(songId: string): PhysicalSeedId | null {
     case "el-rio":
     case "el-fuego":
     case "ponzona":
+    case "nueve-sentidos":
       return songId;
     default:
       return null;

@@ -898,14 +898,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
               aria-expanded={seedBookOpen}
               aria-controls="seedbook-panel"
             >
-              <svg className="seedbook-toggle-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false" shapeRendering="crispEdges">
-                <path d="M6 12h15c6 0 11 3 11 9v32c0-5-4-8-10-8H6z" fill="#f6ebd1" stroke="#2b2631" strokeWidth="3" />
-                <path d="M58 12H43c-6 0-11 3-11 9v32c0-5 4-8 10-8h16z" fill="#fff8e8" stroke="#2b2631" strokeWidth="3" />
-                <path d="M32 21v32M11 20h9M11 26h10M53 20h-9M53 26h-10" fill="none" stroke="#8d7d83" strokeWidth="2" />
-                <path d="M31 40c0-10-2-16-8-21M32 34c1-9 5-14 11-17" fill="none" stroke="#376c3e" strokeWidth="3" />
-                <path d="M22 16c5 0 8 3 9 8-5 0-9-2-10-7z" fill="#83bd52" stroke="#376c3e" strokeWidth="2" />
-                <path d="M43 13c-5 1-8 4-10 9 5 0 9-2 11-7z" fill="#e4d64c" stroke="#376c3e" strokeWidth="2" />
-              </svg>
+              <img className="seedbook-toggle-icon" src={gameAssetUrl("/seedbook-art.png")} alt="" aria-hidden="true" />
               <b aria-hidden="true">{discoveredSongIds.length}/10</b>
             </button>
             <button

@@ -17,10 +17,10 @@
 .nueve-awakening-star.is-extinguished .nueve-awakening-gif { opacity:0; }
 .nueve-awakening-star.is-extinguished .nueve-awakening-static-glyph { display:block; background:#66718e; filter:none; opacity:.14; transform:scale(.82); }
 .nueve-awakening-star:focus-visible,.nueve-rhythm-star:focus-visible,.nueve-white-moon:focus-visible,.nueve-hint-button:focus-visible { outline:3px dashed #fff2bf; outline-offset:3px; }
-.nueve-rhythm-star { position:absolute; z-index:5; display:flex; width:78px; min-height:76px; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:5px 3px; transform:translate(-50%,-50%); border:1px solid #dbe6ff33; background:#07102535; color:#fff; cursor:pointer; touch-action:manipulation; }
-.nueve-rhythm-star:hover:not(:disabled) { background:#ffffff12; }
+.nueve-rhythm-star { position:absolute; z-index:5; display:grid; width:60px; height:60px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; color:#fff; cursor:pointer; touch-action:manipulation; }
+.nueve-rhythm-star:hover:not(:disabled) .nueve-rhythm-gif { filter:brightness(1.18); }
 .nueve-rhythm-star:disabled { cursor:default; }
-.nueve-rhythm-gif { width:36px; height:36px; transition:opacity .14s ease-out; }
+.nueve-rhythm-gif { width:36px; height:36px; transition:opacity .14s ease-out,filter .14s ease-out; }
 .nueve-rhythm-static-glyph { display:none; width:28px; height:28px; clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:currentColor; transition:opacity .14s ease-out; }
 .nueve-rhythm-star.is-selected .nueve-rhythm-gif,.nueve-rhythm-star.is-selected .nueve-rhythm-static-glyph { opacity:0; }
 .nueve-rhythm-star-red { color:#ff8e8e; }
@@ -31,7 +31,6 @@
 .nueve-rhythm-star-green .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #71d88b); }
 .nueve-rhythm-star-blue .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #77aaff); }
 .nueve-rhythm-star-yellow .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #ffe078); }
-.nueve-rhythm-color-label { color:#f7f2e9; font:7px 'DM Mono',monospace; letter-spacing:.08em; }
 .nueve-rhythm-order { position:absolute; top:-8px; right:5px; display:grid; width:18px; height:18px; place-items:center; border:1px solid #fff3c7; border-radius:50%; background:#19223d; color:#fff3c7; font:700 9px 'DM Mono',monospace; }
 .nueve-rhythm-speed-note { display:none; color:#dce6ff; font:7px 'DM Mono',monospace; }
 .nueve-white-moon { position:absolute; z-index:6; top:36%; left:50%; display:flex; width:96px; min-height:100px; flex-direction:column; align-items:center; justify-content:center; gap:7px; transform:translate(-50%,-50%); border:0; background:transparent; color:#fff7da; cursor:pointer; touch-action:manipulation; }
@@ -66,7 +65,7 @@
   .nueve-phase-card h3 { font-size:9px; }
   .nueve-phase-card p { font-size:7px; }
   .nueve-mistake-count { font-size:7px; }
-  .nueve-rhythm-star { width:68px; min-height:70px; }
+  .nueve-rhythm-star { width:56px; height:56px; }
   .nueve-dialogue { right:3%; bottom:20%; left:3%; min-height:60px; padding:7px; }
   .nueve-dialogue p { font-size:8px; }
   .nueve-hint-button { width:48px; min-width:48px; min-height:46px; }

@@ -61,6 +61,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   const [selectedColors, setSelectedColors] = useState<RhythmColor[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [moonTouched, setMoonTouched] = useState(false);
+  const [moonDialogueStep, setMoonDialogueStep] = useState(0);
   const [hintVisible, setHintVisible] = useState(false);
   const [activeHint, setActiveHint] = useState("");
   const [seedDropState, setSeedDropState] = useState<SeedDropState>(() => seedCollected ? "landed" : "idle");
@@ -111,6 +112,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
 
   function touchMoon() {
     if (phase !== "moon") return;
+    if (moonDialogueStep < 2) return;
     setHintVisible(false);
     if (seedCollected || moonTouched || seedDropState !== "idle") return;
     setMoonTouched(true);
@@ -180,6 +182,17 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
         >
           <span className="nueve-moon-disc" aria-hidden="true" />
         </button>
+      )}
+
+      {phase === "moon" && moonDialogueStep < 2 && (
+        <div className="nueve-moon-dialogue" role="status" aria-live="polite">
+          <p>{moonDialogueStep === 0
+            ? "Yo soy la roca que se mueve en el vacío."
+            : "Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas"}</p>
+          <button type="button" onClick={() => setMoonDialogueStep(step => step + 1)}>
+            {moonDialogueStep === 0 ? "Siguiente" : "Continuar"}
+          </button>
+        </div>
       )}
 
       {phase === "moon" && seedDropState !== "idle" && (

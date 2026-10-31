@@ -541,7 +541,7 @@ button { font:inherit; }
 .journey-menu-toggle:hover,.journey-menu-toggle-open { background:#f0e7d6; opacity:1; }
 .journey-menu-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; }
 .journey-menu-toggle span { font:700 25px/1 'DM Mono',monospace; transform:rotate(90deg); }
-.journey-menu-anchor-story { display:none; }
+.journey-menu-anchor-story,.journey-menu-anchor-book { display:none; }
 .journey-menu-panel { position:absolute; z-index:122; top:101px; left:67px; width:min(260px,calc(100% - 77px)); padding:10px; border:3px solid #2b2631cc; background:#fbf7eceb; color:#302638; box-shadow:4px 4px #2b263166; image-rendering:pixelated; }
 .journey-menu-heading { padding:2px 3px 7px; color:#706a73; font:8px 'DM Mono',monospace; letter-spacing:.12em; }
 .journey-menu-panel button,.journey-menu-panel a { display:flex; width:100%; min-height:32px; align-items:center; padding:7px 8px; border:1px solid #61546c88; background:#fffdf766; color:#3c3346; text-decoration:none; font:9px 'DM Mono',monospace; cursor:pointer; }
@@ -554,7 +554,7 @@ button { font:inherit; }
 .journey-menu-actions .journey-danger { background:#9a4639; color:#fffdf7; }
 .seedbook-layer { position:absolute; inset:0; z-index:100; isolation:isolate; }
 .seedbook-scrim { position:absolute; inset:0; width:100%; height:100%; border:0; background:#211d2b9c; cursor:default; }
-.seedbook-panel { position:absolute; top:16px; right:10px; bottom:8px; width:min(440px,calc(100% - 20px)); display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
+.seedbook-panel { position:absolute; inset:0; width:100%; display:flex; flex-direction:column; overflow:hidden; padding:20px; border:7px solid #2b2631; background:#f7f3e9; color:#28252c; box-shadow:inset 0 0 0 3px #82758a,0 12px 44px #100d18a6; image-rendering:pixelated; animation:seedbook-open .32s ease-out both; }
 @keyframes seedbook-open { from { opacity:0; transform:translateX(22px); } to { opacity:1; transform:translateX(0); } }
 .seedbook-header { order:1; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-top:8px; padding-bottom:24px; border-bottom:2px dashed #b9ad9c; }
 .seedbook-heading { display:flex; min-width:0; align-items:center; gap:12px; }
@@ -623,7 +623,7 @@ button { font:inherit; }
  .journey-menu-toggle { top:86px; left:7px; width:48px; height:38px; }
  .journey-menu-panel { top:86px; left:62px; width:min(240px,calc(100% - 69px)); }
  .seed-spark { width:46px; height:50px; padding:7px; }
- .seedbook-panel { top:132px; right:5px; bottom:5px; width:calc(100% - 10px); padding:12px; border-width:4px; }
+ .seedbook-panel { inset:0; width:100%; padding:12px; border-width:4px; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }

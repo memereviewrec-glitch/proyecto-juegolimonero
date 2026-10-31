@@ -872,11 +872,11 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
-            <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}`}>
+            <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
             <button
               className="seedbook-toggle"
               type="button"
-              onClick={() => setSeedBookOpen(open => !open)}
+              onClick={() => { setSeedBookOpen(open => !open); setJourneyMenuOpen(false); }}
               aria-label={`${seedBookOpen ? "Cerrar" : "Abrir"} Libro de semillas. ${discoveredSongIds.length} de 10 semillas descubiertas.`}
               aria-haspopup="dialog"
               aria-expanded={seedBookOpen}

@@ -1,9 +1,21 @@
 const activeGameAudio = new Set<HTMLAudioElement>();
 
+/** Resolves a public asset against Vite's base without repeating an already-prefixed path. */
+export function resolveGameAssetUrl(path: string, basePath: string): string {
+  const base = basePath.endsWith("/") ? basePath : `${basePath}/`;
+  const basePrefix = base.replace(/^\/+|\/+$/g, "");
+  let assetPath = path.replace(/^\/+/, "");
+
+  if (basePrefix && assetPath.startsWith(`${basePrefix}/`)) {
+    assetPath = assetPath.slice(basePrefix.length + 1).replace(/^\/+/, "");
+  }
+
+  return `${base}${assetPath}`;
+}
+
 /** Resolves a public asset against Vite's configured base path (including GitHub Pages). */
 export function gameAssetUrl(path: string): string {
-  const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-  return `${base}${path.replace(/^\/+/, "")}`;
+  return resolveGameAssetUrl(path, import.meta.env.BASE_URL);
 }
 
 export function stopGameAudio() {

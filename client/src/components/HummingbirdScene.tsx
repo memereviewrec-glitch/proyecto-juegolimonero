@@ -84,6 +84,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const [questionIndex, setQuestionIndex] = useState(0);
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
   const [entryComplete, setEntryComplete] = useState(false);
+  const [friendshipExit, setFriendshipExit] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setEntryComplete(true), 2200);
@@ -116,11 +117,21 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
     setQuestionIndex(index => index + 1);
   };
 
+  const collectSeed = () => {
+    if (seedCollected || friendshipExit) return;
+    if (outcome !== "good" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onCollectSeed();
+      return;
+    }
+    setFriendshipExit(true);
+    window.setTimeout(onCollectSeed, 1350);
+  };
+
   const progress = ((mood + 100) / 200) * 100;
   const moodTone = mood >= 0 ? "positive" : "negative";
 
   return (
-    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}`}>
+    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}${friendshipExit ? " hummingbird-friendship-exit" : ""}`}>
       <div className="scene-stage game-screen hummingbird-stage">
       <div className="hummingbird-sky" aria-hidden="true" />
       <picture className="hummingbird-sprite">
@@ -139,7 +150,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
           <>
             <span>{outcome === "good" ? "AMISTAD" : outcome === "bad" ? "DESPEDIDA" : "DUDA"}</span>
             <p>{outcomeText(outcome)}</p>
-            {!seedCollected && <button type="button" className="hummingbird-seed-button" onClick={onCollectSeed} aria-label="Recoger la semilla de Ponzoña y abrir el Libro de Semillas"><SeedGlyph seed="ponzona" /><b>recoger semilla de Ponzoña</b></button>}
+            {!seedCollected && <button type="button" className="hummingbird-seed-button" onClick={collectSeed} disabled={friendshipExit} aria-label="Recoger la semilla de Ponzoña y abrir el Libro de Semillas"><SeedGlyph seed="ponzona" /><b>{friendshipExit ? "el colibrí se acerca…" : "recoger semilla de Ponzoña"}</b></button>}
             {seedCollected && <small>La semilla de Ponzoña ya está en el Libro de Semillas.</small>}
           </>
         ) : (

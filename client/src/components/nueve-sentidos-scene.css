@@ -19,8 +19,9 @@
 .nueve-rhythm-star { position:absolute; z-index:5; display:flex; width:78px; min-height:76px; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:5px 3px; transform:translate(-50%,-50%); border:1px solid #dbe6ff33; background:#07102535; color:#fff; cursor:pointer; touch-action:manipulation; }
 .nueve-rhythm-star:hover:not(:disabled) { background:#ffffff12; }
 .nueve-rhythm-star:disabled { cursor:default; }
-.nueve-rhythm-gif { width:36px; height:36px; }
-.nueve-rhythm-static-glyph { display:none; width:28px; height:28px; clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:currentColor; }
+.nueve-rhythm-gif { width:36px; height:36px; transition:opacity .14s ease-out; }
+.nueve-rhythm-static-glyph { display:none; width:28px; height:28px; clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%); background:currentColor; transition:opacity .14s ease-out; }
+.nueve-rhythm-star.is-selected .nueve-rhythm-gif,.nueve-rhythm-star.is-selected .nueve-rhythm-static-glyph { opacity:0; }
 .nueve-rhythm-star-red { color:#ff8e8e; }
 .nueve-rhythm-star-green { color:#9ce4a8; }
 .nueve-rhythm-star-blue { color:#9cc7ff; }

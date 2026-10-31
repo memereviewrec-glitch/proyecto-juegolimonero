@@ -2,6 +2,13 @@ export const RHYTHM_COLORS = ["red", "green", "blue", "yellow"] as const;
 export type RhythmColor = typeof RHYTHM_COLORS[number];
 
 export type StarRhythmPattern = Readonly<Record<RhythmColor, number>>;
+export type RhythmPickResult = "wrong" | "correct" | "complete";
+
+export type RhythmPickTransition = {
+  result: RhythmPickResult;
+  patternIndex: number;
+  selectedColors: RhythmColor[];
+};
 
 /** Duración de un ciclo de destello por color, en milisegundos. */
 export const RHYTHM_PATTERNS: readonly StarRhythmPattern[] = [
@@ -21,8 +28,25 @@ export function getNextRhythmPatternIndex(currentIndex: number): number {
   return (safeIndex + 1) % RHYTHM_PATTERNS.length;
 }
 
-export function evaluateRhythmPick(patternIndex: number, selectedCount: number, color: RhythmColor): "wrong" | "correct" | "complete" {
+export function evaluateRhythmPick(patternIndex: number, selectedCount: number, color: RhythmColor): RhythmPickResult {
   const order = getFastestToSlowestOrder(patternIndex);
   if (order[selectedCount] !== color) return "wrong";
   return selectedCount === order.length - 1 ? "complete" : "correct";
+}
+
+export function applyRhythmPick(
+  patternIndex: number,
+  selectedColors: readonly RhythmColor[],
+  color: RhythmColor,
+): RhythmPickTransition {
+  const result = evaluateRhythmPick(patternIndex, selectedColors.length, color);
+  if (result === "wrong") {
+    return {
+      result,
+      patternIndex: getNextRhythmPatternIndex(patternIndex),
+      selectedColors: [],
+    };
+  }
+
+  return { result, patternIndex, selectedColors: [...selectedColors, color] };
 }

@@ -3,11 +3,6 @@
 .nueve-sentidos-sky[data-phase="awakening"] { background:radial-gradient(ellipse at 50% 50%,#121a3060,transparent 58%),linear-gradient(160deg,#02030a 0%,#050a19 58%,#0a1020 100%); }
 .nueve-sentidos-sky::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 44%,#7e83cb18,transparent 58%),linear-gradient(180deg,#02040b22,transparent 48%,#06081355); pointer-events:none; }
 .nueve-sentidos-nebula { position:absolute; left:15%; top:25%; width:72%; height:54%; border-radius:50%; background:radial-gradient(ellipse,#8499e31c 0%,#5c8aca12 34%,transparent 72%); filter:blur(24px); }
-.nueve-phase-card { position:absolute; z-index:8; top:3.5%; left:50%; width:min(82%,620px); padding:9px 12px; transform:translateX(-50%); border:2px solid #a5b6d9a6; background:#0d1429d9; color:#f8f3e8; box-shadow:3px 3px 0 #02040a90; text-align:center; }
-.nueve-phase-count { color:#b8c9ed; font:8px 'DM Mono',monospace; letter-spacing:.14em; }
-.nueve-phase-card h3 { margin:4px 0 3px; color:#fff1c9; font:700 clamp(10px,1.6vw,15px)/1.25 'DM Mono',monospace; letter-spacing:.08em; }
-.nueve-phase-card p { margin:0; color:#e3e8f4; font:clamp(8px,1.2vw,11px)/1.4 'DM Mono',monospace; }
-.nueve-mistake-count { display:block; margin-top:4px; color:#ffc0a4; font:8px 'DM Mono',monospace; }
 .stage-coordinate { position:absolute; z-index:4; right:13px; bottom:11px; font:8px 'DM Mono',monospace; color:#e9e1ef; opacity:.72; letter-spacing:.1em; }
 .nueve-awakening-star { position:absolute; z-index:3; display:grid; width:46px; height:46px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
 .nueve-star-gif { display:block; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
@@ -32,44 +27,44 @@
 .nueve-rhythm-star-blue .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #77aaff); }
 .nueve-rhythm-star-yellow .nueve-rhythm-static-glyph { filter:drop-shadow(0 0 5px #ffe078); }
 .nueve-rhythm-order { position:absolute; top:-8px; right:5px; display:grid; width:18px; height:18px; place-items:center; border:1px solid #fff3c7; border-radius:50%; background:#19223d; color:#fff3c7; font:700 9px 'DM Mono',monospace; }
-.nueve-rhythm-speed-note { display:none; color:#dce6ff; font:7px 'DM Mono',monospace; }
-.nueve-white-moon { position:absolute; z-index:6; top:36%; left:50%; display:flex; width:96px; min-height:100px; flex-direction:column; align-items:center; justify-content:center; gap:7px; transform:translate(-50%,-50%); border:0; background:transparent; color:#fff7da; cursor:pointer; touch-action:manipulation; }
-.nueve-moon-disc { display:block; width:54px; height:54px; border-radius:50%; background:radial-gradient(circle at 34% 27%,#fff 0 12%,#f7f5e9 13% 64%,#cfd9f0 100%); box-shadow:0 0 13px #fff8d9,0 0 30px #dae2ffb0,0 0 62px #b6caff6b; transition:transform .35s ease,box-shadow .35s ease; }
+.nueve-white-moon { position:absolute; z-index:6; top:36%; left:50%; display:grid; width:88px; height:88px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; color:#fff7da; cursor:pointer; touch-action:manipulation; }
+.nueve-moon-disc { display:block; width:54px; height:54px; border-radius:50%; background:radial-gradient(circle at 34% 27%,#fff 0 12%,#f7f5e9 13% 64%,#cfd9f0 100%); box-shadow:0 0 13px #fff8d9,0 0 30px #dae2ffb0,0 0 62px #b6caff6b; transition:transform .35s ease,box-shadow .35s ease,opacity .35s ease; }
 .nueve-white-moon:hover .nueve-moon-disc,.nueve-white-moon:focus-visible .nueve-moon-disc { transform:scale(1.11); box-shadow:0 0 20px #fff8d9,0 0 44px #dae2ff; }
-.nueve-moon-label { color:#fff3ce; font:8px 'DM Mono',monospace; letter-spacing:.14em; text-shadow:0 1px 5px #080c19; }
-.nueve-moon-seed { position:absolute; top:17px; left:37px; width:22px; height:30px; filter:drop-shadow(0 0 5px #fff); }
+.nueve-white-moon.is-collected .nueve-moon-disc { opacity:.72; box-shadow:0 0 9px #fff8d9,0 0 20px #dae2ff70; }
+.nueve-seed-drop { position:absolute; z-index:7; top:82%; left:50%; width:24px; height:32px; transform:translate(-50%,-50%); opacity:1; pointer-events:none; }
+.nueve-seed-drop.is-dropping { animation:nueve-seed-fall 900ms cubic-bezier(.22,.65,.3,1) forwards; }
+.nueve-seed-drop-glyph { display:block; width:100%; height:100%; filter:drop-shadow(0 0 5px #fff4b0); }
+@keyframes nueve-seed-fall {
+  0% { top:42%; opacity:0; transform:translate(-50%,-50%) scale(.55) rotate(-12deg); }
+  14% { opacity:1; }
+  72% { top:84%; opacity:1; transform:translate(calc(-50% + 8px),-50%) scale(1.08) rotate(10deg); }
+  87% { top:80%; transform:translate(calc(-50% - 4px),-50%) scale(.96) rotate(-5deg); }
+  100% { top:82%; opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0); }
+}
 .nueve-jaguar-trail { position:absolute; z-index:2; top:34%; right:4%; width:25%; height:21%; opacity:0; pointer-events:none; transition:opacity 1s ease; }
 .nueve-jaguar-trail::before { content:""; position:absolute; top:48%; left:0; width:100%; height:2px; transform:rotate(-17deg); transform-origin:left center; background:linear-gradient(90deg,#fff4d700,#c7d6ff,#fff7db); box-shadow:0 0 9px #cad8ff; }
 .nueve-jaguar-trail::after { content:"EL JAGUAR"; position:absolute; top:4%; right:0; color:#fff0c9; font:7px 'DM Mono',monospace; letter-spacing:.12em; text-shadow:0 0 9px #c7d6ff; }
 .nueve-jaguar-trail.is-unlocked { opacity:.88; }
 .nueve-lemon { position:absolute; z-index:4; left:47%; bottom:1%; width:clamp(50px,10%,76px); height:clamp(60px,11%,90px); transform:translateX(-50%); pointer-events:none; filter:drop-shadow(2px 3px 0 #060913); }
 .nueve-lemon .lemon-sprite { display:block; width:100%; height:100%; }
-.nueve-dialogue { position:absolute; z-index:10; right:5%; bottom:21%; left:5%; display:flex; align-items:center; gap:8px; min-height:62px; padding:8px 9px; border:2px solid #c2c9dc; background:#11182ceF; box-shadow:3px 3px 0 #02040a9c; }
-.nueve-dialogue-copy { min-width:0; flex:1; }
-.nueve-speaker { color:#d7dcf1; font:7px 'DM Mono',monospace; letter-spacing:.12em; }
-.nueve-dialogue p { margin:4px 0 0; color:#fff6e9; font:clamp(8px,1.15vw,10px)/1.42 'DM Mono',monospace; }
-.nueve-hint-button { display:flex; width:56px; min-width:56px; min-height:48px; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:2px; border:1px solid #c2c9dc8a; background:#252e4c; color:#fff2c9; cursor:pointer; touch-action:manipulation; }
-.nueve-hint-button:hover { background:#364365; }
-.nueve-hint-button img { display:block; width:37px; height:28px; object-fit:contain; image-rendering:pixelated; }
-.nueve-hint-button span { font:7px 'DM Mono',monospace; letter-spacing:.1em; }
+.nueve-hint-button { position:absolute; z-index:12; left:4%; bottom:4%; display:grid; width:68px; height:62px; padding:3px; place-items:center; transform-origin:center; border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
+.nueve-hint-button:hover,.nueve-hint-button.is-active { transform:scale(1.08); }
+.nueve-hint-button img { display:block; width:62px; height:48px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 2px 0 #080d1d); }
+.nueve-hint-popover { position:absolute; z-index:11; left:4%; bottom:calc(4% + 68px); width:min(78%,460px); padding:10px 12px; border:2px solid #c2c9dc; background:#11182cf2; box-shadow:3px 3px 0 #02040a9c; color:#fff6e9; font:9px/1.45 'DM Mono',monospace; animation:nueve-hint-appear .16s steps(3,end) both; }
+@keyframes nueve-hint-appear { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
 @media (prefers-reduced-motion: reduce) {
   .nueve-sentidos-sky,.nueve-awakening-static-glyph,.nueve-rhythm-static-glyph,.nueve-moon-disc,.nueve-jaguar-trail { transition:none; }
   .nueve-awakening-gif,.nueve-rhythm-gif { display:none; }
   .nueve-awakening-static-glyph,.nueve-rhythm-static-glyph { display:block; opacity:1; transform:none; }
   .nueve-awakening-star.is-extinguished .nueve-awakening-static-glyph { background:#66718e; filter:none; opacity:.14; transform:none; }
-  .nueve-rhythm-speed-note { display:block; }
+  .nueve-seed-drop.is-dropping { animation-duration:1ms; }
+  .nueve-hint-button,.nueve-hint-popover { animation:none; transition:none; }
 }
 @media (max-width:600px) {
-  .nueve-phase-card { top:2.5%; width:88%; padding:7px 8px; }
-  .nueve-phase-card[data-phase="awakening"] p { width:calc(100% - 58px); margin-left:auto; }
-  .nueve-phase-card h3 { font-size:9px; }
-  .nueve-phase-card p { font-size:7px; }
-  .nueve-mistake-count { font-size:7px; }
   .nueve-rhythm-star { width:56px; height:56px; }
-  .nueve-dialogue { right:3%; bottom:20%; left:3%; min-height:60px; padding:7px; }
-  .nueve-dialogue p { font-size:8px; }
-  .nueve-hint-button { width:48px; min-width:48px; min-height:46px; }
-  .nueve-hint-button img { width:32px; height:25px; }
+  .nueve-hint-button { left:3%; bottom:3%; width:64px; height:58px; }
+  .nueve-hint-button img { width:58px; height:44px; }
+  .nueve-hint-popover { left:4%; bottom:calc(4% + 64px); width:82%; padding:8px 9px; font-size:8px; }
   .nueve-lemon { bottom:1%; }
   .stage-coordinate { right:7px; bottom:8px; font-size:7px; }
 }

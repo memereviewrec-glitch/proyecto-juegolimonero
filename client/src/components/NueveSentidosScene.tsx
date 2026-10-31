@@ -12,24 +12,23 @@ type Props = {
 };
 
 type Phase = "awakening" | "rhythm" | "moon";
-type Speaker = "EL LIMÓN" | "EL CIELO" | "EL COLIBRÍ";
+type SeedDropState = "idle" | "dropping" | "landed";
 
 type AwakeningStar = {
   x: number;
   y: number;
   size: number;
-  reflection: string;
 };
 
 const AWAKENING_STARS: readonly AwakeningStar[] = [
   // Dispersas de forma irregular por la franja libre entre la cabecera y el diálogo.
-  { x: 28, y: 30, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
-  { x: 63, y: 29, size: 6, reflection: "Una luz lejana me recuerda que percibir también es esperar." },
-  { x: 88, y: 36, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
-  { x: 43, y: 44, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
-  { x: 66, y: 50, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
-  { x: 24, y: 54, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
-  { x: 87, y: 54, size: 8, reflection: "Siete luces, siete maneras de sentir la misma noche." },
+  { x: 28, y: 30, size: 8 },
+  { x: 63, y: 29, size: 6 },
+  { x: 88, y: 36, size: 10 },
+  { x: 43, y: 44, size: 7 },
+  { x: 66, y: 50, size: 9 },
+  { x: 24, y: 54, size: 6 },
+  { x: 87, y: 54, size: 8 },
 ];
 
 const RHYTHM_LABELS: Record<RhythmColor, string> = {
@@ -46,14 +45,14 @@ const RHYTHM_POSITIONS: Record<RhythmColor, { x: number; y: number }> = {
   yellow: { x: 50, y: 54 },
 };
 
-const HINTS = [
-  "El aleteo rápido del colibrí no teme al tiempo; compara cuánto tarda cada destello en volver a encenderse.",
-  "Busca primero el pulso que tarda más en regresar. Deja para el final al que vuelve sin demora.",
-  "No midas la fuerza de la luz, sino el espacio entre sus latidos: el más largo abre el camino y el más breve lo cierra.",
+const RHYTHM_HINTS = [
+  "El pulso más lento deja el silencio más largo entre dos destellos; el más veloz apenas roza la noche.",
+  "La luz que demora abre la danza; la que regresa en un suspiro la despide.",
+  "Cuatro corazones cruzan el cielo, desde la larga espera hasta el regreso fugaz.",
 ] as const;
 
-const OPENING_HINT = "Toca las siete estrellas; cada una apagará su brillo al recibir tu toque. Después, el cielo planteará su pregunta.";
-const MOON_HINT = "Las cuatro luces ya comparten un mismo compás. La luna blanca guarda la semilla que conduce al último canto.";
+const AWAKENING_HINT = "Siete luces velan en silencio; cada destello que descansa deja sitio para una nueva melodía.";
+const MOON_HINT = "La luna blanca guarda una semilla dormida; cuando la alcanzan las estrellas, cae como rocío.";
 
 export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIsFriend }: Props) {
   const [phase, setPhase] = useState<Phase>("awakening");
@@ -62,106 +61,76 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   const [selectedColors, setSelectedColors] = useState<RhythmColor[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [moonTouched, setMoonTouched] = useState(false);
-  const [dialogue, setDialogue] = useState("Siete luces esperan bajo la noche. Toca cada una y verás apagarse su brillo.");
-  const [speaker, setSpeaker] = useState<Speaker>("EL CIELO");
+  const [hintVisible, setHintVisible] = useState(false);
+  const [activeHint, setActiveHint] = useState("");
+  const [seedDropState, setSeedDropState] = useState<SeedDropState>(() => seedCollected ? "landed" : "idle");
 
   const activePattern = RHYTHM_PATTERNS[patternIndex];
-  const pathUnlocked = seedCollected || moonTouched;
+  const pathUnlocked = seedCollected || seedDropState === "landed";
 
   function extinguishStar(index: number) {
     if (phase !== "awakening") return;
-    const star = AWAKENING_STARS[index];
-    if (!star || extinguishedStars.includes(index)) return;
+    if (!AWAKENING_STARS[index] || extinguishedStars.includes(index)) return;
+    setHintVisible(false);
     const next = [...extinguishedStars, index];
     setExtinguishedStars(next);
-    if (next.length === AWAKENING_STARS.length) {
-      setPhase("rhythm");
-      setSpeaker("EL CIELO");
-      setDialogue("Al apagarse las siete luces, aparecen cuatro pulsos. Ordénalos desde el destello más lento hasta el más rápido.");
-      return;
-    }
-    setSpeaker("EL LIMÓN");
-    setDialogue(star.reflection);
+    if (next.length === AWAKENING_STARS.length) setPhase("rhythm");
   }
 
   function chooseRhythmStar(color: RhythmColor) {
     if (phase !== "rhythm" || selectedColors.includes(color)) return;
+    setHintVisible(false);
     const transition = applyRhythmPick(patternIndex, selectedColors, color);
     if (transition.result === "wrong") {
       setMistakes(count => count + 1);
       setPatternIndex(transition.patternIndex);
       setSelectedColors(transition.selectedColors);
-      setSpeaker("EL CIELO");
-      setDialogue("El orden se deshace. Las cuatro estrellas cambian por completo su compás; vuelve a observarlas.");
       return;
     }
 
-    const next = transition.selectedColors;
-    setSelectedColors(next);
-    if (transition.result === "complete") {
-      setPhase("moon");
-      setSpeaker("EL CIELO");
-      setDialogue("Los cuatro pulsos se encuentran. Una luna blanca emerge sobre el firmamento.");
-      return;
-    }
-
-    setSpeaker("EL LIMÓN");
-    setDialogue(next.length < 3
-      ? "Ese latido encuentra su lugar. Escuchemos cuál tarda menos en regresar."
-      : "Tres pulsos ya se reconocen; falta el destello que vuelve más rápido.");
+    setSelectedColors(transition.selectedColors);
+    if (transition.result === "complete") setPhase("moon");
   }
 
   function askForHint() {
-    setSpeaker("EL COLIBRÍ");
-    if (phase === "awakening") {
-      setDialogue(OPENING_HINT);
+    if (hintVisible) {
+      setHintVisible(false);
       return;
     }
-    if (phase === "moon") {
-      setDialogue(seedCollected ? "La semilla ya descansa en el Libro. El sendero hacia El Jaguar está abierto." : MOON_HINT);
-      return;
-    }
-    const hint = HINTS[Math.min(mistakes, HINTS.length - 1)];
-    setDialogue(hint);
+
+    const hint = phase === "awakening"
+      ? AWAKENING_HINT
+      : phase === "moon"
+        ? seedCollected
+          ? "La semilla lunar ya descansa en el Libro; su luz señala el camino hacia El Jaguar."
+          : MOON_HINT
+        : RHYTHM_HINTS[Math.min(mistakes, RHYTHM_HINTS.length - 1)];
+    setActiveHint(hint);
+    setHintVisible(true);
   }
 
   function touchMoon() {
     if (phase !== "moon") return;
-    setSpeaker("EL LIMÓN");
-    if (seedCollected || moonTouched) {
-      setDialogue("La semilla lunar ya reposa en el Libro. Una senda de estrellas conduce hacia El Jaguar.");
-      return;
-    }
+    setHintVisible(false);
+    if (seedCollected || moonTouched || seedDropState !== "idle") return;
     setMoonTouched(true);
+    setSeedDropState("dropping");
     playFrequencies([523.25, 659.25]);
-    setDialogue("La luna entrega la semilla de Nueve Sentidos. El camino hacia El Jaguar queda iluminado.");
+  }
+
+  function finishSeedDrop() {
+    if (seedDropState !== "dropping") return;
+    setSeedDropState("landed");
     onCollectSeed();
   }
 
-  const phaseNumber = phase === "awakening" ? "01 / 03" : phase === "rhythm" ? "02 / 03" : "03 / 03";
-  const phaseTitle = phase === "awakening" ? "EL DESPERTAR DEL CIELO" : phase === "rhythm" ? "EL RITMO DE LAS CUATRO ESTRELLAS" : "LA LUNA BLANCA";
-  const instruction = phase === "awakening"
-    ? `Apaga cada estrella al tocarla · ${extinguishedStars.length}/${AWAKENING_STARS.length}`
-    : phase === "rhythm"
-      ? "Observa sus destellos y actívalas de la más lenta a la más rápida."
-      : seedCollected
-        ? "La semilla está en el Libro. El camino hacia El Jaguar se ha abierto."
-        : "Pulsa la luna blanca para recoger la semilla final.";
-
   return (
-    <div className="scene-stage game-screen nueve-sentidos-stage" role="group" aria-label="Nueve Sentidos: acertijo nocturno en tres fases">
+    <div className="scene-stage game-screen nueve-sentidos-stage" role="group" aria-label="Nueve Sentidos: cielo nocturno interactivo en tres fases">
       <div className="nueve-sentidos-sky" data-phase={phase} aria-hidden="true">
         <div className="nueve-sentidos-nebula" />
         <div className={`nueve-jaguar-trail${phase === "moon" && pathUnlocked ? " is-unlocked" : ""}`} />
         <span className="stage-coordinate">LF · 10</span>
       </div>
-
-      <header className="nueve-phase-card" data-phase={phase} aria-live="polite">
-        <span className="nueve-phase-count">{phaseNumber}</span>
-        <h3>{phaseTitle}</h3>
-        <p>{instruction}</p>
-        {phase === "rhythm" && mistakes > 0 && <small className="nueve-mistake-count">El cielo ha cambiado de ritmo · {mistakes} {mistakes === 1 ? "intento" : "intentos"}</small>}
-      </header>
 
       {phase === "awakening" && AWAKENING_STARS.map((star, index) => (
         <button
@@ -197,7 +166,6 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
             <img className="nueve-star-gif nueve-rhythm-gif" src={gameAssetUrl(`/star-pulses/60bpm/${color}-${pulseMs}.gif`)} alt="" aria-hidden="true" />
             <span className="nueve-rhythm-static-glyph" aria-hidden="true" />
             {selectedIndex >= 0 && <span className="nueve-rhythm-order" aria-hidden="true">{selectedIndex + 1}</span>}
-            <span className="nueve-rhythm-speed-note" aria-hidden="true">{(pulseMs / 1000).toFixed(2)} s</span>
           </button>
         );
       })}
@@ -207,26 +175,46 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
           type="button"
           className={`nueve-white-moon${pathUnlocked ? " is-collected" : ""}`}
           onClick={touchMoon}
-          aria-label={seedCollected ? "Semilla lunar recogida; camino hacia El Jaguar abierto" : "Tocar la luna blanca y recoger la semilla de Nueve Sentidos"}
+          aria-label={pathUnlocked ? "Semilla lunar recogida; camino hacia El Jaguar abierto" : "Tocar la luna blanca"}
           aria-pressed={seedCollected || moonTouched}
         >
           <span className="nueve-moon-disc" aria-hidden="true" />
-          {pathUnlocked && <SeedGlyph seed="nueve-sentidos" className="nueve-moon-seed" />}
-          <span className="nueve-moon-label">{pathUnlocked ? "SEMILLA" : "LUNA"}</span>
         </button>
       )}
 
-      <div className="nueve-lemon" aria-hidden="true"><LemonSprite /></div>
-      <div className="nueve-dialogue" role="status" aria-live="polite" aria-atomic="true">
-        <div className="nueve-dialogue-copy">
-          <span className="nueve-speaker">{speaker}</span>
-          <p>{dialogue}</p>
+      {phase === "moon" && seedDropState !== "idle" && (
+        <div
+          className={`nueve-seed-drop${seedDropState === "dropping" ? " is-dropping" : " is-landed"}`}
+          aria-hidden="true"
+          onAnimationEnd={event => {
+            if (event.target === event.currentTarget) finishSeedDrop();
+          }}
+        >
+          <SeedGlyph seed="nueve-sentidos" className="nueve-seed-drop-glyph" />
         </div>
-        {hummingbirdIsFriend && <button className="nueve-hint-button" type="button" onClick={askForHint} aria-label="Pedir una pista poética al colibrí">
-          <img src={gameAssetUrl("/colibri.gif")} alt="" aria-hidden="true" />
-          <span>PISTA</span>
-        </button>}
-      </div>
+      )}
+
+      {hummingbirdIsFriend && (
+        <>
+          {hintVisible && (
+            <div id="nueve-colibri-hint" className="nueve-hint-popover" role="status" aria-live="polite">
+              {activeHint}
+            </div>
+          )}
+          <button
+            className={`nueve-hint-button${hintVisible ? " is-active" : ""}`}
+            type="button"
+            onClick={askForHint}
+            aria-controls="nueve-colibri-hint"
+            aria-expanded={hintVisible}
+            aria-label={hintVisible ? "Ocultar la pista poética del colibrí" : "Pedir una pista poética al colibrí"}
+          >
+            <img src={gameAssetUrl("/colibri.gif")} alt="" aria-hidden="true" />
+          </button>
+        </>
+      )}
+
+      <div className="nueve-lemon" aria-hidden="true"><LemonSprite /></div>
     </div>
   );
 }

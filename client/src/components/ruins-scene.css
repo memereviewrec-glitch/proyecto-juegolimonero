@@ -46,17 +46,16 @@
 }
 
 .ruins-column-left {
-  left: 19%;
-  top: 16%;
-  width: 20%;
-  height: 50%;
+  left: 14%;
+  top: 13%;
+  width: 30%;
+  height: 56%;
 }
-
 .ruins-column-right {
-  left: 75%;
-  top: 18%;
-  width: 17%;
-  height: 54%;
+  left: 70%;
+  top: 15%;
+  width: 27%;
+  height: 60%;
 }
 
 .ruins-lemon-actor {
@@ -160,8 +159,8 @@
 }
 
 @media (max-width: 600px) {
-  .ruins-column-left { left: 19%; width: 20%; }
-  .ruins-column-right { left: 43%; width: 19%; }
+  .ruins-column-left { left: 17%; width: 24%; }
+  .ruins-column-right { left: 41%; width: 23%; }
   .ruins-root-plant { bottom: 13%; }
 }
 

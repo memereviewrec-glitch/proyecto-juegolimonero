@@ -9,7 +9,7 @@ import "./campfire-scene.css";
 
 export type CampfireFireStage = "unlit" | "lighting" | "seed";
 
-const WALK_DURATION_MS = 1600;
+const WALK_DURATION_MS = 1300;
 
 type StickSpot = {
   id: number;

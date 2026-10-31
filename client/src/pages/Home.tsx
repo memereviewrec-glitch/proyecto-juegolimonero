@@ -52,7 +52,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   "nueve-sentidos": "nueve-sentidos",
 };
 
-const WALK_DURATION_MS = 3800;
+const WALK_DURATION_MS = 2600;
 const PORTAL_TRANSIT_DURATION_MS = 2800;
 const PORTAL_ARRIVAL_DURATION_MS = 4800;
 const DAWN_FLOWER_DELAY_MS = 2600;

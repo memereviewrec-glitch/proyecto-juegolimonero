@@ -22,13 +22,14 @@ type AwakeningStar = {
 };
 
 const AWAKENING_STARS: readonly AwakeningStar[] = [
-  { x: 30, y: 31, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
-  { x: 50, y: 31, size: 6, reflection: "Una luz lejana me recuerda que percibir también es esperar." },
-  { x: 70, y: 31, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
-  { x: 22, y: 47, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
-  { x: 41, y: 47, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
-  { x: 59, y: 47, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
-  { x: 78, y: 47, size: 8, reflection: "Siete luces, siete maneras de sentir la misma noche." },
+  // Dispersas de forma irregular por la franja libre entre la cabecera y el diálogo.
+  { x: 28, y: 30, size: 8, reflection: "El silencio también tiene un pulso, aunque todavía no sepa nombrarlo." },
+  { x: 63, y: 29, size: 6, reflection: "Una luz lejana me recuerda que percibir también es esperar." },
+  { x: 88, y: 36, size: 10, reflection: "Cada destello deja una huella distinta sobre mi cáscara." },
+  { x: 43, y: 44, size: 7, reflection: "La noche no está vacía: respira entre una estrella y otra." },
+  { x: 66, y: 50, size: 9, reflection: "Veo la luz antes de comprender el camino que dibuja." },
+  { x: 24, y: 54, size: 6, reflection: "El cielo parece inmenso, pero un destello cabe en un instante." },
+  { x: 87, y: 54, size: 8, reflection: "Siete luces, siete maneras de sentir la misma noche." },
 ];
 
 const RHYTHM_LABELS: Record<RhythmColor, string> = {
@@ -42,7 +43,7 @@ const RHYTHM_POSITIONS: Record<RhythmColor, { x: number; y: number }> = {
   red: { x: 22, y: 39 },
   green: { x: 50, y: 33 },
   blue: { x: 78, y: 40 },
-  yellow: { x: 50, y: 58 },
+  yellow: { x: 50, y: 54 },
 };
 
 const HINTS = [
@@ -195,7 +196,6 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
           >
             <img className="nueve-star-gif nueve-rhythm-gif" src={gameAssetUrl(`/star-pulses/60bpm/${color}-${pulseMs}.gif`)} alt="" aria-hidden="true" />
             <span className="nueve-rhythm-static-glyph" aria-hidden="true" />
-            <span className="nueve-rhythm-color-label">{RHYTHM_LABELS[color]}</span>
             {selectedIndex >= 0 && <span className="nueve-rhythm-order" aria-hidden="true">{selectedIndex + 1}</span>}
             <span className="nueve-rhythm-speed-note" aria-hidden="true">{(pulseMs / 1000).toFixed(2)} s</span>
           </button>

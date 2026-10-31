@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import "./ruins-column-puzzle.css";
 
 export type RuinsColumnSide = "left" | "right";
@@ -23,9 +23,50 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
   const stageRef = useRef<HTMLDivElement>(null);
   const revealedCallback = useRef(alreadyRevealed);
   const dragRef = useRef<{ id: number; pointerId: number; dx: number; dy: number } | null>(null);
+  const leafRefs = useRef(new Map<number, HTMLButtonElement>());
+  const backRef = useRef<HTMLButtonElement>(null);
+  const focusAfterRemoval = useRef<number | "back" | null>(null);
   const [leaves, setLeaves] = useState<Leaf[]>(() => alreadyRevealed ? [] : INITIAL_LEAVES);
   const [dragging, setDragging] = useState<number | null>(null);
+  const [leaving, setLeaving] = useState<number | null>(null);
   const inscription = side === "left" ? "como es arriba" : "así es abajo";
+
+  useEffect(() => {
+    const target = focusAfterRemoval.current;
+    if (target === null) return;
+    focusAfterRemoval.current = null;
+    if (target === "back") backRef.current?.focus();
+    else leafRefs.current.get(target)?.focus();
+  }, [leaves]);
+
+  function removeLeaf(id: number) {
+    setLeaves(current => {
+      const index = current.findIndex(leaf => leaf.id === id);
+      if (index < 0) return current;
+      const remaining = current.filter(leaf => leaf.id !== id);
+      focusAfterRemoval.current = remaining.length ? remaining[Math.min(index, remaining.length - 1)].id : "back";
+      if (remaining.length === 0 && !revealedCallback.current) {
+        revealedCallback.current = true;
+        onReveal();
+      }
+      return remaining;
+    });
+  }
+
+  function activateByKeyboard(id: number, event: ReactKeyboardEvent<HTMLButtonElement>) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    if (leaving !== null) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) removeLeaf(id);
+    else setLeaving(id);
+  }
+
+  function finishKeyboardRemoval(id: number) {
+    if (leaving !== id) return;
+    setLeaving(null);
+    removeLeaf(id);
+  }
 
   function beginDrag(id: number, event: ReactPointerEvent<HTMLButtonElement>) {
     event.preventDefault();
@@ -61,27 +102,25 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
     dragRef.current = null;
     setDragging(null);
     if (!outsideStone) return;
-    setLeaves(current => {
-      const remaining = current.filter(leaf => leaf.id !== drag.id);
-      if (remaining.length === 0 && !revealedCallback.current) {
-        revealedCallback.current = true;
-        onReveal();
-      }
-      return remaining;
-    });
+    removeLeaf(drag.id);
   }
 
   return (
     <div className="ruins-puzzle" role="dialog" aria-label="Columna antigua" data-side={side}>
       <div className="ruins-puzzle-stage" ref={stageRef}>
         <span className="sr-only" aria-live="polite">{leaves.length === 0 ? inscription : ""}</span>
+        <p className="ruins-puzzle-keyboard-hint" id="ruins-puzzle-keyboard-hint">Teclado: enfoca una hoja y pulsa Intro o Espacio para apartarla.</p>
         {leaves.map((leaf, index) => (
           <button
             key={leaf.id}
             type="button"
-            className={`ruins-puzzle-leaf${dragging === leaf.id ? " is-dragging" : ""}`}
+            ref={element => { if (element) leafRefs.current.set(leaf.id, element); else leafRefs.current.delete(leaf.id); }}
+            className={`ruins-puzzle-leaf${dragging === leaf.id ? " is-dragging" : ""}${leaving === leaf.id ? " is-leaving" : ""}`}
             style={{ left: `${leaf.x}%`, top: `${leaf.y}%`, transform: `translate(-50%, -50%) rotate(${leaf.rotation}deg)` }}
             aria-label={`Apartar hoja ${index + 1}`}
+            aria-describedby="ruins-puzzle-keyboard-hint"
+            onKeyDown={event => activateByKeyboard(leaf.id, event)}
+            onAnimationEnd={() => finishKeyboardRemoval(leaf.id)}
             onPointerDown={event => beginDrag(leaf.id, event)}
             onPointerMove={moveLeaf}
             onPointerUp={endDrag}
@@ -95,7 +134,7 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
             </svg>
           </button>
         ))}
-        {leaves.length === 0 && <button type="button" className="ruins-puzzle-back" onClick={onClose}>Volver al sendero</button>}
+        {leaves.length === 0 && <button ref={backRef} type="button" className="ruins-puzzle-back" onClick={onClose}>Volver al sendero</button>}
       </div>
     </div>
   );

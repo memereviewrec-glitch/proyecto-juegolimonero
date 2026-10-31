@@ -23,6 +23,19 @@
   image-rendering: pixelated;
 }
 
+.ruins-puzzle-keyboard-hint {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  max-width: calc(100% - 16px);
+  margin: 0;
+  padding: 4px 6px;
+  background: rgb(22 27 22 / 78%);
+  color: #f0e5c6;
+  font: 11px/1.3 monospace;
+}
+
 .ruins-puzzle[data-side="left"] .ruins-puzzle-stage {
   background-image: linear-gradient(180deg, rgb(21 22 21 / 4%), rgb(24 24 21 / 12%)), url("/ruins-column-left-spanish.png");
   background-size: 100% 100%, auto 360%;
@@ -64,6 +77,19 @@
 .ruins-puzzle-leaf.is-dragging {
   z-index: 5;
   cursor: grabbing;
+}
+
+.ruins-puzzle-leaf.is-leaving {
+  pointer-events: none;
+  animation: ruins-leaf-away 380ms ease-in forwards;
+}
+
+@keyframes ruins-leaf-away {
+  to { opacity: 0; transform: translate(-50%, -170%) rotate(38deg) scale(.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ruins-puzzle-leaf.is-leaving { animation: none; }
 }
 
 .ruins-puzzle-leaf:focus-visible,

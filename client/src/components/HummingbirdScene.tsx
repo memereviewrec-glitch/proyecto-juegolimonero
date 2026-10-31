@@ -3,7 +3,6 @@ import { gameAssetUrl } from "../gameAudio";
 import "./hummingbird-scene.css";
 import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
-import { gameAssetUrl } from "../gameAudio";
 
 export type HummingbirdOutcome = "good" | "bad" | "neutral";
 

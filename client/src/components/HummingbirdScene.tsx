@@ -119,8 +119,8 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
     setQuestionIndex(index => index + 1);
   };
 
-  const collectSeed = () => {
-    if (seedCollected || exitingScene) return;
+  const continueFromOutcome = () => {
+    if (exitingScene) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       onCollectSeed();
       return;
@@ -152,8 +152,8 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
           <>
             <span>{outcome === "good" ? "AMISTAD" : outcome === "bad" ? "DESPEDIDA" : "DUDA"}</span>
             <p>{outcomeText(outcome)}</p>
-            {!seedCollected && <button type="button" className="hummingbird-seed-button" onClick={collectSeed} disabled={exitingScene} aria-label="Continuar, salir de la escena y recoger la semilla de Ponzoña"><SeedGlyph seed="ponzona" /><b>{exitingScene ? "saliendo de la escena…" : "Continuar"}</b></button>}
-            {seedCollected && <small>La semilla de Ponzoña ya está en el Libro de Semillas.</small>}
+            {seedCollected && <small>La semilla de Ponzoña ya está en el Libro de Semillas. El desenlace más reciente queda guardado.</small>}
+            <button type="button" className="hummingbird-seed-button" onClick={continueFromOutcome} disabled={exitingScene} aria-label={seedCollected ? "Continuar, salir de la escena y volver al Libro de Semillas" : "Continuar, salir de la escena y recoger la semilla de Ponzoña"}><SeedGlyph seed="ponzona" /><b>{exitingScene ? "saliendo de la escena…" : "Continuar"}</b></button>
           </>
         ) : (
           <>

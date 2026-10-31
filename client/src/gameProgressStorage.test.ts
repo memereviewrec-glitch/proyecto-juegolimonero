@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, saveHummingbirdFriendship } from "./gameProgressStorage";
+import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, saveHummingbirdOutcome } from "./gameProgressStorage";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -21,7 +21,7 @@ describe("readStoredHummingbirdFriendship", () => {
     expect(readStoredHummingbirdFriendship()).toBe(false);
   });
 
-  it("persists the friendship and clears it with the game's progress", () => {
+  it("persists the most recent ending and only keeps friendship for the good ending", () => {
     const values = new Map<string, string>();
     const localStorage = {
       getItem: (key: string) => values.get(key) ?? null,
@@ -30,11 +30,29 @@ describe("readStoredHummingbirdFriendship", () => {
     };
     vi.stubGlobal("window", { localStorage });
 
-    saveHummingbirdFriendship();
-    expect(values.get(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY)).toBe("friend");
+    saveHummingbirdOutcome("good");
+    expect(values.get(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY)).toBe("good");
+    expect(readStoredHummingbirdOutcome()).toBe("good");
     expect(readStoredHummingbirdFriendship()).toBe(true);
+
+    saveHummingbirdOutcome("neutral");
+    expect(readStoredHummingbirdOutcome()).toBe("neutral");
+    expect(readStoredHummingbirdFriendship()).toBe(false);
+
+    saveHummingbirdOutcome("bad");
+    expect(readStoredHummingbirdOutcome()).toBe("bad");
+    expect(readStoredHummingbirdFriendship()).toBe(false);
 
     expect(clearStoredGameProgress()).toBe(true);
     expect(readStoredHummingbirdFriendship()).toBe(false);
+    expect(readStoredHummingbirdOutcome()).toBe(null);
+  });
+
+  it("reads a friendship saved by an older version", () => {
+    const values = new Map<string, string>([[HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, "friend"]]);
+    vi.stubGlobal("window", { localStorage: { getItem: (key: string) => values.get(key) ?? null } });
+
+    expect(readStoredHummingbirdOutcome()).toBe("good");
+    expect(readStoredHummingbirdFriendship()).toBe(true);
   });
 });

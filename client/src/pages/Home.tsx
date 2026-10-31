@@ -18,7 +18,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredRamblaOutcome, readStoredSeedBookIds, saveHummingbirdFriendship, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredRamblaOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
@@ -540,9 +540,12 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   }
 
   function collectPonzonaSeed() {
-    if (ponzonaSeedCollected) return;
-    setPonzonaSeedCollected(true);
-    setNotice("La semilla de «Ponzoña» queda en el Libro de Semillas.");
+    if (!ponzonaSeedCollected) {
+      setPonzonaSeedCollected(true);
+      setNotice("La semilla de «Ponzoña» queda en el Libro de Semillas.");
+    } else {
+      setNotice("El nuevo desenlace de «Ponzoña» queda guardado; la semilla ya estaba en el Libro.");
+    }
     setJourneyMenuOpen(false);
     openStorySeedBook("ponzona");
   }
@@ -555,9 +558,8 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     openStorySeedBook("nueve-sentidos");
   }
   function recordHummingbirdOutcome(outcome: HummingbirdOutcome) {
-    if (outcome !== "good" || hummingbirdIsFriend) return;
-    setHummingbirdIsFriend(true);
-    saveHummingbirdFriendship();
+    setHummingbirdIsFriend(outcome === "good");
+    saveHummingbirdOutcome(outcome);
   }
 
   function chooseRamblaResponse(path: RamblaPath) {

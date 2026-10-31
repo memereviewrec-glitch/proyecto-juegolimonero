@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import { LemonSprite } from "./GameSprites";
 import "./password-gate.css";
 
-const PASSWORD = "limondrakofuzz";
+const PASSWORD = "0123456789";
 const ACCESS_KEY = "limonero-access-granted";
 
 function hasAccess() {

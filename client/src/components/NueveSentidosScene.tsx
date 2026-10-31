@@ -2,7 +2,7 @@ import { useState, type CSSProperties } from "react";
 import { gameAssetUrl, playFrequencies } from "../gameAudio";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
-import { evaluateRhythmPick, getNextRhythmPatternIndex, RHYTHM_COLORS, RHYTHM_PATTERNS, type RhythmColor } from "./nueveSentidosRules";
+import { applyRhythmPick, RHYTHM_COLORS, RHYTHM_PATTERNS, type RhythmColor } from "./nueveSentidosRules";
 import "./nueve-sentidos-scene.css";
 
 type Props = {
@@ -92,19 +92,19 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
 
   function chooseRhythmStar(color: RhythmColor) {
     if (phase !== "rhythm" || selectedColors.includes(color)) return;
-    const result = evaluateRhythmPick(patternIndex, selectedColors.length, color);
-    if (result === "wrong") {
+    const transition = applyRhythmPick(patternIndex, selectedColors, color);
+    if (transition.result === "wrong") {
       setMistakes(count => count + 1);
-      setPatternIndex(current => getNextRhythmPatternIndex(current));
-      setSelectedColors([]);
+      setPatternIndex(transition.patternIndex);
+      setSelectedColors(transition.selectedColors);
       setSpeaker("EL CIELO");
       setDialogue("El orden se deshace. Las cuatro estrellas cambian por completo su compás; vuelve a observarlas.");
       return;
     }
 
-    const next = [...selectedColors, color];
+    const next = transition.selectedColors;
     setSelectedColors(next);
-    if (result === "complete") {
+    if (transition.result === "complete") {
       setPhase("moon");
       setSpeaker("EL CIELO");
       setDialogue("Los cuatro pulsos se encuentran. Una luna blanca emerge sobre el firmamento.");
@@ -194,7 +194,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
             type="button"
             className={`nueve-rhythm-star nueve-rhythm-star-${color}${selectedIndex >= 0 ? " is-selected" : ""}`}
             style={{ left: `${position.x}%`, top: `${position.y}%` } as CSSProperties}
-            aria-label={`Estrella ${RHYTHM_LABELS[color].toLowerCase()}, su pulso vuelve cada ${(pulseMs / 1000).toFixed(2)} segundos${selectedIndex >= 0 ? `, posición ${selectedIndex + 1}` : ""}`}
+            aria-label={`Estrella ${RHYTHM_LABELS[color].toLowerCase()}, su pulso vuelve cada ${(pulseMs / 1000).toFixed(2)} segundos${selectedIndex >= 0 ? `, apagada, posición ${selectedIndex + 1}` : ""}`}
             aria-pressed={selectedIndex >= 0}
             disabled={selectedIndex >= 0}
             onClick={() => chooseRhythmStar(color)}

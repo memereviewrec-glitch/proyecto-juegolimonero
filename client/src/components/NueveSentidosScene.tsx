@@ -129,8 +129,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
   return (
     <div className="scene-stage game-screen nueve-sentidos-stage" role="group" aria-label="Nueve Sentidos: cielo nocturno interactivo en tres fases">
       <div className="nueve-sentidos-sky" data-phase={phase} aria-hidden="true">
-        <div className="nueve-sentidos-nebula" />
-        <div className={`nueve-jaguar-trail${phase === "moon" && pathUnlocked ? " is-unlocked" : ""}`} />
+        <img className="nueve-sentidos-milky-way" src={gameAssetUrl("/nueve-sentidos-milky-way.webp")} alt="" />
         <span className="stage-coordinate">LF · 10</span>
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { gameAssetUrl } from "../gameAudio";
+import { resolveHummingbirdOutcome } from "./hummingbirdRules";
 import "./hummingbird-scene.css";
 import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
@@ -21,8 +22,6 @@ type HummingbirdQuestion = {
   prompt: string;
   options: readonly HummingbirdOption[];
 };
-
-const FRIENDSHIP_THRESHOLD = 80;
 
 const QUESTIONS: readonly HummingbirdQuestion[] = [
   {
@@ -97,25 +96,13 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const answer = (delta: number) => {
     if (outcome || !question) return;
     const nextMood = Math.max(-100, Math.min(100, mood + delta));
-    if (nextMood >= FRIENDSHIP_THRESHOLD) {
-      setMood(nextMood);
-      setOutcome("good");
-      onOutcome?.("good");
-      return;
-    }
-    if (nextMood <= -100) {
-      setMood(-100);
-      setOutcome("bad");
-      onOutcome?.("bad");
-      return;
-    }
-    if (questionIndex === QUESTIONS.length - 1) {
-      setMood(nextMood);
-      setOutcome("neutral");
-      onOutcome?.("neutral");
-      return;
-    }
     setMood(nextMood);
+    const nextOutcome = resolveHummingbirdOutcome(nextMood, questionIndex === QUESTIONS.length - 1);
+    if (nextOutcome) {
+      setOutcome(nextOutcome);
+      onOutcome?.(nextOutcome);
+      return;
+    }
     setQuestionIndex(index => index + 1);
   };
 

@@ -1,9 +1,10 @@
 .nueve-sentidos-stage { position:relative; overflow:hidden; border-color:#53638e; background:#030612; color:#f8f3e8; }
-.nueve-sentidos-sky { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 18% 20%,#40538442 0%,transparent 36%),radial-gradient(ellipse at 76% 34%,#76528c24 0%,transparent 34%),radial-gradient(ellipse at 44% 78%,#28627a20 0%,transparent 38%),linear-gradient(160deg,#030611 0%,#08142b 57%,#11182e 100%); transition:background .8s ease; }
-.nueve-sentidos-sky[data-phase="awakening"] { background:radial-gradient(ellipse at 50% 50%,#28335438 0%,transparent 58%),radial-gradient(ellipse at 78% 27%,#563b6c18 0%,transparent 34%),linear-gradient(160deg,#02030a 0%,#050a19 58%,#0a1020 100%); }
-.nueve-sentidos-sky::before { content:""; position:absolute; z-index:1; inset:0; background:radial-gradient(ellipse at 50% 44%,#7e83cb18,transparent 58%),linear-gradient(157deg,transparent 23%,#9aa9e008 34%,#a79bd313 43%,transparent 57%),linear-gradient(180deg,#02040b22,transparent 48%,#06081355); pointer-events:none; }
-.nueve-sentidos-sky::after { content:""; position:absolute; z-index:1; inset:0; background:radial-gradient(circle at 9% 19%,#d5ddff 0 1px,transparent 1.7px),radial-gradient(circle at 19% 68%,#bdcffb 0 1px,transparent 1.8px),radial-gradient(circle at 34% 13%,#e4e8ff 0 1px,transparent 1.6px),radial-gradient(circle at 39% 78%,#aabfe8 0 1px,transparent 1.8px),radial-gradient(circle at 58% 21%,#d1d8ff 0 1px,transparent 1.7px),radial-gradient(circle at 69% 72%,#d2d8f4 0 1px,transparent 1.8px),radial-gradient(circle at 82% 14%,#d8e3ff 0 1px,transparent 1.7px),radial-gradient(circle at 94% 57%,#b5c5ed 0 1px,transparent 1.8px); opacity:.28; pointer-events:none; }
-.nueve-sentidos-nebula { position:absolute; left:7%; top:19%; width:86%; height:62%; border-radius:50%; background:radial-gradient(ellipse at 23% 47%,#697bc32a 0%,transparent 34%),radial-gradient(ellipse at 57% 37%,#a078bb20 0%,transparent 35%),radial-gradient(ellipse at 77% 64%,#39869b1b 0%,transparent 31%),radial-gradient(ellipse,#8499e31c 0%,#5c8aca12 34%,transparent 72%); filter:blur(21px); }
+.nueve-sentidos-sky { position:absolute; inset:0; overflow:hidden; background:#030612; }
+.nueve-sentidos-milky-way { position:absolute; z-index:0; inset:0; display:block; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
+.nueve-sentidos-sky::before { content:""; position:absolute; z-index:1; inset:0; background:linear-gradient(180deg,#02051235 0%,#08102624 57%,#070b1845 100%); pointer-events:none; transition:background .55s ease; }
+.nueve-sentidos-sky[data-phase="awakening"]::before { background:linear-gradient(160deg,#01030bbd 0%,#050a1a99 58%,#0a1020b0 100%); }
+.nueve-sentidos-sky[data-phase="rhythm"]::before { background:linear-gradient(180deg,#02051662 0%,#07102735 55%,#080d1d63 100%); }
+.nueve-sentidos-sky[data-phase="moon"]::before { background:linear-gradient(180deg,#0204101c 0%,#060b1920 55%,#070b1838 100%); }
 .stage-coordinate { position:absolute; z-index:4; right:13px; bottom:11px; font:8px 'DM Mono',monospace; color:#e9e1ef; opacity:.72; letter-spacing:.1em; }
 .nueve-awakening-star { position:absolute; z-index:3; display:grid; width:46px; height:46px; padding:0; place-items:center; transform:translate(-50%,-50%); border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
 .nueve-star-gif { display:block; flex:0 0 auto; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
@@ -42,10 +43,6 @@
   87% { top:80%; transform:translate(calc(-50% - 4px),-50%) scale(.96) rotate(-5deg); }
   100% { top:82%; opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0); }
 }
-.nueve-jaguar-trail { position:absolute; z-index:2; top:34%; right:4%; width:25%; height:21%; opacity:0; pointer-events:none; transition:opacity 1s ease; }
-.nueve-jaguar-trail::before { content:""; position:absolute; top:48%; left:0; width:100%; height:2px; transform:rotate(-17deg); transform-origin:left center; background:linear-gradient(90deg,#fff4d700,#c7d6ff,#fff7db); box-shadow:0 0 9px #cad8ff; }
-.nueve-jaguar-trail::after { content:"EL JAGUAR"; position:absolute; top:4%; right:0; color:#fff0c9; font:7px 'DM Mono',monospace; letter-spacing:.12em; text-shadow:0 0 9px #c7d6ff; }
-.nueve-jaguar-trail.is-unlocked { opacity:.88; }
 .nueve-lemon { position:absolute; z-index:4; left:47%; bottom:1%; width:clamp(50px,10%,76px); height:clamp(60px,11%,90px); transform:translateX(-50%); pointer-events:none; filter:drop-shadow(2px 3px 0 #060913); }
 .nueve-lemon .lemon-sprite { display:block; width:100%; height:100%; }
 .nueve-hint-button { position:absolute; z-index:12; left:calc(47% + clamp(27px,5vw,40px)); bottom:5%; display:grid; width:68px; height:62px; padding:3px; place-items:center; transform-origin:center; border:0; background:transparent; cursor:pointer; touch-action:manipulation; }
@@ -59,7 +56,7 @@
 @keyframes nueve-hint-appear { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
 @keyframes nueve-moon-appear { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion: reduce) {
-  .nueve-sentidos-sky,.nueve-awakening-static-glyph,.nueve-rhythm-static-glyph,.nueve-moon-disc,.nueve-jaguar-trail { transition:none; }
+  .nueve-sentidos-sky::before,.nueve-awakening-static-glyph,.nueve-rhythm-static-glyph,.nueve-moon-disc { transition:none; }
   .nueve-awakening-gif,.nueve-rhythm-gif { display:none; }
   .nueve-awakening-static-glyph,.nueve-rhythm-static-glyph { display:block; opacity:1; transform:none; }
   .nueve-awakening-star.is-extinguished .nueve-awakening-static-glyph { background:#66718e; filter:none; opacity:.14; transform:none; }

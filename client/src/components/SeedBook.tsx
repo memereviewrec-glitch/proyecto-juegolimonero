@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
 import { getPhysicalSeedId, PHYSICAL_SEED_COLORS } from "./seed-colors";
 
@@ -95,7 +96,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
       <aside id="seedbook-panel" ref={panelRef} className="seedbook-panel" role="dialog" aria-modal="true" aria-labelledby="seedbook-title">
         <div className="seedbook-header">
           <div className="seedbook-heading">
-            <img className="seedbook-art" src="/seedbook-art.png" alt="" aria-hidden="true" />
+            <img className="seedbook-art" src={gameAssetUrl("/seedbook-art.png")} alt="" aria-hidden="true" />
             <div>
               <p id="seedbook-title">{discoveredSongs.length} de {SONG_CATALOG.length} semillas descubiertas</p>
             </div>

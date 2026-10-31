@@ -8,7 +8,7 @@ import { RiverMirrorScene } from "../components/RiverMirrorScene";
 import { RiverChallengeScene } from "../components/RiverChallengeScene";
 import { ElRioScene } from "../components/ElRioScene";
 import { FireForestScene } from "../components/FireForestScene";
-import { HummingbirdScene } from "../components/HummingbirdScene";
+import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
@@ -17,8 +17,8 @@ import type { RamblaOutcome, RamblaPath } from "../components/ramblaConversation
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
-import { playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredRamblaOutcome, readStoredSeedBookIds, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredRamblaOutcome, readStoredSeedBookIds, saveHummingbirdFriendship, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
@@ -186,6 +186,8 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
   const [fireSeedCollected, setFireSeedCollected] = useState(() => persistedSeedIds.includes("el-fuego"));
   const [ponzonaSeedCollected, setPonzonaSeedCollected] = useState(() => persistedSeedIds.includes("ponzona"));
+  const [nueveSentidosSeedCollected, setNueveSentidosSeedCollected] = useState(() => persistedSeedIds.includes("nueve-sentidos"));
+  const [hummingbirdIsFriend, setHummingbirdIsFriend] = useState(readStoredHummingbirdFriendship);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -566,6 +568,19 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     openStorySeedBook("ponzona");
   }
 
+  function collectNueveSentidosSeed() {
+    if (nueveSentidosSeedCollected) return;
+    setNueveSentidosSeedCollected(true);
+    setNotice("La semilla de «Nueve sentidos» entra en el Libro. El camino hacia El Jaguar queda iluminado.");
+    setJourneyMenuOpen(false);
+    openStorySeedBook("nueve-sentidos");
+  }
+  function recordHummingbirdOutcome(outcome: HummingbirdOutcome) {
+    if (outcome !== "good" || hummingbirdIsFriend) return;
+    setHummingbirdIsFriend(true);
+    saveHummingbirdFriendship();
+  }
+
   function chooseRamblaResponse(path: RamblaPath) {
     if (ramblaOutcome !== null || campfireSeedCollected) return;
     const nextPacific = ramblaPacificPoints + (path === "pacifico" ? 1 : 0);
@@ -708,8 +723,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     if (elRioSeedCollected) found.add("el-rio");
     if (fireSeedCollected) found.add("el-fuego");
     if (ponzonaSeedCollected) found.add("ponzona");
+    if (nueveSentidosSeedCollected) found.add("nueve-sentidos");
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
-  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected]);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected, nueveSentidosSeedCollected]);
 
   useEffect(() => {
     const merged = mergeDiscoveredSeedIds(SONG_CATALOG.map(song => song.id), persistedSeedIds, discoveredSongIds);
@@ -807,7 +823,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     <main className="explorer-shell">
       <header className="topbar">
         <a className="brand-lockup" href="#inicio" aria-label="Limonero Fuzz, inicio">
-          <img src="/limonero-mark.svg" alt="" className="brand-icon" />
+          <img src={gameAssetUrl("/limonero-mark.svg")} alt="" className="brand-icon" />
           <span><strong>Limonero Fuzz</strong><small>EXPLORADOR DEL GUION</small></span>
         </a>
         <div className="topbar-right">
@@ -856,7 +872,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
           <span className="tab-number">09</span><span><strong>El colibrí</strong><small>Ponzoña · la rama quemada</small></span><span className="tab-mark">{ponzonaSeedCollected ? "✓" : fireSeedCollected ? "↗" : "⌑"}</span>
         </button>
         <button className={`screen-tab ${scene === "nueve-sentidos" ? "active" : ""}`} onClick={() => setVisitedScene("nueve-sentidos")} disabled={!ponzonaSeedCollected || portalTransit || arrivalPortal}>
-          <span className="tab-number">10</span><span><strong>Nueve sentidos</strong><small>Canción 09 · cielo nocturno</small></span><span className="tab-mark">{ponzonaSeedCollected ? "↗" : "⌑"}</span>
+          <span className="tab-number">10</span><span><strong>Nueve sentidos</strong><small>Canción 09 · cielo nocturno</small></span><span className="tab-mark">{nueveSentidosSeedCollected ? "✓" : ponzonaSeedCollected ? "↗" : "⌑"}</span>
         </button>
       </nav>
 
@@ -882,7 +898,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
               aria-expanded={seedBookOpen}
               aria-controls="seedbook-panel"
             >
-              <img className="seedbook-toggle-icon" src="/seedbook-art.png" alt="" aria-hidden="true" />
+              <img className="seedbook-toggle-icon" src={gameAssetUrl("/seedbook-art.png")} alt="" aria-hidden="true" />
               <b aria-hidden="true">{discoveredSongIds.length}/10</b>
             </button>
             <button
@@ -923,8 +939,8 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
               {roomView === "scene" && <div className="room-world">
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className="cable-art-layer" aria-hidden="true"><CableSceneArt pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} /></div>
-                <div className="room-object-art guitar-art" aria-hidden="true"><img className="guitar-sprite" src="/guitar-sprite-recut-v2.png" alt="" /></div>
-                <div className="room-object-art amp-art" aria-hidden="true"><img className="amp-sprite amp-art-sprite" src="/amp-sprite-light.png" alt="" /></div>
+                <div className="room-object-art guitar-art" aria-hidden="true"><img className="guitar-sprite" src={gameAssetUrl("/guitar-sprite-recut-v2.png")} alt="" /></div>
+                <div className="room-object-art amp-art" aria-hidden="true"><img className="amp-sprite amp-art-sprite" src={gameAssetUrl("/amp-sprite-light.png")} alt="" /></div>
                 <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
                 <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
                   <span className="sr-only">Cable en el suelo</span>
@@ -993,9 +1009,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
             ) : scene === "hummingbird" ? (
-              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} />
+              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} />
             ) : (
-              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} />
+              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} hummingbirdIsFriend={hummingbirdIsFriend} />
             )
           )}
 
@@ -1049,9 +1065,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
 
       <section className="storyboard-section" id="storyboard">
         <div className="storyboard-heading"><div><span className="stage-kicker">DOCUMENTO DE PREPRODUCCIÓN</span><h2>El storyboard original</h2></div><span>REFERENCIA VISUAL · PANTALLAS 01–04</span></div>
-        <figure className="storyboard-frame"><img src="/storyboard-pantallas-01-02.png" alt="Storyboard conceptual: el local de ensayo vacío y el limón ante El Cuchillo de Albatera al amanecer." /><figcaption><span>01 · Local de ensayo</span><span>02 · El Cuchillo al amanecer</span></figcaption></figure>
-        <figure className="storyboard-frame storyboard-frame-roots"><img src="/ruins-background.png" alt="Fondo de las ruinas invadidas por raíces, basado en el panel 03 del storyboard v02." /><figcaption><span>03 · Ruinas y arco de piedra</span><span>Fondo adaptado del panel 03 · storyboard v02</span></figcaption></figure>
-        <figure className="storyboard-frame storyboard-frame-campfire"><img src="/scene-04-background.png" alt="Fondo pixel art del encuentro nocturno: una reunión junto a un símbolo luminoso en un valle rocoso; el limón se mueve como actor separado." /><figcaption><span>04 · Encuentro bajo la luna</span><span>La reunión, la hoguera y la semilla de «Rambla»</span></figcaption></figure>
+        <figure className="storyboard-frame"><img src={gameAssetUrl("/storyboard-pantallas-01-02.png")} alt="Storyboard conceptual: el local de ensayo vacío y el limón ante El Cuchillo de Albatera al amanecer." /><figcaption><span>01 · Local de ensayo</span><span>02 · El Cuchillo al amanecer</span></figcaption></figure>
+        <figure className="storyboard-frame storyboard-frame-roots"><img src={gameAssetUrl("/ruins-background.png")} alt="Fondo de las ruinas invadidas por raíces, basado en el panel 03 del storyboard v02." /><figcaption><span>03 · Ruinas y arco de piedra</span><span>Fondo adaptado del panel 03 · storyboard v02</span></figcaption></figure>
+        <figure className="storyboard-frame storyboard-frame-campfire"><img src={gameAssetUrl("/scene-04-background.png")} alt="Fondo pixel art del encuentro nocturno: una reunión junto a un símbolo luminoso en un valle rocoso; el limón se mueve como actor separado." /><figcaption><span>04 · Encuentro bajo la luna</span><span>La reunión, la hoguera y la semilla de «Rambla»</span></figcaption></figure>
       </section>
 
       <footer className="site-footer"><div className="footer-mark">LF<span>✳</span></div><p>Un guion se vuelve paisaje, un clic cada vez.</p><span>PREPRODUCCIÓN · VERSIÓN 0.5</span></footer>

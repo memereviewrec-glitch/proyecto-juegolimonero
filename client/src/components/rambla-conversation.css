@@ -4,7 +4,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  padding: 8px;
+  padding: calc(var(--game-ui-safe-top, 151px) + 8px) 8px 8px;
   overflow: hidden;
   background: rgb(5 7 12 / 54%);
   cursor: default;
@@ -13,7 +13,7 @@
 
 .rambla-panel {
   width: min(100%, 360px);
-  max-height: 96%;
+  max-height: 100%;
   overflow-y: auto;
   padding: 10px;
   border: 3px solid #b8a37c;
@@ -155,8 +155,8 @@
 }
 
 @media (max-width: 600px) {
-  .rambla-overlay { padding: 6px; }
-  .rambla-panel { max-height: 97%; padding: 8px; }
+  .rambla-overlay { padding: calc(var(--game-ui-safe-top, 132px) + 8px) 6px 6px; }
+  .rambla-panel { max-height: 100%; padding: 8px; }
   .rambla-panel-kicker { font-size: 7px; }
   .rambla-panel h3 { margin-top: 5px; font-size: 11px; }
   .rambla-dialogue-line { margin-bottom: 6px; font-size: 9px; }

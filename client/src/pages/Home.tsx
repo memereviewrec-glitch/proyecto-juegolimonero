@@ -147,7 +147,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   const [ampOn, setAmpOn] = useState(false);
   const [roomAction, setRoomAction] = useState<RoomAction>(null);
   const [lemonPosition, setLemonPosition] = useState("lemon-left");
-  const [lemonFloorPoint, setLemonFloorPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [dawnLemonPoint, setDawnLemonPoint] = useState<{ x: number; bottom: number } | null>(null);
   const [dawnIsMoving, setDawnIsMoving] = useState(false);
@@ -232,30 +231,12 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   }, [campfireFireStage]);
 
   function moveTo(position: string, callback: () => void) {
-    setLemonFloorPoint(null);
     setIsMoving(true);
     setLemonPosition(position);
     window.setTimeout(() => {
       setIsMoving(false);
       callback();
     }, motionDuration(WALK_DURATION_MS));
-  }
-
-  function handleRoomStageClick(event: MouseEvent<HTMLDivElement>) {
-    if (roomView !== "scene" || roomAction || isMoving || portalTransit) return;
-    if (event.target instanceof Element && event.target.closest("button")) return;
-    const world = event.currentTarget.querySelector(".room-world");
-    if (!world) return;
-    const bounds = world.getBoundingClientRect();
-    if (event.clientX < bounds.left || event.clientX > bounds.right) return;
-    const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 8, 92);
-    const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 3, 97);
-    if (y < 78 || y > 96) return;
-    setRoomAction(null);
-    setLemonPosition("lemon-free");
-    setLemonFloorPoint({ x, bottom: 100 - y });
-    setIsMoving(true);
-    window.setTimeout(() => setIsMoving(false), motionDuration(WALK_DURATION_MS));
   }
 
   function handleDawnStageClick(event: MouseEvent<HTMLDivElement>) {
@@ -283,12 +264,12 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     }
     if (target === "guitar") {
       if (!pluggedGuitar || !pluggedAmp) {
-        setRoomAction("guitar-unplugged");
+        moveTo("lemon-guitar", () => setRoomAction("guitar-unplugged"));
         setNotice("La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.");
         return;
       }
       if (!ampOn) {
-        setRoomAction("amp-off");
+        moveTo("lemon-guitar", () => setRoomAction("amp-off"));
         setNotice("La guitarra ya está conectada, pero el amplificador sigue apagado.");
         return;
       }
@@ -378,7 +359,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     if (!portalOpen || portalTransit) return;
     setPortalTransit(true);
     setIsMoving(false);
-    setLemonFloorPoint(null);
     setLemonPosition("lemon-portal");
     setNotice("El limón salta hacia el portal.");
     window.setTimeout(() => {
@@ -390,7 +370,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       setStorySeedPreview(null);
       setStoryBeat("portal");
       setLemonPosition("lemon-left");
-      setLemonFloorPoint(null);
       setRoomAction(null);
       setArrivalPortal(true);
       setNotice("El portal aparece ante el amanecer de la otra dimensión.");
@@ -661,7 +640,6 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     setRuinsAction(null);
     setLemonWhistling(false);
     setDawnIsMoving(false);
-    setLemonFloorPoint(null);
     setIsMoving(false);
 
     if (songId === "intro") {
@@ -935,13 +913,13 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             </div>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
           {scene === "room" ? (
-            <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`} onClick={handleRoomStageClick}>
-              {roomView === "scene" && <div className="room-world">
+            <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
+              {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className="cable-art-layer" aria-hidden="true"><CableSceneArt pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} /></div>
                 <div className="room-object-art guitar-art" aria-hidden="true"><img className="guitar-sprite" src={gameAssetUrl("/guitar-sprite-recut-v2.png")} alt="" /></div>
                 <div className="room-object-art amp-art" aria-hidden="true"><img className="amp-sprite amp-art-sprite" src={gameAssetUrl("/amp-sprite-light.png")} alt="" /></div>
-                <div className={`lemon-actor ${lemonFloorPoint ? "lemon-free" : lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`} style={lemonFloorPoint ? { left: `${lemonFloorPoint.x}%`, bottom: `${lemonFloorPoint.bottom}%` } : undefined}><LemonSprite /></div>
+                <div className={`lemon-actor ${lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`}><LemonSprite /></div>
                 <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
                   <span className="sr-only">Cable en el suelo</span>
                 </button>

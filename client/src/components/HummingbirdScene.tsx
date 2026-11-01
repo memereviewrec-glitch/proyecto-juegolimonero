@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createAttemptTaskScope } from "../attemptTaskScope";
 import { gameAssetUrl } from "../gameAudio";
 import { resolveHummingbirdOutcome } from "./hummingbirdRules";
 import "./hummingbird-scene.css";
@@ -81,6 +82,11 @@ function outcomeText(outcome: HummingbirdOutcome) {
 }
 
 export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: HummingbirdSceneProps) {
+  const attemptTasks = useMemo(() => createAttemptTaskScope(
+    (callback, delay) => window.setTimeout(callback, delay),
+    id => window.clearTimeout(id),
+  ), []);
+  useEffect(() => () => attemptTasks.reset(), [attemptTasks]);
   const [mood, setMood] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
@@ -113,7 +119,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
       return;
     }
     setExitingScene(true);
-    window.setTimeout(onCollectSeed, 1800);
+    attemptTasks.schedule(onCollectSeed, 1800);
   };
 
   const progress = ((mood + 100) / 200) * 100;

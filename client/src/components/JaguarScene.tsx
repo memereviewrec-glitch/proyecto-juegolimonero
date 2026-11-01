@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createAttemptTaskScope } from "../attemptTaskScope";
 import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
@@ -59,7 +60,7 @@ type ViewTransitionHandle = { finished?: Promise<unknown> };
 type ViewTransitionDocument = Document & { startViewTransition?: (callback: () => void) => ViewTransitionHandle };
 let dialogueTransitionInProgress = false;
 
-function runDialogueTransition(update: () => void) {
+function runDialogueTransition(update: () => void, schedule: (callback: () => void, delay: number) => number, guard: (callback: () => void) => () => void) {
   if (typeof document === "undefined" || typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     update();
     return;
@@ -85,7 +86,7 @@ function runDialogueTransition(update: () => void) {
     }
     outgoing.inert = true;
     outgoing.classList.add("jaguar-dialogue-exiting");
-    window.setTimeout(() => {
+    schedule(() => {
       flushSync(update);
       const incoming = document.querySelector<HTMLElement>(".jaguar-dialogue");
       if (!incoming) {
@@ -95,7 +96,7 @@ function runDialogueTransition(update: () => void) {
       incoming.classList.remove("jaguar-dialogue-exiting");
       incoming.inert = true;
       incoming.classList.add("jaguar-dialogue-entering");
-      window.setTimeout(() => {
+      schedule(() => {
         incoming.classList.remove("jaguar-dialogue-entering");
         incoming.inert = false;
         releaseTransition();
@@ -103,21 +104,28 @@ function runDialogueTransition(update: () => void) {
     }, 1400);
     return;
   }
-  const transition = transitionDocument.startViewTransition(() => {
+  const transition = transitionDocument.startViewTransition(guard(() => {
     flushSync(update);
     const incoming = document.querySelector<HTMLElement>(".jaguar-dialogue");
     if (incoming) {
       incoming.inert = true;
       incoming.classList.add("jaguar-dialogue-transitioning");
     }
-  });
-  if (transition.finished) void transition.finished.then(finishTransition, finishTransition);
-  else window.setTimeout(finishTransition, 2800);
+  }));
+  if (transition.finished) void transition.finished.then(guard(finishTransition), guard(finishTransition));
+  else schedule(finishTransition, 2800);
 }
 
-const transitionAction = (update: () => void) => () => runDialogueTransition(update);
-
 export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, stats, onStatsChange, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
+  const attemptTasks = useMemo(() => createAttemptTaskScope(
+    (callback, delay) => window.setTimeout(callback, delay),
+    id => window.clearTimeout(id),
+  ), []);
+  useEffect(() => () => {
+    attemptTasks.reset();
+    dialogueTransitionInProgress = false;
+  }, [attemptTasks]);
+  const transitionAction = (update: () => void) => () => runDialogueTransition(attemptTasks.guard(update), attemptTasks.schedule, attemptTasks.guard);
   const history = useMemo<JaguarHistory>(() => ({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome }), [ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
   const initialStats = useMemo(() => createInitialJaguarStats(history), [history]);
   const setStats = onStatsChange;
@@ -501,7 +509,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
         {phase === "cautela-check" && <div className="jaguar-check-card">
           <span className="jaguar-check-label">EL BOSQUE CONTIENE EL ALIENTO</span>
           <p>El limón sabe que hay alguien ahí. ¿Conseguirá apartarse sin revelar que lo ha descubierto?</p>
-          {testMode && <p className="jaguar-check-rule">Cautela actual: {stats.cautela}%. Con {CAUTELA_THRESHOLD}% o más el jaguar sale enfadado; con menos, se ríe.</p>}
+          {testMode && <p className="jaguar-check-rule">Cautela actual: {stats.cautela}%. Con {CAUTELA_THRESHOLD}% o más el jaguar se ríe; con menos, sale enfadado.</p>}
           <button type="button" className="jaguar-primary-button" onClick={transitionAction(resolveCautela)}>Avanzar con cuidado</button>
         </div>}
 

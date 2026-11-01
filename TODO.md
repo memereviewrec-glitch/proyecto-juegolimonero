@@ -302,3 +302,12 @@
 - Hay tres diapositivas según el desenlace: en el final malo, el colibrí deja la semilla en la escena y se marcha volando; en el final neutral/de duda, explica que el miedo lo paraliza y no puede acompañar a Limón, pero le entrega la semilla para ayudarlo; en el final amistoso, entrega voluntariamente la semilla y acompaña a Limón.
 - En todas las diapositivas narrativas salvo la primera, el botón dice «continuar sendero»; la primera conserva «comenzar el sendero».
 - En El Río, el botón global «continuar sendero» no aparece hasta que el pez negro haya respondido al pez blanco. No se cambian los textos ni la conversación de la escena jugable.
+
+## [x] Exigir una nueva superación para avanzar tras cada repetición
+- Las banderas que habilitan «continuar sendero» representan el intento actual, no el hecho de que la semilla ya esté guardada en el Libro; al recargar o volver a una escena se reinicia su mecánica y el botón permanece oculto hasta completarla de nuevo.
+- El reinicio se aplica al entrar desde el Libro de Semillas, la navegación de escenas, las diapositivas narrativas y el selector de desarrollo. Las semillas guardadas siguen desbloqueando escenas y conservan su entrada en el Libro.
+- Los botones de selección y su acción comparten una regla de desbloqueo persistido; completar el intento sigue siendo una condición distinta del acceso a la escena.
+- Los temporizadores y las acciones diferidas de sala, Amanecer, Colibrí y Jaguar se cancelan o invalidan al reiniciar/desmontar el intento; no pueden entregar recompensas ni abrir interludios en otro intento.
+- Repetir Rambla reinicia su conversación y su mecánica, pero conserva el último desenlace histórico para el HUD, la ruta del Río y las estadísticas iniciales de Jaguar hasta que una nueva resolución lo sustituya.
+- Al pulsar «Volver a casa» tras Jaguar, la sala reinicia su mecánica sin borrar semillas ni historial: su botón de avance no aparece hasta superarla de nuevo. Decisión explícita del usuario del 2 de noviembre de 2026.
+- Cobertura añadida: 13 pruebas de acceso a escenas y 6 de aislamiento de tareas diferidas. La suite combinada pasa con 78 pruebas.

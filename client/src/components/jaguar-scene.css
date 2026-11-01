@@ -19,8 +19,8 @@
 .jaguar-hummingbird { position:absolute; z-index:6; right:10%; bottom:25%; width:clamp(42px,8%,78px); height:auto; image-rendering:pixelated; filter:drop-shadow(0 0 8px #c7e9c777); }
 .jaguar-home-portal { position:absolute; z-index:6; top:44%; left:50%; width:clamp(120px,27%,220px); aspect-ratio:.7; transform:translate(-50%,-50%); border:4px ridge #e1c987; border-radius:50%; background:radial-gradient(ellipse at center,#eef0c8 0%,#7ed5d0 9%,#2c6e97 25%,#362a79 46%,#13152c 62%,#0e121c 70%); box-shadow:0 0 0 5px #79654a,0 0 24px 12px #5bb6db9c; animation:jaguar-portal-open 1.15s steps(6,end) both; }
 .jaguar-home-portal span { position:absolute; inset:16%; border:2px dashed #e8ce92; border-radius:50%; transform:rotate(-28deg) scaleY(.76); animation:jaguar-portal-swirl 9s linear infinite; }
-.jaguar-stats { position:static; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
-.jaguar-player-stats { position:absolute; z-index:8; top:2.4%; left:2%; width:min(46%,300px); padding:7px; border:1px solid #b79d7290; background:#0c1115e6; box-shadow:0 2px 8px #05070a88; }
+.jaguar-stats { position:static; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.jaguar-player-stats { position:absolute; z-index:8; top:2.4%; right:2%; width:min(76%,520px); padding:7px; border:1px solid #b79d7290; background:#0c1115e6; box-shadow:0 2px 8px #05070a88; }
 .jaguar-stat { min-width:0; padding:6px 7px 7px; border:1px solid #b79d7261; background:#0a1015d9; box-shadow:0 2px 7px #04070b55; }
 .jaguar-stat > div:first-child { display:flex; justify-content:space-between; gap:3px; align-items:baseline; color:#eee5d2; font:8px/1.2 'DM Mono',monospace; }
 .jaguar-stat strong { color:#edce91; font-weight:700; font-size:9px; }
@@ -92,11 +92,11 @@
   .jaguar-debug-panel { max-height:calc(100dvh - 24px); overflow-y:auto; }
 }
 @media(max-width:650px) {
-  .jaguar-player-stats { top:2%; left:2%; width:min(49%,250px); padding:5px; }
-  .jaguar-stats { gap:4px; }
-  .jaguar-stat { padding:4px; }
-  .jaguar-stat > div:first-child { font-size:7px; }
-  .jaguar-stat strong { font-size:8px; }
+  .jaguar-player-stats { top:2%; right:2%; width:min(76%,520px); padding:4px; }
+  .jaguar-stats { gap:2px; }
+  .jaguar-stat { padding:4px 3px; }
+  .jaguar-stat > div:first-child { gap:2px; font-size:6px; }
+  .jaguar-stat strong { font-size:7px; }
   .jaguar-stat-meter { height:3px; margin-top:3px; }
   .jaguar-dialogue { width:92%; max-height:62%; bottom:2%; padding:9px; }
   .jaguar-answer { min-height:36px; padding:7px 8px; }

@@ -242,7 +242,7 @@
 - En la diapositiva del Río, los Espíritus recomiendan recoger «las 10 semillas mágicas» para volver a casa; se conserva la continuación que señala el fondo del cauce y prepara la búsqueda de la siguiente semilla.
 - En la escena del incendio, la frase describe «Un jaguar que pasaba por allí se reía» y no dice que se reía de los animales por sus vanos intentos de apagarlo.
 - Tras recoger la semilla de Ponzoña en cualquiera de los tres finales del colibrí, una diapositiva conduce a Nueve Sentidos y muestra el glifo clicable de esa semilla. Si el colibrí es amigo, dice «Después de la conversación, el colibrí y el limón se sentaron a observar las estrellas»; en los finales neutral o malo, dice «Después de la conversación, el limón se sentó a solas a mirar el cielo nocturno». El glifo abre la entrada descubierta de Ponzoña en el Libro.
-- Al aterrizar la semilla lunar al final de Nueve Sentidos, la Luna recomienda ir a hablar con el Jaguar; incluye al colibrí solo si el limón se hizo su amigo. Esta línea prepara el arco del Jaguar, cuya escena todavía queda pendiente.
+- La pantalla jugable de la Luna conserva únicamente sus dos frases y no muestra una recomendación adicional para ir a hablar con el Jaguar. La diapositiva narrativa de la cueva permanece intacta como transición al arco del Jaguar.
 
 
 ## [x] Diapositiva de la cueva tras Nueve Sentidos
@@ -255,4 +255,9 @@
 - Tras finalizar la conversación jugable del colibrí, la semilla de Ponzoña se entrega en la diapositiva narrativa siguiente; no se modifica el contenido ni la mecánica de esa conversación.
 - Hay tres diapositivas según el desenlace: en el final malo, el colibrí deja la semilla en la escena y se marcha volando; en el final neutral/de duda, explica que el miedo lo paraliza y no puede acompañar a Limón, pero le entrega la semilla para ayudarlo; en el final amistoso, entrega voluntariamente la semilla y acompaña a Limón.
 - En todas las diapositivas narrativas salvo la primera, el botón dice «continuar sendero»; la primera conserva «comenzar el sendero».
-- En El Río, el botón global «continuar sendero» no aparece hasta que el pez negro haya respondido al pez blanco. No se cambian los textos ni la conversación de la escena jugable.
+ - En El Río, el botón global «continuar sendero» no aparece hasta que el pez negro haya respondido al pez blanco. No se cambian los textos ni la conversación de la escena jugable.
+
+
+## [x] Quitar la recomendación del diálogo jugable de Nueve Sentidos
+- La pantalla de la Luna conserva las dos frases existentes («Yo soy la roca que se mueve en el vacío.» y «Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas») y no muestra un cuadro adicional que recomiende ir a hablar con el Jaguar.
+- No se modifica ninguna diapositiva narrativa, incluida la de la cueva posterior a Nueve Sentidos, ni las pistas poéticas del colibrí.

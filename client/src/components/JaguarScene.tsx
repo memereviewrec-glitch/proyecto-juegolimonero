@@ -9,6 +9,7 @@ import {
   COURAGE_THRESHOLD,
   EMPATHY_THRESHOLD,
   getFinalJaguarAdvice,
+  getJaguarBranchAfterCautela,
   getJaguarHummingbirdHint,
   INGENUITY_ANSWER,
   INGENUITY_RIDDLE,
@@ -187,28 +188,29 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
 
   function resolveCautela() {
     const succeeds = meetsJaguarThreshold(stats.cautela, CAUTELA_THRESHOLD);
-    if (succeeds) {
+    const nextBranch = getJaguarBranchAfterCautela(succeeds);
+    if (nextBranch === "laughing") {
+      setLaughingEntryStats({ ...stats });
+      setBranch(nextBranch);
+      setLaughingStep(0);
+      presentSkillResult({
+        stat: "cautela",
+        outcome: "success",
+        message: "El limón intuye el peligro y se aparta antes de pisar la rama. Desde la maleza estalla una carcajada y el jaguar aparece burlándose: «¿Quién anda ahí?».",
+        checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
+        nextPhase: "laughing-questions",
+      });
+    } else {
       setLaughingEntryStats(null);
-      setBranch("angry");
+      setBranch(nextBranch);
       setAngryStep(0);
       setApproach("empatia");
       presentSkillResult({
         stat: "cautela",
-        outcome: "success",
-        message: "El limón intuye el peligro y retrocede con cuidado. Una rama cruje bajo su peso. Los ojos desaparecen de la sombra; el jaguar sale enfurecido.",
+        outcome: "failure",
+        message: "El limón no advierte la rama a tiempo. El crujido corta el silencio; los ojos se fijan en él y el jaguar sale enfurecido.",
         checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "angry-questions",
-      });
-    } else {
-      setLaughingEntryStats({ ...stats });
-      setBranch("laughing");
-      setLaughingStep(0);
-      presentSkillResult({
-        stat: "cautela",
-        outcome: "failure",
-        message: "El limón traga saliva y pregunta: «¿Quién anda ahí?». Desde la maleza responde una carcajada. El jaguar sale riéndose.",
-        checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
-        nextPhase: "laughing-questions",
       });
     }
   }
@@ -348,7 +350,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     const testStats: JaguarStats = {
       cautela: 72,
       empatia: 76,
-      ingenio: kind === "lowIngenio" || kind === "secondIngenioFail" ? 84 : 96,
+      ingenio: kind === "lowIngenio" || kind === "secondIngenioFail" ? INGENUITY_THRESHOLD - 1 : 96,
       valentia: 78,
     };
     let nextStats = testStats;
@@ -397,7 +399,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     setStats(nextStats);
     const startsInLaughingRoute = kind === "laughing" || kind === "lowIngenio" || kind === "secondIngenioFail" || kind === "ingenioSuccess";
     const entrySnapshot = { ...nextStats };
-    if (kind === "lowIngenio") entrySnapshot.ingenio = 74;
+    if (kind === "lowIngenio") entrySnapshot.ingenio = INGENUITY_THRESHOLD - 1;
     setLaughingEntryStats(startsInLaughingRoute ? entrySnapshot : null);
     setBranch(nextBranch);
     setInnerStep(0);
@@ -589,12 +591,12 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
       <div className="jaguar-test-tools" aria-label="Atajos de prueba de desarrollo">
         <span>MODO DE PRUEBA</span>
         <button type="button" onClick={transitionAction(resetEncounter)}>Volver al inicio · reiniciar stats</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("cautelaSuccess"))}>Cautela ≥ 70 → enfadado</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("cautelaFail"))}>Cautela &lt; 70 → risa</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("cautelaSuccess"))}>Cautela ≥ 70 → burlona / Ingenio</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("cautelaFail"))}>Cautela &lt; 70 → furiosa / Empatía o Valentía</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("angry"); setBranch("angry"); setFeedback("Atajo de prueba: rama enfadada, después del crujido de la rama."); })}>Rama enfadada</button>
-        <button type="button" onClick={transitionAction(() => { prepareTest("laughing"); setBranch("laughing"); setFeedback("Atajo de prueba: rama burlona, después de «¿Quién anda ahí?». "); })}>Rama riéndose</button>
-        <button type="button" onClick={transitionAction(() => { prepareTest("lowIngenio"); setFeedback("Atajo de prueba: Ingenio por debajo del 85%; si falla, el jaguar se ríe y repite los enigmas."); })}>Probar umbral 85%</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("ingenioSuccess"))}>Ingenio ≥ 85 → éxito</button>
+        <button type="button" onClick={transitionAction(() => { prepareTest("laughing"); setBranch("laughing"); setFeedback("Atajo de prueba: rama burlona, después de «¿Quién anda ahí?». "); })}>Rama burlona / Ingenio</button>
+        <button type="button" onClick={transitionAction(() => { prepareTest("lowIngenio"); setFeedback("Atajo de prueba: Ingenio por debajo del 70%; si falla, el jaguar se ríe y repite los enigmas."); })}>Probar umbral de Ingenio 70%</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("ingenioSuccess"))}>Ingenio ≥ 70 → éxito</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("secondIngenioFail"); setFeedback("Atajo de prueba: primera falla contabilizada; la comprobación determinista de Ingenio fallará de nuevo."); })}>Ingenio · 2.º fallo → pesadilla</button>
         <button type="button" onClick={transitionAction(() => prepareTest("empathySuccess"))}>Empatía ≥ 70% → éxito</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("empathyFail"); setFeedback("Atajo de prueba: Empatía inferior a 70; conduce directamente a pesadilla."); })}>Empatía &lt; 70% → pesadilla</button>

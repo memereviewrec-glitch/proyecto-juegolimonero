@@ -87,7 +87,7 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   if (beat === "ponzona-leaves") return "El colibrí dejó la semilla de Ponzoña junto a Limón y alzó el vuelo para alejarse. Limón la recogió mientras su compañero desaparecía en el cielo.";
   if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";
   if (beat === "nueve-sentidos-cave") return "La luz de la luna señaló el camino hasta la cueva más profunda, donde aguarda el secreto mayor guardado del bosque.";
-  return "En el fondo del río, el limón encontró otra señal del camino. La corriente lo llevó hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
+  return "Con la semilla de «El Río» guardada en el Libro, el limón siguió la corriente. En el fondo del cauce encontró otra señal del camino, que lo condujo hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
 }
 
 const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
@@ -101,6 +101,7 @@ const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
   "ponzona-doubt": "ponzona",
   "ponzona-leaves": "ponzona",
   "nueve-sentidos-cave": "nueve-sentidos",
+  "fire-forest": "el-rio",
 };
 
 function motionDuration(duration: number) {

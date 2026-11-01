@@ -14,6 +14,7 @@ import {
   applyJaguarEffects,
   createInitialJaguarStats,
   getFinalJaguarAdvice,
+  getJaguarBranchAfterCautela,
   getJaguarHummingbirdHint,
   resolveFightOutcome,
   meetsJaguarThreshold,
@@ -131,11 +132,16 @@ describe("reglas de El Jaguar", () => {
     }
   });
 
-  it("conserva el umbral determinista de 85 para Ingenio", () => {
-    expect(INGENUITY_THRESHOLD).toBe(85);
-    expect(meetsJaguarThreshold(84, INGENUITY_THRESHOLD)).toBe(false);
-    expect(meetsJaguarThreshold(85, INGENUITY_THRESHOLD)).toBe(true);
+  it("usa el umbral determinista de 70 para Ingenio", () => {
+    expect(INGENUITY_THRESHOLD).toBe(70);
+    expect(meetsJaguarThreshold(69, INGENUITY_THRESHOLD)).toBe(false);
+    expect(meetsJaguarThreshold(70, INGENUITY_THRESHOLD)).toBe(true);
     expect(meetsJaguarThreshold(100, INGENUITY_THRESHOLD)).toBe(true);
+  });
+
+  it("dirige el éxito de Cautela a la rama burlona y el fallo a la furiosa", () => {
+    expect(getJaguarBranchAfterCautela(true)).toBe("laughing");
+    expect(getJaguarBranchAfterCautela(false)).toBe("angry");
   });
 
   it("da pistas enigmáticas sobre cada atributo sin revelar una respuesta concreta", () => {
@@ -163,18 +169,10 @@ describe("reglas de El Jaguar", () => {
     expect(NIGHTMARE_VOICEOVER.toLowerCase()).not.toContain("dios");
   });
 
-  it("mantiene los finales alcanzables con las respuestas y los umbrales deterministas", () => {
+  it("mantiene alcanzables los cuatro finales tras intercambiar las ramas de Cautela", () => {
     const applySequence = (initial: ReturnType<typeof createInitialJaguarStats>, questions: readonly (typeof INNER_QUESTIONS)[number][], choices: readonly number[]) => (
       choices.reduce((current, choice, index) => applyJaguarAnswerEffects(current, questions[index].answers[choice].effects), initial)
     );
-
-    const base = createInitialJaguarStats({ ramblaOutcome: null, hummingbirdOutcome: null });
-    const enigmaEntry = applySequence(base, INNER_QUESTIONS, [1, 2, 1]);
-    expect(enigmaEntry.cautela).toBe(41);
-    expect(meetsJaguarThreshold(enigmaEntry.cautela, CAUTELA_THRESHOLD)).toBe(false);
-    const enigmas = applySequence(enigmaEntry, LAUGHING_QUESTIONS, [0, 0, 0]);
-    expect(enigmas.ingenio).toBe(85);
-    expect(meetsJaguarThreshold(enigmas.ingenio, INGENUITY_THRESHOLD)).toBe(true);
 
     const historyWithCaution = {
       ramblaOutcome: 1 as const,
@@ -182,16 +180,31 @@ describe("reglas de El Jaguar", () => {
       riverConversationOutcome: { route: "pacifico" as const, choiceIndex: 0 },
       riverChallengeOutcome: "shore" as const,
     };
-    const empathyEntry = applySequence(createInitialJaguarStats(historyWithCaution), INNER_QUESTIONS, [0, 3, 2]);
-    expect(empathyEntry.cautela).toBe(70);
+    const enigmaEntry = applySequence(createInitialJaguarStats(historyWithCaution), INNER_QUESTIONS, [1, 2, 0]);
+    expect(enigmaEntry.cautela).toBe(CAUTELA_THRESHOLD);
+    expect(getJaguarBranchAfterCautela(meetsJaguarThreshold(enigmaEntry.cautela, CAUTELA_THRESHOLD))).toBe("laughing");
+    const enigmas = applySequence(enigmaEntry, LAUGHING_QUESTIONS, [0, 0, 0]);
+    expect(enigmas.ingenio).toBe(80);
+    expect(meetsJaguarThreshold(enigmas.ingenio, INGENUITY_THRESHOLD)).toBe(true);
+
+    const empathyHistory = { ramblaOutcome: 1 as const, hummingbirdOutcome: "good" as const };
+    const empathyEntry = applySequence(createInitialJaguarStats(empathyHistory), INNER_QUESTIONS, [2, 1, 2]);
+    expect(empathyEntry.cautela).toBeLessThan(CAUTELA_THRESHOLD);
+    expect(getJaguarBranchAfterCautela(meetsJaguarThreshold(empathyEntry.cautela, CAUTELA_THRESHOLD))).toBe("angry");
     const empathy = applySequence(empathyEntry, ANGRY_QUESTIONS, [0, 1, 0]);
-    expect(empathy.empatia).toBe(70);
+    expect(empathy.empatia).toBe(92);
     expect(meetsJaguarThreshold(empathy.empatia, EMPATHY_THRESHOLD)).toBe(true);
 
-    const courageEntry = applySequence(createInitialJaguarStats(historyWithCaution), INNER_QUESTIONS, [0, 3, 3]);
-    expect(courageEntry.cautela).toBe(70);
+    const courageHistory = {
+      ramblaOutcome: 2 as const,
+      hummingbirdOutcome: "bad" as const,
+      riverChallengeOutcome: "current" as const,
+    };
+    const courageEntry = applySequence(createInitialJaguarStats(courageHistory), INNER_QUESTIONS, [0, 3, 3]);
+    expect(courageEntry.cautela).toBeLessThan(CAUTELA_THRESHOLD);
+    expect(getJaguarBranchAfterCautela(meetsJaguarThreshold(courageEntry.cautela, CAUTELA_THRESHOLD))).toBe("angry");
     const courage = applySequence(courageEntry, ANGRY_QUESTIONS, [1, 2, 1]);
-    expect(courage.valentia).toBe(71);
+    expect(courage.valentia).toBe(95);
     expect(meetsJaguarThreshold(courage.valentia, COURAGE_THRESHOLD)).toBe(true);
     expect(resolveFightOutcome(0, 3)).toBe("victory");
     expect(resolveFightOutcome(2, 3)).toBe("nightmare");

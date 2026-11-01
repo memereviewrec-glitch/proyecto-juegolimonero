@@ -3,13 +3,14 @@ import type { PhysicalSeedId } from "./seed-colors";
 
 type StoryInterludeProps = {
   text: string;
+  continueLabel?: string;
   seed?: PhysicalSeedId;
   seedBookOpened: boolean;
   onOpenSeedBook: (seed?: PhysicalSeedId) => void;
   onContinue: () => void;
 };
 
-export function StoryInterlude({ text, seed, seedBookOpened, onOpenSeedBook, onContinue }: StoryInterludeProps) {
+export function StoryInterlude({ text, continueLabel = "explorar", seed, seedBookOpened, onOpenSeedBook, onContinue }: StoryInterludeProps) {
   return (
     <div className="story-interlude" role="dialog" aria-label="Narración" tabIndex={0}>
       <div className="story-interlude-inner">
@@ -22,7 +23,7 @@ export function StoryInterlude({ text, seed, seedBookOpened, onOpenSeedBook, onC
             {seedBookOpened && <button className="story-continue-button" type="button" onClick={onContinue}>continuar el sendero <b aria-hidden="true">▶</b></button>}
           </>
         ) : (
-          <button className="story-continue-button" type="button" onClick={onContinue} autoFocus>explorar <b aria-hidden="true">▶</b></button>
+          <button className="story-continue-button" type="button" onClick={onContinue} autoFocus>{continueLabel} <b aria-hidden="true">▶</b></button>
         )}
       </div>
     </div>

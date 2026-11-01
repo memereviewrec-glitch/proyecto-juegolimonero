@@ -10,20 +10,22 @@ import { ElRioScene } from "../components/ElRioScene";
 import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
+import { JaguarScene } from "../components/JaguarScene";
 import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaChoice, RamblaOutcome } from "../components/ramblaConversationRules";
+import type { RiverChallengeOutcome } from "../components/riverChoiceRules";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredRamblaOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveRiverChallengeOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
-type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest" | "hummingbird" | "nueve-sentidos";
+type Scene = "room" | "dawn" | "ruins" | "gathering" | "river" | "river-challenge" | "el-rio" | "fire-forest" | "hummingbird" | "nueve-sentidos" | "jaguar";
 const SCENE_PRESENTATION: Record<Scene, { number: string; title: string; location: string | null }> = {
   room: { number: "01", title: "El local de ensayo", location: null },
   dawn: { number: "02", title: "El Cuchillo al amanecer", location: "ALBATERA · AMANECER" },
@@ -35,6 +37,7 @@ const SCENE_PRESENTATION: Record<Scene, { number: string; title: string; locatio
   "fire-forest": { number: "08", title: "El bosque ardiendo", location: "BOSQUE · DESPUÉS DEL INCENDIO" },
   hummingbird: { number: "09", title: "El colibrí", location: "BOSQUE QUEMADO · LA RAMA" },
   "nueve-sentidos": { number: "10", title: "Nueve sentidos", location: "CIELO NOCTURNO · NUEVE SENTIDOS" },
+  jaguar: { number: "11", title: "El Jaguar", location: "BOSQUE · CUEVA OCULTA DEL JAGUAR" },
 };
 type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona" | "hummingbird-stars" | "nueve-sentidos-cave";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
@@ -51,6 +54,7 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   "el-fuego": "fire-forest",
   ponzona: "hummingbird",
   "nueve-sentidos": "nueve-sentidos",
+  "el-jaguar": "jaguar",
 };
 
 const WALK_DURATION_MS = 2600;
@@ -132,17 +136,21 @@ function FlowerSprite({ open }: { open: boolean }) {
 
 type HomeProps = {
   openWorldExplorer?: boolean;
+  openJaguarPreview?: boolean;
+  openRiverChallengePreview?: boolean;
 };
 
-export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
+export default function Home({ openWorldExplorer = false, openJaguarPreview = false, openRiverChallengePreview = false }: HomeProps = {}) {
   const isDevelopment = import.meta.env.DEV;
-  const [scene, setScene] = useState<Scene>("room");
+  const previewTestMode = isDevelopment && (openJaguarPreview || openRiverChallengePreview) && new URLSearchParams(window.location.search).get("pruebas") === "1";
+  const [scene, setScene] = useState<Scene>(openJaguarPreview ? "jaguar" : openRiverChallengePreview ? "river-challenge" : "room");
   const [devSelectedScene, setDevSelectedScene] = useState<Scene>("room");
   const [devFriendPreview, setDevFriendPreview] = useState<DevFriendPreview>("saved");
-  const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer ? null : "opening");
+  const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer || openJaguarPreview || openRiverChallengePreview ? null : "opening");
   const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
-  const [seedBookOpen, setSeedBookOpen] = useState(openWorldExplorer);
+  const [seedBookOpen, setSeedBookOpen] = useState(openWorldExplorer && !openJaguarPreview && !openRiverChallengePreview);
+  const [previewChromeHidden, setPreviewChromeHidden] = useState(openJaguarPreview || openRiverChallengePreview);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
@@ -192,12 +200,15 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   const [riverSeedCollected, setRiverSeedCollected] = useState(() => persistedSeedIds.includes("espiritus-del-rio"));
   const [riverConversationComplete, setRiverConversationComplete] = useState(false);
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
+  const [riverChallengeOutcome, setRiverChallengeOutcome] = useState<RiverChallengeOutcome | null>(readStoredRiverChallengeOutcome);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
   const [fireSeedCollected, setFireSeedCollected] = useState(() => persistedSeedIds.includes("el-fuego"));
   const [ponzonaSeedCollected, setPonzonaSeedCollected] = useState(() => persistedSeedIds.includes("ponzona"));
   const [nueveSentidosSeedCollected, setNueveSentidosSeedCollected] = useState(() => persistedSeedIds.includes("nueve-sentidos"));
   const [nueveSentidosEpilogueReady, setNueveSentidosEpilogueReady] = useState(false);
+  const [jaguarSeedCollected, setJaguarSeedCollected] = useState(() => persistedSeedIds.includes("el-jaguar"));
   const [hummingbirdIsFriend, setHummingbirdIsFriend] = useState(readStoredHummingbirdFriendship);
+  const [hummingbirdOutcome, setHummingbirdOutcome] = useState<HummingbirdOutcome | null>(readStoredHummingbirdOutcome);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -571,8 +582,35 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   function completeNueveSentidosScene() {
     setNueveSentidosEpilogueReady(true);
   }
+  function collectJaguarSeed() {
+    if (!jaguarSeedCollected) {
+      setJaguarSeedCollected(true);
+      setNotice("La última semilla queda guardada en el Libro de Semillas.");
+    }
+    setJourneyMenuOpen(false);
+    openStorySeedBook("el-jaguar");
+  }
+
+  function returnHomeFromJaguar() {
+    setScene("room");
+    setStoryBeat(null);
+    setStorySeedPreview(null);
+    setSeedBookOpen(false);
+    setJourneyMenuOpen(false);
+    setJourneyRestartConfirm(false);
+    setPreviewChromeHidden(false);
+    setRoomView("scene");
+    setRoomAction(null);
+    setRoomPhase("portal");
+    setPortalOpen(true);
+    setPortalTransit(false);
+    setArrivalPortal(false);
+    setNotice("El limón atraviesa el portal y vuelve a casa. El Libro de Semillas sigue disponible.");
+  }
+
   function recordHummingbirdOutcome(outcome: HummingbirdOutcome) {
     setHummingbirdIsFriend(outcome === "good");
+    setHummingbirdOutcome(outcome);
     saveHummingbirdOutcome(outcome);
   }
 
@@ -629,6 +667,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     if (nextScene === "fire-forest" && !elRioSeedCollected) return;
     if (nextScene === "hummingbird" && !fireSeedCollected) return;
     if (nextScene === "nueve-sentidos" && !ponzonaSeedCollected) return;
+    if (nextScene === "jaguar" && !nueveSentidosSeedCollected) return;
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -743,8 +782,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     if (fireSeedCollected) found.add("el-fuego");
     if (ponzonaSeedCollected) found.add("ponzona");
     if (nueveSentidosSeedCollected) found.add("nueve-sentidos");
+    if (jaguarSeedCollected) found.add("el-jaguar");
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
-  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected, nueveSentidosSeedCollected]);
+  }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected, nueveSentidosSeedCollected, jaguarSeedCollected]);
 
   useEffect(() => {
     const merged = mergeDiscoveredSeedIds(SONG_CATALOG.map(song => song.id), persistedSeedIds, discoveredSongIds);
@@ -752,6 +792,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     setPersistedSeedIds(current => current.length === merged.length && current.every((id, index) => id === merged[index]) ? current : merged);
   }, [discoveredSongIds, persistedSeedIds]);
 
+  const hummingbirdFriendForCurrentRun = devFriendPreview === "saved" ? hummingbirdIsFriend : devFriendPreview === "friend";
   const canContinue = !storyBeat && !seedBookOpen && !portalTransit && !arrivalPortal && (
     (scene === "room" && roomView === "scene" && portalOpen)
     || (scene === "dawn" && seedCollected)
@@ -789,18 +830,18 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             ? "river"
             : storyBeat === "spirits-challenge"
               ? "river-challenge"
-              : storyBeat === "el-rio"
-                ? "el-rio"
-                : storyBeat === "ponzona"
-                  ? "hummingbird"
-              : storyBeat === "hummingbird-stars"
-                ? "nueve-sentidos"
-                : storyBeat === "nueve-sentidos-cave"
-                  ? "nueve-sentidos"
-                  : "fire-forest";
+                : storyBeat === "el-rio"
+                  ? "el-rio"
+                  : storyBeat === "ponzona"
+                    ? "hummingbird"
+                    : storyBeat === "hummingbird-stars"
+                      ? "nueve-sentidos"
+                      : storyBeat === "nueve-sentidos-cave"
+                        ? "jaguar"
+                        : "fire-forest";
     setScene(nextScene);
     if (storyBeat === "hummingbird-stars") {
-      setNotice(hummingbirdIsFriend
+      setNotice(hummingbirdFriendForCurrentRun
         ? "El cielo de Nueve sentidos se abre sobre el limón y su amigo."
         : "El cielo de Nueve sentidos se abre sobre el limón.");
     }
@@ -842,16 +883,16 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       showStory("fire-forest");
     } else if (scene === "fire-forest") {
       showStory("ponzona");
-      } else if (scene === "hummingbird") {
-        showStory("hummingbird-stars");
-      } else if (scene === "nueve-sentidos" && nueveSentidosSeedCollected && nueveSentidosEpilogueReady) {
-        setNueveSentidosEpilogueReady(false);
-        showStory("nueve-sentidos-cave");
-      }
+    } else if (scene === "hummingbird") {
+      showStory("hummingbird-stars");
+    } else if (scene === "nueve-sentidos" && nueveSentidosSeedCollected && nueveSentidosEpilogueReady) {
+      setNueveSentidosEpilogueReady(false);
+      showStory("nueve-sentidos-cave");
+    }
   }
 
   return (
-    <main className="explorer-shell">
+    <main className={`explorer-shell${openJaguarPreview || openRiverChallengePreview ? " explorer-shell-test-preview" : ""}`}>
       <header className="topbar">
         <a className="brand-lockup" href="#inicio" aria-label="Limonero Fuzz, inicio">
           <img src={gameAssetUrl("/limonero-mark.svg")} alt="" className="brand-icon" />
@@ -866,11 +907,11 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       <section className="intro-band" id="inicio">
         <div className="intro-copy">
           <div className="eyebrow"><span>DISCO · 10 CANCIONES</span><span className="eyebrow-line" /></div>
-          <h1>Diez pantallas.<br /><em>Un camino de vuelta.</em></h1>
-          <p>Del primer acorde en el local vacío al cielo nocturno de Nueve sentidos, cada mundo abre otra pregunta en el camino de vuelta.</p>
+          <h1>Once pantallas.<br /><em>Un camino de vuelta.</em></h1>
+          <p>Del primer acorde en el local vacío al encuentro con el dios del conocimiento, cada mundo abre otra pregunta en el camino de vuelta.</p>
         </div>
-        <div className="intro-stamp" aria-label="Diez pantallas en exploración">
-          <span className="stamp-big">10</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
+        <div className="intro-stamp" aria-label="Once pantallas en exploración">
+          <span className="stamp-big">11</span><span>PANTALLAS<br />EN EXPLORACIÓN</span>
         </div>
       </section>
 
@@ -905,6 +946,9 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
         <button className={`screen-tab ${scene === "nueve-sentidos" ? "active" : ""}`} onClick={() => setVisitedScene("nueve-sentidos")} disabled={!ponzonaSeedCollected || portalTransit || arrivalPortal}>
           <span className="tab-number">10</span><span><strong>Nueve sentidos</strong><small>Canción 09 · cielo nocturno</small></span><span className="tab-mark">{nueveSentidosSeedCollected ? "✓" : ponzonaSeedCollected ? "↗" : "⌑"}</span>
         </button>
+        <button className={`screen-tab ${scene === "jaguar" ? "active" : ""}`} onClick={() => setVisitedScene("jaguar")} disabled={!nueveSentidosSeedCollected || portalTransit || arrivalPortal}>
+          <span className="tab-number">11</span><span><strong>El Jaguar</strong><small>La última semilla · el sueño</small></span><span className="tab-mark">{jaguarSeedCollected ? "✓" : nueveSentidosSeedCollected ? "↗" : "⌑"}</span>
+        </button>
       </nav>
 
       {isDevelopment && <DevPlaytestTools
@@ -927,7 +971,8 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
-            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome, hummingbirdIsFriend)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome, hummingbirdFriendForCurrentRun)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {!previewChromeHidden && <>
             <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
             <button
               className="seedbook-toggle"
@@ -974,6 +1019,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             </aside>}
             </div>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
+            </>}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>
@@ -1043,15 +1089,26 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             scene === "river" ? (
               <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} onConversationComplete={() => setRiverConversationComplete(true)} />
             ) : scene === "river-challenge" ? (
-              <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={() => setRiverChallengeComplete(true)} />
+              <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={outcome => { setRiverChallengeOutcome(outcome); saveRiverChallengeOutcome(outcome); setRiverChallengeComplete(true); }} onPreviewContinue={openRiverChallengePreview ? () => setScene("jaguar") : undefined} />
             ) : scene === "el-rio" ? (
               <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} />
             ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
             ) : scene === "hummingbird" ? (
               <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} />
+            ) : scene === "nueve-sentidos" ? (
+              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} onComplete={completeNueveSentidosScene} hummingbirdIsFriend={hummingbirdFriendForCurrentRun} />
             ) : (
-              <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} onComplete={completeNueveSentidosScene} hummingbirdIsFriend={devFriendPreview === "saved" ? hummingbirdIsFriend : devFriendPreview === "friend"} />
+              <JaguarScene
+                key={`jaguar-${sceneReplayNonce}`}
+                seedCollected={jaguarSeedCollected}
+                onCollectSeed={collectJaguarSeed}
+                onReturnHome={returnHomeFromJaguar}
+                ramblaOutcome={ramblaOutcome}
+                hummingbirdOutcome={hummingbirdOutcome}
+                riverChallengeOutcome={riverChallengeOutcome}
+                testMode={previewTestMode}
+              />
             )
           )}
 

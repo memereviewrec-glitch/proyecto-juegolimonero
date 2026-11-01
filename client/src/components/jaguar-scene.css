@@ -1,0 +1,115 @@
+.jaguar-stage { position:relative; overflow:hidden; isolation:isolate; border-color:#4f3b39; background:#080a10; color:#f7efd8; }
+.jaguar-preview-layout { width:100%; min-width:0; }
+.jaguar-preview-layout-test { display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:12px; }
+.scene-stage.game-screen.jaguar-stage { width:min(100%,73vh); width:min(100%,73dvh); margin-inline:auto; }
+.jaguar-debug-panel { display:grid; min-width:0; gap:8px; padding:9px; border:1px dashed #d2ba8c99; background:#0c1115e6; box-shadow:0 2px 8px #05070a88; }
+.jaguar-forest { position:absolute; inset:0; overflow:hidden; background:#0a1014; }
+.jaguar-forest > img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 52%; image-rendering:pixelated; }
+.jaguar-forest > .jaguar-background-art { filter:saturate(.78) brightness(.68) hue-rotate(5deg); }
+.jaguar-forest > .jaguar-cave-art { filter:none; }
+.jaguar-forest > .jaguar-ending-art { filter:none; }
+.jaguar-forest-shade { position:absolute; inset:0; background:linear-gradient(180deg,#06101865 0%,#080d1650 34%,#070b1265 66%,#08090e99 100%),radial-gradient(ellipse at 50% 39%,#6d281735 0%,transparent 31%); }
+.jaguar-eyes { position:absolute; z-index:2; top:40%; left:50%; display:flex; gap:clamp(14px,3vw,28px); transform:translate(-50%,-50%); transition:opacity .35s ease,filter .35s ease; }
+.jaguar-eyes i { display:block; width:clamp(13px,2.2vw,23px); height:clamp(7px,1.1vw,12px); border-radius:50% 50% 35% 35%; background:#ffd77b; box-shadow:0 0 5px 2px #ffb64c,0 0 22px 9px #ed562c99; clip-path:ellipse(50% 45% at 50% 50%); animation:jaguar-eye-glint 2.6s steps(5,end) infinite; }
+.jaguar-eyes i:last-child { animation-delay:.16s; }
+.jaguar-character-art { position:absolute; z-index:3; top:9%; left:50%; width:clamp(180px,52%,560px); height:65%; transform:translateX(-50%); object-fit:contain; object-position:center top; image-rendering:pixelated; pointer-events:none; }
+.jaguar-character-art.is-angry { filter:drop-shadow(0 0 8px #d5493070); }
+.jaguar-character-art.is-confused { filter:drop-shadow(0 0 8px #bbc9cf70); }
+.jaguar-character-art.is-laughing { filter:drop-shadow(0 0 8px #d7aa4a70); }
+.jaguar-hummingbird { position:absolute; z-index:6; right:10%; bottom:25%; width:clamp(42px,8%,78px); height:auto; image-rendering:pixelated; filter:drop-shadow(0 0 8px #c7e9c777); }
+.jaguar-home-portal { position:absolute; z-index:6; top:44%; left:50%; width:clamp(120px,27%,220px); aspect-ratio:.7; transform:translate(-50%,-50%); border:4px ridge #e1c987; border-radius:50%; background:radial-gradient(ellipse at center,#eef0c8 0%,#7ed5d0 9%,#2c6e97 25%,#362a79 46%,#13152c 62%,#0e121c 70%); box-shadow:0 0 0 5px #79654a,0 0 24px 12px #5bb6db9c; animation:jaguar-portal-open 1.15s steps(6,end) both; }
+.jaguar-home-portal span { position:absolute; inset:16%; border:2px dashed #e8ce92; border-radius:50%; transform:rotate(-28deg) scaleY(.76); animation:jaguar-portal-swirl 9s linear infinite; }
+.jaguar-stats { position:static; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+.jaguar-player-stats { position:absolute; z-index:8; top:2.4%; left:2%; width:min(46%,300px); padding:7px; border:1px solid #b79d7290; background:#0c1115e6; box-shadow:0 2px 8px #05070a88; }
+.jaguar-stat { min-width:0; padding:6px 7px 7px; border:1px solid #b79d7261; background:#0a1015d9; box-shadow:0 2px 7px #04070b55; }
+.jaguar-stat > div:first-child { display:flex; justify-content:space-between; gap:3px; align-items:baseline; color:#eee5d2; font:8px/1.2 'DM Mono',monospace; }
+.jaguar-stat strong { color:#edce91; font-weight:700; font-size:9px; }
+.jaguar-stat-meter { height:4px; margin-top:5px; overflow:hidden; background:#363842; }
+.jaguar-stat-meter i { display:block; height:100%; background:#c69f5b; transition:width .24s steps(5,end); }
+.jaguar-stat-empatia .jaguar-stat-meter i { background:#86b9a1; }
+.jaguar-stat-ingenio .jaguar-stat-meter i { background:#92a9d2; }
+.jaguar-stat-valentia .jaguar-stat-meter i { background:#cb7962; }
+.jaguar-dialogue { position:absolute; z-index:10; left:50%; bottom:2.5%; width:min(88%,740px); max-height:66%; overflow:auto; transform:translateX(-50%); padding:clamp(10px,1.4vw,16px); border:3px solid #352b27; outline:1px solid #d0b880a3; background:linear-gradient(145deg,#131820d8,#0a0e14e3); color:#f5eddb; box-shadow:4px 5px 0 #040508cc,0 0 24px #05070b8c; scrollbar-color:#806b4d #14171e; animation:jaguar-dialogue-reveal 1.4s ease-in-out both; }
+.jaguar-dialogue-exiting { animation:jaguar-dialogue-fade-out 1.4s ease-in-out both; pointer-events:none; }
+.jaguar-dialogue-entering { animation:jaguar-dialogue-fade-in 1.4s ease-in-out both; }
+.jaguar-dialogue-transitioning,.jaguar-dialogue-entering { pointer-events:none; }
+.jaguar-feedback { margin:0 0 9px; padding:8px 10px; border-left:3px solid #c79551; background:#3b302277; color:#f2dcae; font:9px/1.5 'DM Mono',monospace; }
+.jaguar-speaker-row { display:flex; justify-content:space-between; gap:8px; align-items:center; color:#d0ac70; font:700 8px/1.2 'DM Mono',monospace; letter-spacing:.13em; }
+.jaguar-speaker-row small { color:#b7a98c; font:8px 'DM Mono',monospace; }
+.jaguar-prompt { margin:7px 0 11px; color:#fff4dc; font:clamp(10px,1.15vw,13px)/1.5 Georgia,serif; }
+.jaguar-prompt.is-jaguar { padding:9px 11px; border:2px solid #f5c65a; background:#e99531ed; color:#171006; box-shadow:3px 3px 0 #05070bbd; }
+.jaguar-answers { display:grid; grid-template-columns:1fr; gap:6px; }
+.jaguar-answer { display:flex; flex-direction:column; align-items:flex-start; gap:4px; width:100%; min-height:38px; padding:8px 10px; border:1px solid #d9a944a6; background:#05070bd9; color:#ffd875; text-align:left; cursor:pointer; touch-action:manipulation; transition:background .13s ease,border-color .13s ease,transform .13s ease; }
+.jaguar-answer:hover,.jaguar-answer:focus-visible { transform:translateX(2px); border-color:#ffe18b; background:#05070bf2; }
+.jaguar-answer > span { color:#ffd875; font:9px/1.4 'DM Mono',monospace; }
+.jaguar-answer > small { color:#edc45b; font:7px/1.3 'DM Mono',monospace; }
+.jaguar-check-card { color:#f0e7d4; }
+.jaguar-check-label { display:block; margin-bottom:7px; color:#d9b677; font:700 8px/1.25 'DM Mono',monospace; letter-spacing:.12em; }
+.jaguar-check-card > p { margin:7px 0; font:9px/1.5 'DM Mono',monospace; }
+.jaguar-skill-result { margin:0 auto; padding:13px 15px; border:2px solid #e6ad4a; background:linear-gradient(145deg,#11151beF,#070a0feF); color:#f8edd4; box-shadow:3px 4px 0 #030508cc,0 0 16px #bd812c40; text-align:center; }
+.jaguar-skill-message { margin:7px auto; max-width:52ch; color:#f4ead5; font:10px/1.5 Georgia,serif; }
+.jaguar-check-card .jaguar-check-rule { padding:7px 9px; border-left:2px solid #a3865e; background:#22262d; color:#d2c7b3; font-size:8px; }
+.jaguar-primary-button,.jaguar-reset-button { display:inline-flex; min-height:39px; align-items:center; justify-content:center; margin-top:8px; padding:8px 12px; border:1px solid #ddc184; background:#37332a; color:#fff1d0; font:700 8px/1.3 'DM Mono',monospace; text-align:center; cursor:pointer; touch-action:manipulation; }
+.jaguar-primary-button:hover,.jaguar-reset-button:hover { background:#504533; }
+.jaguar-last-roll { display:inline-block; margin-left:10px; color:#d7c6a1; font:8px 'DM Mono',monospace; }
+.jaguar-threshold { display:grid; grid-template-columns:auto 1fr; align-items:center; column-gap:8px; padding:8px; border:1px solid #625845; background:#1d2229; }
+.jaguar-threshold strong { grid-row:span 2; color:#e7ca8b; font:700 19px 'DM Mono',monospace; }
+.jaguar-threshold span { color:#d4c8b2; font:7px 'DM Mono',monospace; }
+.jaguar-threshold > i { grid-column:1/-1; height:6px; margin:6px 0 3px; overflow:hidden; background:#434047; }
+.jaguar-threshold > i b { display:block; height:100%; background:#a7b2d4; }
+.jaguar-outcome-note { padding:7px 9px; border-left:2px solid #d1ad69; background:#282920; color:#f0ddb1; }
+.jaguar-fight-threat { color:#ffcd9f; font-weight:700 !important; }
+.jaguar-revelation-card > p { margin-block:9px; }
+.jaguar-revelation-card strong { color:#d8b873; }
+.jaguar-nightmare-card blockquote,.jaguar-counsel-card blockquote,.jaguar-complete-card blockquote { margin:10px 0; padding:9px 11px; border-left:3px solid #d4b16e; background:#292822; color:#f4e6c2; font:italic 11px/1.5 Georgia,serif; }
+.jaguar-counsel-card > p { margin:7px 0; color:#e9ddc3; font:8px/1.5 'DM Mono',monospace; }
+.jaguar-seed-action { display:flex; justify-content:center; margin:11px 0 3px; }
+.jaguar-seed-button { display:flex; min-width:180px; min-height:58px; align-items:center; justify-content:center; gap:9px; padding:8px 13px; border:1px solid #e5cc8e; background:#29261e; color:#fff3d5; cursor:pointer; touch-action:manipulation; }
+.jaguar-seed-button .seed-glyph,.jaguar-seed-found .seed-glyph { width:27px; height:39px; filter:drop-shadow(0 0 6px #edcf82); }
+.jaguar-seed-button span,.jaguar-seed-found span { font:8px/1.4 'DM Mono',monospace; }
+.jaguar-seed-found { display:flex; align-items:center; gap:10px; color:#ead7a6; }
+.jaguar-reset-button { display:flex; margin:9px auto 0; background:#1a2027; }
+.jaguar-test-tools { position:static; display:flex; flex-wrap:wrap; align-items:center; gap:5px; width:100%; max-height:none; overflow:visible; padding:0; border:0; background:transparent; box-shadow:none; }
+.jaguar-test-tools > span { width:100%; color:#e6ca92; font:700 7px 'DM Mono',monospace; letter-spacing:.12em; }
+.jaguar-test-tools button { min-height:29px; padding:5px 7px; border:1px solid #74674f; background:#242a31; color:#f0e5cf; font:7px/1.2 'DM Mono',monospace; cursor:pointer; touch-action:manipulation; }
+.jaguar-test-tools button:hover { border-color:#e3c681; background:#35332d; }
+.jaguar-stage button:focus-visible,.jaguar-test-tools button:focus-visible { outline:3px dashed #fff1bd; outline-offset:2px; }
+@keyframes jaguar-eye-glint { 0%,43%,47%,100% { opacity:.86; } 45% { opacity:.28; } }
+@keyframes jaguar-dialogue-reveal { from { opacity:0; } to { opacity:1; } }
+@keyframes jaguar-dialogue-fade-out { from { opacity:1; } to { opacity:0; } }
+@keyframes jaguar-dialogue-fade-in { from { opacity:0; } to { opacity:1; } }
+@supports (view-transition-name: jaguar-dialogue) {
+  .jaguar-dialogue { view-transition-name:jaguar-dialogue; }
+  ::view-transition-group(jaguar-dialogue) { animation-duration:2.8s; }
+  ::view-transition-image-pair(jaguar-dialogue) { isolation:isolate; }
+  ::view-transition-old(jaguar-dialogue) { animation:jaguar-dialogue-fade-out 1.4s ease-in-out both; }
+  ::view-transition-new(jaguar-dialogue) { animation:jaguar-dialogue-fade-in 1.4s ease-in-out 1.4s both; }
+}
+@keyframes jaguar-portal-open { from { opacity:0; transform:translate(-50%,-50%) scale(.05); filter:brightness(2); } to { opacity:1; transform:translate(-50%,-50%) scale(1); filter:none; } }
+@keyframes jaguar-portal-swirl { to { transform:rotate(332deg) scaleY(.76); } }
+@media(min-width:900px) {
+  .jaguar-preview-layout-test { grid-template-columns:minmax(0,1fr) 280px; gap:12px; }
+  .jaguar-debug-panel { max-height:calc(100dvh - 24px); overflow-y:auto; }
+}
+@media(max-width:650px) {
+  .jaguar-player-stats { top:2%; left:2%; width:min(49%,250px); padding:5px; }
+  .jaguar-stats { gap:4px; }
+  .jaguar-stat { padding:4px; }
+  .jaguar-stat > div:first-child { font-size:7px; }
+  .jaguar-stat strong { font-size:8px; }
+  .jaguar-stat-meter { height:3px; margin-top:3px; }
+  .jaguar-dialogue { width:92%; max-height:62%; bottom:2%; padding:9px; }
+  .jaguar-answer { min-height:36px; padding:7px 8px; }
+  .jaguar-answer > span { font-size:8px; }
+  .jaguar-feedback { font-size:8px; }
+  .jaguar-test-tools { gap:4px; }
+  .jaguar-test-tools button { min-height:27px; font-size:6px; }
+  .jaguar-character-art { top:7%; height:62%; }
+  .jaguar-hummingbird { right:7%; bottom:29%; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .jaguar-eyes i,.jaguar-home-portal,.jaguar-home-portal span { animation:none; }
+  .jaguar-dialogue { animation:none; opacity:1; }
+  ::view-transition-old(jaguar-dialogue),::view-transition-new(jaguar-dialogue) { animation:none; }
+  .jaguar-eyes,.jaguar-character-art,.jaguar-stat-meter i,.jaguar-answer { transition:none; }
+}

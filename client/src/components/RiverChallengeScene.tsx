@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { LemonSprite } from "./GameSprites";
+import type { RiverChallengeOutcome } from "./riverChoiceRules";
 import "./river-challenge-scene.css";
 
 type ChallengePhase = "shore" | "inside" | "answer" | "complete";
 
-type RiverChallengeSceneProps = { onComplete: () => void };
+type RiverChallengeSceneProps = { onComplete: (outcome: RiverChallengeOutcome) => void; onPreviewContinue?: () => void };
 
-export function RiverChallengeScene({ onComplete }: RiverChallengeSceneProps) {
+export function RiverChallengeScene({ onComplete, onPreviewContinue }: RiverChallengeSceneProps) {
   const [phase, setPhase] = useState<ChallengePhase>("shore");
 
-  function completeChallenge() {
+  function completeChallenge(outcome: RiverChallengeOutcome) {
     setPhase("complete");
-    onComplete();
+    onComplete(outcome);
   }
 
   return (
@@ -25,8 +26,8 @@ export function RiverChallengeScene({ onComplete }: RiverChallengeSceneProps) {
       <div className="challenge-dialogue" role="status" aria-live="polite">
         {phase === "shore" && <><span>ESPÍRITUS DEL RÍO</span><p>Has escuchado nuestras aguas. Ahora entra en ellas y descubre si sabes distinguir corriente de espejismo.</p><button type="button" onClick={() => setPhase("inside")}>adentrarse en el río <b aria-hidden="true">▶</b></button></>}
         {phase === "inside" && <><span>ESPÍRITUS DEL RÍO</span><p>El fondo se mueve bajo tus patas. No hay orilla que te diga quién eres.</p><button type="button" onClick={() => setPhase("answer")}>escuchar el reto <b aria-hidden="true">▶</b></button></>}
-        {phase === "answer" && <><span>EL RÍO ESPEJO</span><p>¿Seguirás la corriente que no puedes ver, o volverás al fuego que ya conoces?</p><div className="challenge-choices"><button type="button" onClick={completeChallenge}>Seguir la corriente</button><button type="button" onClick={completeChallenge}>Mirar hacia la orilla</button></div></>}
-        {phase === "complete" && <><span>EL RÍO ESPEJO</span><p>La corriente acepta tu decisión y abre un descenso hacia el fondo del río.</p></>}
+        {phase === "answer" && <><span>EL RÍO ESPEJO</span><p>¿Seguirás la corriente que no puedes ver, o volverás al fuego que ya conoces?</p><div className="challenge-choices"><button type="button" onClick={() => completeChallenge("current")}>Seguir la corriente</button><button type="button" onClick={() => completeChallenge("shore")}>Mirar hacia la orilla</button></div></>}
+        {phase === "complete" && <><span>EL RÍO ESPEJO</span><p>La corriente acepta tu decisión y abre un descenso hacia el fondo del río.</p>{onPreviewContinue && <button type="button" onClick={onPreviewContinue}>Ver sus stats iniciales en Jaguar</button>}</>}
       </div>
     </div>
   );

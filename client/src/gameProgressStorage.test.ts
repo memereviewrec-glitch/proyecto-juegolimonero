@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, saveHummingbirdOutcome } from "./gameProgressStorage";
+import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRiverChallengeOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveRiverChallengeOutcome } from "./gameProgressStorage";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -54,5 +54,27 @@ describe("readStoredHummingbirdFriendship", () => {
 
     expect(readStoredHummingbirdOutcome()).toBe("good");
     expect(readStoredHummingbirdFriendship()).toBe(true);
+  });
+
+  it("persists the river challenge choice and removes it when progress is cleared", () => {
+    const values = new Map<string, string>();
+    const localStorage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); },
+      removeItem: (key: string) => { values.delete(key); },
+    };
+    vi.stubGlobal("window", { localStorage });
+
+    saveRiverChallengeOutcome("current");
+    expect(values.get(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY)).toBe("current");
+    expect(readStoredRiverChallengeOutcome()).toBe("current");
+
+    values.set(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, "invalid");
+    expect(readStoredRiverChallengeOutcome()).toBe(null);
+
+    saveRiverChallengeOutcome("shore");
+    expect(readStoredRiverChallengeOutcome()).toBe("shore");
+    expect(clearStoredGameProgress()).toBe(true);
+    expect(readStoredRiverChallengeOutcome()).toBe(null);
   });
 });

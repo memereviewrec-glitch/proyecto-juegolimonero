@@ -15,6 +15,7 @@ const BODY_PATHS: Record<PhysicalSeedId, string> = {
   "el-fuego": "M9 2h6l1 5 5 4-2 8-3 3v6l-5 2-5-4-4-7 2-8z",
   ponzona: "M10 1h5l2 5 4 5-2 9-4 2-1 7-5 2-4-5-3-6 2-8z",
   "nueve-sentidos": "M10 1h5l2 5 4 4v10l-3 3-2 7-4 1-4-4-4-7 2-9 3-3z",
+  "el-jaguar": "M9 1h6l1 5 5 4 1 8-4 3-1 7-5 3-5-4-4-6 2-8 3-3z",
 };
 
 export function SeedGlyph({ seed, className = "" }: Props) {

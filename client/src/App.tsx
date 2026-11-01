@@ -14,6 +14,12 @@ function Router() {
   if (import.meta.env.DEV && previewScreen === "explorar") {
     return <Home openWorldExplorer />;
   }
+  if (import.meta.env.DEV && previewScreen === "jaguar") {
+    return <Home openJaguarPreview />;
+  }
+  if (import.meta.env.DEV && previewScreen === "espiritus-rio") {
+    return <Home openRiverChallengePreview />;
+  }
   if (previewScreen === "colibri") {
     return <HummingbirdPreview />;
   }

@@ -772,3 +772,9 @@ body { background:#08070d; }
   .dev-playtest-controls label:last-child { grid-column:1 / -1; }
   .dev-playtest-controls select,.dev-playtest-controls button { min-height:32px; max-width:none; width:100%; font-size:10px; }
 }
+
+/* Previews de test: el lienzo conserva su proporción y los controles externos quedan fuera del juego. */
+.explorer-shell.explorer-shell-test-preview { position:relative; inset:auto; display:block; width:100%; height:auto; min-height:100dvh; overflow-x:hidden; overflow-y:auto; background:#08070d; }
+.explorer-shell-test-preview .workspace { position:relative; inset:auto; display:block; width:100%; height:auto; min-height:100dvh; max-width:none; margin:0; padding:12px; overflow:visible; border:0; background:#08070d; box-shadow:none; }
+.explorer-shell-test-preview .stage-column { width:min(calc(100vw - 24px),calc(88.5dvh + 292px),1400px); min-width:0; margin:0 auto; }
+.explorer-shell-test-preview .playfield-portrait { width:100%; margin:0; }

@@ -1,10 +1,12 @@
 import type { RiverConversationOutcome } from "./components/riverChoiceRules";
+import type { Branch } from "./gameRules";
 
 export type RamblaOutcomeValue = 1 | 2;
 export type HummingbirdOutcomeValue = "good" | "bad" | "neutral";
 export type RiverChallengeOutcomeValue = "current" | "shore";
 
 export const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
+export const DAWN_OUTCOME_STORAGE_KEY = "limonero-fuzz-dawn-outcome-v1";
 export const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
 export const HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY = "limonero-fuzz-hummingbird-friendship-v1";
 export const RIVER_CHALLENGE_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-challenge-outcome-v1";
@@ -19,6 +21,25 @@ export function readStoredSeedBookIds<Id extends string>(knownIds: readonly Id[]
     return [...new Set(parsed.filter((id): id is Id => typeof id === "string" && known.has(id)))];
   } catch {
     return [];
+  }
+}
+
+export function readStoredDawnOutcome(): Branch | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = window.localStorage.getItem(DAWN_OUTCOME_STORAGE_KEY);
+    return value === "A" || value === "B" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveDawnOutcome(outcome: Branch) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DAWN_OUTCOME_STORAGE_KEY, outcome);
+  } catch {
+    // El desenlace sigue disponible durante la sesión aunque el almacenamiento esté bloqueado.
   }
 }
 
@@ -124,6 +145,7 @@ export function clearStoredGameProgress(): boolean {
   if (typeof window === "undefined") return false;
   try {
     window.localStorage.removeItem(SEED_BOOK_STORAGE_KEY);
+    window.localStorage.removeItem(DAWN_OUTCOME_STORAGE_KEY);
     window.localStorage.removeItem(RAMBLA_ROUTE_STORAGE_KEY);
     window.localStorage.removeItem(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY);
     window.localStorage.removeItem(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY);

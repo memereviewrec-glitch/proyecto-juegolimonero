@@ -1,7 +1,56 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome } from "./gameProgressStorage";
+import { DAWN_OUTCOME_STORAGE_KEY, readStoredDawnOutcome, saveDawnOutcome, SEED_BOOK_STORAGE_KEY } from "./gameProgressStorage";
+import { createInitialJaguarStats } from "./components/jaguarRules";
 
 afterEach(() => vi.unstubAllGlobals());
+
+describe("desenlace guardado del amanecer", () => {
+  it("no añade una elección a partidas antiguas o sin almacenamiento de navegador", () => {
+    expect(readStoredDawnOutcome()).toBe(null);
+    expect(() => saveDawnOutcome("A")).not.toThrow();
+    vi.stubGlobal("window", { localStorage: { getItem: () => null } });
+    expect(readStoredDawnOutcome()).toBe(null);
+  });
+
+  it("conserva la última elección y recalcula su recompensa sin acumular puntos ni borrar semillas", () => {
+    const values = new Map<string, string>([[SEED_BOOK_STORAGE_KEY, '["intro","ventana"]']]);
+    vi.stubGlobal("window", { localStorage: {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); },
+      removeItem: (key: string) => { values.delete(key); },
+    } });
+    const stats = () => createInitialJaguarStats({
+      ramblaOutcome: null, hummingbirdOutcome: null, dawnOutcome: readStoredDawnOutcome(),
+    });
+
+    saveDawnOutcome("A");
+    expect(values.get(DAWN_OUTCOME_STORAGE_KEY)).toBe("A");
+    expect(stats()).toEqual({ cautela: 35, empatia: 35, ingenio: 35, valentia: 42 });
+    saveDawnOutcome("A");
+    expect(stats().valentia).toBe(42);
+    saveDawnOutcome("B");
+    expect(readStoredDawnOutcome()).toBe("B");
+    expect(stats()).toEqual({ cautela: 42, empatia: 35, ingenio: 35, valentia: 35 });
+    expect(values.get(SEED_BOOK_STORAGE_KEY)).toBe('["intro","ventana"]');
+
+    expect(clearStoredGameProgress()).toBe(true);
+    expect(readStoredDawnOutcome()).toBe(null);
+    expect(stats()).toEqual({ cautela: 35, empatia: 35, ingenio: 35, valentia: 35 });
+  });
+
+  it("ignora desenlaces no válidos", () => {
+    vi.stubGlobal("window", { localStorage: { getItem: () => "invalid" } });
+    expect(readStoredDawnOutcome()).toBe(null);
+  });
+
+  it("tolera el almacenamiento bloqueado sin impedir que continúe la sesión", () => {
+    const blocked = () => { throw new Error("Storage blocked"); };
+    vi.stubGlobal("window", { localStorage: { getItem: blocked, setItem: blocked } });
+    expect(readStoredDawnOutcome()).toBe(null);
+    expect(() => saveDawnOutcome("B")).not.toThrow();
+  });
+});
 
 describe("mergeDiscoveredSeedIds", () => {
   const catalog = ["intro", "ventana", "raices", "rambla"] as const;

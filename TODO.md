@@ -311,3 +311,8 @@
 - Repetir Rambla reinicia su conversación y su mecánica, pero conserva el último desenlace histórico para el HUD, la ruta del Río y las estadísticas iniciales de Jaguar hasta que una nueva resolución lo sustituya.
 - Al pulsar «Volver a casa» tras Jaguar, la sala reinicia su mecánica sin borrar semillas ni historial: su botón de avance no aparece hasta superarla de nuevo. Decisión explícita del usuario del 2 de noviembre de 2026.
 - Cobertura añadida: 13 pruebas de acceso a escenas y 6 de aislamiento de tareas diferidas. La suite combinada pasa con 78 pruebas.
+
+## [x] Recompensas de atributos en la escena del silbido
+- En «Ventana al sendero», silbar da exactamente +7 Valentía y observar/escuchar a los pájaros da exactamente +7 Cautela; no modifica los otros atributos.
+- El desenlace se aplica al ejecutar la acción final, se refleja en el HUD y se conserva al avanzar, recargar y reiniciar el encuentro del Jaguar.
+- Repetir la escena conserva la decisión previa hasta completar una nueva acción final, que la sustituye sin acumular recompensas; reiniciar el juego borra también esta decisión y no se alteran las semillas guardadas al repetir.

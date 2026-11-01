@@ -28,7 +28,7 @@ pnpm build:static
 ## Recorrido y reglas de juego
 
 1. **Aurora** es la introducción musical. El nombre visible es “Aurora”, pero el identificador persistente sigue siendo `intro`. No renombrarlo sin una migración compatible con el progreso ya guardado.
-2. **Ventana al sendero** presenta las animaciones de pájaros y silbido. Los cuadros de diálogo deben esperar a que terminen para no cubrirlas.
+2. **Ventana al sendero** presenta las animaciones de pájaros y silbido. Silbar aporta exactamente +7 Valentía; observar/escuchar a los pájaros, +7 Cautela. La decisión final actualiza el HUD y se guarda para las estadísticas heredadas del Jaguar. Los cuadros de diálogo deben esperar a que terminen las animaciones para no cubrirlas.
 3. **Raíces** pide apartar cuatro hojas de cada primer plano. Las inscripciones integradas en la piedra son exactamente `as above` y `so below`; descubrirlas ambas desbloquea la semilla y la canción de Raíces.
 4. **Rambla** comienza su conversación solo cuando el limón termina de caminar dentro del círculo de la hoguera. Tres decisiones se puntúan por mayoría: dos de tres determinan el desenlace. La ruta pacífica habilita exactamente tres palitos; un clic en un palito hace que el limón camine y lo recoja, y un clic en la hoguera mientras lleva una rama hace que la deposite en el centro. Al completar las tres, otro clic enciende el fuego. La ruta drástica muestra primero una advertencia narrativa lenta sobre el ataque de la secta y luego permite iniciar la tirada de habilidad para rodar.
 5. **La Orilla del Río Espejo** se desbloquea al recoger «Rambla». La piedra despierta a los Espíritus del Río y la conversación avanza en cuadros breves, con tres respuestas posibles por ruta. Tras la revelación aparece la semilla plateada de «Espíritus del río», que se recoge con un clic y se añade al Libro de Semillas.
@@ -46,6 +46,8 @@ En Rambla se prefieren textos evocadores a instrucciones literales. No añadir p
 ## Persistencia y repeticiones
 
 El Libro de Semillas usa la clave de `localStorage` `limonero-fuzz-seedbook-v1`. La colección de semillas/canciones es progreso global. Repetir una entrada debe cerrar el Libro y reiniciar solo los estados de ese minijuego, sin borrar la colección ni reiniciar el juego entero.
+
+El desenlace de **Ventana al sendero** usa `limonero-fuzz-dawn-outcome-v1`: A para silbar, B para observar/escuchar a los pájaros. Repetir la escena o reiniciar su conversación mantiene la decisión anterior hasta ejecutar un nuevo desenlace, que la sustituye sin acumular puntos. Las partidas antiguas sin esa clave no reciben una bonificación inventada. Reiniciar el juego borra también esta decisión.
 
 Repetir **Rambla** desde el Libro no cambia un final del Jaguar automáticamente: solo actualiza el desenlace previo activo cuando se termina la escena. Después, al repetir **El Jaguar** desde su entrada del Libro, el encuentro se reinicia y recalcula las stats iniciales con las decisiones previas vigentes; solo una nueva partida puede producir otro final. La semilla del Jaguar permanece descubierta. Actualmente el juego conserva la colección, pero no un historial de los finales anteriores del Jaguar.
 

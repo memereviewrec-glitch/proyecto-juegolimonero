@@ -23,7 +23,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import { isSceneUnlocked, type GameScene } from "../sceneAccessRules";
 import { createAttemptTaskScope } from "../attemptTaskScope";
@@ -194,6 +194,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [scoreB, setScoreB] = useState(0);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [pendingBranch, setPendingBranch] = useState<Branch | null>(null);
+  const [dawnOutcome, setDawnOutcome] = useState<Branch | null>(readStoredDawnOutcome);
   const [birdsPassed, setBirdsPassed] = useState(false);
   const [dawnOutcomeAnimationRunning, setDawnOutcomeAnimationRunning] = useState(false);
   const [sunRisen, setSunRisen] = useState(false);
@@ -234,11 +235,12 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [lemonWhistling, setLemonWhistling] = useState(false);
   const [notice, setNotice] = useState("");
   const jaguarHistory = useMemo<JaguarHistory>(() => ({
+    dawnOutcome,
     ramblaOutcome: ramblaHistoryOutcome,
     hummingbirdOutcome,
     riverConversationOutcome,
     riverChallengeOutcome,
-  }), [ramblaHistoryOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
+  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
   const initialJaguarStats = useMemo(() => createInitialJaguarStats(jaguarHistory), [jaguarHistory]);
   const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<{ history: JaguarHistory; stats: JaguarStats } | null>(null);
   const jaguarHudStats = jaguarStatsSnapshot?.history === jaguarHistory ? jaguarStatsSnapshot.stats : initialJaguarStats;
@@ -494,6 +496,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   function whistle(outcome: Branch | null = branch) {
     if (outcome !== "A" || sunRisen) return;
     const animationDuration = motionDuration(LEMON_WHISTLE_DURATION_MS);
+    setDawnOutcome(outcome);
+    saveDawnOutcome(outcome);
     setBranch(outcome);
     setDawnOutcomeAnimationRunning(animationDuration > 0);
     playWhistle("lemon");
@@ -508,6 +512,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   function listenToBirds(outcome: Branch | null = branch) {
     if (outcome !== "B" || birdsPassed || sunRisen) return;
     const animationDuration = motionDuration(BIRD_FLYBY_DURATION_MS);
+    setDawnOutcome(outcome);
+    saveDawnOutcome(outcome);
     setBranch(outcome);
     setDawnOutcomeAnimationRunning(animationDuration > 0);
     playWhistle("birds");
@@ -1184,6 +1190,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 onCollectSeed={collectJaguarSeed}
                 onReturnHome={returnHomeFromJaguar}
                 onStatsChange={reportJaguarStats}
+                dawnOutcome={dawnOutcome}
                 ramblaOutcome={ramblaHistoryOutcome}
                 hummingbirdOutcome={hummingbirdOutcome}
                 riverConversationOutcome={riverConversationOutcome}

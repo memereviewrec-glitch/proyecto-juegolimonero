@@ -1,8 +1,10 @@
 import type { RiverChallengeOutcome, RiverConversationOutcome } from "./riverChoiceRules";
+import type { Branch } from "../gameRules";
 
 export type JaguarStat = "cautela" | "empatia" | "ingenio" | "valentia";
 export type JaguarStats = Record<JaguarStat, number>;
 export type JaguarHistory = {
+  dawnOutcome?: Branch | null;
   ramblaOutcome: 1 | 2 | null;
   hummingbirdOutcome: "good" | "bad" | "neutral" | null;
   riverConversationOutcome?: RiverConversationOutcome | null;
@@ -82,6 +84,11 @@ export function createInitialJaguarStats(history: JaguarHistory): JaguarStats {
     ingenio: BASE_STAT,
     valentia: BASE_STAT,
   };
+  if (history.dawnOutcome === "A") {
+    stats = applyJaguarEffects(stats, { valentia: 7 });
+  } else if (history.dawnOutcome === "B") {
+    stats = applyJaguarEffects(stats, { cautela: 7 });
+  }
   if (history.ramblaOutcome === 1) {
     stats = applyJaguarEffects(stats, { cautela: 7, empatia: 7 });
   } else if (history.ramblaOutcome === 2) {

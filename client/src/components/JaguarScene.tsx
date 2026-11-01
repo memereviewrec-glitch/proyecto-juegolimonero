@@ -116,7 +116,7 @@ function runDialogueTransition(update: () => void, schedule: (callback: () => vo
   else schedule(finishTransition, 2800);
 }
 
-export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, stats, onStatsChange, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, stats, onStatsChange, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -126,7 +126,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     dialogueTransitionInProgress = false;
   }, [attemptTasks]);
   const transitionAction = (update: () => void) => () => runDialogueTransition(attemptTasks.guard(update), attemptTasks.schedule, attemptTasks.guard);
-  const history = useMemo<JaguarHistory>(() => ({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome }), [ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
+  const history = useMemo<JaguarHistory>(() => ({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome }), [dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
   const initialStats = useMemo(() => createInitialJaguarStats(history), [history]);
   const setStats = onStatsChange;
   const [phase, setPhase] = useState<Phase>("inner");

@@ -22,6 +22,41 @@ import {
 } from "./jaguarRules";
 
 describe("reglas de El Jaguar", () => {
+  it("silbar suma exactamente 7 de Valentía y observar a los pájaros suma 7 de Cautela", () => {
+    const history = { ramblaOutcome: null, hummingbirdOutcome: null };
+    expect(createInitialJaguarStats({ ...history, dawnOutcome: "A" })).toEqual({
+      cautela: 35, empatia: 35, ingenio: 35, valentia: 42,
+    });
+    expect(createInitialJaguarStats({ ...history, dawnOutcome: "B" })).toEqual({
+      cautela: 42, empatia: 35, ingenio: 35, valentia: 35,
+    });
+    expect(createInitialJaguarStats({ ...history, dawnOutcome: null })).toEqual(createInitialJaguarStats(history));
+  });
+
+  it("recalcula una sola recompensa del amanecer sin acumularla al repetir o cambiar de ruta", () => {
+    const history = { ramblaOutcome: null, hummingbirdOutcome: null, dawnOutcome: "A" as const };
+    const first = createInitialJaguarStats(history);
+    expect(createInitialJaguarStats(history)).toEqual(first);
+    expect(createInitialJaguarStats({ ...history, dawnOutcome: "B" })).toEqual({
+      cautela: 42, empatia: 35, ingenio: 35, valentia: 35,
+    });
+  });
+
+  it("combina la recompensa del amanecer con Rambla, el colibrí y ambas decisiones del río", () => {
+    const history = {
+      ramblaOutcome: 1 as const,
+      hummingbirdOutcome: "good" as const,
+      riverConversationOutcome: { route: "pacifico" as const, choiceIndex: 1 },
+      riverChallengeOutcome: "current" as const,
+    };
+    expect(createInitialJaguarStats({ ...history, dawnOutcome: "A" })).toEqual({
+      cautela: 42, empatia: 52, ingenio: 35, valentia: 52,
+    });
+    expect(createInitialJaguarStats({ ...history, dawnOutcome: "B" })).toEqual({
+      cautela: 49, empatia: 52, ingenio: 35, valentia: 45,
+    });
+  });
+
   it("inclina las estadísticas iniciales con las decisiones guardadas de Rambla y el colibrí", () => {
     expect(createInitialJaguarStats({ ramblaOutcome: 1, hummingbirdOutcome: "good" })).toEqual({
       cautela: 42,

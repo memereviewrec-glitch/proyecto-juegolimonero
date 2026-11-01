@@ -28,6 +28,8 @@ const STICK_SPOTS: StickSpot[] = [
   { id: 3, left: 44, top: 86, rotation: 38 },
 ];
 
+const CAMPFIRE_DEPARTURE_POINT: WalkPoint = { x: 85, y: 86 };
+
 const WALKABLE_PATH: readonly PathBound[] = [
   { y: 64, left: 44, right: 56 },
   { y: 74, left: 18, right: 82 },
@@ -108,9 +110,11 @@ export function CampfireScene({
   const worldRef = useRef<HTMLDivElement>(null);
   const walkTimer = useRef<number | null>(null);
   const responseTimer = useRef<number | null>(null);
+  const ignitionTimer = useRef<number | null>(null);
   const responseLocked = useRef(false);
   const [lemonPoint, setLemonPoint] = useState<WalkPoint>({ x: 22, y: 86 });
   const [walking, setWalking] = useState(false);
+  const [ignitionSequenceStarted, setIgnitionSequenceStarted] = useState(false);
   const [skillCheckStarted, setSkillCheckStarted] = useState(false);
   const [warningReady, setWarningReady] = useState(false);
   const [responseGesture, setResponseGesture] = useState<RamblaChoice["gesture"] | null>(null);
@@ -125,6 +129,8 @@ export function CampfireScene({
   const showCampfireStatus = !seedCollected && (sticksUnlocked || escapeSeedAvailable || fireStage !== "unlit");
   const status = escapeSeedAvailable
       ? "Una luz turquesa espera donde termina la caída."
+    : ignitionSequenceStarted
+      ? "El limón se aparta del círculo."
     : fireStage === "lighting"
       ? "La llama aprende a respirar."
     : fireStage === "seed"
@@ -140,6 +146,8 @@ export function CampfireScene({
       : "Rambla";
   const statusDetail = escapeSeedAvailable
       ? "La brisa trae un destello desde el sendero oscuro."
+      : ignitionSequenceStarted
+        ? "La chispa espera a que termine su paso."
       : fireStage === "lighting"
         ? "Las sombras retroceden al calor recién nacido."
     : fireStage === "seed"
@@ -157,6 +165,7 @@ export function CampfireScene({
   useEffect(() => () => {
     if (walkTimer.current !== null) window.clearTimeout(walkTimer.current);
     if (responseTimer.current !== null) window.clearTimeout(responseTimer.current);
+    if (ignitionTimer.current !== null) window.clearTimeout(ignitionTimer.current);
   }, []);
 
   function chooseConversation(choice: RamblaChoice) {
@@ -213,18 +222,26 @@ export function CampfireScene({
   }
 
   function handleCampfireTargetClick() {
-    if (walking || fireStage !== "unlit") return;
+    if (walking || fireStage !== "unlit" || ignitionSequenceStarted) return;
     if (selectedStickId !== null) {
       const dropPoint = { ...CAMPFIRE_DROP_POINT };
       if (!pathSegmentIsWalkable(lemonPoint, dropPoint)) return;
       moveLemon(dropPoint, () => onPlaceStick(dropPoint, false));
     } else if (allSticksPlaced) {
-      onIgnite();
+      if (!pathSegmentIsWalkable(lemonPoint, CAMPFIRE_DEPARTURE_POINT)) return;
+      setIgnitionSequenceStarted(true);
+      moveLemon(CAMPFIRE_DEPARTURE_POINT, () => {
+        ignitionTimer.current = window.setTimeout(() => {
+          ignitionTimer.current = null;
+          setIgnitionSequenceStarted(false);
+          onIgnite();
+        }, motionDuration(360));
+      });
     }
   }
 
   function handleWorldClick(event: MouseEvent<HTMLDivElement>) {
-    if (escapeSucceeded || conversationReady || skillCheckActive || selectedStickId !== null) return;
+    if (escapeSucceeded || conversationReady || skillCheckActive || selectedStickId !== null || ignitionSequenceStarted) return;
     if (walking) return;
     if (event.target instanceof Element && event.target.closest("button, .campfire-lemon, .campfire-flame, .campfire-stack, .rambla-overlay")) return;
     const world = worldRef.current;
@@ -239,7 +256,7 @@ export function CampfireScene({
   }
 
   function handleWorldKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (escapeSucceeded || conversationReady || skillCheckActive || selectedStickId !== null) return;
+    if (escapeSucceeded || conversationReady || skillCheckActive || selectedStickId !== null || ignitionSequenceStarted) return;
     if (walking) return;
     if (event.target instanceof Element && event.target.closest("button, input, .rambla-overlay")) return;
     const next = { ...lemonPoint };
@@ -304,9 +321,9 @@ export function CampfireScene({
 
         {sticksUnlocked && fireStage === "unlit" && (
           <button
-            className={`campfire-center-target${selectedStickId !== null || allSticksPlaced ? " is-ready" : ""}${selectedStickId === null && !allSticksPlaced || walking ? " is-walk-through" : ""}`}
+            className={`campfire-center-target${selectedStickId !== null || allSticksPlaced ? " is-ready" : ""}${(selectedStickId === null && !allSticksPlaced) || walking || ignitionSequenceStarted ? " is-walk-through" : ""}`}
             type="button"
-            disabled={selectedStickId === null && !allSticksPlaced || walking}
+            disabled={selectedStickId === null && !allSticksPlaced || walking || ignitionSequenceStarted}
             onClick={handleCampfireTargetClick}
             aria-label={selectedStickId === null
               ? allSticksPlaced ? "Encender la hoguera" : "Círculo de piedra junto a la hoguera"

@@ -144,7 +144,7 @@
 ## [x] Tres palitos y gestos automáticos en Rambla
 - La rama pacífica ofrece exactamente tres palitos marrones, más pequeños en pantalla. Al pulsar un palito, el limón camina hasta él y lo recoge sin una segunda pulsación.
 - Con un palito cargado, basta pulsar el centro de la hoguera: el limón recorre la senda y lo deposita allí automáticamente. Los callbacks conservan las comprobaciones de proximidad y movimiento para evitar recogidas o depósitos remotos.
-- Cuando las tres ramas están colocadas, pulsar la hoguera inicia una animación final más fluida, con tres leños pequeños y una llama pixelada más detallada.
+- Cuando las tres ramas están colocadas, pulsar la hoguera hace que el limón se aparte hacia un lado del sendero; al llegar, comienza la animación final con tres leños pequeños y una llama pixelada más detallada. La semilla turquesa de Rambla aparece debajo del fuego, más abajo en el lienzo y sin salirse de la pantalla de juego.
 - El texto de apoyo evita instrucciones literales como «acerca el palito al centro» y usa mensajes poéticos e indirectos.
 
 ## [x] Recoger cada semilla con un clic y distinguir sus colores

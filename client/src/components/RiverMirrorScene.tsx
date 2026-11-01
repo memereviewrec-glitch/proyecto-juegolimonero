@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { gameAssetUrl } from "../gameAudio";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
-import { getRiverChoiceConsequence, type RiverRoute } from "./riverChoiceRules";
+import { getRiverChoiceConsequence, type RiverConversationOutcome, type RiverRoute } from "./riverChoiceRules";
 import "./river-mirror-scene.css";
 
 type RiverStep = "arrival" | "spirits-1" | "spirits-2" | "spirits-3" | "answer" | "revelation-1" | "revelation-2" | "ending";
@@ -12,6 +12,7 @@ type RiverMirrorSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
   onConversationComplete: () => void;
+  onChoiceSelected: (outcome: RiverConversationOutcome) => void;
 };
 
 const RIVER_DIALOGUE = {
@@ -64,7 +65,7 @@ const NEXT_LABEL: Partial<Record<RiverStep, string>> = {
   "revelation-2": "seguir la corriente",
 };
 
-export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConversationComplete }: RiverMirrorSceneProps) {
+export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConversationComplete, onChoiceSelected }: RiverMirrorSceneProps) {
   const [step, setStep] = useState<RiverStep>("arrival");
   const [stoneStatus, setStoneStatus] = useState<"ground" | "throwing" | "thrown">("ground");
   const [rippleVisible, setRippleVisible] = useState(false);
@@ -123,6 +124,7 @@ export function RiverMirrorScene({ route, seedCollected, onCollectSeed, onConver
   function chooseAnswer(answer: string, choiceIndex: number) {
     setSelectedAnswer(answer);
     setSelectedChoiceIndex(choiceIndex);
+    onChoiceSelected({ route, choiceIndex });
     setStep("revelation-1");
   }
 

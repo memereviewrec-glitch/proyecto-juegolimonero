@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRiverChallengeOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveRiverChallengeOutcome } from "./gameProgressStorage";
+import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome } from "./gameProgressStorage";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -76,5 +76,27 @@ describe("readStoredHummingbirdFriendship", () => {
     expect(readStoredRiverChallengeOutcome()).toBe("shore");
     expect(clearStoredGameProgress()).toBe(true);
     expect(readStoredRiverChallengeOutcome()).toBe(null);
+  });
+
+  it("persists the first river conversation route and answer, validates them, and clears them on restart", () => {
+    const values = new Map<string, string>();
+    const localStorage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); },
+      removeItem: (key: string) => { values.delete(key); },
+    };
+    vi.stubGlobal("window", { localStorage });
+
+    saveRiverConversationOutcome({ route: "drastico", choiceIndex: 2 });
+    expect(values.get(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY)).toBe('{"route":"drastico","choiceIndex":2}');
+    expect(readStoredRiverConversationOutcome()).toEqual({ route: "drastico", choiceIndex: 2 });
+
+    values.set(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, '{"route":"unknown","choiceIndex":1}');
+    expect(readStoredRiverConversationOutcome()).toBe(null);
+    values.set(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, '{"route":"pacifico","choiceIndex":3}');
+    expect(readStoredRiverConversationOutcome()).toBe(null);
+
+    expect(clearStoredGameProgress()).toBe(true);
+    expect(readStoredRiverConversationOutcome()).toBe(null);
   });
 });

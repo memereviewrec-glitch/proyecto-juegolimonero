@@ -16,12 +16,12 @@ import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaChoice, RamblaOutcome } from "../components/ramblaConversationRules";
-import type { RiverChallengeOutcome } from "../components/riverChoiceRules";
+import type { RiverChallengeOutcome, RiverConversationOutcome } from "../components/riverChoiceRules";
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveRiverChallengeOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
@@ -201,6 +201,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [riverConversationComplete, setRiverConversationComplete] = useState(false);
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
   const [riverChallengeOutcome, setRiverChallengeOutcome] = useState<RiverChallengeOutcome | null>(readStoredRiverChallengeOutcome);
+  const [riverConversationOutcome, setRiverConversationOutcome] = useState<RiverConversationOutcome | null>(readStoredRiverConversationOutcome);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
   const [fireSeedCollected, setFireSeedCollected] = useState(() => persistedSeedIds.includes("el-fuego"));
   const [ponzonaSeedCollected, setPonzonaSeedCollected] = useState(() => persistedSeedIds.includes("ponzona"));
@@ -545,6 +546,11 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     if (riverSeedCollected) return;
     setRiverSeedCollected(true);
     setNotice("La semilla plateada de «Espíritus del río» queda en el Libro de Semillas.");
+  }
+
+  function recordRiverConversationChoice(outcome: RiverConversationOutcome) {
+    setRiverConversationOutcome(outcome);
+    saveRiverConversationOutcome(outcome);
   }
 
   function collectElRioSeed() {
@@ -1087,7 +1093,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             />
           ) : (
             scene === "river" ? (
-              <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} onConversationComplete={() => setRiverConversationComplete(true)} />
+              <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} onConversationComplete={() => setRiverConversationComplete(true)} onChoiceSelected={recordRiverConversationChoice} />
             ) : scene === "river-challenge" ? (
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={outcome => { setRiverChallengeOutcome(outcome); saveRiverChallengeOutcome(outcome); setRiverChallengeComplete(true); }} onPreviewContinue={openRiverChallengePreview ? () => setScene("jaguar") : undefined} />
             ) : scene === "el-rio" ? (
@@ -1106,6 +1112,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 onReturnHome={returnHomeFromJaguar}
                 ramblaOutcome={ramblaOutcome}
                 hummingbirdOutcome={hummingbirdOutcome}
+                riverConversationOutcome={riverConversationOutcome}
                 riverChallengeOutcome={riverChallengeOutcome}
                 testMode={previewTestMode}
               />

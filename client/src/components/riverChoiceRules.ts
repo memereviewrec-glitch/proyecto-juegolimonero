@@ -1,5 +1,6 @@
 export type RiverRoute = "pacifico" | "drastico";
 export type RiverChallengeOutcome = "current" | "shore";
+export type RiverConversationOutcome = { route: RiverRoute; choiceIndex: number };
 
 export type RiverChoiceConsequence = {
   reply: string;

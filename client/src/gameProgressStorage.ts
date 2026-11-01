@@ -1,3 +1,5 @@
+import type { RiverConversationOutcome } from "./components/riverChoiceRules";
+
 export type RamblaOutcomeValue = 1 | 2;
 export type HummingbirdOutcomeValue = "good" | "bad" | "neutral";
 export type RiverChallengeOutcomeValue = "current" | "shore";
@@ -6,6 +8,7 @@ export const SEED_BOOK_STORAGE_KEY = "limonero-fuzz-seedbook-v1";
 export const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
 export const HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY = "limonero-fuzz-hummingbird-friendship-v1";
 export const RIVER_CHALLENGE_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-challenge-outcome-v1";
+export const RIVER_CONVERSATION_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-conversation-outcome-v1";
 
 export function readStoredSeedBookIds<Id extends string>(knownIds: readonly Id[]): Id[] {
   if (typeof window === "undefined") return [];
@@ -54,6 +57,19 @@ export function readStoredRiverChallengeOutcome(): RiverChallengeOutcomeValue | 
   }
 }
 
+export function readStoredRiverConversationOutcome(): RiverConversationOutcome | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY) ?? "null");
+    if (typeof parsed !== "object" || parsed === null) return null;
+    const { route, choiceIndex } = parsed as Record<string, unknown>;
+    if ((route !== "pacifico" && route !== "drastico") || !Number.isInteger(choiceIndex) || Number(choiceIndex) < 0 || Number(choiceIndex) > 2) return null;
+    return { route, choiceIndex: Number(choiceIndex) };
+  } catch {
+    return null;
+  }
+}
+
 export function saveHummingbirdOutcome(outcome: HummingbirdOutcomeValue) {
   if (typeof window === "undefined") return;
   try {
@@ -69,6 +85,15 @@ export function saveRiverChallengeOutcome(outcome: RiverChallengeOutcomeValue) {
     window.localStorage.setItem(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, outcome);
   } catch {
     // El desenlace sigue disponible durante la sesión aunque el almacenamiento esté bloqueado.
+  }
+}
+
+export function saveRiverConversationOutcome(outcome: RiverConversationOutcome) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, JSON.stringify(outcome));
+  } catch {
+    // La elección sigue disponible durante la sesión aunque el almacenamiento esté bloqueado.
   }
 }
 
@@ -102,6 +127,7 @@ export function clearStoredGameProgress(): boolean {
     window.localStorage.removeItem(RAMBLA_ROUTE_STORAGE_KEY);
     window.localStorage.removeItem(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY);
     window.localStorage.removeItem(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY);
+    window.localStorage.removeItem(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY);
     return true;
   } catch {
     return false;

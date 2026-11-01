@@ -120,8 +120,8 @@ function runDialogueTransition(update: () => void) {
 
 const transitionAction = (update: () => void) => () => runDialogueTransition(update);
 
-export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverChallengeOutcome, seedCollected, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
-  const history = useMemo<JaguarHistory>(() => ({ ramblaOutcome, hummingbirdOutcome, riverChallengeOutcome }), [ramblaOutcome, hummingbirdOutcome, riverChallengeOutcome]);
+export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
+  const history = useMemo<JaguarHistory>(() => ({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome }), [ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
   const initialStats = useMemo(() => createInitialJaguarStats(history), [history]);
   const [stats, setStats] = useState<JaguarStats>(initialStats);
   const [phase, setPhase] = useState<Phase>("inner");

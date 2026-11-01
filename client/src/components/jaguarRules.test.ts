@@ -60,6 +60,26 @@ describe("reglas de El Jaguar", () => {
     });
   });
 
+  it("incorpora cada respuesta de la primera conversación del Río en Cautela o Valentía, nunca en Ingenio", () => {
+    const cases = [
+      [{ route: "pacifico", choiceIndex: 0 }, { cautela: 39, empatia: 35, ingenio: 35, valentia: 35 }],
+      [{ route: "pacifico", choiceIndex: 1 }, { cautela: 35, empatia: 35, ingenio: 35, valentia: 39 }],
+      [{ route: "pacifico", choiceIndex: 2 }, { cautela: 38, empatia: 35, ingenio: 35, valentia: 35 }],
+      [{ route: "drastico", choiceIndex: 0 }, { cautela: 35, empatia: 35, ingenio: 35, valentia: 40 }],
+      [{ route: "drastico", choiceIndex: 1 }, { cautela: 40, empatia: 35, ingenio: 35, valentia: 35 }],
+      [{ route: "drastico", choiceIndex: 2 }, { cautela: 37, empatia: 35, ingenio: 35, valentia: 38 }],
+    ] as const;
+    for (const [riverConversationOutcome, expected] of cases) {
+      expect(createInitialJaguarStats({ ramblaOutcome: null, hummingbirdOutcome: null, riverConversationOutcome })).toEqual(expected);
+    }
+    expect(createInitialJaguarStats({
+      ramblaOutcome: null,
+      hummingbirdOutcome: null,
+      riverConversationOutcome: { route: "pacifico", choiceIndex: 1 },
+      riverChallengeOutcome: "current",
+    })).toEqual({ cautela: 35, empatia: 35, ingenio: 35, valentia: 45 });
+  });
+
   it("deja la elección entre Empatía y Valentía para la pregunta 3/3 de la rama furiosa", () => {
     expect(ANGRY_QUESTIONS.map(question => question.answers.length)).toEqual([3, 3, 2]);
     expect(ANGRY_QUESTIONS[2].answers.map(answer => answer.approach)).toEqual(["empatia", "valentia"]);

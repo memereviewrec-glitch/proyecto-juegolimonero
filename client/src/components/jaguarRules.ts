@@ -1,10 +1,11 @@
-import type { RiverChallengeOutcome } from "./riverChoiceRules";
+import type { RiverChallengeOutcome, RiverConversationOutcome } from "./riverChoiceRules";
 
 export type JaguarStat = "cautela" | "empatia" | "ingenio" | "valentia";
 export type JaguarStats = Record<JaguarStat, number>;
 export type JaguarHistory = {
   ramblaOutcome: 1 | 2 | null;
   hummingbirdOutcome: "good" | "bad" | "neutral" | null;
+  riverConversationOutcome?: RiverConversationOutcome | null;
   riverChallengeOutcome?: RiverChallengeOutcome | null;
 };
 export type JaguarAnswer = {
@@ -19,6 +20,19 @@ export type JaguarQuestion = {
 };
 
 const BASE_STAT = 35;
+const RIVER_CONVERSATION_EFFECTS = {
+  pacifico: [
+    { cautela: 4 },
+    { valentia: 4 },
+    { cautela: 3 },
+  ],
+  drastico: [
+    { valentia: 5 },
+    { cautela: 5 },
+    { cautela: 2, valentia: 3 },
+  ],
+} as const satisfies Record<"pacifico" | "drastico", readonly Partial<JaguarStats>[]>;
+
 export const EMPATHY_THRESHOLD = 50;
 export const INGENUITY_THRESHOLD = 85;
 export const INGENUITY_RIDDLE = "Caminas sobre la escoria del mundo y los espejismos de la noche, rodeado de tesoros que no puedes tocar y peligros que solo existen mientras crees en ellos. ¿Qué milagro permite que la flor florezca en el cieno sin ensuciar sus pétalos?";
@@ -73,6 +87,11 @@ export function createInitialJaguarStats(history: JaguarHistory): JaguarStats {
     stats = applyJaguarEffects(stats, { cautela: 7 });
   } else if (history.hummingbirdOutcome === "bad") {
     stats = applyJaguarEffects(stats, { valentia: 9 });
+  }
+  const riverConversation = history.riverConversationOutcome;
+  if (riverConversation && riverConversation.choiceIndex >= 0 && riverConversation.choiceIndex < 3) {
+    const effects = RIVER_CONVERSATION_EFFECTS[riverConversation.route][riverConversation.choiceIndex];
+    if (effects) stats = applyJaguarEffects(stats, effects);
   }
   if (history.riverChallengeOutcome === "current") {
     stats = applyJaguarEffects(stats, { valentia: 6 });

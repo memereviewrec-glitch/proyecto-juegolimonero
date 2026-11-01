@@ -82,7 +82,7 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
   if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger las 10 semillas mágicas si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
-  if (beat === "ponzona-friend") return "Confiando en su nueva amistad, el colibrí entregó voluntariamente a Limón la semilla de Ponzoña y decidió acompañarlo en el sendero.";
+  if (beat === "ponzona-friend") return "Confiando en su nueva amistad, el colibrí entregó a Limón una semilla y decidió acompañarlo en el sendero.";
   if (beat === "ponzona-doubt") return "El miedo dejó al colibrí paralizado. No podía acompañar a Limón, pero quiso ayudarlo y le entregó la semilla de Ponzoña para que continuara su viaje.";
   if (beat === "ponzona-leaves") return "El colibrí dejó la semilla de Ponzoña junto a Limón y alzó el vuelo para alejarse. Limón la recogió mientras su compañero desaparecía en el cielo.";
   if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";

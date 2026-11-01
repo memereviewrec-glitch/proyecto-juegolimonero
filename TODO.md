@@ -252,6 +252,10 @@
 - La pantalla de la Luna conserva las dos frases existentes («Yo soy la roca que se mueve en el vacío.» y «Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas») y no muestra un cuadro adicional que recomiende ir a hablar con el Jaguar.
 - No se modifica ninguna diapositiva narrativa, incluida la de la cueva posterior a Nueve Sentidos, ni las pistas poéticas del colibrí.
 
+## [x] Añadir la tercera línea del diálogo de la Luna
+- Después de sus dos frases actuales y antes de recoger la semilla, la Luna muestra un cuadro de diálogo adicional con el texto «Toma esta semilla, te ayudará en tu viaje.»
+- Los tres cuadros se presentan uno a uno; la interacción con la Luna queda bloqueada hasta cerrar el tercero.
+
 ## [x] Restaurar el avance desde la Luna hacia la diapositiva de la cueva
 - Al tocar la Luna, recoger la semilla de «Nueve Sentidos» y completar su diálogo, el Libro debe actualizarse sin abrirse automáticamente encima de la pantalla jugable.
 - Con la semilla recogida y el epílogo listo debe aparecer el botón «continuar sendero»; al pulsarlo se muestra la diapositiva narrativa de la cueva y desde ella se continúa a Jaguar.

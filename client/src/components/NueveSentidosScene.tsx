@@ -54,6 +54,11 @@ const RHYTHM_HINTS = [
 
 const AWAKENING_HINT = "Siete luces velan en silencio; cada destello que descansa deja sitio para una nueva melodía.";
 const MOON_HINT = "La luna blanca guarda una semilla dormida; cuando la alcanzan las estrellas, cae como rocío.";
+const MOON_DIALOGUE = [
+  "Yo soy la roca que se mueve en el vacío.",
+  "Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas",
+  "Toma esta semilla, te ayudará en tu viaje.",
+] as const;
 
 export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, hummingbirdIsFriend }: Props) {
   const [phase, setPhase] = useState<Phase>("awakening");
@@ -113,7 +118,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
 
   function touchMoon() {
     if (phase !== "moon") return;
-    if (moonDialogueStep < 2) return;
+    if (moonDialogueStep < MOON_DIALOGUE.length) return;
     setHintVisible(false);
     if (moonTouched) return;
     if (seedCollected) {
@@ -191,13 +196,11 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
         </button>
       )}
 
-      {phase === "moon" && moonDialogueStep < 2 && (
+      {phase === "moon" && moonDialogueStep < MOON_DIALOGUE.length && (
         <div className="nueve-moon-dialogue" role="status" aria-live="polite">
-          <p>{moonDialogueStep === 0
-            ? "Yo soy la roca que se mueve en el vacío."
-            : "Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas"}</p>
+          <p>{MOON_DIALOGUE[moonDialogueStep] ?? ""}</p>
           <button type="button" onClick={() => setMoonDialogueStep(step => step + 1)}>
-            {moonDialogueStep === 0 ? "Siguiente" : "Continuar"}
+            {moonDialogueStep === MOON_DIALOGUE.length - 1 ? "Continuar" : "Siguiente"}
           </button>
         </div>
       )}

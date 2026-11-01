@@ -8,6 +8,7 @@ type FishColor = "verde" | "azul" | "rojo" | "amarillo";
 type ElRioSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
+  onBlackReplyToWhite?: () => void;
 };
 
 const FISH_THOUGHTS: Record<FishColor, string> = {
@@ -33,7 +34,7 @@ const BLACK_RESPONSES: Record<FishColor, string> = {
   amarillo: "La sabiduría empieza cuando aceptamos que no poseemos el principio.",
 };
 
-export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
+export function ElRioScene({ seedCollected, onCollectSeed, onBlackReplyToWhite }: ElRioSceneProps) {
   const fishLanes = useMemo(() => ({
     green: 22 + Math.random() * 39,
     blue: 22 + Math.random() * 39,
@@ -83,6 +84,7 @@ export function ElRioScene({ seedCollected, onCollectSeed }: ElRioSceneProps) {
 
   function showBlackReply() {
     setShowingBlackReply(true);
+    if (activeFish === "blanco") onBlackReplyToWhite?.();
   }
 
   const speakerFish = showingBlackReply && blackThought ? "negro" : activeFish;

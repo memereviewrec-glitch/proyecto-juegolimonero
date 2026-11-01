@@ -10,7 +10,7 @@ type StoryInterludeProps = {
   onContinue: () => void;
 };
 
-export function StoryInterlude({ text, continueLabel = "explorar", seed, seedBookOpened, onOpenSeedBook, onContinue }: StoryInterludeProps) {
+export function StoryInterlude({ text, continueLabel = "continuar sendero", seed, seedBookOpened, onOpenSeedBook, onContinue }: StoryInterludeProps) {
   return (
     <div className="story-interlude" role="dialog" aria-label="Narración" tabIndex={0}>
       <div className="story-interlude-inner">
@@ -20,7 +20,7 @@ export function StoryInterlude({ text, continueLabel = "explorar", seed, seedBoo
             <button className="story-seed-button" type="button" onClick={() => onOpenSeedBook(seed)} aria-label="Abrir esta semilla en el Libro de Semillas">
               <SeedGlyph seed={seed} className={`story-seed-glyph story-seed-${seed}`} />
             </button>
-            {seedBookOpened && <button className="story-continue-button" type="button" onClick={onContinue}>continuar el sendero <b aria-hidden="true">▶</b></button>}
+            {seedBookOpened && <button className="story-continue-button" type="button" onClick={onContinue}>continuar sendero <b aria-hidden="true">▶</b></button>}
           </>
         ) : (
           <button className="story-continue-button" type="button" onClick={onContinue} autoFocus>{continueLabel} <b aria-hidden="true">▶</b></button>

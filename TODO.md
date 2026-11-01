@@ -246,3 +246,10 @@
 - La escena Jaguar permanece bloqueada en la navegación hasta recoger «Nueve sentidos», y solo ofrece continuar hacia el hogar al llegar a un final exitoso. Los previews de desarrollo no alteran esta progresión normal. La elección del reto del río se guarda para mantener su bonificación inicial a Jaguar después de recargar o repetir escenas y se elimina al reiniciar toda la partida.
 - La respuesta elegida en la primera conversación de los Espíritus del Río, después de lanzar la piedra, también influye en las estadísticas iniciales de Jaguar y se persiste. En la ruta pacífica, las respuestas 1/2/3 añaden respectivamente Cautela +4, Valentía +4 y Cautela +3; en la ruta drástica, añaden Valentía +5, Cautela +5, y Cautela +2/Valentía +3. Solo afectan Cautela o Valentía —no Ingenio— y se acumulan con la elección separada del reto posterior del río.
 - Validación tras integrar las nuevas diapositivas y las bonificaciones del Río: `pnpm check`, `pnpm test` (56 pruebas), `pnpm build:static` y `git diff --cached --check` pasan. Las pruebas verifican que la respuesta inicial se guarda, se valida, modifica Cautela/Valentía y se borra al reiniciar el progreso.
+
+
+## [x] Ajustes de diapositivas narrativas tras el colibrí y de avance de El Río
+- Tras finalizar la conversación jugable del colibrí, la semilla de Ponzoña se entrega en la diapositiva narrativa siguiente; no se modifica el contenido ni la mecánica de esa conversación.
+- Hay tres diapositivas según el desenlace: en el final malo, el colibrí deja la semilla en la escena y se marcha volando; en el final neutral/de duda, explica que el miedo lo paraliza y no puede acompañar a Limón, pero le entrega la semilla para ayudarlo; en el final amistoso, entrega voluntariamente la semilla y acompaña a Limón.
+- En todas las diapositivas narrativas salvo la primera, el botón dice «continuar sendero»; la primera conserva «comenzar el sendero».
+- En El Río, el botón global «continuar sendero» no aparece hasta que el pez negro haya respondido al pez blanco. No se cambian los textos ni la conversación de la escena jugable.

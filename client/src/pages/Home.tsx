@@ -63,7 +63,7 @@ const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const BAND_INSTAGRAM_LINKS = [{ label: "Instagram de la banda", url: null }] as const;
 
-function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
+function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null, hummingbirdIsFriend: boolean) {
   if (beat === "opening") return "Había una vez un limón que quería descubrir los límites del conocimiento y la realidad.";
   if (beat === "portal") return "El limón tomó la semilla del conocimiento que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otra dimensión. Al otro lado se encontró muy solo y comprendió que ya no sabía cómo volver a casa. Desde entonces, encontrar un hogar se convirtió en el nudo de su historia.";
   if (beat === "ruins") return "Sin saber todavía cómo volver, el limón comenzó a andar por las ruinas. Cada piedra parecía guardar una pregunta y cada raíz, un camino que no figuraba en ningún mapa.";
@@ -76,7 +76,9 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
   if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger las 10 semillas mágicas si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
-  if (beat === "hummingbird-stars") return "Después de la conversación, el colibrí y el limón fueron a sentarse a observar las estrellas.";
+  if (beat === "hummingbird-stars") return hummingbirdIsFriend
+    ? "Después de la conversación, el colibrí y el limón se sentaron a observar las estrellas."
+    : "Después de la conversación, el limón se sentó a solas a mirar el cielo nocturno.";
   if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";
   if (beat === "nueve-sentidos-cave") return "La luz de la luna señaló el camino hasta la cueva más profunda, donde aguarda el secreto mayor guardado del bosque.";
   return "En el fondo del río, el limón encontró otra señal del camino. La corriente lo llevó hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
@@ -89,6 +91,7 @@ const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
   "river-arrival": "rambla",
   "spirits-challenge": "espiritus-del-rio",
   "el-rio": "el-rio",
+  "hummingbird-stars": "ponzona",
   "nueve-sentidos-cave": "nueve-sentidos",
 };
 
@@ -796,7 +799,11 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
                   ? "nueve-sentidos"
                   : "fire-forest";
     setScene(nextScene);
-    if (storyBeat === "hummingbird-stars") setNotice("El cielo de Nueve sentidos se abre sobre el limón y su amigo.");
+    if (storyBeat === "hummingbird-stars") {
+      setNotice(hummingbirdIsFriend
+        ? "El cielo de Nueve sentidos se abre sobre el limón y su amigo."
+        : "El cielo de Nueve sentidos se abre sobre el limón.");
+    }
     setStoryBeat(null);
     setRoomView("scene");
     setRoomAction(null);
@@ -836,12 +843,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     } else if (scene === "fire-forest") {
       showStory("ponzona");
       } else if (scene === "hummingbird") {
-        if (hummingbirdIsFriend) {
-          showStory("hummingbird-stars");
-        } else {
-          setScene("nueve-sentidos");
-          setNotice("El cielo de Nueve sentidos se abre sobre el limón.");
-        }
+        showStory("hummingbird-stars");
       } else if (scene === "nueve-sentidos" && nueveSentidosSeedCollected && nueveSentidosEpilogueReady) {
         setNueveSentidosEpilogueReady(false);
         showStory("nueve-sentidos-cave");
@@ -925,7 +927,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
-            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome, hummingbirdIsFriend)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
             <button
               className="seedbook-toggle"

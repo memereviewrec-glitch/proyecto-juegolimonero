@@ -241,7 +241,7 @@
 ## [x] Ajustes narrativos del Río, el incendio y la transición hacia El Jaguar
 - En la diapositiva del Río, los Espíritus recomiendan recoger «las 10 semillas mágicas» para volver a casa; se conserva la continuación que señala el fondo del cauce y prepara la búsqueda de la siguiente semilla.
 - En la escena del incendio, la frase describe «Un jaguar que pasaba por allí se reía» y no dice que se reía de los animales por sus vanos intentos de apagarlo.
-- Tras el desenlace amistoso con el colibrí, una diapositiva narra: «Después de la conversación, el colibrí y el limón fueron a sentarse a observar las estrellas» antes de entrar en Nueve Sentidos. Si no hay amistad, no se afirma que se sienten juntos.
+- Tras recoger la semilla de Ponzoña en cualquiera de los tres finales del colibrí, una diapositiva conduce a Nueve Sentidos y muestra el glifo clicable de esa semilla. Si el colibrí es amigo, dice «Después de la conversación, el colibrí y el limón se sentaron a observar las estrellas»; en los finales neutral o malo, dice «Después de la conversación, el limón se sentó a solas a mirar el cielo nocturno». El glifo abre la entrada descubierta de Ponzoña en el Libro.
 - Al aterrizar la semilla lunar al final de Nueve Sentidos, la Luna recomienda ir a hablar con el Jaguar; incluye al colibrí solo si el limón se hizo su amigo. Esta línea prepara el arco del Jaguar, cuya escena todavía queda pendiente.
 
 

@@ -69,9 +69,6 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
 
   const activePattern = RHYTHM_PATTERNS[patternIndex];
   const pathUnlocked = seedCollected || seedDropState === "landed";
-  const jaguarRecommendation = hummingbirdIsFriend
-    ? "La luna recomienda a Limón y al Colibrí que vayan a hablar con el Jaguar."
-    : "La luna recomienda a Limón que vaya a hablar con el Jaguar.";
 
   function extinguishStar(index: number) {
     if (phase !== "awakening") return;
@@ -214,12 +211,6 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
           }}
         >
           <SeedGlyph seed="nueve-sentidos" className="nueve-seed-drop-glyph" />
-        </div>
-      )}
-
-      {phase === "moon" && pathUnlocked && moonDialogueStep >= 2 && (
-        <div className="nueve-moon-dialogue nueve-moon-recommendation" role="status" aria-live="polite">
-          <p>{jaguarRecommendation}</p>
         </div>
       )}
 

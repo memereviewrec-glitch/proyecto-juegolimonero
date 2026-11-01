@@ -63,6 +63,23 @@ button { font:inherit; }
   .story-continue-button { padding:7px 9px; font-size:8px; }
 }
 .playfield-portrait,.playfield-room { width:min(100%,760px); margin-inline:auto; }
+.playfield.playfield-jaguar { width:min(100%,73vh); width:min(100%,73dvh); margin-inline:auto; }
+.workspace-with-dev-tools .playfield.playfield-jaguar { width:min(100%,73vh,calc((100vh - 210px)*.885)); width:min(100%,73dvh,calc((100dvh - 210px)*.885)); }
+.jaguar-player-stats { position:relative; z-index:3; box-sizing:border-box; width:100%; max-width:none; margin:0 auto 8px; padding:7px; border:1px solid #b79d7290; background:#0c1115e6; box-shadow:0 2px 8px #05070a88; }
+.playfield-jaguar .jaguar-player-stats { max-width:none; }
+.jaguar-global-stats { pointer-events:none; }
+.jaguar-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.jaguar-stat { min-width:0; padding:6px 7px 7px; border:1px solid #b79d7261; background:#0a1015d9; box-shadow:0 2px 7px #04070b55; }
+.jaguar-stat > div:first-child { display:flex; justify-content:space-between; gap:3px; align-items:baseline; color:#eee5d2; font:8px/1.2 'DM Mono',monospace; }
+.jaguar-stat strong { color:#edce91; font-weight:700; font-size:9px; }
+.jaguar-stat-meter { height:4px; margin-top:5px; overflow:hidden; background:#363842; }
+.jaguar-stat-meter i { display:block; height:100%; background:#c69f5b; transition:width .24s steps(5,end); }
+.jaguar-stat-empatia .jaguar-stat-meter i { background:#86b9a1; }
+.jaguar-stat-ingenio .jaguar-stat-meter i { background:#92a9d2; }
+.jaguar-stat-valentia .jaguar-stat-meter i { background:#cb7962; }
+@media (min-width:900px) {
+ .playfield-jaguar-test .jaguar-player-stats { width:calc(100% - 292px); max-width:none; margin-left:0; margin-right:0; }
+}
 .stage-heading { display:flex; justify-content:space-between; align-items:end; margin:0 0 16px; gap:20px; }
 .stage-heading h2,.storyboard-heading h2 { margin:5px 0 0; font-size:22px; letter-spacing:-.055em; font-weight:600; }
 .stage-heading h2 { color:#fff7e9; }
@@ -752,6 +769,8 @@ body { background:#08070d; }
 /* Herramientas de prueba fuera del canvas; se reservan 104 px para no tapar el juego. */
 .workspace.workspace-with-dev-tools { inset:0 0 104px; height:auto; }
 .workspace-with-dev-tools .stage-column { width:min(100vw, calc((100dvh - 104px) * .885), 1200px); }
+.workspace.workspace-with-stats-hud .stage-column { width:min(100vw,calc((100dvh - 90px)*.885),1200px); }
+.workspace.workspace-with-stats-hud.workspace-with-dev-tools .stage-column { width:min(100vw,calc((100dvh - 200px)*.885),1200px); }
 .dev-playtest-tools { position:fixed; z-index:120; inset:auto 0 0; min-height:104px; display:flex; align-items:center; justify-content:center; gap:18px; padding:10px clamp(12px,3vw,36px); background:#f7f3e9; color:#28252c; border-top:2px solid #61546c; box-shadow:0 -4px 18px #08070d55; }
 .dev-playtest-title { display:block; font:600 12px 'Space Grotesk',system-ui,sans-serif; }
 .dev-playtest-help { margin:4px 0 0; max-width:190px; color:#706a73; font:10px/1.35 'DM Mono',monospace; }
@@ -762,6 +781,14 @@ body { background:#08070d; }
 .dev-playtest-controls button:hover { background:#3c3346; }
 .dev-playtest-controls button:disabled { opacity:.55; cursor:not-allowed; }
 .dev-playtest-controls :focus-visible { outline:3px solid #d98470; outline-offset:2px; }
+@media (max-width:650px) {
+ .jaguar-player-stats { padding:4px; }
+ .jaguar-stats { gap:2px; }
+ .jaguar-stat { padding:4px 3px; }
+ .jaguar-stat > div:first-child { gap:2px; font-size:6px; }
+ .jaguar-stat strong { font-size:7px; }
+ .jaguar-stat-meter { height:3px; margin-top:3px; }
+}
 @media (max-width:760px) {
   .workspace.workspace-with-dev-tools { inset:0 0 146px; }
   .workspace-with-dev-tools .stage-column { width:min(100vw, calc((100dvh - 146px) * .885), 1200px); }

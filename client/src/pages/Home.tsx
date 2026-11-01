@@ -11,6 +11,7 @@ import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { JaguarScene } from "../components/JaguarScene";
+import { JaguarStatsHud } from "../components/JaguarStatsHud";
 import { createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
@@ -996,7 +997,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
         friendPreview={devFriendPreview}
         onFriendPreviewChange={setDevFriendPreview}
       />}
-      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}`}>
+      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${!storyBeat ? " workspace-with-stats-hud" : ""}`}>
         <div className="stage-column">
           <div className="stage-heading">
             <div>
@@ -1006,7 +1007,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
           </div>
 
-          <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
+          <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             {!previewChromeHidden && <>
             <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
@@ -1056,6 +1057,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             </div>
             {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
             </>}
+            {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>

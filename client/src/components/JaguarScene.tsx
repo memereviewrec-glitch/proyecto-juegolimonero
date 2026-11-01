@@ -5,8 +5,11 @@ import { SeedGlyph } from "./SeedGlyph";
 import { STAT_LABELS } from "./JaguarStatsHud";
 import {
   ANGRY_QUESTIONS,
+  CAUTELA_THRESHOLD,
+  COURAGE_THRESHOLD,
   EMPATHY_THRESHOLD,
   getFinalJaguarAdvice,
+  getJaguarHummingbirdHint,
   INGENUITY_ANSWER,
   INGENUITY_RIDDLE,
   INGENUITY_THRESHOLD,
@@ -16,7 +19,7 @@ import {
   applyJaguarAnswerEffects,
   createInitialJaguarStats,
   resolveFightOutcome,
-  resolveJaguarCheck,
+  meetsJaguarThreshold,
   scaleJaguarAnswerEffects,
   type JaguarHistory,
   type JaguarQuestion,
@@ -51,10 +54,6 @@ const FIGHT_ROUNDS = [
   { threat: "El jaguar salta y la tierra tiembla.", prompt: "¿Cómo evita el golpe?", safe: "Esperar el último instante y deslizarse bajo las raíces." },
   { threat: "La cola barre el suelo frente a él.", prompt: "¿Cómo encuentra una salida?", safe: "Saltar sobre la roca cuando la cola pase." },
 ] as const;
-function rollD100() {
-  return Math.floor(Math.random() * 100) + 1;
-}
-
 type ViewTransitionHandle = { finished?: Promise<unknown> };
 type ViewTransitionDocument = Document & { startViewTransition?: (callback: () => void) => ViewTransitionHandle };
 let dialogueTransitionInProgress = false;
@@ -129,17 +128,15 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
   const [approach, setApproach] = useState<Approach>("empatia");
   const [fightStep, setFightStep] = useState(0);
   const [fightFailures, setFightFailures] = useState(0);
-  const [lastRoll, setLastRoll] = useState<number | null>(null);
-  const [forcedRoll, setForcedRoll] = useState<number | null>(null);
   const [nightmareEnding, setNightmareEnding] = useState(false);
   const [ingenioFailures, setIngenioFailures] = useState(0);
   const [laughingEntryStats, setLaughingEntryStats] = useState<JaguarStats | null>(null);
-  const [empathyFailures, setEmpathyFailures] = useState(0);
   const [endingRoute, setEndingRoute] = useState<EndingRoute | null>(null);
   const [outcomeNote, setOutcomeNote] = useState("");
   const [feedback, setFeedback] = useState("");
   const [skillResult, setSkillResult] = useState<SkillResult | null>(null);
   const [seedJustCollected, setSeedJustCollected] = useState(false);
+  const [shownHummingbirdHintContext, setShownHummingbirdHintContext] = useState<string | null>(null);
   const advice = useMemo(() => getFinalJaguarAdvice(stats), [stats]);
 
   function presentSkillResult(result: SkillResult) {
@@ -172,7 +169,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
       return;
     }
     if (questionSet === "angry") {
-      // La última pregunta (3/3) ofrece dos respuestas y fija la tirada final.
+      // La última pregunta (3/3) ofrece dos respuestas y fija la prueba final.
       if (questionIndex === ANGRY_QUESTIONS.length - 1 && answer.approach) setApproach(answer.approach);
       if (questionIndex < ANGRY_QUESTIONS.length - 1) {
         setAngryStep(questionIndex + 1);
@@ -188,16 +185,9 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     }
   }
 
-  function getRoll() {
-    const result = forcedRoll ?? rollD100();
-    setForcedRoll(null);
-    setLastRoll(result);
-    return result;
-  }
-
   function resolveCautela() {
-    const check = resolveJaguarCheck(stats.cautela, getRoll());
-    if (check.success) {
+    const succeeds = meetsJaguarThreshold(stats.cautela, CAUTELA_THRESHOLD);
+    if (succeeds) {
       setLaughingEntryStats(null);
       setBranch("angry");
       setAngryStep(0);
@@ -206,7 +196,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
         stat: "cautela",
         outcome: "success",
         message: "El limón intuye el peligro y retrocede con cuidado. Una rama cruje bajo su peso. Los ojos desaparecen de la sombra; el jaguar sale enfurecido.",
-        checkDetails: `Cautela ${check.stat}% · resultado ${check.roll}/100`,
+        checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "angry-questions",
       });
     } else {
@@ -217,7 +207,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
         stat: "cautela",
         outcome: "failure",
         message: "El limón traga saliva y pregunta: «¿Quién anda ahí?». Desde la maleza responde una carcajada. El jaguar sale riéndose.",
-        checkDetails: `Cautela ${check.stat}% · resultado ${check.roll}/100`,
+        checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "laughing-questions",
       });
     }
@@ -225,91 +215,55 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
 
   function resolveAngryApproach() {
     const statValue = stats[approach];
-    if (approach === "empatia" && statValue < EMPATHY_THRESHOLD) {
-      setBranch("angry");
+    const threshold = approach === "empatia" ? EMPATHY_THRESHOLD : COURAGE_THRESHOLD;
+    const succeeds = meetsJaguarThreshold(statValue, threshold);
+    if (!succeeds) {
       setEndingRoute("pesadilla");
       setNightmareEnding(true);
       presentSkillResult({
-        stat: "empatia",
+        stat: approach,
         outcome: "blocked",
-        message: "El jaguar sigue furioso. El limón intenta acercarse, pero el rugido le corta el paso y la cueva se oscurece.",
-        checkDetails: `Empatía ${statValue}% · mínimo ${EMPATHY_THRESHOLD}%`,
+        message: approach === "empatia"
+          ? "El jaguar sigue furioso. La empatía de Limón no alcanza para atravesar el rugido y la cueva se oscurece."
+          : "La valentía de Limón no alcanza para resistir la embestida. El jaguar lo devora y la cueva se oscurece.",
+        checkDetails: `${approach === "empatia" ? "Empatía" : "Valentía"} ${statValue}% · mínimo ${threshold}%`,
         nextPhase: "nightmare",
       });
       return;
     }
-    const check = resolveJaguarCheck(statValue, getRoll(), approach === "empatia" ? EMPATHY_THRESHOLD : 0);
     if (approach === "empatia") {
       setEndingRoute("empatia");
-      if (check.success) {
-        presentSkillResult({
-          stat: "empatia",
-          outcome: "success",
-          message: "Las palabras del limón atraviesan la furia. El jaguar deja de rugir y escucha.",
-          checkDetails: `Empatía ${check.stat}% · resultado ${check.roll}/100 · mínimo ${check.minimum}%`,
-          nextPhase: "revelation",
-        });
-        return;
-      }
-      const nextFailureCount = empathyFailures + 1;
-      setEmpathyFailures(nextFailureCount);
-      if (nextFailureCount >= 2) {
-        const failureText = "El jaguar no logra confiar. Su furia se desborda y el rugido llena la cueva; el limón queda inmóvil.";
-        setBranch("angry");
-        setEndingRoute("pesadilla");
-        setNightmareEnding(true);
-        presentSkillResult({
-          stat: "empatia",
-          outcome: "failure",
-          message: failureText,
-          checkDetails: `Empatía ${check.stat}% · resultado ${check.roll}/100 · mínimo ${check.minimum}%`,
-          nextPhase: "nightmare",
-        });
-        return;
-      }
       presentSkillResult({
         stat: "empatia",
-        outcome: "failure",
-        message: "El jaguar queda confundido por las palabras del limón, pero le concede una última oportunidad para acercarse.",
-        checkDetails: `Empatía ${check.stat}% · resultado ${check.roll}/100 · mínimo ${check.minimum}%`,
-        nextPhase: "angry-check",
+        outcome: "success",
+        message: "Las palabras del limón atraviesan la furia. El jaguar deja de rugir y escucha.",
+        checkDetails: `Empatía ${statValue}% · mínimo ${threshold}%`,
+        nextPhase: "revelation",
       });
       return;
     }
-    if (check.success) {
-      setEndingRoute("valentia");
-      setFightStep(0);
-      setFightFailures(0);
-      presentSkillResult({
-        stat: "valentia",
-        outcome: "success",
-        message: "El limón sostiene la mirada del jaguar. La bestia abre un espacio para una prueba física.",
-        checkDetails: `Valentía ${check.stat}% · resultado ${check.roll}/100`,
-        nextPhase: "fight",
-      });
-    } else {
-      setEndingRoute("pesadilla");
-      setNightmareEnding(true);
-      presentSkillResult({
-        stat: "valentia",
-        outcome: "failure",
-        message: "El jaguar se abalanza y devora al limón de un solo bocado.",
-        checkDetails: `Valentía ${check.stat}% · resultado ${check.roll}/100`,
-        nextPhase: "nightmare",
-      });
-    }
+    setEndingRoute("valentia");
+    setFightStep(0);
+    setFightFailures(0);
+    presentSkillResult({
+      stat: "valentia",
+      outcome: "success",
+      message: "El limón sostiene la mirada del jaguar. La bestia abre un espacio para una prueba física.",
+      checkDetails: `Valentía ${statValue}% · mínimo ${threshold}%`,
+      nextPhase: "fight",
+    });
   }
 
   function resolveIngenio() {
-    const check = resolveJaguarCheck(stats.ingenio, getRoll(), INGENUITY_THRESHOLD);
-    if (check.success) {
+    const succeeds = meetsJaguarThreshold(stats.ingenio, INGENUITY_THRESHOLD);
+    if (succeeds) {
       setEndingRoute("enigmas");
       setBranch("laughing");
       presentSkillResult({
         stat: "ingenio",
         outcome: "success",
         message: `El limón resuelve el enigma: ${INGENUITY_ANSWER}`,
-        checkDetails: `Ingenio ${check.stat}% · resultado ${check.roll}/100 · mínimo ${check.minimum}%`,
+        checkDetails: `Ingenio ${stats.ingenio}% · mínimo ${INGENUITY_THRESHOLD}%`,
         nextPhase: "revelation",
       });
       return;
@@ -325,7 +279,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
         stat: "ingenio",
         outcome: "failure",
         message: failureText,
-        checkDetails: `Ingenio ${check.stat}% · resultado ${check.roll}/100 · mínimo ${check.minimum}%`,
+        checkDetails: `Ingenio ${stats.ingenio}% · mínimo ${INGENUITY_THRESHOLD}%`,
         nextPhase: "nightmare",
       });
       return;
@@ -338,7 +292,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
       stat: "ingenio",
       outcome: "failure",
       message: failureText,
-      checkDetails: `Ingenio ${check.stat}% · resultado ${check.roll}/100 · mínimo ${check.minimum}%`,
+      checkDetails: `Ingenio ${stats.ingenio}% · mínimo ${INGENUITY_THRESHOLD}%`,
       nextPhase: "laughing-questions",
     });
   }
@@ -378,12 +332,11 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     setApproach("empatia");
     setFightStep(0);
     setFightFailures(0);
-    setLastRoll(null);
-    setForcedRoll(null);
+
+
     setNightmareEnding(false);
     setIngenioFailures(0);
     setLaughingEntryStats(null);
-    setEmpathyFailures(0);
     setEndingRoute(null);
     setOutcomeNote("");
     setFeedback("");
@@ -391,10 +344,10 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     setSeedJustCollected(false);
   }
 
-  function prepareTest(kind: "angry" | "laughing" | "lowIngenio" | "secondIngenioFail" | "fight" | "fightSecondFail" | "nightmare" | "empathySuccess" | "empathyFail" | "secondEmpathyFail" | "empathyLow" | "determinationSuccess" | "determinationFail" | "ingenioSuccess" | "cautelaSuccess" | "cautelaFail") {
+  function prepareTest(kind: "angry" | "laughing" | "lowIngenio" | "secondIngenioFail" | "fight" | "fightSecondFail" | "nightmare" | "empathySuccess" | "empathyFail" | "determinationSuccess" | "determinationFail" | "ingenioSuccess" | "cautelaSuccess" | "cautelaFail") {
     const testStats: JaguarStats = {
       cautela: 72,
-      empatia: kind === "lowIngenio" ? 70 : 76,
+      empatia: 76,
       ingenio: kind === "lowIngenio" || kind === "secondIngenioFail" ? 84 : 96,
       valentia: 78,
     };
@@ -402,47 +355,36 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     let nextPhase: Phase = "angry-questions";
     let nextBranch: Branch = "angry";
     let nextApproach: Approach = "empatia";
-    let nextForcedRoll: number | null = null;
     let nextFightStep = 0;
     let nextFightFailures = 0;
     if (kind === "cautelaSuccess" || kind === "cautelaFail") {
       nextPhase = "cautela-check";
       nextBranch = null;
-      nextStats = { ...testStats, cautela: kind === "cautelaSuccess" ? 100 : 15 };
-      nextForcedRoll = kind === "cautelaSuccess" ? 1 : 100;
+      nextStats = { ...testStats, cautela: kind === "cautelaSuccess" ? CAUTELA_THRESHOLD : CAUTELA_THRESHOLD - 1 };
     } else if (kind === "laughing") {
       nextPhase = "laughing-questions";
       nextBranch = "laughing";
     } else if (kind === "lowIngenio" || kind === "secondIngenioFail") {
       nextPhase = "ingenio-check";
       nextBranch = "laughing";
-      nextForcedRoll = 1;
     } else if (kind === "ingenioSuccess") {
       nextPhase = "ingenio-check";
       nextBranch = "laughing";
-      nextStats = { ...testStats, ingenio: 100 };
-      nextForcedRoll = 1;
+      nextStats = { ...testStats, ingenio: INGENUITY_THRESHOLD };
     } else if (kind === "empathySuccess") {
       nextPhase = "angry-check";
-      nextStats = { ...testStats, empatia: 100 };
-      nextForcedRoll = 1;
-    } else if (kind === "empathyFail" || kind === "secondEmpathyFail") {
+      nextStats = { ...testStats, empatia: EMPATHY_THRESHOLD };
+    } else if (kind === "empathyFail") {
       nextPhase = "angry-check";
-      nextStats = { ...testStats, empatia: 70 };
-      nextForcedRoll = 100;
-    } else if (kind === "empathyLow") {
-      nextPhase = "angry-check";
-      nextStats = { ...testStats, empatia: 49 };
+      nextStats = { ...testStats, empatia: EMPATHY_THRESHOLD - 1 };
     } else if (kind === "determinationSuccess") {
       nextPhase = "angry-check";
       nextApproach = "valentia";
-      nextStats = { ...testStats, valentia: 100 };
-      nextForcedRoll = 1;
+      nextStats = { ...testStats, valentia: COURAGE_THRESHOLD };
     } else if (kind === "determinationFail") {
       nextPhase = "angry-check";
       nextApproach = "valentia";
-      nextStats = { ...testStats, valentia: 0 };
-      nextForcedRoll = 100;
+      nextStats = { ...testStats, valentia: COURAGE_THRESHOLD - 1 };
     } else if (kind === "fight" || kind === "fightSecondFail") {
       nextPhase = "fight";
       if (kind === "fightSecondFail") {
@@ -464,10 +406,8 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     setApproach(nextApproach);
     setFightStep(nextFightStep);
     setFightFailures(nextFightFailures);
-    setLastRoll(null);
+
     setNightmareEnding(kind === "nightmare");
-    setIngenioFailures(kind === "secondIngenioFail" ? 1 : 0);
-    setEmpathyFailures(kind === "secondEmpathyFail" ? 1 : 0);
     setEndingRoute(kind === "nightmare" || kind === "determinationFail"
       ? "pesadilla"
       : kind === "ingenioSuccess" || kind === "laughing" || kind === "lowIngenio" || kind === "secondIngenioFail"
@@ -479,7 +419,6 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
     setSkillResult(null);
     setFeedback("Atajo de prueba: se mantienen disponibles las reglas y respuestas de la ruta seleccionada.");
     setPhase(nextPhase);
-    setForcedRoll(nextForcedRoll);
   }
 
   const question = phase === "inner"
@@ -491,6 +430,10 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
         : null;
   const questionIndex = phase === "inner" ? innerStep : phase === "angry-questions" ? angryStep : laughingStep;
   const questionTotal = phase === "inner" ? INNER_QUESTIONS.length : phase === "angry-questions" ? ANGRY_QUESTIONS.length : LAUGHING_QUESTIONS.length;
+  const hintStage = phase === "inner" || phase === "cautela-check" || phase === "angry-questions" || phase === "angry-check" || phase === "laughing-questions" || phase === "ingenio-check" ? phase : null;
+  const hummingbirdHint = hintStage ? getJaguarHummingbirdHint(hintStage, approach) : null;
+  const hummingbirdHintContext = question ? `${phase}:${questionIndex}` : `${phase}:${approach}`;
+  const hummingbirdHintVisible = hummingbirdHint !== null && shownHummingbirdHintContext === hummingbirdHintContext;
   const nightmareArtworkVisible = nightmareEnding && (phase === "nightmare" || phase === "counsel" || phase === "complete");
   const successfulEndingArtworkVisible = !nightmareEnding && (phase === "revelation" || phase === "counsel");
   const showReturnPortal = phase === "complete" && !nightmareEnding;
@@ -504,30 +447,38 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
           ? "/jaguar-ending-empatia.webp"
           : null;
   const showJaguarLayers = !endingArtwork && !showReturnPortal;
-  const jaguarIsConfused = branch === "angry" && empathyFailures === 1 && (
-    phase === "angry-check" || (phase === "skill-result" && skillResult?.stat === "empatia" && skillResult.outcome === "failure")
-  );
   const jaguarCharacterArt = branch === "angry"
-    ? jaguarIsConfused ? "/jaguar-confused-overlay.webp" : "/jaguar-angry-overlay.webp"
+    ? "/jaguar-angry-overlay.webp"
     : branch === "laughing"
       ? "/jaguar-laughing-overlay.webp"
       : null;
 
   return (
     <div className={`jaguar-preview-layout${testMode ? " jaguar-preview-layout-test" : ""}`}>
-    <div className={`scene-stage game-screen jaguar-stage${branch ? ` jaguar-stage-${branch}` : ""}${jaguarIsConfused ? " jaguar-stage-confused" : ""}`} role="group" aria-label="El Jaguar: encuentro final conversacional y tiradas de habilidad">
+    <div className={`scene-stage game-screen jaguar-stage${branch ? ` jaguar-stage-${branch}` : ""}`} role="group" aria-label="El Jaguar: encuentro final con pruebas por umbral">
       <div className="jaguar-forest" aria-hidden="true">
         <img className={endingArtwork ? "jaguar-ending-art" : showReturnPortal ? "jaguar-cave-art" : "jaguar-background-art"} src={gameAssetUrl(endingArtwork ?? "/jaguar-cave-background.webp")} alt="" />
         {showJaguarLayers && <div className="jaguar-forest-shade" />}
         {showJaguarLayers && <>
           {!branch && <div className="jaguar-eyes"><i /><i /></div>}
-          {branch && jaguarCharacterArt && <img className={`jaguar-character-art is-${jaguarIsConfused ? "confused" : branch}`} src={gameAssetUrl(jaguarCharacterArt)} alt="" />}
-          {hummingbirdOutcome === "good" && <img className="jaguar-hummingbird" src={gameAssetUrl("/colibri.gif")} alt="" />}
+          {branch && jaguarCharacterArt && <img className={`jaguar-character-art is-${branch}`} src={gameAssetUrl(jaguarCharacterArt)} alt="" />}
         </>}
       </div>
+      {hummingbirdOutcome === "good" && showJaguarLayers && <button
+        type="button"
+        className={`jaguar-hummingbird-button${hummingbirdHint ? " is-help-available" : ""}${hummingbirdHintVisible ? " is-hint-open" : ""}`}
+        onClick={() => hummingbirdHint && setShownHummingbirdHintContext(hummingbirdHintVisible ? null : hummingbirdHintContext)}
+        disabled={!hummingbirdHint}
+        aria-label={hummingbirdHint ? "Pulsar al colibrí para escuchar una pista" : "Colibrí"}
+        aria-expanded={hummingbirdHint ? hummingbirdHintVisible : undefined}
+        aria-controls={hummingbirdHint ? "jaguar-hummingbird-hint" : undefined}
+      >
+        <img className="jaguar-hummingbird" src={gameAssetUrl("/colibri.gif")} alt="" />
+      </button>}
       {showReturnPortal && <div className="jaguar-home-portal" aria-hidden="true"><span /></div>}
       <main key={`${phase}-${innerStep}-${angryStep}-${laughingStep}-${fightStep}-${endingRoute ?? "none"}`} className="jaguar-dialogue" aria-live="polite">
         {feedback && <p className="jaguar-feedback" role="status">{feedback}</p>}
+        {hummingbirdOutcome === "good" && hummingbirdHint && <p id="jaguar-hummingbird-hint" className="jaguar-hummingbird-hint" role="status" hidden={!hummingbirdHintVisible}>{hummingbirdHint}</p>}
         {phase === "skill-result" && skillResult && <div className="jaguar-skill-result" role="status">
           <p className="jaguar-skill-message">{skillResult.message}</p>
           <button type="button" className="jaguar-primary-button" onClick={transitionAction(continueAfterSkillResult)}>Continuar</button>
@@ -548,21 +499,17 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
         {phase === "cautela-check" && <div className="jaguar-check-card">
           <span className="jaguar-check-label">EL BOSQUE CONTIENE EL ALIENTO</span>
           <p>El limón sabe que hay alguien ahí. ¿Conseguirá apartarse sin revelar que lo ha descubierto?</p>
-          {testMode && <p className="jaguar-check-rule">Cautela actual: {stats.cautela}%. La tirada decide qué ocurre al acercarse.</p>}
+          {testMode && <p className="jaguar-check-rule">Cautela actual: {stats.cautela}%. Con {CAUTELA_THRESHOLD}% o más el jaguar sale enfadado; con menos, se ríe.</p>}
           <button type="button" className="jaguar-primary-button" onClick={transitionAction(resolveCautela)}>Avanzar con cuidado</button>
-          {testMode && lastRoll !== null && <small className="jaguar-last-roll">Resultado de prueba: {lastRoll}</small>}
         </div>}
 
         {phase === "angry-check" && <div className="jaguar-check-card">
-          <span className="jaguar-check-label">{approach === "empatia" ? empathyFailures > 0 ? "ÚLTIMA OPORTUNIDAD" : "ESCUCHAR TRAS EL RUGIDO" : "SOSTENERSE ANTE EL RUGIDO"}</span>
+          <span className="jaguar-check-label">{approach === "empatia" ? "ESCUCHAR TRAS EL RUGIDO" : "SOSTENERSE ANTE EL RUGIDO"}</span>
           <p>{approach === "empatia"
-            ? empathyFailures > 0
-              ? "El limón intenta escuchar de nuevo lo que la furia oculta, sin juzgar ni responder con otro rugido."
-              : "Bajo el rugido del jaguar, el limón percibe una herida. Decide escuchar sin juzgar: ¿conseguirá que el jaguar confíe en él?"
-            : "El jaguar raspa la tierra y se prepara para embestir. El limón planta las raíces y sostiene la mirada: ¿podrá mantenerse firme ante el miedo?"}</p>
-          {testMode && <p className="jaguar-check-rule">Ruta: {approach === "empatia" ? `Empatía ${stats.empatia}% · umbral ${EMPATHY_THRESHOLD}%` : `Valentía ${stats.valentia}%`}</p>}
-          <button type="button" className="jaguar-primary-button" onClick={transitionAction(resolveAngryApproach)}>{approach === "empatia" ? empathyFailures > 0 ? "Intentar conectar una última vez" : "Acercarse sin juzgar" : "Mantenerse firme"}</button>
-          {testMode && lastRoll !== null && <small className="jaguar-last-roll">Resultado de prueba: {lastRoll}</small>}
+            ? "Bajo el rugido del jaguar, el limón percibe una herida. Decide escuchar sin juzgar: ¿alcanzará el umbral de Empatía para que el jaguar confíe en él?"
+            : "El jaguar raspa la tierra y se prepara para embestir. El limón planta las raíces y sostiene la mirada: ¿alcanzará el umbral de Valentía para mantenerse firme ante el miedo?"}</p>
+          {testMode && <p className="jaguar-check-rule">Ruta: {approach === "empatia" ? `Empatía ${stats.empatia}% · umbral ${EMPATHY_THRESHOLD}%` : `Valentía ${stats.valentia}% · umbral ${COURAGE_THRESHOLD}%`}</p>}
+          <button type="button" className="jaguar-primary-button" onClick={transitionAction(resolveAngryApproach)}>{approach === "empatia" ? "Acercarse sin juzgar" : "Mantenerse firme"}</button>
         </div>}
 
         {phase === "ingenio-check" && <div className="jaguar-check-card">
@@ -571,7 +518,6 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
           {testMode && <p className="jaguar-threshold"><strong>{stats.ingenio}%</strong><span>Ingenio actual · umbral {INGENUITY_THRESHOLD}%</span><i><b style={{ width: `${Math.min(stats.ingenio / INGENUITY_THRESHOLD * 100, 100)}%` }} /></i></p>}
           {outcomeNote && <p className="jaguar-outcome-note">{outcomeNote}</p>}
           <button type="button" className="jaguar-primary-button" onClick={transitionAction(resolveIngenio)}>Responder al enigma</button>
-          {testMode && lastRoll !== null && <small className="jaguar-last-roll">Resultado de prueba: {lastRoll}</small>}
         </div>}
 
         {phase === "fight" && <div className="jaguar-check-card jaguar-fight-card">
@@ -643,19 +589,17 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
       <div className="jaguar-test-tools" aria-label="Atajos de prueba de desarrollo">
         <span>MODO DE PRUEBA</span>
         <button type="button" onClick={transitionAction(resetEncounter)}>Volver al inicio · reiniciar stats</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("cautelaSuccess"))}>Cautela → enfadado</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("cautelaFail"))}>Cautela → risa</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("cautelaSuccess"))}>Cautela ≥ 70 → enfadado</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("cautelaFail"))}>Cautela &lt; 70 → risa</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("angry"); setBranch("angry"); setFeedback("Atajo de prueba: rama enfadada, después del crujido de la rama."); })}>Rama enfadada</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("laughing"); setBranch("laughing"); setFeedback("Atajo de prueba: rama burlona, después de «¿Quién anda ahí?». "); })}>Rama riéndose</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("lowIngenio"); setFeedback("Atajo de prueba: Ingenio por debajo del 85%; si falla, el jaguar se ríe y repite los enigmas."); })}>Probar umbral 85%</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("ingenioSuccess"))}>Ingenio · éxito</button>
-        <button type="button" onClick={transitionAction(() => { prepareTest("secondIngenioFail"); setFeedback("Atajo de prueba: primera falla contabilizada; esta es la segunda tirada de Ingenio."); })}>Ingenio · 2.º fallo → pesadilla</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("empathySuccess"))}>Empatía · éxito</button>
-        <button type="button" onClick={transitionAction(() => { prepareTest("empathyFail"); setFeedback("Atajo de prueba: primer fallo de Empatía; el limón recibe una última oportunidad."); })}>Empatía · fallo</button>
-        <button type="button" onClick={transitionAction(() => { prepareTest("secondEmpathyFail"); setFeedback("Atajo de prueba: primera falla de Empatía contabilizada; esta es la segunda tirada."); })}>Empatía · 2.º fallo → pesadilla</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("empathyLow"))}>Empatía &lt; 50%</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("determinationSuccess"))}>Valentía · éxito</button>
-        <button type="button" onClick={transitionAction(() => prepareTest("determinationFail"))}>Valentía · fallo</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("ingenioSuccess"))}>Ingenio ≥ 85 → éxito</button>
+        <button type="button" onClick={transitionAction(() => { prepareTest("secondIngenioFail"); setFeedback("Atajo de prueba: primera falla contabilizada; la comprobación determinista de Ingenio fallará de nuevo."); })}>Ingenio · 2.º fallo → pesadilla</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("empathySuccess"))}>Empatía ≥ 70% → éxito</button>
+        <button type="button" onClick={transitionAction(() => { prepareTest("empathyFail"); setFeedback("Atajo de prueba: Empatía inferior a 70; conduce directamente a pesadilla."); })}>Empatía &lt; 70% → pesadilla</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("determinationSuccess"))}>Valentía ≥ 70% → combate</button>
+        <button type="button" onClick={transitionAction(() => prepareTest("determinationFail"))}>Valentía &lt; 70% → pesadilla</button>
         <button type="button" onClick={transitionAction(() => prepareTest("fight"))}>Probar minijuego</button>
         <button type="button" onClick={transitionAction(() => { prepareTest("fightSecondFail"); setFeedback("Atajo: ya hay un movimiento fallido; falla el último para comprobar la pesadilla."); })}>Minijuego · 2 fallos → pesadilla</button>
         <button type="button" onClick={transitionAction(() => prepareTest("nightmare"))}>Probar pesadilla</button>

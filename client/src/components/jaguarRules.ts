@@ -33,7 +33,9 @@ const RIVER_CONVERSATION_EFFECTS = {
   ],
 } as const satisfies Record<"pacifico" | "drastico", readonly Partial<JaguarStats>[]>;
 
-export const EMPATHY_THRESHOLD = 50;
+export const CAUTELA_THRESHOLD = 70;
+export const EMPATHY_THRESHOLD = 70;
+export const COURAGE_THRESHOLD = 70;
 export const INGENUITY_THRESHOLD = 85;
 export const INGENUITY_RIDDLE = "Caminas sobre la escoria del mundo y los espejismos de la noche, rodeado de tesoros que no puedes tocar y peligros que solo existen mientras crees en ellos. ¿Qué milagro permite que la flor florezca en el cieno sin ensuciar sus pétalos?";
 export const INGENUITY_ANSWER = "El milagro no es alterar el mundo de los sueños, sino despertar en medio de ellos. El loto nace del lodo; de la misma manera, la sabiduría brota al reconocer que los fenómenos son transitorios y carentes de un núcleo propio, permitiendo que la mente permanezca libre en el mundo sin aferrarse a él.";
@@ -164,7 +166,7 @@ export const ANGRY_QUESTIONS: readonly JaguarQuestion[] = [
       },
       {
         label: "«No voy a apartarme. Me mantendré en pie aunque me embistas.»",
-        effects: { valentia: 12, cautela: 2 },
+        effects: { valentia: 15, cautela: 2 },
         approach: "valentia",
       },
     ],
@@ -201,26 +203,29 @@ export const LAUGHING_QUESTIONS: readonly JaguarQuestion[] = [
   },
 ];
 
-export type CheckResult = {
-  eligible: boolean;
-  success: boolean;
-  stat: number;
-  roll: number;
-  minimum: number;
-};
+export function meetsJaguarThreshold(stat: number, minimum: number): boolean {
+  return clampJaguarStat(stat) >= clampJaguarStat(minimum);
+}
 
-export function resolveJaguarCheck(stat: number, roll: number, minimum = 0): CheckResult {
-  const safeStat = clampJaguarStat(stat);
-  const safeRoll = Math.max(1, Math.min(100, Math.round(roll)));
-  const required = clampJaguarStat(minimum);
-  const eligible = safeStat >= required;
-  return {
-    eligible,
-    success: eligible && safeRoll <= safeStat,
-    stat: safeStat,
-    roll: safeRoll,
-    minimum: required,
-  };
+export type JaguarHintStage = "inner" | "cautela-check" | "angry-questions" | "angry-check" | "laughing-questions" | "ingenio-check";
+
+export function getJaguarHummingbirdHint(stage: JaguarHintStage, approach?: "empatia" | "valentia"): string {
+  switch (stage) {
+    case "inner":
+      return "Escucha el borde del silencio: la Cautela crece cuando el siguiente paso no se da con prisa.";
+    case "cautela-check":
+      return `El bosque no se abre al apuro: esta prueba mide Cautela; el umbral es ${CAUTELA_THRESHOLD}.`;
+    case "angry-questions":
+      return "Al rugido se le puede responder escuchando su herida o manteniéndose firme: allí crecen Empatía y Valentía, de distinto modo.";
+    case "angry-check":
+      return approach === "valentia"
+        ? `La raíz que resiste se llama Valentía; el umbral está en ${COURAGE_THRESHOLD}.`
+        : `El rugido guarda una herida: la prueba mide Empatía, y hacen falta ${EMPATHY_THRESHOLD} para que ceda.`;
+    case "laughing-questions":
+      return "La risa deja una sombra; el Ingenio crece cuando encuentras otra forma de mirar la pregunta.";
+    case "ingenio-check":
+      return `Una flor no fuerza el acertijo: lo mira desde otro ángulo. El Ingenio debe llegar a ${INGENUITY_THRESHOLD}.`;
+  }
 }
 
 export type FightOutcome = "continue" | "victory" | "nightmare";

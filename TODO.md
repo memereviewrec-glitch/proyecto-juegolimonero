@@ -254,8 +254,21 @@
 
 ## [x] HUD global de estadísticas y alcanzabilidad de los finales del Jaguar
 - Mostrar las cuatro barras de estadísticas en todas las pantallas jugables, pero no en ninguna diapositiva narrativa; deben reflejar las estadísticas vigentes y sincronizarse con los cambios realizados en Jaguar.
-- Analizar los cuatro finales de Jaguar (Empatía, Enigmas, Valentía y Pesadilla), comprobar con las reglas y estadísticas base que cada uno es alcanzable, describir sus requisitos y dificultad, y ajustar mecánicas solo si algún final resultara imposible.
-- La prueba de alcanzabilidad en `client/src/components/jaguarRules.test.ts` confirma rutas favorables desde el perfil base; no fue necesario rebalancear los umbrales.
+- Analizar los cuatro finales de Jaguar (Empatía, Enigmas, Valentía y Pesadilla), comprobar con las reglas e historiales posibles que cada uno es alcanzable, describir sus requisitos y dificultad, y ajustar mecánicas solo si algún final resultara imposible.
+- Las pruebas de `client/src/components/jaguarRules.test.ts` recorren respuestas concretas de Enigmas desde estadísticas base y rutas de Empatía y Valentía con un historial previo que permite cruzar Cautela 70. Sin bonificaciones previas, Cautela parte de 35 y no alcanza 70 ni tomando las tres respuestas más cautelosas.
+
+## [x] Separar el botón de avance del HUD de estadísticas
+- En las pantallas jugables que muestran el botón «continuar sendero», mantener visibles las barras y colocar el botón un poco más abajo, sin superponerlas, también en pantallas móviles.
+
+## [x] Hacer deterministas las pruebas de habilidad de El Jaguar
+- Cautela, Empatía y Valentía comparan los puntos con el umbral 70; Ingenio conserva el umbral 85. Se retiran los d100, las tiradas forzadas y las repeticiones de Empatía que no tendrían efecto bajo reglas deterministas.
+- La verificación exhaustiva detectó que la última respuesta de Valentía dejaba el máximo alcanzable en 68 tras cumplir Cautela 70; su efecto subió de +12 a +15 (tras el escalado pasa de +8 a +11), para que exista una ruta válida a 71 sin bajar el umbral solicitado.
+- La probabilidad de una prueba determinista es 100% al alcanzar el umbral y 0% al quedar por debajo; la probabilidad de cada final depende de las elecciones previas, el historial y la estrategia del jugador, no del azar.
+
+## [x] Ayuda opcional del colibrí en El Jaguar
+- Si el colibrí es amigo, antes de cada comprobación de atributo puede revelar qué atributo se pone a prueba y qué umbral hay que alcanzar.
+- Durante las preguntas puede dar una pista sobre el tipo de respuestas que fortalece el atributo útil, sin señalar una respuesta/opción concreta.
+- El colibrí solo revela la pista al pulsar su GIF en la escena; las pistas son enigmáticas, opcionales y el colibrí no aparece ni ayuda si no se hizo amigo.
 
 ## [x] Ajustes de diapositivas narrativas tras el colibrí y de avance de El Río
 - Tras finalizar la conversación jugable del colibrí, la semilla de Ponzoña se entrega en la diapositiva narrativa siguiente; no se modifica el contenido ni la mecánica de esa conversación.

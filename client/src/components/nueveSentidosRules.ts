@@ -1,4 +1,4 @@
-export const RHYTHM_COLORS = ["red", "green", "blue", "yellow"] as const;
+export const RHYTHM_COLORS = ["red", "green", "blue", "yellow", "white"] as const;
 export type RhythmColor = typeof RHYTHM_COLORS[number];
 
 export type StarRhythmPattern = Readonly<Record<RhythmColor, number>>;
@@ -12,6 +12,7 @@ export type RhythmPickTransition = {
 
 export const NOTE_DURATIONS_AT_60_BPM = {
   redonda: 4_000,
+  blancaConPuntillo: 3_000,
   blanca: 2_000,
   negra: 1_000,
   corchea: 500,
@@ -19,10 +20,10 @@ export const NOTE_DURATIONS_AT_60_BPM = {
 
 /** Duración de un ciclo de destello por color, en milisegundos. */
 export const RHYTHM_PATTERNS: readonly StarRhythmPattern[] = [
-  { red: NOTE_DURATIONS_AT_60_BPM.redonda, green: NOTE_DURATIONS_AT_60_BPM.blanca, blue: NOTE_DURATIONS_AT_60_BPM.negra, yellow: NOTE_DURATIONS_AT_60_BPM.corchea },
-  { red: NOTE_DURATIONS_AT_60_BPM.blanca, green: NOTE_DURATIONS_AT_60_BPM.negra, blue: NOTE_DURATIONS_AT_60_BPM.corchea, yellow: NOTE_DURATIONS_AT_60_BPM.redonda },
-  { red: NOTE_DURATIONS_AT_60_BPM.negra, green: NOTE_DURATIONS_AT_60_BPM.corchea, blue: NOTE_DURATIONS_AT_60_BPM.redonda, yellow: NOTE_DURATIONS_AT_60_BPM.blanca },
-  { red: NOTE_DURATIONS_AT_60_BPM.corchea, green: NOTE_DURATIONS_AT_60_BPM.redonda, blue: NOTE_DURATIONS_AT_60_BPM.blanca, yellow: NOTE_DURATIONS_AT_60_BPM.negra },
+  { red: NOTE_DURATIONS_AT_60_BPM.redonda, green: NOTE_DURATIONS_AT_60_BPM.blanca, blue: NOTE_DURATIONS_AT_60_BPM.negra, yellow: NOTE_DURATIONS_AT_60_BPM.corchea, white: NOTE_DURATIONS_AT_60_BPM.blancaConPuntillo },
+  { red: NOTE_DURATIONS_AT_60_BPM.blanca, green: NOTE_DURATIONS_AT_60_BPM.negra, blue: NOTE_DURATIONS_AT_60_BPM.corchea, yellow: NOTE_DURATIONS_AT_60_BPM.redonda, white: NOTE_DURATIONS_AT_60_BPM.blancaConPuntillo },
+  { red: NOTE_DURATIONS_AT_60_BPM.negra, green: NOTE_DURATIONS_AT_60_BPM.corchea, blue: NOTE_DURATIONS_AT_60_BPM.redonda, yellow: NOTE_DURATIONS_AT_60_BPM.blanca, white: NOTE_DURATIONS_AT_60_BPM.blancaConPuntillo },
+  { red: NOTE_DURATIONS_AT_60_BPM.corchea, green: NOTE_DURATIONS_AT_60_BPM.redonda, blue: NOTE_DURATIONS_AT_60_BPM.blanca, yellow: NOTE_DURATIONS_AT_60_BPM.negra, white: NOTE_DURATIONS_AT_60_BPM.blancaConPuntillo },
 ];
 
 export function getSlowestToFastestOrder(patternIndex: number): RhythmColor[] {

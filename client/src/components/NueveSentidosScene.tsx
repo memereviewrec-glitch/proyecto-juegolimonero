@@ -37,6 +37,7 @@ const RHYTHM_LABELS: Record<RhythmColor, string> = {
   green: "VERDE",
   blue: "AZUL",
   yellow: "AMARILLA",
+  white: "BLANCA CON PUNTILLO",
 };
 
 const RHYTHM_POSITIONS: Record<RhythmColor, { x: number; y: number }> = {
@@ -44,12 +45,13 @@ const RHYTHM_POSITIONS: Record<RhythmColor, { x: number; y: number }> = {
   green: { x: 50, y: 33 },
   blue: { x: 78, y: 40 },
   yellow: { x: 50, y: 54 },
+  white: { x: 22, y: 59 },
 };
 
 const RHYTHM_HINTS = [
   "El pulso más lento deja el silencio más largo entre dos destellos; el más veloz apenas roza la noche.",
   "La luz que demora abre la danza; la que regresa en un suspiro la despide.",
-  "Cuatro corazones cruzan el cielo, desde la larga espera hasta el regreso fugaz.",
+  "Cinco corazones cruzan el cielo, desde la larga espera hasta el regreso fugaz.",
 ] as const;
 
 const AWAKENING_HINT = "Siete luces velan en silencio; cada destello que descansa deja sitio para una nueva melodía.";
@@ -66,14 +68,14 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
   const [patternIndex, setPatternIndex] = useState(0);
   const [selectedColors, setSelectedColors] = useState<RhythmColor[]>([]);
   const [mistakes, setMistakes] = useState(0);
-  const [moonTouched, setMoonTouched] = useState(false);
+  const [seedPicked, setSeedPicked] = useState(false);
   const [moonDialogueStep, setMoonDialogueStep] = useState(0);
   const [hintVisible, setHintVisible] = useState(false);
   const [activeHint, setActiveHint] = useState("");
   const [seedDropState, setSeedDropState] = useState<SeedDropState>(() => seedCollected ? "landed" : "idle");
 
   const activePattern = RHYTHM_PATTERNS[patternIndex];
-  const pathUnlocked = seedCollected || seedDropState === "landed";
+  const seedIsCollected = seedCollected || seedPicked;
 
   function extinguishStar(index: number) {
     if (phase !== "awakening") return;
@@ -116,27 +118,32 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
     setHintVisible(true);
   }
 
-  function touchMoon() {
-    if (phase !== "moon") return;
-    if (moonDialogueStep < MOON_DIALOGUE.length) return;
-    setHintVisible(false);
-    if (moonTouched) return;
-    if (seedCollected) {
-      setMoonTouched(true);
-      onComplete();
-      return;
-    }
-    if (seedDropState !== "idle") return;
-    setMoonTouched(true);
+  function startSeedDrop() {
+    if (seedCollected || seedDropState !== "idle") return;
     setSeedDropState("dropping");
     playFrequencies([523.25, 659.25]);
+  }
+
+  function advanceMoonDialogue() {
+    if (moonDialogueStep >= MOON_DIALOGUE.length) return;
+    const nextStep = moonDialogueStep + 1;
+    setMoonDialogueStep(nextStep);
+    setHintVisible(false);
+    if (nextStep === MOON_DIALOGUE.length) startSeedDrop();
+  }
+
+  function collectMoonSeed() {
+    if (phase !== "moon" || moonDialogueStep < MOON_DIALOGUE.length) return;
+    if (seedDropState !== "landed" || seedPicked) return;
+    setHintVisible(false);
+    setSeedPicked(true);
+    if (!seedCollected) onCollectSeed();
+    onComplete();
   }
 
   function finishSeedDrop() {
     if (seedDropState !== "dropping") return;
     setSeedDropState("landed");
-    onCollectSeed();
-    onComplete();
   }
 
   return (
@@ -185,47 +192,45 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
       })}
 
       {phase === "moon" && (
-        <button
-          type="button"
-          className={`nueve-white-moon${pathUnlocked ? " is-collected" : ""}`}
-          onClick={touchMoon}
-          aria-label={pathUnlocked ? "Semilla lunar recogida; camino hacia El Jaguar abierto" : "Tocar la luna blanca"}
-          aria-pressed={seedCollected || moonTouched}
-        >
+        <div className={`nueve-white-moon${seedIsCollected ? " is-collected" : ""}`} aria-hidden="true">
           <span className="nueve-moon-disc" aria-hidden="true" />
-        </button>
+        </div>
       )}
 
       {phase === "moon" && moonDialogueStep < MOON_DIALOGUE.length && (
         <div className="nueve-moon-dialogue" role="status" aria-live="polite">
           <p>{MOON_DIALOGUE[moonDialogueStep] ?? ""}</p>
-          <button type="button" onClick={() => setMoonDialogueStep(step => step + 1)}>
+          <button type="button" onClick={advanceMoonDialogue}>
             {moonDialogueStep === MOON_DIALOGUE.length - 1 ? "Continuar" : "Siguiente"}
           </button>
         </div>
       )}
 
       {phase === "moon" && seedDropState !== "idle" && (
-        <div
+        <button
+          type="button"
           className={`nueve-seed-drop${seedDropState === "dropping" ? " is-dropping" : " is-landed"}`}
-          aria-hidden="true"
+          aria-label={seedCollected ? "Pulsar la semilla de Nueve Sentidos para continuar" : "Recoger la semilla de Nueve Sentidos"}
+          aria-pressed={seedIsCollected}
+          disabled={seedDropState !== "landed" || moonDialogueStep < MOON_DIALOGUE.length || seedPicked}
+          onClick={collectMoonSeed}
           onAnimationEnd={event => {
             if (event.target === event.currentTarget) finishSeedDrop();
           }}
         >
           <SeedGlyph seed="nueve-sentidos" className="nueve-seed-drop-glyph" />
-        </div>
+        </button>
       )}
 
       {hummingbirdIsFriend && (
         <>
           {hintVisible && (
-            <div id="nueve-colibri-hint" className="nueve-hint-popover" role="status" aria-live="polite">
+            <div id="nueve-colibri-hint" className={`nueve-hint-popover${phase === "moon" ? " is-moon-phase" : ""}`} role="status" aria-live="polite">
               {activeHint}
             </div>
           )}
           <button
-            className={`nueve-hint-button${hintVisible ? " is-active" : ""}`}
+            className={`nueve-hint-button${hintVisible ? " is-active" : ""}${phase === "moon" ? " is-moon-phase" : ""}`}
             type="button"
             onClick={askForHint}
             aria-controls="nueve-colibri-hint"

@@ -256,6 +256,15 @@
 - Después de sus dos frases actuales y antes de recoger la semilla, la Luna muestra un cuadro de diálogo adicional con el texto «Toma esta semilla, te ayudará en tu viaje.»
 - Los tres cuadros se presentan uno a uno; la interacción con la Luna queda bloqueada hasta cerrar el tercero.
 
+## [x] Añadir una quinta estrella a la secuencia rítmica
+- La fase de ritmo tiene cinco estrellas pulsables y se completa tocándolas de la más lenta a la más rápida.
+- La nueva estrella blanca parpadea con el pulso de una blanca con puntillo: 3 segundos por ciclo a 60 BPM.
+- `nueveSentidosRules.test.ts` comprueba cinco pulsos distintos, el orden ascendente y que cada ciclo de patrón conserva la estrella blanca a 3000 ms.
+
+## [x] Recoger la semilla lunar pulsando la semilla
+- Después de cerrar los tres diálogos, el jugador recoge la semilla pulsándola cuando ha caído; la Luna no debe ser el objetivo clicable para continuar.
+- La caída comienza al cerrar el tercer diálogo; la semilla queda como botón táctil y accesible al aterrizar, y solo su pulsación registra la semilla y habilita la continuación.
+
 ## [x] Restaurar el avance desde la Luna hacia la diapositiva de la cueva
 - Al tocar la Luna, recoger la semilla de «Nueve Sentidos» y completar su diálogo, el Libro debe actualizarse sin abrirse automáticamente encima de la pantalla jugable.
 - Con la semilla recogida y el epílogo listo debe aparecer el botón «continuar sendero»; al pulsarlo se muestra la diapositiva narrativa de la cueva y desde ella se continúa a Jaguar.

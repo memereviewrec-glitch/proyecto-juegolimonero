@@ -11,7 +11,6 @@ import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { JaguarScene } from "../components/JaguarScene";
-import { JaguarStatsHud } from "../components/JaguarStatsHud";
 import { createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
@@ -1151,8 +1150,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               />
             )
           )}
-
-          {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
 
           {scene === "ruins" && ruinsView !== "scene" && <div className="scene-stage game-screen roots-closeup-stage">
             <RuinsColumnPuzzle

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
-import { STAT_LABELS } from "./JaguarStatsHud";
+import { JaguarStatsHud, STAT_LABELS } from "./JaguarStatsHud";
 import {
   ANGRY_QUESTIONS,
   CAUTELA_THRESHOLD,
@@ -457,6 +457,8 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
 
   return (
     <div className={`jaguar-preview-layout${testMode ? " jaguar-preview-layout-test" : ""}`}>
+    <div className="jaguar-game-column">
+    <JaguarStatsHud stats={stats} className="jaguar-global-stats" />
     <div className={`scene-stage game-screen jaguar-stage${branch ? ` jaguar-stage-${branch}` : ""}`} role="group" aria-label="El Jaguar: encuentro final con pruebas por umbral">
       <div className="jaguar-forest" aria-hidden="true">
         <img className={endingArtwork ? "jaguar-ending-art" : showReturnPortal ? "jaguar-cave-art" : "jaguar-background-art"} src={gameAssetUrl(endingArtwork ?? "/jaguar-cave-background.webp")} alt="" />
@@ -586,6 +588,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
           </>}
         </div>}
       </main>
+    </div>
     </div>
     {testMode && <aside className="jaguar-debug-panel" aria-label="Controles externos del modo de prueba">
       <div className="jaguar-test-tools" aria-label="Atajos de prueba de desarrollo">

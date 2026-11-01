@@ -3,6 +3,7 @@ import {
   ANGRY_QUESTIONS,
   INGENUITY_ANSWER,
   INGENUITY_RIDDLE,
+  INNER_QUESTIONS,
   LAUGHING_QUESTIONS,
   NIGHTMARE_VOICEOVER,
   applyJaguarAnswerEffects,
@@ -12,6 +13,9 @@ import {
   resolveFightOutcome,
   resolveJaguarCheck,
   scaleJaguarAnswerEffects,
+  type JaguarQuestion,
+  type JaguarStat,
+  type JaguarStats,
 } from "./jaguarRules";
 
 describe("reglas de El Jaguar", () => {
@@ -136,6 +140,39 @@ describe("reglas de El Jaguar", () => {
   it("mantiene la voz en off de Pesadilla sin revelar al jaguar como dios", () => {
     expect(NIGHTMARE_VOICEOVER).toBe("Tu mente misma creó la selva y al depredador. Al igual que cuando alguien se libera de las ataduras pero corre de regreso a enredarse, a menudo recreamos nuestros propios temores. El sueño muestra cómo la mente construye el miedo a la disolución, pero al despertar comprendemos que no era más que una ilusión.");
     expect(NIGHTMARE_VOICEOVER.toLowerCase()).not.toContain("dios");
+  });
+
+  it("demuestra que los cuatro finales son alcanzables desde las estadísticas base", () => {
+    const base = createInitialJaguarStats({ ramblaOutcome: null, hummingbirdOutcome: null });
+    const chooseBestStatAnswers = (initial: JaguarStats, questions: readonly JaguarQuestion[], stat: JaguarStat) => (
+      questions.reduce((current, question) => {
+        const answer = question.answers.reduce((best, candidate) => (
+          (candidate.effects[stat] ?? 0) > (best.effects[stat] ?? 0) ? candidate : best
+        ));
+        return applyJaguarAnswerEffects(current, answer.effects);
+      }, initial)
+    );
+
+    const enigmaEntry = chooseBestStatAnswers(base, INNER_QUESTIONS, "ingenio");
+    expect(enigmaEntry.cautela).toBe(41);
+    expect(resolveJaguarCheck(enigmaEntry.cautela, 100).success).toBe(false);
+    const enigmas = chooseBestStatAnswers(enigmaEntry, LAUGHING_QUESTIONS, "ingenio");
+    expect(enigmas.ingenio).toBe(85);
+    expect(resolveJaguarCheck(enigmas.ingenio, 85, 85).success).toBe(true);
+
+    const empathyEntry = chooseBestStatAnswers(base, INNER_QUESTIONS, "empatia");
+    expect(resolveJaguarCheck(empathyEntry.cautela, 1).success).toBe(true);
+    const empathy = chooseBestStatAnswers(empathyEntry, ANGRY_QUESTIONS, "empatia");
+    expect(empathy.empatia).toBe(75);
+    expect(resolveJaguarCheck(empathy.empatia, 75, 50).success).toBe(true);
+
+    const courageEntry = chooseBestStatAnswers(base, INNER_QUESTIONS, "valentia");
+    expect(resolveJaguarCheck(courageEntry.cautela, 1).success).toBe(true);
+    const courage = chooseBestStatAnswers(courageEntry, ANGRY_QUESTIONS, "valentia");
+    expect(courage.valentia).toBe(75);
+    expect(resolveJaguarCheck(courage.valentia, 75).success).toBe(true);
+    expect(resolveFightOutcome(0, 3)).toBe("victory");
+    expect(resolveFightOutcome(2, 3)).toBe("nightmare");
   });
 
   it("elige el consejo según la estadística final más alta", () => {

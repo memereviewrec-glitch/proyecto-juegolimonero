@@ -252,6 +252,10 @@
 - La pantalla de la Luna conserva las dos frases existentes («Yo soy la roca que se mueve en el vacío.» y «Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas») y no muestra un cuadro adicional que recomiende ir a hablar con el Jaguar.
 - No se modifica ninguna diapositiva narrativa, incluida la de la cueva posterior a Nueve Sentidos, ni las pistas poéticas del colibrí.
 
+## [x] HUD global de estadísticas y alcanzabilidad de los finales del Jaguar
+- Mostrar las cuatro barras de estadísticas en todas las pantallas jugables, pero no en ninguna diapositiva narrativa; deben reflejar las estadísticas vigentes y sincronizarse con los cambios realizados en Jaguar.
+- Analizar los cuatro finales de Jaguar (Empatía, Enigmas, Valentía y Pesadilla), comprobar con las reglas y estadísticas base que cada uno es alcanzable, describir sus requisitos y dificultad, y ajustar mecánicas solo si algún final resultara imposible.
+- La prueba de alcanzabilidad en `client/src/components/jaguarRules.test.ts` confirma rutas favorables desde el perfil base; no fue necesario rebalancear los umbrales.
 
 ## [x] Ajustes de diapositivas narrativas tras el colibrí y de avance de El Río
 - Tras finalizar la conversación jugable del colibrí, la semilla de Ponzoña se entrega en la diapositiva narrativa siguiente; no se modifica el contenido ni la mecánica de esa conversación.

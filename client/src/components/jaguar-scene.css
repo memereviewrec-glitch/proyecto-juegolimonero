@@ -21,6 +21,7 @@
 .jaguar-home-portal span { position:absolute; inset:16%; border:2px dashed #e8ce92; border-radius:50%; transform:rotate(-28deg) scaleY(.76); animation:jaguar-portal-swirl 9s linear infinite; }
 .jaguar-stats { position:static; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
 .jaguar-player-stats { position:absolute; z-index:8; top:2.4%; right:2%; width:min(76%,520px); padding:7px; border:1px solid #b79d7290; background:#0c1115e6; box-shadow:0 2px 8px #05070a88; }
+.jaguar-global-stats { z-index:80; pointer-events:none; }
 .jaguar-stat { min-width:0; padding:6px 7px 7px; border:1px solid #b79d7261; background:#0a1015d9; box-shadow:0 2px 7px #04070b55; }
 .jaguar-stat > div:first-child { display:flex; justify-content:space-between; gap:3px; align-items:baseline; color:#eee5d2; font:8px/1.2 'DM Mono',monospace; }
 .jaguar-stat strong { color:#edce91; font-weight:700; font-size:9px; }

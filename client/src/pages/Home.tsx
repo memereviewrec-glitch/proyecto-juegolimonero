@@ -11,6 +11,8 @@ import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { JaguarScene } from "../components/JaguarScene";
+import { JaguarStatsHud } from "../components/JaguarStatsHud";
+import { createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
@@ -221,6 +223,18 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [ramblaEscapeSucceeded, setRamblaEscapeSucceeded] = useState(false);
   const [lemonWhistling, setLemonWhistling] = useState(false);
   const [notice, setNotice] = useState("");
+  const jaguarHistory = useMemo<JaguarHistory>(() => ({
+    ramblaOutcome,
+    hummingbirdOutcome,
+    riverConversationOutcome,
+    riverChallengeOutcome,
+  }), [ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
+  const initialJaguarStats = useMemo(() => createInitialJaguarStats(jaguarHistory), [jaguarHistory]);
+  const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<{ history: JaguarHistory; stats: JaguarStats } | null>(null);
+  const jaguarHudStats = jaguarStatsSnapshot?.history === jaguarHistory ? jaguarStatsSnapshot.stats : initialJaguarStats;
+  const reportJaguarStats = useMemo(() => (stats: JaguarStats) => {
+    setJaguarStatsSnapshot({ history: jaguarHistory, stats });
+  }, [jaguarHistory]);
 
   useEffect(() => {
     if (!journeyMenuOpen) return;
@@ -681,6 +695,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     if (nextScene === "hummingbird" && !fireSeedCollected) return;
     if (nextScene === "nueve-sentidos" && !ponzonaSeedCollected) return;
     if (nextScene === "jaguar" && !nueveSentidosSeedCollected) return;
+    if (nextScene === "jaguar" && scene !== "jaguar") setJaguarStatsSnapshot(null);
     setScene(nextScene);
     if (nextScene === "ruins" || nextScene === "gathering") setNotice("");
     setRoomView("scene");
@@ -698,6 +713,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setStoryBeat(null);
     setStorySeedBookOpened(false);
     setStorySeedPreview(null);
+    if (targetScene === "jaguar") setJaguarStatsSnapshot(null);
     setScene(targetScene);
     setSceneReplayNonce(version => version + 1);
     setNotice("");
@@ -855,6 +871,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                       : storyBeat === "nueve-sentidos-cave"
                         ? "jaguar"
                         : "fire-forest";
+    if (nextScene === "jaguar") setJaguarStatsSnapshot(null);
     setScene(nextScene);
     if (storyBeat === "ponzona-friend") {
       setNotice("El cielo de Nueve sentidos se abre sobre el limón y su amigo.");
@@ -1105,7 +1122,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             scene === "river" ? (
               <RiverMirrorScene key={`river-${sceneReplayNonce}-${ramblaOutcome ?? "pacifico"}`} route={ramblaOutcome === 2 ? "drastico" : "pacifico"} seedCollected={riverSeedCollected} onCollectSeed={collectRiverSeed} onConversationComplete={() => setRiverConversationComplete(true)} onChoiceSelected={recordRiverConversationChoice} />
             ) : scene === "river-challenge" ? (
-              <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={outcome => { setRiverChallengeOutcome(outcome); saveRiverChallengeOutcome(outcome); setRiverChallengeComplete(true); }} onPreviewContinue={openRiverChallengePreview ? () => setScene("jaguar") : undefined} />
+              <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={outcome => { setRiverChallengeOutcome(outcome); saveRiverChallengeOutcome(outcome); setRiverChallengeComplete(true); }} onPreviewContinue={openRiverChallengePreview ? () => { setJaguarStatsSnapshot(null); setScene("jaguar"); } : undefined} />
             ) : scene === "el-rio" ? (
               <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} onBlackReplyToWhite={() => setElRioBlackAnsweredWhite(true)} />
             ) : scene === "fire-forest" ? (
@@ -1118,8 +1135,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               <JaguarScene
                 key={`jaguar-${sceneReplayNonce}`}
                 seedCollected={jaguarSeedCollected}
+                stats={jaguarHudStats}
                 onCollectSeed={collectJaguarSeed}
                 onReturnHome={returnHomeFromJaguar}
+                onStatsChange={reportJaguarStats}
                 ramblaOutcome={ramblaOutcome}
                 hummingbirdOutcome={hummingbirdOutcome}
                 riverConversationOutcome={riverConversationOutcome}
@@ -1128,6 +1147,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               />
             )
           )}
+
+          {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
 
           {scene === "ruins" && ruinsView !== "scene" && <div className="scene-stage game-screen roots-closeup-stage">
             <RuinsColumnPuzzle

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
+import { STAT_LABELS } from "./JaguarStatsHud";
 import {
   ANGRY_QUESTIONS,
   EMPATHY_THRESHOLD,
@@ -25,6 +26,8 @@ import "./jaguar-scene.css";
 
 type JaguarSceneProps = JaguarHistory & {
   seedCollected: boolean;
+  stats: JaguarStats;
+  onStatsChange: (stats: JaguarStats) => void;
   onCollectSeed: () => void;
   onReturnHome: () => void;
   testMode?: boolean;
@@ -48,12 +51,6 @@ const FIGHT_ROUNDS = [
   { threat: "El jaguar salta y la tierra tiembla.", prompt: "¿Cómo evita el golpe?", safe: "Esperar el último instante y deslizarse bajo las raíces." },
   { threat: "La cola barre el suelo frente a él.", prompt: "¿Cómo encuentra una salida?", safe: "Saltar sobre la roca cuando la cola pase." },
 ] as const;
-const STAT_LABELS: Record<keyof JaguarStats, string> = {
-  cautela: "Cautela",
-  empatia: "Empatía",
-  ingenio: "Ingenio",
-  valentia: "Valentía",
-};
 function rollD100() {
   return Math.floor(Math.random() * 100) + 1;
 }
@@ -120,10 +117,10 @@ function runDialogueTransition(update: () => void) {
 
 const transitionAction = (update: () => void) => () => runDialogueTransition(update);
 
-export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, stats, onStatsChange, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
   const history = useMemo<JaguarHistory>(() => ({ ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome }), [ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
   const initialStats = useMemo(() => createInitialJaguarStats(history), [history]);
-  const [stats, setStats] = useState<JaguarStats>(initialStats);
+  const setStats = onStatsChange;
   const [phase, setPhase] = useState<Phase>("inner");
   const [branch, setBranch] = useState<Branch>(null);
   const [innerStep, setInnerStep] = useState(0);
@@ -164,7 +161,7 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
   function applyAnswer(question: JaguarQuestion, answerIndex: number, questionIndex: number, questionSet: "inner" | "angry" | "laughing") {
     const answer = question.answers[answerIndex];
     if (!answer) return;
-    setStats(current => applyJaguarAnswerEffects(current, answer.effects));
+    setStats(applyJaguarAnswerEffects(stats, answer.effects));
     setFeedback("");
     if (questionSet === "inner") {
       if (questionIndex < INNER_QUESTIONS.length - 1) {
@@ -641,16 +638,6 @@ export function JaguarScene({ ramblaOutcome, hummingbirdOutcome, riverConversati
           </>}
         </div>}
       </main>
-      <aside className="jaguar-player-stats" aria-label="Estado actual del limón">
-        <section className="jaguar-stats" aria-label="Barras de porcentaje de los cuatro rasgos">
-          {(Object.keys(STAT_LABELS) as (keyof JaguarStats)[]).map(stat => (
-            <div key={stat} className={`jaguar-stat jaguar-stat-${stat}`}>
-              <div><span>{STAT_LABELS[stat]}</span><strong>{stats[stat]}%</strong></div>
-              <div className="jaguar-stat-meter" role="progressbar" aria-label={STAT_LABELS[stat]} aria-valuemin={0} aria-valuemax={100} aria-valuenow={stats[stat]}><i style={{ width: `${stats[stat]}%` }} /></div>
-            </div>
-          ))}
-        </section>
-      </aside>
     </div>
     {testMode && <aside className="jaguar-debug-panel" aria-label="Controles externos del modo de prueba">
       <div className="jaguar-test-tools" aria-label="Atajos de prueba de desarrollo">

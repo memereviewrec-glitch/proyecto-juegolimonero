@@ -252,6 +252,11 @@
 - La pantalla de la Luna conserva las dos frases existentes («Yo soy la roca que se mueve en el vacío.» y «Ahora conocerás a las fuerzas ocultas que dibujan nuestras órbitas») y no muestra un cuadro adicional que recomiende ir a hablar con el Jaguar.
 - No se modifica ninguna diapositiva narrativa, incluida la de la cueva posterior a Nueve Sentidos, ni las pistas poéticas del colibrí.
 
+## [x] Restaurar el avance desde la Luna hacia la diapositiva de la cueva
+- Al tocar la Luna, recoger la semilla de «Nueve Sentidos» y completar su diálogo, el Libro debe actualizarse sin abrirse automáticamente encima de la pantalla jugable.
+- Con la semilla recogida y el epílogo listo debe aparecer el botón «continuar sendero»; al pulsarlo se muestra la diapositiva narrativa de la cueva y desde ella se continúa a Jaguar.
+- `collectNueveSentidosSeed` registra la semilla y cierra cualquier overlay del Libro; `canContinue` vuelve a habilitarse y `continueAlongPath` abre `nueve-sentidos-cave`, cuya continuación lleva a Jaguar.
+
 ## [x] HUD global de estadísticas y alcanzabilidad de los finales del Jaguar
 - Mostrar las cuatro barras de estadísticas en todas las pantallas jugables, pero no en ninguna diapositiva narrativa; deben reflejar las estadísticas vigentes y sincronizarse con los cambios realizados en Jaguar.
 - Analizar los cuatro finales de Jaguar (Empatía, Enigmas, Valentía y Pesadilla), comprobar con las reglas e historiales posibles que cada uno es alcanzable, describir sus requisitos y dificultad, y ajustar mecánicas solo si algún final resultara imposible.

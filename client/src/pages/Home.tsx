@@ -604,7 +604,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setNueveSentidosSeedCollected(true);
     setNotice("La semilla de «Nueve sentidos» entra en el Libro. El camino hacia El Jaguar queda iluminado.");
     setJourneyMenuOpen(false);
-    openStorySeedBook("nueve-sentidos");
+    // La semilla se guarda sin abrir el Libro encima del botón que lleva a la diapositiva de la cueva.
+    setSeedBookOpen(false);
+    setStorySeedBookOpened(false);
+    setStorySeedPreview(null);
   }
   function completeNueveSentidosScene() {
     setNueveSentidosEpilogueReady(true);

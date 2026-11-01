@@ -8,6 +8,7 @@ import "./nueve-sentidos-scene.css";
 type Props = {
   seedCollected: boolean;
   onCollectSeed: () => void;
+  onComplete: () => void;
   hummingbirdIsFriend: boolean;
 };
 
@@ -54,7 +55,7 @@ const RHYTHM_HINTS = [
 const AWAKENING_HINT = "Siete luces velan en silencio; cada destello que descansa deja sitio para una nueva melodía.";
 const MOON_HINT = "La luna blanca guarda una semilla dormida; cuando la alcanzan las estrellas, cae como rocío.";
 
-export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIsFriend }: Props) {
+export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, hummingbirdIsFriend }: Props) {
   const [phase, setPhase] = useState<Phase>("awakening");
   const [extinguishedStars, setExtinguishedStars] = useState<number[]>([]);
   const [patternIndex, setPatternIndex] = useState(0);
@@ -117,7 +118,13 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
     if (phase !== "moon") return;
     if (moonDialogueStep < 2) return;
     setHintVisible(false);
-    if (seedCollected || moonTouched || seedDropState !== "idle") return;
+    if (moonTouched) return;
+    if (seedCollected) {
+      setMoonTouched(true);
+      onComplete();
+      return;
+    }
+    if (seedDropState !== "idle") return;
     setMoonTouched(true);
     setSeedDropState("dropping");
     playFrequencies([523.25, 659.25]);
@@ -127,6 +134,7 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, hummingbirdIs
     if (seedDropState !== "dropping") return;
     setSeedDropState("landed");
     onCollectSeed();
+    onComplete();
   }
 
   return (

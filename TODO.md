@@ -243,3 +243,9 @@
 - En la escena del incendio, la frase describe «Un jaguar que pasaba por allí se reía» y no dice que se reía de los animales por sus vanos intentos de apagarlo.
 - Tras el desenlace amistoso con el colibrí, una diapositiva narra: «Después de la conversación, el colibrí y el limón fueron a sentarse a observar las estrellas» antes de entrar en Nueve Sentidos. Si no hay amistad, no se afirma que se sienten juntos.
 - Al aterrizar la semilla lunar al final de Nueve Sentidos, la Luna recomienda ir a hablar con el Jaguar; incluye al colibrí solo si el limón se hizo su amigo. Esta línea prepara el arco del Jaguar, cuya escena todavía queda pendiente.
+
+
+## [x] Diapositiva de la cueva tras Nueve Sentidos
+- Después de completar el reto lunar y aterrizar la semilla, aparece una diapositiva con el texto exacto: «La luz de la luna señaló el camino hasta la cueva más profunda, donde aguarda el secreto mayor guardado del bosque».
+- La diapositiva muestra el glifo clicable de la semilla física «Nueve Sentidos»; al pulsarlo, el Libro abre la entrada descubierta de esa semilla, no una vista previa bloqueada. La semilla se registra al aterrizar y no se duplica al repetir la escena.
+- Si Nueve Sentidos se repite con la semilla ya descubierta, la diapositiva sigue disponible solo después de completar de nuevo la fase lunar. Como la escena de El Jaguar aún no existe, continuar desde la diapositiva vuelve al cierre de Nueve Sentidos y no salta a otra pantalla.

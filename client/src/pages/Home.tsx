@@ -19,7 +19,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredRamblaOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredSeedBookIds, saveHummingbirdOutcome, saveRamblaOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import "./home.css";
 
@@ -36,7 +36,7 @@ const SCENE_PRESENTATION: Record<Scene, { number: string; title: string; locatio
   hummingbird: { number: "09", title: "El colibrí", location: "BOSQUE QUEMADO · LA RAMA" },
   "nueve-sentidos": { number: "10", title: "Nueve sentidos", location: "CIELO NOCTURNO · NUEVE SENTIDOS" },
 };
-type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona" | "hummingbird-stars" | "nueve-sentidos-cave";
+type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona" | "ponzona-friend" | "ponzona-doubt" | "ponzona-leaves" | "nueve-sentidos-cave";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -63,7 +63,7 @@ const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const BAND_INSTAGRAM_LINKS = [{ label: "Instagram de la banda", url: null }] as const;
 
-function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null, hummingbirdIsFriend: boolean) {
+function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   if (beat === "opening") return "Había una vez un limón que quería descubrir los límites del conocimiento y la realidad.";
   if (beat === "portal") return "El limón tomó la semilla del conocimiento que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otra dimensión. Al otro lado se encontró muy solo y comprendió que ya no sabía cómo volver a casa. Desde entonces, encontrar un hogar se convirtió en el nudo de su historia.";
   if (beat === "ruins") return "Sin saber todavía cómo volver, el limón comenzó a andar por las ruinas. Cada piedra parecía guardar una pregunta y cada raíz, un camino que no figuraba en ningún mapa.";
@@ -76,9 +76,9 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null, humming
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
   if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger las 10 semillas mágicas si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
-  if (beat === "hummingbird-stars") return hummingbirdIsFriend
-    ? "Después de la conversación, el colibrí y el limón se sentaron a observar las estrellas."
-    : "Después de la conversación, el limón se sentó a solas a mirar el cielo nocturno.";
+  if (beat === "ponzona-friend") return "Confiando en su nueva amistad, el colibrí entregó voluntariamente a Limón la semilla de Ponzoña y decidió acompañarlo en el sendero.";
+  if (beat === "ponzona-doubt") return "El miedo dejó al colibrí paralizado. No podía acompañar a Limón, pero quiso ayudarlo y le entregó la semilla de Ponzoña para que continuara su viaje.";
+  if (beat === "ponzona-leaves") return "El colibrí dejó la semilla de Ponzoña junto a Limón y alzó el vuelo para alejarse. Limón la recogió mientras su compañero desaparecía en el cielo.";
   if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";
   if (beat === "nueve-sentidos-cave") return "La luz de la luna señaló el camino hasta la cueva más profunda, donde aguarda el secreto mayor guardado del bosque.";
   return "En el fondo del río, el limón encontró otra señal del camino. La corriente lo llevó hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
@@ -91,7 +91,9 @@ const STORY_SEEDS: Partial<Record<StoryBeat, PhysicalSeedId>> = {
   "river-arrival": "rambla",
   "spirits-challenge": "espiritus-del-rio",
   "el-rio": "el-rio",
-  "hummingbird-stars": "ponzona",
+  "ponzona-friend": "ponzona",
+  "ponzona-doubt": "ponzona",
+  "ponzona-leaves": "ponzona",
   "nueve-sentidos-cave": "nueve-sentidos",
 };
 
@@ -193,11 +195,13 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
   const [riverConversationComplete, setRiverConversationComplete] = useState(false);
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(() => persistedSeedIds.includes("el-rio"));
+  const [elRioBlackAnsweredWhite, setElRioBlackAnsweredWhite] = useState(false);
   const [fireSeedCollected, setFireSeedCollected] = useState(() => persistedSeedIds.includes("el-fuego"));
   const [ponzonaSeedCollected, setPonzonaSeedCollected] = useState(() => persistedSeedIds.includes("ponzona"));
   const [nueveSentidosSeedCollected, setNueveSentidosSeedCollected] = useState(() => persistedSeedIds.includes("nueve-sentidos"));
   const [nueveSentidosEpilogueReady, setNueveSentidosEpilogueReady] = useState(false);
   const [hummingbirdIsFriend, setHummingbirdIsFriend] = useState(readStoredHummingbirdFriendship);
+  const [hummingbirdOutcome, setHummingbirdOutcome] = useState<HummingbirdOutcome | null>(readStoredHummingbirdOutcome);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -557,8 +561,12 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     } else {
       setNotice("El nuevo desenlace de «Ponzoña» queda guardado; la semilla ya estaba en el Libro.");
     }
-    setJourneyMenuOpen(false);
-    openStorySeedBook("ponzona");
+    const endingBeat: StoryBeat = hummingbirdOutcome === "good"
+      ? "ponzona-friend"
+      : hummingbirdOutcome === "bad"
+        ? "ponzona-leaves"
+        : "ponzona-doubt";
+    showStory(endingBeat);
   }
 
   function collectNueveSentidosSeed() {
@@ -572,6 +580,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     setNueveSentidosEpilogueReady(true);
   }
   function recordHummingbirdOutcome(outcome: HummingbirdOutcome) {
+    setHummingbirdOutcome(outcome);
     setHummingbirdIsFriend(outcome === "good");
     saveHummingbirdOutcome(outcome);
   }
@@ -701,11 +710,13 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
       setRamblaSkillFailures(0);
       setRamblaEscapeSucceeded(false);
     } else if (songId === "espiritus-del-rio") {
-      setRiverSeedCollected(false);
-      setRiverConversationComplete(false);
-      setRiverChallengeComplete(false);
+    setRiverSeedCollected(false);
+    setRiverConversationComplete(false);
+    setRiverChallengeComplete(false);
+    setElRioBlackAnsweredWhite(false);
     } else if (songId === "el-rio") {
       setElRioSeedCollected(false);
+      setElRioBlackAnsweredWhite(false);
     }
   }
 
@@ -729,6 +740,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     setLemonWhistling(false);
     setDawnIsMoving(false);
     setIsMoving(false);
+    setElRioBlackAnsweredWhite(false);
     setSceneReplayNonce(version => version + 1);
   }
 
@@ -759,7 +771,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     || (scene === "gathering" && campfireSeedCollected)
     || (scene === "river" && riverConversationComplete && riverSeedCollected)
     || (scene === "river-challenge" && riverChallengeComplete)
-    || (scene === "el-rio" && elRioSeedCollected)
+    || (scene === "el-rio" && elRioSeedCollected && elRioBlackAnsweredWhite)
     || (scene === "fire-forest" && fireSeedCollected)
     || (scene === "hummingbird" && ponzonaSeedCollected)
     || (scene === "nueve-sentidos" && nueveSentidosSeedCollected && nueveSentidosEpilogueReady)
@@ -793,16 +805,16 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
                 ? "el-rio"
                 : storyBeat === "ponzona"
                   ? "hummingbird"
-              : storyBeat === "hummingbird-stars"
+              : storyBeat === "ponzona-friend" || storyBeat === "ponzona-doubt" || storyBeat === "ponzona-leaves"
                 ? "nueve-sentidos"
                 : storyBeat === "nueve-sentidos-cave"
                   ? "nueve-sentidos"
                   : "fire-forest";
     setScene(nextScene);
-    if (storyBeat === "hummingbird-stars") {
-      setNotice(hummingbirdIsFriend
-        ? "El cielo de Nueve sentidos se abre sobre el limón y su amigo."
-        : "El cielo de Nueve sentidos se abre sobre el limón.");
+    if (storyBeat === "ponzona-friend") {
+      setNotice("El cielo de Nueve sentidos se abre sobre el limón y su amigo.");
+    } else if (storyBeat === "ponzona-doubt" || storyBeat === "ponzona-leaves") {
+      setNotice("El cielo de Nueve sentidos se abre sobre el limón.");
     }
     setStoryBeat(null);
     setRoomView("scene");
@@ -843,7 +855,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     } else if (scene === "fire-forest") {
       showStory("ponzona");
       } else if (scene === "hummingbird") {
-        showStory("hummingbird-stars");
+        showStory(hummingbirdOutcome === "good" ? "ponzona-friend" : hummingbirdOutcome === "bad" ? "ponzona-leaves" : "ponzona-doubt");
       } else if (scene === "nueve-sentidos" && nueveSentidosSeedCollected && nueveSentidosEpilogueReady) {
         setNueveSentidosEpilogueReady(false);
         showStory("nueve-sentidos-cave");
@@ -927,7 +939,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
           </div>
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}`}>
-            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome, hummingbirdIsFriend)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
             <button
               className="seedbook-toggle"
@@ -1045,7 +1057,7 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
             ) : scene === "river-challenge" ? (
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={() => setRiverChallengeComplete(true)} />
             ) : scene === "el-rio" ? (
-              <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} />
+              <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} onBlackReplyToWhite={() => setElRioBlackAnsweredWhite(true)} />
             ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
             ) : scene === "hummingbird" ? (

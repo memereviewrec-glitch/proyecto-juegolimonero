@@ -249,3 +249,10 @@
 - Después de completar el reto lunar y aterrizar la semilla, aparece una diapositiva con el texto exacto: «La luz de la luna señaló el camino hasta la cueva más profunda, donde aguarda el secreto mayor guardado del bosque».
 - La diapositiva muestra el glifo clicable de la semilla física «Nueve Sentidos»; al pulsarlo, el Libro abre la entrada descubierta de esa semilla, no una vista previa bloqueada. La semilla se registra al aterrizar y no se duplica al repetir la escena.
 - Si Nueve Sentidos se repite con la semilla ya descubierta, la diapositiva sigue disponible solo después de completar de nuevo la fase lunar. Como la escena de El Jaguar aún no existe, continuar desde la diapositiva vuelve al cierre de Nueve Sentidos y no salta a otra pantalla.
+
+
+## [x] Ajustes de diapositivas narrativas tras el colibrí y de avance de El Río
+- Tras finalizar la conversación jugable del colibrí, la semilla de Ponzoña se entrega en la diapositiva narrativa siguiente; no se modifica el contenido ni la mecánica de esa conversación.
+- Hay tres diapositivas según el desenlace: en el final malo, el colibrí deja la semilla en la escena y se marcha volando; en el final neutral/de duda, explica que el miedo lo paraliza y no puede acompañar a Limón, pero le entrega la semilla para ayudarlo; en el final amistoso, entrega voluntariamente la semilla y acompaña a Limón.
+- En todas las diapositivas narrativas salvo la primera, el botón dice «continuar sendero»; la primera conserva «comenzar el sendero».
+- En El Río, el botón global «continuar sendero» no aparece hasta que el pez negro haya respondido al pez blanco. No se cambian los textos ni la conversación de la escena jugable.

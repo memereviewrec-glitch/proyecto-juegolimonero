@@ -36,7 +36,7 @@ const SCENE_PRESENTATION: Record<Scene, { number: string; title: string; locatio
   hummingbird: { number: "09", title: "El colibrí", location: "BOSQUE QUEMADO · LA RAMA" },
   "nueve-sentidos": { number: "10", title: "Nueve sentidos", location: "CIELO NOCTURNO · NUEVE SENTIDOS" },
 };
-type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona";
+type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona" | "hummingbird-stars";
 type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
@@ -75,7 +75,8 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
     return `${arrival} Así que decidió lanzar piedras al agua, para ver si algo le respondía desde el fondo.`;
   }
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
-  if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger todas las semillas que encontrara si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
+  if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger las 10 semillas mágicas si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
+  if (beat === "hummingbird-stars") return "Después de la conversación, el colibrí y el limón fueron a sentarse a observar las estrellas.";
   if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";
   return "En el fondo del río, el limón encontró otra señal del camino. La corriente lo llevó hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
 }
@@ -781,8 +782,11 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
                 ? "el-rio"
                 : storyBeat === "ponzona"
                   ? "hummingbird"
-                  : "fire-forest";
+                  : storyBeat === "hummingbird-stars"
+                    ? "nueve-sentidos"
+                    : "fire-forest";
     setScene(nextScene);
+    if (storyBeat === "hummingbird-stars") setNotice("El cielo de Nueve sentidos se abre sobre el limón y su amigo.");
     setStoryBeat(null);
     setRoomView("scene");
     setRoomAction(null);
@@ -822,8 +826,12 @@ export default function Home({ openWorldExplorer = false }: HomeProps = {}) {
     } else if (scene === "fire-forest") {
       showStory("ponzona");
     } else if (scene === "hummingbird") {
-      setScene("nueve-sentidos");
-      setNotice("El cielo de Nueve sentidos se abre sobre el limón.");
+      if (hummingbirdIsFriend) {
+        showStory("hummingbird-stars");
+      } else {
+        setScene("nueve-sentidos");
+        setNotice("El cielo de Nueve sentidos se abre sobre el limón.");
+      }
     }
   }
 

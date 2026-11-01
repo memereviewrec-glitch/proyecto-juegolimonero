@@ -29,7 +29,7 @@
 - El incendio usa una única hoja de fondos completos (`fire-forest-burning-frames.png`): fotograma 1 con mucho fuego, fotograma 2 con menos fuego, y la secuencia repite 1, 2, 1, 2 rápidamente con `steps(2)`; no existe ninguna capa de llamas superpuesta.
 - Cuando comienza la lluvia, la hoja de fondos incendiados inicia una transición progresiva hacia `fire-forest-background-after.png`, con el bosque seco, silencioso y cubierto de ceniza; la lluvia está compuesta por gotas pixeladas individuales, desfasadas y animadas con pasos discretos, sin gradientes repetidos ni líneas diagonales continuas.
 - Cuando la semilla negra aparece al final, es un botón clicable; al recogerla se añade «El fuego» al Libro y se abre directamente esa nueva entrada.
-- Durante los 22 segundos de la escena se cuenta la historia en cinco pasos, dejando un segundo adicional entre cambios para facilitar la lectura: los animales intentan llevar agua del río al bosque sin conseguirlo; un jaguar se ríe de sus vanos intentos; se anuncia «Al tiempo, llegó la lluvia» y en ese instante comienzan las gotas; después la lluvia apaga el incendio y aparece la semilla en una zona clicable por encima del diálogo.
+- Durante los 22 segundos de la escena se cuenta la historia en cinco pasos, dejando un segundo adicional entre cambios para facilitar la lectura: los animales intentan llevar agua del río al bosque sin conseguirlo; un jaguar que pasaba por allí se ríe; se anuncia «Al tiempo, llegó la lluvia» y en ese instante comienzan las gotas; después la lluvia apaga el incendio y aparece la semilla en una zona clicable por encima del diálogo.
 - Con `prefers-reduced-motion`, el relato conserva el mismo orden usando fases estáticas de incendio, lluvia y bosque apagado; no se muestra una lluvia animada.
 
 ## [x] Pantalla 1: fondo y flujo de juego
@@ -236,3 +236,10 @@
 - Al recoger «Ventana al sendero», «Siguiente: Raíces» abre la tercera escena; no aparece un botón de retorno al local. La navegación de progreso tampoco habilita volver a pantallas anteriores.
 - En las ruinas se caminaron las zonas del sendero, se examinó cada columna por separado y se arrastraron sus hojas: izquierda «as above», derecha «so below». Al despejar ambas, creció la flor, cayó la tercera semilla y se desbloqueó «Raíces».
 - Las dos rutas del amanecer, la flor, la semilla y el salto del limón siguen verificadas de la iteración anterior; se capturaron vistas responsive de escritorio y móvil para comprobar la separación de los sprites.
+
+
+## [x] Ajustes narrativos del Río, el incendio y la transición hacia El Jaguar
+- En la diapositiva del Río, los Espíritus recomiendan recoger «las 10 semillas mágicas» para volver a casa; se conserva la continuación que señala el fondo del cauce y prepara la búsqueda de la siguiente semilla.
+- En la escena del incendio, la frase describe «Un jaguar que pasaba por allí se reía» y no dice que se reía de los animales por sus vanos intentos de apagarlo.
+- Tras el desenlace amistoso con el colibrí, una diapositiva narra: «Después de la conversación, el colibrí y el limón fueron a sentarse a observar las estrellas» antes de entrar en Nueve Sentidos. Si no hay amistad, no se afirma que se sienten juntos.
+- Al aterrizar la semilla lunar al final de Nueve Sentidos, la Luna recomienda ir a hablar con el Jaguar; incluye al colibrí solo si el limón se hizo su amigo. Esta línea prepara el arco del Jaguar, cuya escena todavía queda pendiente.

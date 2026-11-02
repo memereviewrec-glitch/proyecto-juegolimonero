@@ -1056,6 +1056,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
           </div>
 
+          <div className={`game-stage-layout${scene === "jaguar" ? " game-stage-layout-jaguar" : ""}`}>
           {!previewChromeHidden && !storyBeat && <div className={`game-hud-toolbar${scene === "jaguar" ? " game-hud-toolbar-jaguar" : ""}`}>
             <div ref={journeyMenuRef} className={`journey-menu-anchor${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
               <button
@@ -1247,6 +1248,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             <span>{scene === "room" ? "atravesar la ventana" : "continuar el sendero"}</span>
             <svg viewBox="0 0 18 16" aria-hidden="true" shapeRendering="crispEdges"><path d="M1 6h8V2h2v2h2v2h3v4h-3v2h-2v2H9v-4H1z" fill="currentColor" /></svg>
           </button>}
+          </div>
           </div>
           <span className="sr-only" aria-live="polite" aria-atomic="true">{notice}</span>
         </div>

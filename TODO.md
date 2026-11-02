@@ -347,3 +347,8 @@
 - La primera frase de la última caja dice exactamente: «La semilla que buscabas estuvo debajo de tu cama todo el tiempo, Limón. Es la semilla que te generó»; después conserva el mensaje de que la última semilla está a salvo en el libro y Limón vuelve tranquilo a dormir.
 - La animación/carga del libro se muestra por encima de la última caja de diálogo.
 - Evidencia: al recoger la semilla final, el callback abre el Libro con «El jaguar» enfocado; su capa (`z-index: 300`) queda sobre el cuadro. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+## [x] Botonera lateral exclusiva para ordenador
+- En ordenador, los iconos del Libro de semillas y del menú se muestran en un lateral fuera del lienzo, no en la fila superior, para que la pantalla de juego conserve toda su altura visible.
+- En móvil, los dos iconos se mantienen en su fila superior actual y no se trasladan al lateral.
+- A partir de 1.000 px, la botonera se ancla al lateral derecho del lienzo sin ocupar altura; en anchos menores conserva la fila superior. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.

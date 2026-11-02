@@ -618,14 +618,12 @@ button { font:inherit; }
 .seedbook-page-indicator { margin:16px 0 8px; color:#706a73; text-align:center; font:9px 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
 .seedbook-entry { padding:14px; border:2px solid #d9d0c0; background:#fffdf7; box-shadow:3px 3px #eee7d8; }
 .seedbook-preview-entry { border-style:dashed; background:#f7fbf5; }
-.seedbook-preview-entry .seedbook-page-seed-button { position:relative; border:2px dashed #9aa6a2; background:#e8efeb; opacity:.78; }
-.seedbook-preview-entry .seedbook-page-seed-button::after { content:"▣"; position:absolute; right:4px; bottom:3px; color:#52666a; font:12px 'DM Mono',monospace; }
-.seedbook-preview-entry .seedbook-page-seed-button .seed-glyph { filter:grayscale(.72) saturate(.55) opacity(.62); }
+.seedbook-preview-entry .seedbook-page-seed-display { position:relative; border:2px dashed #9aa6a2; background:#e8efeb; opacity:.78; }
+.seedbook-preview-entry .seedbook-page-seed-display::after { content:"▣"; position:absolute; right:4px; bottom:3px; color:#52666a; font:12px 'DM Mono',monospace; }
+.seedbook-preview-entry .seedbook-page-seed-display .seed-glyph { filter:grayscale(.72) saturate(.55) opacity(.62); }
 .seedbook-page-seed { display:flex; min-height:116px; align-items:center; justify-content:center; padding:10px 0 5px; }
-.seedbook-page-seed-button { display:grid; width:92px; height:104px; place-items:center; border:0; background:transparent; cursor:pointer; image-rendering:pixelated; }
-.seedbook-page-seed-button .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
-.seedbook-page-seed-button:hover:not(:disabled),.seedbook-page-seed-button:focus-visible { outline:2px dashed #d98470; outline-offset:4px; }
-.seedbook-page-seed-button:disabled { cursor:not-allowed; opacity:.72; }
+.seedbook-page-seed-display { display:grid; width:92px; height:104px; place-items:center; image-rendering:pixelated; }
+.seedbook-page-seed-display .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
 .seedbook-entry-heading { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 .seedbook-number { color:#d98470; font:10px 'DM Mono',monospace; }
 .seedbook-entry-heading h3 { flex:1; margin:0; font-size:17px; letter-spacing:-.04em; }
@@ -703,8 +701,8 @@ button { font:inherit; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }
  .seedbook-page-seed { min-height:92px; padding-top:4px; }
- .seedbook-page-seed-button { width:72px; height:82px; }
- .seedbook-page-seed-button .seed-glyph { width:56px; height:72px; }
+ .seedbook-page-seed-display { width:72px; height:82px; }
+ .seedbook-page-seed-display .seed-glyph { width:56px; height:72px; }
  .seedbook-lyrics-space { min-height:104px; margin-bottom:12px; padding:9px; }
  .seedbook-metadata { gap:4px; }
  .seedbook-metadata span { padding:5px; }

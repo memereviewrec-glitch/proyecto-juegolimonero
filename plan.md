@@ -17,4 +17,8 @@ Se conserva la estética aprobada del juego: Libro como objeto físico de pixel 
 
 
 ## Índice de semillas
-El Libro tendrá una vista de índice ordenada con las diez canciones del catálogo. Elegir una entrada abrirá directamente su página; si la semilla aún está bloqueada, se mostrará como bloqueada y no modificará la progresión. Se mantienen anterior/siguiente como navegación opcional para páginas contiguas.
+El Libro tendrá una vista de índice ordenada con las diez canciones del catálogo. Elegir una entrada abrirá directamente su página; si la semilla aún está bloqueada, se mostrará como bloqueada y no modificará la progresión. Los títulos permanecerán ocultos tanto en pantalla como en etiquetas accesibles hasta conseguir su semilla. Se mantienen anterior/siguiente como navegación opcional para páginas contiguas.
+
+
+## Interacción del glifo
+En las páginas de canción, el glifo es ornamental y no inicia escenas ni minijuegos. La entrada a una escena para reescribir decisiones permanece separada y explícita en «Reescribir historia».

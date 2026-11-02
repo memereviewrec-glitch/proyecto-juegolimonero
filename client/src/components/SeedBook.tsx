@@ -36,13 +36,12 @@ type SeedBookProps = {
   rewriteSummaries: Partial<Record<RewriteChapterId, string>>;
   archivedEndingIds: JaguarEndingId[];
   onClose: () => void;
-  onReplaySong: (songId: SeedSongId) => void;
   onRewriteChapter: (chapterId: RewriteChapterId) => void;
 };
 
 type BookView = "songs" | "index" | "rewrite" | "endings" | "ending";
 
-export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, archivedEndingIds, onClose, onReplaySong, onRewriteChapter }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, archivedEndingIds, onClose, onRewriteChapter }: SeedBookProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
@@ -152,18 +151,17 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 const isPreview = currentSongLocked;
                 const seedId = getPhysicalSeedId(song.id);
                 const visibleTitle = isPreview ? "Semilla bloqueada" : song.title;
+                const accessibleSongTitle = isPreview ? "semilla bloqueada" : song.title;
                 return <>
                 <div className="seedbook-page-seed">
-                  {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReplaySong(song.id)} disabled={isPreview} aria-label={`Repetir el minijuego de ${song.title}`} title={`Repetir el minijuego de ${song.title}`}>
-                    <SeedGlyph seed={seedId} />
-                  </button>}
+                  {seedId && <div className="seedbook-page-seed-display" aria-hidden="true"><SeedGlyph seed={seedId} /></div>}
                 </div>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
                   <h3>{visibleTitle}</h3>
                   {isPreview && <span className="seedbook-locked">bloqueada</span>}
                 </div>
-                <div className="seedbook-metadata" aria-label={`Recursos de ${song.title}`}>
+                <div className="seedbook-metadata" aria-label={`Recursos de ${accessibleSongTitle}`}>
                   <span><b>YouTube</b><small>{song.youtubeUrl ? "Enlace disponible" : "Pendiente del enlace"}</small></span>
                   <span><b>Descarga</b><small>{song.wavDownloadUrl ? "Archivo disponible" : "Pendiente del archivo"}</small></span>
                 </div>
@@ -179,7 +177,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                     <button type="button" className="seedbook-action" disabled>WAV pendiente</button>
                   )}
                 </div>
-                <div className="seedbook-lyrics-space" aria-label={`Espacio para la letra de ${song.title}`}><span>LETRA DE LA CANCIÓN</span></div>
+                <div className="seedbook-lyrics-space" aria-label={`Espacio para la letra de ${accessibleSongTitle}`}><span>LETRA DE LA CANCIÓN</span></div>
                 </>;
               })()}
             </article>
@@ -192,10 +190,12 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
             {SONG_CATALOG.map((song, index) => {
               const seedId = getPhysicalSeedId(song.id);
               const isDiscovered = discoveredSongIds.includes(song.id);
-              return <button key={song.id} type="button" className={`seedbook-index-entry${isDiscovered ? "" : " seedbook-index-entry-locked"}`} onClick={() => openIndexSong(song.id)} aria-label={`Ir a la página ${index + 1}: ${song.title}${isDiscovered ? "" : ", semilla bloqueada"}`}>
+              const visibleTitle = isDiscovered ? song.title : "Semilla bloqueada";
+              const accessibleTitle = isDiscovered ? song.title : "semilla bloqueada";
+              return <button key={song.id} type="button" className={`seedbook-index-entry${isDiscovered ? "" : " seedbook-index-entry-locked"}`} onClick={() => openIndexSong(song.id)} aria-label={`Ir a la página ${index + 1}: ${accessibleTitle}`}>
                 <span className="seedbook-index-seed" aria-hidden="true">{seedId && <SeedGlyph seed={seedId} />}</span>
                 <span className="seedbook-index-number">{String(index + 1).padStart(2, "0")}</span>
-                <strong>{song.title}</strong>
+                <strong>{visibleTitle}</strong>
                 <span className="seedbook-index-status">{isDiscovered ? "descubierta" : "bloqueada"}</span>
                 <span className="seedbook-index-arrow" aria-hidden="true">→</span>
               </button>;

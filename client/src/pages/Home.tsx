@@ -49,19 +49,6 @@ type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
 type RoomTarget = "guitar" | "amp" | "cable";
 type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
 type RoomView = "scene" | "cable" | "amp" | "guitar";
-const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
-  intro: "room",
-  ventana: "dawn",
-  raices: "ruins",
-  rambla: "gathering",
-  "espiritus-del-rio": "river",
-  "el-rio": "el-rio",
-  "el-fuego": "fire-forest",
-  ponzona: "hummingbird",
-  "nueve-sentidos": "nueve-sentidos",
-  "el-jaguar": "jaguar",
-};
-
 const REWRITE_TARGETS: Record<RewriteChapterId, Scene> = {
   dawn: "dawn",
   rambla: "gathering",
@@ -772,11 +759,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setIsMoving(false);
   }
 
-  function replaySong(songId: SeedSongId) {
-    const targetScene = REPLAY_TARGETS[songId];
-    if (targetScene) enterReplayScene(targetScene);
-  }
-
   function rewriteChapter(chapterId: RewriteChapterId) {
     if (!discoveredSongIds.includes("el-jaguar")) return;
     enterReplayScene(REWRITE_TARGETS[chapterId]);
@@ -1155,7 +1137,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               rewriteSummaries={rewriteSummaries}
               archivedEndingIds={archivedJaguarEndings}
               onClose={() => setSeedBookOpen(false)}
-              onReplaySong={replaySong}
               onRewriteChapter={rewriteChapter}
             />}
             {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}

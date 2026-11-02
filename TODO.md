@@ -397,4 +397,11 @@
 - El Libro incluye una página de índice con las diez semillas, sus títulos y el orden del catálogo.
 - Al pulsar cualquier semilla del índice, se abre directamente la página de esa canción, sin tener que avanzar página por página con «anterior» y «siguiente».
 - Si la semilla aún está bloqueada, su página se abre en estado bloqueado; el índice no altera la progresión ni concede semillas.
-- Evidencia: las diez filas se generan en orden desde `SONG_CATALOG`; las descubiertas saltan a su página y las futuras abren la vista «Semilla bloqueada» sin habilitar su repetición. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.
+- El título de una canción solo es visible después de conseguir su semilla; las entradas bloqueadas del índice y sus etiquetas accesibles no revelan el título.
+- Evidencia: nombres visuales y accesibles condicionados a que la semilla esté descubierta; `onReplaySong`, `replaySong` y `REPLAY_TARGETS` eliminados del flujo del glifo. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [x] Glifo de semilla no interactivo
+- Al pulsar el glifo de una semilla en su página del Libro, no se inicia la escena ni el minijuego asociado.
+- La navegación a capítulos reescribibles sigue disponible desde su acceso explícito de «Reescribir historia».
+- Evidencia: el glifo se renderiza en un contenedor no interactivo y el único acceso a escenas desde SeedBook permanece en la sección explícita de reescritura.

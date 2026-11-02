@@ -411,3 +411,10 @@
 - La frase que abre la puerta del juego debe ser exactamente `gran catalizador`, en lugar de `0123456789`.
 - Las sesiones guardadas con la marca anterior no deben abrir el juego después de recargar; el acceso sigue siendo una puerta informal de demostración, no protección de servidor.
 - Evidencia: contraseña antigua ausente de `client/src` y `client/public`; `ACCESS_KEY` versionada. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [x] Retirar la pestaña «Semillas» del Libro
+- La pestaña «Semillas» desaparece de la navegación interna del Libro.
+- El Libro abre inicialmente el Índice; elegir una entrada de semilla sigue abriendo su página de canción y los accesos narrativos a una canción concreta siguen funcionando.
+- Se conservan las pestañas disponibles de Índice, Reescribir historia y Finales.
+- Evidencia: el índice es la vista inicial si no hay foco narrativo explícito, y el efecto conserva la apertura directa de canciones en los accesos narrativos. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.

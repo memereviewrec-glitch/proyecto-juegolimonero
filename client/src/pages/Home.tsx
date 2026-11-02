@@ -1132,7 +1132,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             {!previewChromeHidden && seedBookOpen && <SeedBook
               discoveredSongIds={discoveredSongIds}
               previewSongId={nextLockedSongId}
-              focusSongId={storySeedPreview ?? nextLockedSongId}
+              focusSongId={storySeedPreview}
               rewriteUnlocked={rewriteUnlocked}
               rewriteSummaries={rewriteSummaries}
               archivedEndingIds={archivedJaguarEndings}

@@ -26,3 +26,7 @@ En las páginas de canción, el glifo es ornamental y no inicia escenas ni minij
 
 ## Puerta de acceso informal
 Actualizar la frase verificada por `PasswordGate` a la nueva frase elegida y versionar la clave de sesión para que la marca de acceso previa no desbloquee la aplicación tras recargar. Se conserva el aviso de que la puerta del navegador no es autenticación de servidor.
+
+
+## Navegación del Libro
+Eliminar la pestaña «Semillas»; abrir el Libro normalmente en el Índice y mantener las páginas de canciones accesibles desde sus entradas. Los accesos narrativos pueden seguir abriendo directamente la canción pertinente. Se conservan las secciones Índice, Reescribir historia y Finales según disponibilidad.

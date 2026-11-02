@@ -46,7 +46,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
   const [pageIndex, setPageIndex] = useState(0);
-  const [view, setView] = useState<BookView>("songs");
+  const [view, setView] = useState<BookView>(focusSongId ? "songs" : "index");
   const [selectedIndexSongId, setSelectedIndexSongId] = useState<SeedSongId | null>(null);
   const [selectedEndingId, setSelectedEndingId] = useState<JaguarEndingId | null>(null);
   const discoveredSongs = SONG_CATALOG.filter(song => discoveredSongIds.includes(song.id));
@@ -76,6 +76,10 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
   useEffect(() => {
     const focusedIndex = focusSongId ? visibleSongs.findIndex(song => song.id === focusSongId) : -1;
     setPageIndex(focusedIndex >= 0 ? focusedIndex : previewSong ? visibleSongs.length - 1 : 0);
+    if (focusSongId) {
+      setSelectedIndexSongId(null);
+      setView("songs");
+    }
   }, [focusSongId, previewSongId]);
 
   useEffect(() => {
@@ -129,7 +133,6 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
         </div>
 
         <nav className="seedbook-library-tabs" aria-label="Secciones del Libro de semillas">
-          <button type="button" className={view === "songs" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "songs"} onClick={() => setView("songs")}>Semillas</button>
           <button type="button" className={view === "index" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "index"} onClick={() => setView("index")}>Índice</button>
           {rewriteUnlocked && <button type="button" className={view === "rewrite" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "rewrite"} onClick={() => setView("rewrite")}>Reescribir historia</button>}
           {rewriteUnlocked && archivedEndingIds.length > 0 && <button type="button" className={view === "endings" || view === "ending" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "endings" || view === "ending"} onClick={() => setView("endings")}>Finales · {archivedEndingIds.length}</button>}

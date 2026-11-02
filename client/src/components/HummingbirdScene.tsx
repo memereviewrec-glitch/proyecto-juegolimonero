@@ -13,6 +13,7 @@ type HummingbirdSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
   onOutcome?: (outcome: HummingbirdOutcome, valiantResponseCount: number) => void;
+  onValiantResponseCountChange?: (count: number) => void;
   previewAlternatives?: HummingbirdPreviewAlternatives;
 };
 
@@ -22,7 +23,7 @@ function outcomeText(outcome: HummingbirdOutcome) {
   return "Aún no sé qué hacer. Me quedaré un momento en esta rama para decidir el siguiente paso.";
 }
 
-export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, previewAlternatives }: HummingbirdSceneProps) {
+export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, onValiantResponseCountChange, previewAlternatives }: HummingbirdSceneProps) {
   const draftAlternatives = import.meta.env.DEV ? previewAlternatives : undefined;
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
@@ -47,9 +48,10 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
     setQuestionIndex(0);
     setOutcome(null);
     setValiantResponseCount(0);
+    onValiantResponseCountChange?.(0);
     setDraftPreviewComplete(false);
     setExitingScene(false);
-  }, [draftAlternatives]);
+  }, [draftAlternatives, onValiantResponseCountChange]);
 
   const question = HUMMINGBIRD_QUESTIONS[questionIndex];
   const empathicResponse = question?.options.find(option => option.kind === "empatica")?.text ?? "";
@@ -72,6 +74,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
     if (!selectedOption) return;
     const nextValiantResponseCount = valiantResponseCount + (selectedOption.kind === "valiente" ? 1 : 0);
     setValiantResponseCount(nextValiantResponseCount);
+    onValiantResponseCountChange?.(nextValiantResponseCount);
     const nextMood = Math.max(-100, Math.min(100, mood + selectedOption.moodDelta));
     setMood(nextMood);
     const nextOutcome = resolveHummingbirdOutcome(nextMood, questionIndex === HUMMINGBIRD_QUESTIONS.length - 1);

@@ -1,4 +1,5 @@
-import { createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "./components/jaguarRules";
+import { applyJaguarEffects, createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "./components/jaguarRules";
+import { getHummingbirdRewards } from "./components/hummingbirdRules";
 import type { GameScene } from "./sceneAccessRules";
 
 const SCENE_ORDER: Record<GameScene, number> = {
@@ -40,8 +41,14 @@ export function getJourneyHudStats(
   scene: GameScene,
   currentDecisionResolved = false,
   snapshot: JaguarStatsSnapshot | null = null,
+  liveHummingbirdValiantResponseCount = 0,
 ): JaguarStats {
   // Encounter answers belong only to the current Jaguar attempt, never earlier chapters.
   if (scene === "jaguar" && snapshot?.history === history) return snapshot.stats;
-  return createInitialJaguarStats(getJourneyStatsHistory(history, scene, currentDecisionResolved));
+  let stats = createInitialJaguarStats(getJourneyStatsHistory(history, scene, currentDecisionResolved));
+  if (scene === "hummingbird" && !currentDecisionResolved) {
+    const liveValentia = getHummingbirdRewards("neutral", liveHummingbirdValiantResponseCount).valentia;
+    if (liveValentia > 0) stats = applyJaguarEffects(stats, { valentia: liveValentia });
+  }
+  return stats;
 }

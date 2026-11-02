@@ -110,6 +110,24 @@ describe("HUD cronológico al reescribir historia", () => {
     }));
   });
 
+  it("muestra +3 Valentía por cada V inmediatamente y no duplica el total al resolver", () => {
+    const unresolved = {
+      ...savedHistory,
+      hummingbirdOutcome: null,
+      hummingbirdEmpatiaBonus: 0,
+      hummingbirdValentiaBonus: 0,
+    };
+    const base = getJourneyHudStats(unresolved, "hummingbird", false, null);
+    expect(getJourneyHudStats(unresolved, "hummingbird", false, null, 1).valentia).toBe(base.valentia + 3);
+    expect(getJourneyHudStats(unresolved, "hummingbird", false, null, 2).valentia).toBe(base.valentia + 6);
+    expect(getJourneyHudStats(unresolved, "hummingbird", false, null, 3).valentia).toBe(base.valentia + 9);
+
+    const resolved = { ...unresolved, hummingbirdOutcome: "neutral" as const, hummingbirdValentiaBonus: 6 };
+    const finalStats = getJourneyHudStats(resolved, "hummingbird", true, null);
+    expect(finalStats.valentia).toBe(base.valentia + 6);
+    expect(getJourneyHudStats(resolved, "hummingbird", true, null, 2)).toEqual(finalStats);
+  });
+
   it("no concede los cuatro de Ingenio de Nueve sentidos por tener su semilla archivada", () => {
     const before = getJourneyHudStats(savedHistory, "nueve-sentidos", false);
     expect(getJourneyHudStats(savedHistory, "nueve-sentidos", true)).toEqual({ ...before, ingenio: before.ingenio + 4 });

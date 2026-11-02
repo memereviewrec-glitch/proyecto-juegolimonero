@@ -232,6 +232,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [hummingbirdOutcome, setHummingbirdOutcome] = useState<HummingbirdOutcome | null>(readStoredHummingbirdOutcome);
   const [hummingbirdRewards, setHummingbirdRewards] = useState(readStoredHummingbirdRewards);
   const [hummingbirdDecisionMadeThisAttempt, setHummingbirdDecisionMadeThisAttempt] = useState(false);
+  const [hummingbirdValiantResponseCount, setHummingbirdValiantResponseCount] = useState(0);
+  const reportHummingbirdValiantResponseCount = useMemo(() => (count: number) => setHummingbirdValiantResponseCount(count), []);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -259,7 +261,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     : scene === "hummingbird" ? hummingbirdDecisionMadeThisAttempt
     : scene === "nueve-sentidos" ? nueveSentidosSeedCollected
     : false;
-  const jaguarHudStats = getJourneyHudStats(jaguarHistory, scene, currentSceneDecisionResolved, jaguarStatsSnapshot);
+  const jaguarHudStats = getJourneyHudStats(jaguarHistory, scene, currentSceneDecisionResolved, jaguarStatsSnapshot, hummingbirdValiantResponseCount);
   const rewriteStartingStats = useMemo(() => Object.fromEntries(
     REWRITE_CHAPTERS.map(chapter => [
       chapter.id,
@@ -688,6 +690,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setHummingbirdIsFriend(outcome === "good");
     setHummingbirdOutcome(outcome);
     setHummingbirdRewards(saveHummingbirdOutcome(outcome, valiantResponseCount));
+    setHummingbirdValiantResponseCount(valiantResponseCount);
     setHummingbirdDecisionMadeThisAttempt(true);
   }
 
@@ -856,6 +859,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
       setFireSeedCollected(false);
     } else if (targetScene === "hummingbird") {
       setPonzonaSeedCollected(false);
+      setHummingbirdValiantResponseCount(0);
       setHummingbirdDecisionMadeThisAttempt(false);
     } else if (targetScene === "nueve-sentidos") {
       setNueveSentidosSeedCollected(false);
@@ -1244,7 +1248,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
             ) : scene === "hummingbird" ? (
-              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} previewAlternatives={isDevelopment && devHummingbirdDialoguePreview === "draft" ? HUMMINGBIRD_DRAFT_ALTERNATIVES : undefined} />
+              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} onValiantResponseCountChange={reportHummingbirdValiantResponseCount} previewAlternatives={isDevelopment && devHummingbirdDialoguePreview === "draft" ? HUMMINGBIRD_DRAFT_ALTERNATIVES : undefined} />
             ) : scene === "nueve-sentidos" ? (
               <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} onComplete={completeNueveSentidosScene} hummingbirdIsFriend={hummingbirdFriendForCurrentRun} />
             ) : (

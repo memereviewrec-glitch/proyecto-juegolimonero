@@ -20,10 +20,10 @@ La tercera opción empática que ya existe en cada pregunta se conserva sin camb
 ## Puntuación y desenlaces
 
 - Cada respuesta **H** resta **−30 de ánimo** y no modifica ninguno de los cuatro atributos.
-- Cada respuesta **V** suma **+10 al ánimo del Colibrí** y **+3 a Valentía**.
+- Cada respuesta **V** suma **+10 al ánimo del Colibrí** y **+3 a Valentía**, reflejados inmediatamente en el HUD.
 - Si la resolución es de amistad y el Colibrí acompaña a Limón, se suman **+10 de Empatía al final de la escena del Colibrí**. No se espera hasta entrar en la escena del Jaguar.
 - Se elimina el anterior **+9 de Valentía** asociado al desenlace de despedida. El desenlace neutral conserva su bonificación vigente de **+7 de Cautela**.
-- Las semillas y los desenlaces previos siguen guardados. Al reescribir la historia, la última resolución del Colibrí sustituye sus recompensas previas; repetir la escena no acumula puntos.
+- Las semillas y los desenlaces previos siguen guardados. Al reescribir la historia, la última resolución del Colibrí sustituye sus recompensas previas; repetir la escena no acumula puntos. El acumulado visible de las V se confirma una sola vez al resolver la escena, sin duplicarse.
 - La vista previa de desarrollo sigue siendo solo un borrador: no suma ánimo ni estadísticas y no modifica el desenlace o el progreso.
 
 Con seis respuestas H, el ánimo alcanza el límite de −100 y se activa la despedida al resolver la sexta pregunta; por tanto, el final negativo vuelve a ser alcanzable en una conversación nueva. Los umbrales restantes no cambian.

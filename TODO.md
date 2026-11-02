@@ -474,3 +474,9 @@
 - El Libro muestra en cada tarjeta de reescritura los valores iniciales de Cautela, Empatía, Ingenio y Valentía; al entrar en el capítulo, el HUD coincide con esos valores.
 - Los valores se reconstruyen a partir de decisiones y recompensas persistidas, sin un acumulador paralelo. Resolver el capítulo reemplaza su desenlace anterior y su efecto se cuenta una sola vez; cambiar Rambla sigue invalidando la respuesta del río que dependa de esa ruta. Reescribir no elimina semillas descubiertas.
 - Evidencia: `journeyStats.test.ts` verifica los valores de entrada de Rambla, río, reto del río, Colibrí, Nueve sentidos y Jaguar a partir del historial guardado; el agente de revisión no encontró problemas. En el preview se ven las cuatro estadísticas iniciales en cada tarjeta. `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan; no se añade un acumulador duplicado ni se modifica el guardado de semillas.
+
+
+## [x] Justificación de textos en diapositivas narrativas
+- Justificar a ambos márgenes el texto narrativo de todas las diapositivas `StoryInterlude`; la última línea del párrafo permanece alineada al inicio.
+- No cambiar la alineación ni el diseño de los botones de continuación, glifos de semillas ni cuadros de diálogo que aparecen dentro de las escenas. La justificación se mantiene en escritorio y móvil.
+- Evidencia: el Preview calcula `text-align: justify` y `text-align-last: start` para el párrafo narrativo; `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan. La regla está limitada a `.story-interlude p`, así que no altera botones, semillas ni paneles de diálogo de las escenas.

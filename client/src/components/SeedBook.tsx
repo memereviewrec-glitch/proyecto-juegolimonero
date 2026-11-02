@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
 import { getPhysicalSeedId } from "./seed-colors";
+import { STAT_LABELS } from "./JaguarStatsHud";
+import type { JaguarStats } from "./jaguarRules";
 import { JAGUAR_ENDINGS, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "./storyArchive";
 
 type SongResource = {
@@ -34,6 +36,7 @@ type SeedBookProps = {
   focusSongId?: SeedSongId | null;
   rewriteUnlocked: boolean;
   rewriteSummaries: Partial<Record<RewriteChapterId, string>>;
+  rewriteStartingStats: Record<RewriteChapterId, JaguarStats>;
   archivedEndingIds: JaguarEndingId[];
   onClose: () => void;
   onRewriteChapter: (chapterId: RewriteChapterId) => void;
@@ -41,7 +44,7 @@ type SeedBookProps = {
 
 type BookView = "songs" | "index" | "rewrite" | "endings" | "ending";
 
-export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, archivedEndingIds, onClose, onRewriteChapter }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, rewriteStartingStats, archivedEndingIds, onClose, onRewriteChapter }: SeedBookProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
@@ -208,13 +211,19 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
         {view === "rewrite" && rewriteUnlocked && <section className="seedbook-rewrite-view" aria-labelledby="seedbook-rewrite-title">
           <div className="seedbook-page-indicator">UN CAPÍTULO CADA VEZ · LAS SEMILLAS NO SE PIERDEN</div>
           <h3 id="seedbook-rewrite-title">Elige qué recuerdo quieres volver a vivir</h3>
-          <p className="seedbook-rewrite-note">Las estadísticas vuelven al momento de ese capítulo: Ventana al sendero empieza en 35. La nueva decisión sustituye la anterior; las demás siguen guardadas. Después puedes volver directamente al Jaguar con las estadísticas recalculadas.</p>
+          <p className="seedbook-rewrite-note">Cada capítulo hereda las estadísticas guardadas hasta el anterior: «Rambla» parte de «Ventana al sendero», «Espíritus del río» de «Rambla» y «El colibrí» de lo acumulado en el río. La tarjeta muestra los valores de entrada. La decisión que reescribes no se cuenta hasta terminar; las posteriores siguen guardadas. «Ventana al sendero» comienza en 35. Al volver al Jaguar, todo se recalcula.</p>
           <div className="seedbook-rewrite-list">
-            {REWRITE_CHAPTERS.map(chapter => <button key={chapter.id} type="button" className="seedbook-rewrite-chapter" onClick={() => onRewriteChapter(chapter.id)}>
-              <span className="seedbook-rewrite-heading"><strong>{chapter.title}</strong><small>{rewriteSummaries[chapter.id] ?? "Todavía no hay una decisión guardada."}</small></span>
-              <span className="seedbook-rewrite-description">{chapter.description}</span>
-              <span className="seedbook-rewrite-action">volver a vivir →</span>
-            </button>)}
+            {REWRITE_CHAPTERS.map(chapter => {
+              const stats = rewriteStartingStats[chapter.id];
+              return <button key={chapter.id} type="button" className="seedbook-rewrite-chapter" onClick={() => onRewriteChapter(chapter.id)}>
+                <span className="seedbook-rewrite-heading"><strong>{chapter.title}</strong><small>{rewriteSummaries[chapter.id] ?? "Todavía no hay una decisión guardada."}</small></span>
+                <span className="seedbook-rewrite-description">{chapter.description}</span>
+                <span className="seedbook-rewrite-stats" aria-label={`Estadísticas iniciales de ${chapter.title}: Cautela ${stats.cautela}%, Empatía ${stats.empatia}%, Ingenio ${stats.ingenio}%, Valentía ${stats.valentia}%`}>
+                  {(["cautela", "empatia", "ingenio", "valentia"] as const).map(stat => <span key={stat}>{STAT_LABELS[stat]} <b>{stats[stat]}%</b></span>)}
+                </span>
+                <span className="seedbook-rewrite-action">volver a vivir →</span>
+              </button>;
+            })}
           </div>
         </section>}
         {view === "endings" && rewriteUnlocked && <section className="seedbook-endings-view" aria-labelledby="seedbook-endings-title">

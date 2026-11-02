@@ -43,6 +43,21 @@ describe("HUD cronológico al reescribir historia", () => {
     }
   });
 
+  it("hereda las estadísticas guardadas hasta el capítulo anterior en cada reescritura", () => {
+    const entryStats = [
+      ["gathering", { ...baseStats, cautela: 42 }],
+      ["river", { ...baseStats, cautela: 49, empatia: 42 }],
+      ["river-challenge", { ...baseStats, cautela: 49, empatia: 42, ingenio: 39 }],
+      ["hummingbird", { ...baseStats, cautela: 55, empatia: 42, ingenio: 39 }],
+      ["nueve-sentidos", { ...baseStats, cautela: 55, empatia: 52, ingenio: 39 }],
+      ["jaguar", { ...baseStats, cautela: 55, empatia: 52, ingenio: 43 }],
+    ] as const;
+
+    for (const [scene, expected] of entryStats) {
+      expect(getJourneyHudStats(savedHistory, scene, false, null)).toEqual(expected);
+    }
+  });
+
   it("incorpora la nueva recompensa al resolver el capítulo y elimina el duplicado anterior", () => {
     const beforeRambla = getJourneyStatsHistory(savedHistory, "gathering", false);
     const afterRambla = getJourneyStatsHistory({ ...savedHistory, ramblaOutcome: 2 }, "gathering", true);

@@ -31,7 +31,7 @@ Actualizar la frase verificada por `PasswordGate` a la nueva frase elegida y ver
 
 
 ## Navegación del Libro
-Eliminar la pestaña «Semillas»; abrir el Libro normalmente en el Índice y mantener las páginas de canciones accesibles desde sus entradas. Los accesos narrativos pueden seguir abriendo directamente la canción pertinente. Se conservan las secciones Índice, Reescribir historia y Finales según disponibilidad.
+Eliminar la pestaña «Semillas»; abrir el Libro normalmente en el Índice y mantener las páginas de canciones accesibles desde sus entradas. Los accesos narrativos pueden seguir abriendo directamente la canción pertinente. Se conservan las secciones Índice, Reescribir historia y Finales según disponibilidad. En Reescribir historia, cada tarjeta muestra los cuatro valores iniciales del capítulo, calculados con las decisiones persistidas de los capítulos anteriores. `getJourneyStatsHistory` excluye la decisión del capítulo que se va a repetir y las posteriores; el mismo historial proyectado alimenta el HUD al entrar. Una nueva decisión reemplaza la anterior sin sumar dos veces; si cambia Rambla, se invalida su conversación dependiente del río. Las semillas permanecen independientes de las estadísticas y no se pierden al reescribir.
 
 
 ## Reto del río y diálogo aprobado del Colibrí

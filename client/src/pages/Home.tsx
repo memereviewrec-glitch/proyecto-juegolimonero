@@ -15,7 +15,7 @@ import { JaguarScene } from "../components/JaguarScene";
 import { JaguarStatsHud } from "../components/JaguarStatsHud";
 import { type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
-import type { JaguarEndingId, RewriteChapterId } from "../components/storyArchive";
+import { REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
 import { DevPlaytestTools, HUMMINGBIRD_DRAFT_ALTERNATIVES, type DevFriendPreview, type DevHummingbirdDialoguePreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
@@ -260,6 +260,12 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     : scene === "nueve-sentidos" ? nueveSentidosSeedCollected
     : false;
   const jaguarHudStats = getJourneyHudStats(jaguarHistory, scene, currentSceneDecisionResolved, jaguarStatsSnapshot);
+  const rewriteStartingStats = useMemo(() => Object.fromEntries(
+    REWRITE_CHAPTERS.map(chapter => [
+      chapter.id,
+      getJourneyHudStats(jaguarHistory, REWRITE_TARGETS[chapter.id], false, null),
+    ]),
+  ) as Record<RewriteChapterId, JaguarStats>, [jaguarHistory]);
   const reportJaguarStats = useMemo(() => (stats: JaguarStats) => {
     setJaguarStatsSnapshot({ history: jaguarHistory, stats });
   }, [jaguarHistory]);
@@ -1157,6 +1163,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               focusSongId={storySeedPreview}
               rewriteUnlocked={rewriteUnlocked}
               rewriteSummaries={rewriteSummaries}
+              rewriteStartingStats={rewriteStartingStats}
               archivedEndingIds={archivedJaguarEndings}
               onClose={() => setSeedBookOpen(false)}
               onRewriteChapter={rewriteChapter}

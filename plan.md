@@ -31,3 +31,7 @@ Actualizar la frase verificada por `PasswordGate` a la nueva frase elegida y ver
 
 ## Navegación del Libro
 Eliminar la pestaña «Semillas»; abrir el Libro normalmente en el Índice y mantener las páginas de canciones accesibles desde sus entradas. Los accesos narrativos pueden seguir abriendo directamente la canción pertinente. Se conservan las secciones Índice, Reescribir historia y Finales según disponibilidad.
+
+
+## Reto del río y propuesta del Colibrí
+El reto distingue la entrada valerosa en la corriente de la retirada cautelosa hacia la orilla. Cada desenlace tiene texto propio en la escena y en el interludio siguiente, pero ambos abren el descenso a El Río; sus recompensas se mantienen en +6 de Valentía o +6 de Cautela. Un catálogo de consecuencias compartido evita que las dos capas narrativas se contradigan. El Colibrí solo recibe un documento de propuesta de respuestas valientes y empáticas: no se aplican textos, deltas ni nuevas condiciones de +9 hasta aprobación.

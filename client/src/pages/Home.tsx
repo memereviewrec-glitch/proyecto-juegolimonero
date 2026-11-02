@@ -6,6 +6,7 @@ import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
 import { CampfireScene, type CampfireFireStage } from "../components/CampfireScene";
 import { RiverMirrorScene } from "../components/RiverMirrorScene";
 import { RiverChallengeScene } from "../components/RiverChallengeScene";
+import { RIVER_CHALLENGE_ROUTES } from "../components/riverChallengeRules";
 import { ElRioScene } from "../components/ElRioScene";
 import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
@@ -69,7 +70,7 @@ const BIRD_FLYBY_DURATION_MS = 6200;
 const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const BAND_INSTAGRAM_LINKS = [{ label: "Instagram de la banda", url: null }] as const;
 
-function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
+function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null, riverChallengeOutcome: RiverChallengeOutcome | null) {
   if (beat === "opening") return "Había una vez un limón que quería descubrir los límites del conocimiento y la realidad.";
   if (beat === "portal") return "El limón tomó la semilla del conocimiento que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otra dimensión. Al otro lado se encontró muy solo y comprendió que ya no sabía cómo volver a casa. Desde entonces, encontrar un hogar se convirtió en el nudo de su historia.";
   if (beat === "ruins") return "Sin saber todavía cómo volver, el limón comenzó a andar por las ruinas. Cada piedra parecía guardar una pregunta y cada raíz, un camino que no figuraba en ningún mapa.";
@@ -80,8 +81,10 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
       : "El limón creyó que la secta lo había iluminado y llegó andando hasta el río. Poseía, según él, el conocimiento supremo; aun así, se sentía aburrido y solo con tanta verdad quieta.";
     return `${arrival} Así que decidió lanzar piedras al agua, para ver si algo le respondía desde el fondo.`;
   }
-  if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
-  if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger las 10 semillas mágicas si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
+  if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a escoger cómo avanzar: entrar en la corriente o volver hacia la orilla y esperar a que abrieran las aguas.";
+  if (beat === "el-rio") return riverChallengeOutcome
+    ? RIVER_CHALLENGE_ROUTES[riverChallengeOutcome].descent
+    : "Los Espíritus del Río señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre peces y raíces sumergidas.";
   if (beat === "ponzona-friend") return "Confiando en su nueva amistad, el colibrí entregó a Limón una semilla y decidió acompañarlo en el sendero.";
   if (beat === "ponzona-doubt") return "El miedo dejó al colibrí paralizado. No podía acompañar a Limón, pero quiso ayudarlo y le entregó una semilla para que continuara su viaje.";
   if (beat === "ponzona-leaves") return "El colibrí dejó una semilla junto a Limón y alzó el vuelo para alejarse. Limón la recogió mientras su compañero desaparecía en el cielo.";
@@ -896,7 +899,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     river: riverConversationOutcome
       ? `Último recuerdo: ruta ${riverConversationOutcome.route === "pacifico" ? "pacífica" : "drástica"}, respuesta ${riverConversationOutcome.choiceIndex + 1}.`
       : ramblaHistoryOutcome !== null ? "Pendiente: elige una respuesta para la ruta actual de Rambla." : undefined,
-    "river-challenge": riverChallengeOutcome === "current" ? "Último recuerdo: siguió la corriente." : riverChallengeOutcome === "shore" ? "Último recuerdo: eligió la orilla." : undefined,
+    "river-challenge": riverChallengeOutcome === "current" ? "Último recuerdo: entró en la corriente con valentía." : riverChallengeOutcome === "shore" ? "Último recuerdo: se retiró con cautela; los espíritus abrieron las aguas." : undefined,
     hummingbird: hummingbirdOutcome === "good" ? "Último recuerdo: el colibrí se hizo amigo." : hummingbirdOutcome === "bad" ? "Último recuerdo: el colibrí se marchó." : hummingbirdOutcome === "neutral" ? "Último recuerdo: el colibrí quedó en duda." : undefined,
     jaguar: archivedJaguarEndings.length > 0 ? `${archivedJaguarEndings.length} final${archivedJaguarEndings.length === 1 ? "" : "es"} guardado${archivedJaguarEndings.length === 1 ? "" : "s"}.` : "El encuentro empieza con las estadísticas actuales.",
   };
@@ -1138,7 +1141,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
           </div>}
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
-            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome, riverChallengeOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             {!previewChromeHidden && seedBookOpen && <SeedBook
               discoveredSongIds={discoveredSongIds}
               previewSongId={nextLockedSongId}

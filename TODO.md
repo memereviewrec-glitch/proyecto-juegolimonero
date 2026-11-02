@@ -427,3 +427,15 @@
 - Las reentradas en Río, Colibrí y Nueve sentidos no aplican la recompensa anterior del capítulo antes de resolver el nuevo intento.
 - «Volver a probar el encuentro» dentro de Jaguar mantiene el +4 de Ingenio de Nueve sentidos al recalcular su historial inicial.
 - Evidencia: ocho pruebas de regresión cronológica; recorrido visual Libro → Reescribir historia → Ventana confirmado con cuatro valores de 35% y colección intacta. Auditoría independiente detectó el historial incompleto del reinicio interno de Jaguar, corregido pasando y memorizando la semilla de Nueve sentidos. `pnpm check`, `pnpm test` (98 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [x] Reto del río: dos caminos hacia el fondo
+- Entrar en la corriente sin miedo representa Valentía y mantiene su recompensa de +6; retirarse hacia la orilla mientras los espíritus abren las aguas representa Cautela y mantiene su +6.
+- La elección, su respuesta posterior y la diapositiva de descenso distinguen ambas rutas; no se presenta retirarse como seguir la corriente ni como regresar al fuego.
+- Ambas elecciones permiten descender al fondo del río y acceder a El Río.
+- Evidencia: consecuencias compartidas en escena e interludio, posición final de Limón específica por ruta y tres pruebas que verifican narración, recompensa y acceso. `pnpm check`, `pnpm test` (101 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+## [x] Propuesta narrativa del Colibrí, sin cambios en el juego
+- Presentar primero un borrador para sustituir las respuestas hirientes por alternativas valientes y empáticas, conservando las seis preguntas como referencia.
+- No aplicar todavía esos textos, modificar deltas de ánimo ni cambiar las bonificaciones por desenlace; la variante de +9 una sola vez tras cuatro elecciones valientes permanece pendiente de aprobación explícita.
+- Evidencia: `docs/propuesta-colibri-valentia.md` contiene doce alternativas y una despedida respetuosa, con reglas marcadas como pendientes; los archivos ejecutables del Colibrí y del balance no tienen diferencias respecto a la versión anterior.

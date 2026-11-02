@@ -27,3 +27,8 @@ La tercera opción empática que ya existe en cada pregunta se conserva sin camb
 - La vista previa de desarrollo sigue siendo solo un borrador: no suma ánimo ni estadísticas y no modifica el desenlace o el progreso.
 
 Con seis respuestas H, el ánimo alcanza el límite de −100 y se activa la despedida al resolver la sexta pregunta; por tanto, el final negativo vuelve a ser alcanzable en una conversación nueva. Los umbrales restantes no cambian.
+
+
+## Despedida del final triste
+
+El texto anterior («Tus palabras pesan más que las cenizas. No puedo quedarme aquí») se suaviza a: «Me da pena despedirme, Limón. Necesito seguir volando por mi cuenta, al menos por ahora». El resultado sigue siendo «DESPEDIDA» y conserva sus condiciones, ánimo, estadísticas y recompensa; solo cambia el tono, que deja de responsabilizar a Limón.

@@ -486,3 +486,9 @@
 - Elevar solo el panel del Libro para que no quede oculta su parte inferior cuando el área de juego no cabe en la altura de la pantalla.
 - No mover el icono/botón del Libro. Mantener el panel centrado respecto al escenario, limitado al alto visible y con su contenido desplazable en móviles y pantallas bajas.
 - Evidencia: en Preview el panel empieza en y=0 y termina en y=1100, igual que el viewport; el icono no se desplazó porque no se alteraron sus reglas. En móvil conserva el alto `100dvh` y el área interna sigue desplazable. `pnpm check`, `pnpm test` (110), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [x] Suavizar la despedida triste del Colibrí
+- En el desenlace negativo, reemplazar «Tus palabras pesan más que las cenizas. No puedo quedarme aquí» por «Me da pena despedirme, Limón. Necesito seguir volando por mi cuenta, al menos por ahora».
+- La despedida debe seguir siendo triste, pero expresar la necesidad de seguir por su cuenta sin reprochar a Limón. No cambiar el umbral, la puntuación, la etiqueta «DESPEDIDA», la entrega de semilla ni los otros desenlaces.
+- Evidencia: el bundle de producción incluye la nueva despedida y excluye la anterior; `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan. Solo cambia el texto de `outcome === "bad"`; los demás desenlaces y recompensas permanecen intactos.

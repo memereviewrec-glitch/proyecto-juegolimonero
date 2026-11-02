@@ -19,7 +19,7 @@ type HummingbirdSceneProps = {
 
 function outcomeText(outcome: HummingbirdOutcome) {
   if (outcome === "good") return "Gracias por escucharme. Seguiré adelante con un nuevo amigo.";
-  if (outcome === "bad") return "Tus palabras pesan más que las cenizas. No puedo quedarme aquí.";
+  if (outcome === "bad") return "Me da pena despedirme, Limón. Necesito seguir volando por mi cuenta, al menos por ahora.";
   return "Aún no sé qué hacer. Me quedaré un momento en esta rama para decidir el siguiente paso.";
 }
 

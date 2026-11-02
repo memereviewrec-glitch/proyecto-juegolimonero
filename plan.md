@@ -54,3 +54,7 @@ En `StoryInterlude`, justificar a ambos márgenes el párrafo narrativo y dejar 
 
 ## Posición vertical del Libro
 El panel modal del Libro se ancla al alto visible de la ventana y se eleva respecto al área del juego, sin alterar el botón/icono que lo abre. El ancho sigue la proporción del escenario y el contenido conserva su desplazamiento interno en pantallas pequeñas.
+
+
+## Despedida triste del Colibrí
+En el desenlace negativo, sustituir el reproche por una frase triste pero amable: «Me da pena despedirme, Limón. Necesito seguir volando por mi cuenta, al menos por ahora». Mantener intactos el desenlace, su puntuación y la recompensa de la escena.

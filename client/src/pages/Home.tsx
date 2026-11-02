@@ -1270,7 +1270,7 @@ function roomActionLabel(action: Exclude<RoomAction, null>) {
   const labels: Record<Exclude<RoomAction, null>, string> = {
     "examine-cable": "Siempre tengo los cables por el suelo... ¿Alguien me echa un cable?",
     examine: "Tengo que enchufar esto... quizá el amplificador despierte.",
-    play: "hay alguna frecuencia más bella que otra?",
+    play: "hay acordes que abren ventanas...",
     "guitar-unplugged": "La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.",
     "amp-off": "La guitarra ya está conectada, pero el amplificador sigue apagado. Primero tengo que encenderlo.",
   };

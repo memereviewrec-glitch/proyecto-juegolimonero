@@ -216,7 +216,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
       presentSkillResult({
         stat: "cautela",
         outcome: "failure",
-        message: "El limón, dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el ruido de la madera crujiendo despertó al jaguar",
+        message: "El limón dio media vuelta pero mientras salía de la cueva, pisó una rama, con tal mala fortuna que el jaguar percibió el miedo de Limón tras escuchar el crujido de la madera, y salió furioso de su escondite",
         checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "angry-questions",
       });
@@ -516,8 +516,8 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
         {phase === "angry-check" && <div className="jaguar-check-card">
           <span className="jaguar-check-label">{approach === "empatia" ? "ESCUCHAR TRAS EL RUGIDO" : "SOSTENERSE ANTE EL RUGIDO"}</span>
           <p>{approach === "empatia"
-            ? "Bajo el rugido del jaguar, el limón percibe una herida. Decide escuchar sin juzgar: ¿alcanzará el umbral de Empatía para que el jaguar confíe en él?"
-            : "El jaguar raspa la tierra y se prepara para embestir. El limón planta las raíces y sostiene la mirada: ¿alcanzará el umbral de Valentía para mantenerse firme ante el miedo?"}</p>
+            ? "Bajo el rugido del jaguar, el limón percibe una herida. Decide escuchar sin juzgar: ¿Conseguirá el limón que el jaguar confíe en él?"
+            : "El jaguar raspa la tierra y se prepara para embestir. El limón planta las raíces y sostiene la mirada: ¿alcanzará la valentía de Limón para mantenerse firme ante el miedo?"}</p>
           {testMode && <p className="jaguar-check-rule">Ruta: {approach === "empatia" ? `Empatía ${stats.empatia}% · umbral ${EMPATHY_THRESHOLD}%` : `Valentía ${stats.valentia}% · umbral ${COURAGE_THRESHOLD}%`}</p>}
           <button type="button" className="jaguar-primary-button" onClick={transitionAction(resolveAngryApproach)}>{approach === "empatia" ? "Acercarse sin juzgar" : "Mantenerse firme"}</button>
         </div>}
@@ -586,7 +586,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
         {phase === "complete" && <div className="jaguar-check-card jaguar-counsel-card">
           <span className="jaguar-check-label">{nightmareEnding ? "FINAL DE PESADILLA · SEMILLA ENCONTRADA" : "SEMILLA DEL JAGUAR · RECOGIDA"}</span>
           {nightmareEnding ? <>
-            <p>La semilla que buscabas estuvo debajo de tu cama todo el tiempo, Limón. Es la semilla que te generó.</p>
+            <p>Los sueños son semillas que plantamos en el mundo.</p>
             <p>La última semilla está a salvo en el Libro. El limón vuelve tranquilo a dormir, sin descubrir quién era el jaguar.</p>
             <p>Puedes consultar el Libro de Semillas desde aquí sin despertarlo.</p>
           </> : <>

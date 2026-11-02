@@ -336,19 +336,26 @@
 - Antes del minijuego rítmico del cielo estrellado se ven nueve estrellas blancas, no siete; la pista del colibrí dice «nueve».
 - La semilla no produce ningún sonido al caer desde la luna y recogerla suma exactamente +4 de Ingenio.
 
-## [x] Textos exactos de las ramas de Jaguar
-- El final de la prueba de habilidad que lleva a la rama enfadada muestra exactamente: «El limón, dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el ruido de la madera crujiendo despertó al jaguar».
+## [x] Textos de las pruebas del Jaguar
+- Si se falla la prueba de Cautela, el mensaje dice exactamente: «El limón dio media vuelta pero mientras salía de la cueva, pisó una rama, con tal mala fortuna que el jaguar percibió el miedo de Limón tras escuchar el crujido de la madera, y salió furioso de su escondite».
 - La rama del Jaguar burlón que aparece con Cautela mejorada muestra exactamente: «El limón, antes de avanzar un paso más, preguntó \"hay alguien ahí\"?».
+- En la pregunta de la prueba de Valentía no se menciona «el umbral»; se pregunta «¿alcanzará la valentía de Limón para mantenerse firme ante el miedo?».
+- En la pregunta de la prueba de Empatía no se menciona «el umbral»; la pregunta es exactamente «¿Conseguirá el limón que el jaguar confíe en él?».
+- Evidencia: los mensajes solicitados están en `JaguarScene.tsx` y los cálculos de Cautela, Empatía y Valentía permanecen intactos. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
 
 ## [x] Encuadre del Jaguar burlón
 - El Jaguar burlón se hace más pequeño y se centra para que quede completamente dentro de la pantalla.
 
 ## [x] Caja final y libro de la pesadilla
-- La primera frase de la última caja dice exactamente: «La semilla que buscabas estuvo debajo de tu cama todo el tiempo, Limón. Es la semilla que te generó»; después conserva el mensaje de que la última semilla está a salvo en el libro y Limón vuelve tranquilo a dormir.
+- La primera frase de la última caja dice exactamente «Los sueños son semillas que plantamos en el mundo.»; se elimina de esa caja la frase desde «La semilla que buscabas» hasta «que te generó». Después conserva el mensaje de que la última semilla está a salvo en el libro y Limón vuelve tranquilo a dormir.
 - La animación/carga del libro se muestra por encima de la última caja de diálogo.
-- Evidencia: al recoger la semilla final, el callback abre el Libro con «El jaguar» enfocado; su capa (`z-index: 300`) queda sobre el cuadro. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
+- Evidencia previa: al recoger la semilla final, el callback abre el Libro con «El jaguar» enfocado; su capa (`z-index: 300`) queda sobre el cuadro.
 
 ## [x] Botonera lateral exclusiva para ordenador
 - En ordenador, los iconos del Libro de semillas y del menú se muestran en un lateral fuera del lienzo, no en la fila superior, para que la pantalla de juego conserve toda su altura visible.
 - En móvil, los dos iconos se mantienen en su fila superior actual y no se trasladan al lateral.
 - A partir de 1.000 px, la botonera se ancla al lateral derecho del lienzo sin ocupar altura; en anchos menores conserva la fila superior. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+## [x] Texto del minijuego de guitarra
+- Al tocar la guitarra, el enunciado dice «hay acordes que abren ventanas...» y no pregunta sobre la belleza de las notas musicales.
+- Evidencia: `Home.tsx` muestra ese enunciado en la acción de tocar; TypeScript, 86 pruebas y el build estático pasan.

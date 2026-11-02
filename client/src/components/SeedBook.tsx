@@ -208,7 +208,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
         {view === "rewrite" && rewriteUnlocked && <section className="seedbook-rewrite-view" aria-labelledby="seedbook-rewrite-title">
           <div className="seedbook-page-indicator">UN CAPÍTULO CADA VEZ · LAS SEMILLAS NO SE PIERDEN</div>
           <h3 id="seedbook-rewrite-title">Elige qué recuerdo quieres volver a vivir</h3>
-          <p className="seedbook-rewrite-note">La nueva decisión sustituirá la anterior. Después podrás volver directamente al Jaguar con las estadísticas recalculadas.</p>
+          <p className="seedbook-rewrite-note">Las estadísticas vuelven al momento de ese capítulo: Ventana al sendero empieza en 35. La nueva decisión sustituye la anterior; las demás siguen guardadas. Después puedes volver directamente al Jaguar con las estadísticas recalculadas.</p>
           <div className="seedbook-rewrite-list">
             {REWRITE_CHAPTERS.map(chapter => <button key={chapter.id} type="button" className="seedbook-rewrite-chapter" onClick={() => onRewriteChapter(chapter.id)}>
               <span className="seedbook-rewrite-heading"><strong>{chapter.title}</strong><small>{rewriteSummaries[chapter.id] ?? "Todavía no hay una decisión guardada."}</small></span>

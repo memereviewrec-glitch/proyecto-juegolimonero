@@ -418,3 +418,12 @@
 - El Libro abre inicialmente el Índice; elegir una entrada de semilla sigue abriendo su página de canción y los accesos narrativos a una canción concreta siguen funcionando.
 - Se conservan las pestañas disponibles de Índice, Reescribir historia y Finales.
 - Evidencia: el índice es la vista inicial si no hay foco narrativo explícito, y el efecto conserva la apertura directa de canciones en los accesos narrativos. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [x] Estadísticas al volver a un capítulo desde Reescribir historia
+- Entrar de nuevo en Ventana al sendero muestra exactamente 35 de Cautela, Empatía, Ingenio y Valentía antes de tomar la nueva decisión, incluso después de terminar Jaguar.
+- El HUD de cada capítulo solo incluye las decisiones anteriores y, cuando se resuelve el intento actual, su nueva bonificación; no incluye resultados de capítulos posteriores ni respuestas del encuentro anterior con Jaguar.
+- Se conservan semillas, finales y decisiones guardadas independientes. Al volver directamente a Jaguar se usan las decisiones vigentes del viaje y se reinicia su encuentro, sin duplicar puntos ni obligar a repetir todos los capítulos.
+- Las reentradas en Río, Colibrí y Nueve sentidos no aplican la recompensa anterior del capítulo antes de resolver el nuevo intento.
+- «Volver a probar el encuentro» dentro de Jaguar mantiene el +4 de Ingenio de Nueve sentidos al recalcular su historial inicial.
+- Evidencia: ocho pruebas de regresión cronológica; recorrido visual Libro → Reescribir historia → Ventana confirmado con cuatro valores de 35% y colección intacta. Auditoría independiente detectó el historial incompleto del reinicio interno de Jaguar, corregido pasando y memorizando la semilla de Nueve sentidos. `pnpm check`, `pnpm test` (98 pruebas), `pnpm build:static` y `git diff --check` pasan.

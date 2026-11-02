@@ -12,7 +12,8 @@ import { HummingbirdScene, type HummingbirdOutcome } from "../components/Humming
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { JaguarScene } from "../components/JaguarScene";
 import { JaguarStatsHud } from "../components/JaguarStatsHud";
-import { createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
+import { type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
+import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
 import type { JaguarEndingId, RewriteChapterId } from "../components/storyArchive";
 import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
@@ -213,6 +214,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [riverChallengeComplete, setRiverChallengeComplete] = useState(false);
   const [riverChallengeOutcome, setRiverChallengeOutcome] = useState<RiverChallengeOutcome | null>(readStoredRiverChallengeOutcome);
   const [riverConversationOutcome, setRiverConversationOutcome] = useState<RiverConversationOutcome | null>(readStoredRiverConversationOutcome);
+  const [riverChoiceMadeThisAttempt, setRiverChoiceMadeThisAttempt] = useState(false);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(false);
   const [elRioBlackAnsweredWhite, setElRioBlackAnsweredWhite] = useState(false);
   const [fireSeedCollected, setFireSeedCollected] = useState(false);
@@ -223,6 +225,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [archivedJaguarEndings, setArchivedJaguarEndings] = useState<JaguarEndingId[]>(readStoredJaguarEndings);
   const [hummingbirdIsFriend, setHummingbirdIsFriend] = useState(readStoredHummingbirdFriendship);
   const [hummingbirdOutcome, setHummingbirdOutcome] = useState<HummingbirdOutcome | null>(readStoredHummingbirdOutcome);
+  const [hummingbirdDecisionMadeThisAttempt, setHummingbirdDecisionMadeThisAttempt] = useState(false);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
   const [ramblaDrasticPoints, setRamblaDrasticPoints] = useState(0);
@@ -240,9 +243,15 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     riverChallengeOutcome,
     nueveSentidosSeedCollected: nueveSentidosSeedCollected || persistedSeedIds.includes("nueve-sentidos"),
   }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected, persistedSeedIds]);
-  const initialJaguarStats = useMemo(() => createInitialJaguarStats(jaguarHistory), [jaguarHistory]);
-  const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<{ history: JaguarHistory; stats: JaguarStats } | null>(null);
-  const jaguarHudStats = jaguarStatsSnapshot?.history === jaguarHistory ? jaguarStatsSnapshot.stats : initialJaguarStats;
+  const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<JaguarStatsSnapshot | null>(null);
+  const currentSceneDecisionResolved = scene === "dawn" ? branch !== null
+    : scene === "gathering" ? ramblaOutcome !== null
+    : scene === "river" ? riverChoiceMadeThisAttempt
+    : scene === "river-challenge" ? riverChallengeComplete
+    : scene === "hummingbird" ? hummingbirdDecisionMadeThisAttempt
+    : scene === "nueve-sentidos" ? nueveSentidosSeedCollected
+    : false;
+  const jaguarHudStats = getJourneyHudStats(jaguarHistory, scene, currentSceneDecisionResolved, jaguarStatsSnapshot);
   const reportJaguarStats = useMemo(() => (stats: JaguarStats) => {
     setJaguarStatsSnapshot({ history: jaguarHistory, stats });
   }, [jaguarHistory]);
@@ -589,6 +598,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
   function recordRiverConversationChoice(outcome: RiverConversationOutcome) {
     setRiverConversationOutcome(outcome);
+    setRiverChoiceMadeThisAttempt(true);
     saveRiverConversationOutcome(outcome);
   }
 
@@ -663,6 +673,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   function recordHummingbirdOutcome(outcome: HummingbirdOutcome) {
     setHummingbirdIsFriend(outcome === "good");
     setHummingbirdOutcome(outcome);
+    setHummingbirdDecisionMadeThisAttempt(true);
     saveHummingbirdOutcome(outcome);
   }
 
@@ -726,7 +737,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
   function setVisitedScene(nextScene: Scene) {
     if (!canVisitScene(nextScene)) return;
-    if (nextScene === "jaguar" && scene !== "jaguar") setJaguarStatsSnapshot(null);
     resetSceneAttempt(nextScene);
     setScene(nextScene);
     setSceneReplayNonce(version => version + 1);
@@ -742,7 +752,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setStoryBeat(null);
     setStorySeedBookOpened(false);
     setStorySeedPreview(null);
-    if (targetScene === "jaguar") setJaguarStatsSnapshot(null);
     resetSceneAttempt(targetScene);
     setScene(targetScene);
     setSceneReplayNonce(version => version + 1);
@@ -766,6 +775,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
   function resetSceneAttempt(targetScene: Scene) {
     attemptTasks.reset();
+    setJaguarStatsSnapshot(null);
     setPortalTransit(false);
     setArrivalPortal(false);
     setLemonWhistling(false);
@@ -820,6 +830,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     } else if (targetScene === "river") {
       setRiverSeedCollected(false);
       setRiverConversationComplete(false);
+      setRiverChoiceMadeThisAttempt(false);
       setRiverChallengeComplete(false);
       setElRioBlackAnsweredWhite(false);
     } else if (targetScene === "river-challenge") {
@@ -831,11 +842,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
       setFireSeedCollected(false);
     } else if (targetScene === "hummingbird") {
       setPonzonaSeedCollected(false);
+      setHummingbirdDecisionMadeThisAttempt(false);
     } else if (targetScene === "nueve-sentidos") {
       setNueveSentidosSeedCollected(false);
       setNueveSentidosEpilogueReady(false);
-    } else if (targetScene === "jaguar") {
-      setJaguarStatsSnapshot(null);
     }
   }
 
@@ -1232,6 +1242,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 hummingbirdOutcome={hummingbirdOutcome}
                 riverConversationOutcome={riverConversationOutcome}
                 riverChallengeOutcome={riverChallengeOutcome}
+                nueveSentidosSeedCollected={jaguarHistory.nueveSentidosSeedCollected}
                 testMode={previewTestMode}
               />
             )

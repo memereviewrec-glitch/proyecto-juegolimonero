@@ -161,6 +161,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [devSelectedScene, setDevSelectedScene] = useState<Scene>("room");
   const [devFriendPreview, setDevFriendPreview] = useState<DevFriendPreview>("saved");
   const [devHummingbirdDialoguePreview, setDevHummingbirdDialoguePreview] = useState<DevHummingbirdDialoguePreview>("current");
+  const [devToolsCollapsed, setDevToolsCollapsed] = useState(false);
   const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer || openJaguarPreview || openRiverChallengePreview ? null : "opening");
   const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
@@ -1083,8 +1084,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
         onFriendPreviewChange={setDevFriendPreview}
         hummingbirdDialoguePreview={devHummingbirdDialoguePreview}
         onHummingbirdDialoguePreviewChange={setDevHummingbirdDialoguePreview}
+        collapsed={devToolsCollapsed}
+        onCollapsedChange={setDevToolsCollapsed}
       />}
-      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${!storyBeat ? " workspace-with-stats-hud" : ""}`}>
+      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${isDevelopment && devToolsCollapsed ? " workspace-with-dev-tools-collapsed" : ""}${!storyBeat ? " workspace-with-stats-hud" : ""}`}>
         <div className="stage-column">
           <div className="stage-heading">
             <div>

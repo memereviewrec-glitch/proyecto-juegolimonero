@@ -446,3 +446,9 @@
 - El borrador permite recorrer las seis preguntas y sus respuestas candidatas en la escena del Colibrí, con una marca visible «borrador · sin puntuación».
 - Elegir respuestas en esta vista solo avanza la previsualización: no suma ni resta ánimo, no decide amistad/despedida, no entrega semillas, no guarda un desenlace ni altera el progreso.
 - Evidencia: la prueba de navegador recorrió los seis cuadros, llegó al fin de la vista previa sin desenlace y mostró las cuatro estadísticas aún en 35; el build de producción excluye el texto borrador. `pnpm check`, `pnpm test` (101 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [x] Panel de pruebas plegable
+- Añadir un botón visible para ocultar o mostrar el panel de controles de desarrollo.
+- Al plegarlo, el botón permanece visible para volver a abrirlo y el lienzo del juego recupera el espacio vertical que deja libre el panel.
+- Evidencia: en Preview el botón alterna ambos estados, queda visible plegado, y el panel vuelve expandido tras recargar. La reserva del workspace baja de 104 a 52 px y la escena conserva la proporción 1180:1333 (0.8852) en ambos estados; CSS contempla el breakpoint móvil. `pnpm check`, `pnpm test` (101), `pnpm build:static` y `git diff --check` pasan; los controles de desarrollo y el borrador no aparecen en el bundle de producción.

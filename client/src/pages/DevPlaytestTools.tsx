@@ -43,9 +43,11 @@ type Props = {
   onFriendPreviewChange: (preview: DevFriendPreview) => void;
   hummingbirdDialoguePreview: DevHummingbirdDialoguePreview;
   onHummingbirdDialoguePreviewChange: (preview: DevHummingbirdDialoguePreview) => void;
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
 };
 
-export function DevPlaytestTools({ scenes, selectedScene, onSceneChange, onJump, jumpDisabled, friendPreview, onFriendPreviewChange, hummingbirdDialoguePreview, onHummingbirdDialoguePreviewChange }: Props) {
+export function DevPlaytestTools({ scenes, selectedScene, onSceneChange, onJump, jumpDisabled, friendPreview, onFriendPreviewChange, hummingbirdDialoguePreview, onHummingbirdDialoguePreviewChange, collapsed, onCollapsedChange }: Props) {
   const handleFriendChange = (event: ChangeEvent<HTMLSelectElement>) => {
     onFriendPreviewChange(event.target.value as DevFriendPreview);
   };
@@ -54,10 +56,22 @@ export function DevPlaytestTools({ scenes, selectedScene, onSceneChange, onJump,
   };
 
   return (
-    <aside className="dev-playtest-tools" aria-label="Herramientas de pruebas de desarrollo">
-      <strong className="dev-playtest-title">Pruebas · solo desarrollo</strong>
-      <p className="dev-playtest-help">El salto no cambia el progreso guardado. El borrador del colibrí tampoco da puntos.</p>
-      <div className="dev-playtest-controls">
+    <aside className={`dev-playtest-tools${collapsed ? " dev-playtest-tools-collapsed" : ""}`} aria-label="Herramientas de pruebas de desarrollo">
+      <div className="dev-playtest-intro">
+        <strong className="dev-playtest-title">Pruebas · solo desarrollo</strong>
+        {!collapsed && <p className="dev-playtest-help">El salto no cambia el progreso guardado. El borrador del colibrí tampoco da puntos.</p>}
+      </div>
+      <button
+        type="button"
+        className="dev-playtest-toggle"
+        aria-label={collapsed ? "Mostrar controles de desarrollo" : "Ocultar controles de desarrollo"}
+        aria-expanded={!collapsed}
+        aria-controls="dev-playtest-controls"
+        onClick={() => onCollapsedChange(!collapsed)}
+      >
+        {collapsed ? "Mostrar controles" : "Ocultar controles"}
+      </button>
+      <div id="dev-playtest-controls" className="dev-playtest-controls" hidden={collapsed}>
         <label>
           <span>Escena</span>
           <select value={selectedScene} onChange={event => onSceneChange(event.target.value)}>

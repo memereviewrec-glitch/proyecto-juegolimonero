@@ -39,3 +39,7 @@ El reto distingue la entrada valerosa en la corriente de la retirada cautelosa h
 
 ## Vista previa de diálogo del Colibrí
 La paleta de pruebas de desarrollo podrá alternar entre el diálogo vigente y el borrador narrativo del Colibrí. La variante borrador reutilizará la escena gráfica, pero sus elecciones serán una secuencia local no puntuable: no podrán generar ánimo, desenlace, semilla ni progreso persistente. En producción no aparecerá el selector y seguirá activa solo la conversación aprobada.
+
+
+## Panel de pruebas plegable
+El panel solo de desarrollo tendrá un control accesible de ocultar/mostrar que permanece visible en ambos estados. Al plegarse, el contenedor del juego reducirá su separación reservada para el panel, de modo que el lienzo recupere altura tanto en escritorio como en móvil.

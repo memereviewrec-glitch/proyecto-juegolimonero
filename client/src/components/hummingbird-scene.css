@@ -17,6 +17,7 @@
 .hummingbird-meter-track span.negative { background:#bf6682; }
 .hummingbird-meter-track i { position:absolute; left:50%; top:-2px; bottom:-2px; width:2px; background:#f7f3e9; opacity:.8; }
 .hummingbird-meter-labels { color:#b7c4c2; font-size:7px; }
+.hummingbird-preview-badge { position:absolute; z-index:9; top:5%; left:50%; width:max-content; max-width:calc(100% - 24px); transform:translateX(-50%); padding:8px 11px; border:2px solid #e8dba8; background:#111a2be8; box-shadow:3px 3px 0 #0a101b; color:#f4e8ba; text-align:center; font:8px/1.35 'DM Mono',monospace; letter-spacing:.08em; }
 .hummingbird-dialogue { position:relative; z-index:12; flex:0 1 auto; width:min(100%,1040px); max-height:40vh; margin:0 auto; padding:clamp(8px,1.4vh,14px) clamp(10px,1.6vw,18px); overflow-y:auto; border:4px solid #282230; background:#f0e5d2; color:#28212d; box-shadow:5px 5px 0 #090d16; }
 .hummingbird-dialogue>span { color:#765263; font:8px 'DM Mono',monospace; letter-spacing:.13em; }
 .hummingbird-dialogue p { margin:7px 0 10px; font:11px/1.4 'DM Mono',monospace; }
@@ -25,6 +26,10 @@
 .hummingbird-options button { min-height:62px; display:flex; gap:7px; align-items:flex-start; padding:7px; border:2px solid #8b7a75; background:#fffaf0; color:#302833; text-align:left; cursor:pointer; font:8px/1.3 'DM Mono',monospace; }
 .hummingbird-options button:hover,.hummingbird-options button:focus-visible { border-color:#b15071; background:#f6d9db; outline:2px dashed #b15071; outline-offset:2px; }
 .hummingbird-options b { color:#b15071; font-size:11px; }
+.hummingbird-options .hummingbird-preview-option { flex-direction:column; gap:4px; }
+.hummingbird-preview-option small { display:block; color:#765263; font:7px 'DM Mono',monospace; letter-spacing:.08em; }
+.hummingbird-preview-restart { display:block; margin:8px auto 0; padding:8px 12px; border:2px solid #6f3157; background:#fff8ef; color:#4d2948; cursor:pointer; font:9px 'DM Mono',monospace; }
+.hummingbird-preview-restart:hover,.hummingbird-preview-restart:focus-visible { background:#f3c4d7; outline:2px dashed #6f3157; outline-offset:3px; }
 .hummingbird-seed-button { display:flex; align-items:center; gap:10px; margin:5px auto 0; padding:5px 10px; border:2px solid #6f3157; background:#fff8ef; color:#4d2948; cursor:pointer; font:8px 'DM Mono',monospace; }
 .hummingbird-seed-button svg { width:30px; height:38px; }
 .hummingbird-seed-button:hover,.hummingbird-seed-button:focus-visible { background:#f3c4d7; outline:2px dashed #6f3157; outline-offset:3px; }

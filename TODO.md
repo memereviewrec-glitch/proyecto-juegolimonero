@@ -439,3 +439,10 @@
 - Presentar primero un borrador para sustituir las respuestas hirientes por alternativas valientes y empáticas, conservando las seis preguntas como referencia.
 - No aplicar todavía esos textos, modificar deltas de ánimo ni cambiar las bonificaciones por desenlace; la variante de +9 una sola vez tras cuatro elecciones valientes permanece pendiente de aprobación explícita.
 - Evidencia: `docs/propuesta-colibri-valentia.md` contiene doce alternativas y una despedida respetuosa, con reglas marcadas como pendientes; los archivos ejecutables del Colibrí y del balance no tienen diferencias respecto a la versión anterior.
+
+
+## [x] Vista previa de desarrollo de los diálogos del Colibrí
+- Los controles de desarrollo permiten cambiar entre el diálogo actual y el borrador narrativo, sin modificar los textos oficiales de producción.
+- El borrador permite recorrer las seis preguntas y sus respuestas candidatas en la escena del Colibrí, con una marca visible «borrador · sin puntuación».
+- Elegir respuestas en esta vista solo avanza la previsualización: no suma ni resta ánimo, no decide amistad/despedida, no entrega semillas, no guarda un desenlace ni altera el progreso.
+- Evidencia: la prueba de navegador recorrió los seis cuadros, llegó al fin de la vista previa sin desenlace y mostró las cuatro estadísticas aún en 35; el build de producción excluye el texto borrador. `pnpm check`, `pnpm test` (101 pruebas), `pnpm build:static` y `git diff --check` pasan.

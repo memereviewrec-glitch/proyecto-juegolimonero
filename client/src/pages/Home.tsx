@@ -16,7 +16,7 @@ import { JaguarStatsHud } from "../components/JaguarStatsHud";
 import { type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
 import type { JaguarEndingId, RewriteChapterId } from "../components/storyArchive";
-import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
+import { DevPlaytestTools, HUMMINGBIRD_DRAFT_ALTERNATIVES, type DevFriendPreview, type DevHummingbirdDialoguePreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
@@ -160,6 +160,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [scene, setScene] = useState<Scene>(openJaguarPreview ? "jaguar" : openRiverChallengePreview ? "river-challenge" : "room");
   const [devSelectedScene, setDevSelectedScene] = useState<Scene>("room");
   const [devFriendPreview, setDevFriendPreview] = useState<DevFriendPreview>("saved");
+  const [devHummingbirdDialoguePreview, setDevHummingbirdDialoguePreview] = useState<DevHummingbirdDialoguePreview>("current");
   const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer || openJaguarPreview || openRiverChallengePreview ? null : "opening");
   const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
@@ -1080,6 +1081,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
         jumpDisabled={portalTransit || arrivalPortal}
         friendPreview={devFriendPreview}
         onFriendPreviewChange={setDevFriendPreview}
+        hummingbirdDialoguePreview={devHummingbirdDialoguePreview}
+        onHummingbirdDialoguePreviewChange={setDevHummingbirdDialoguePreview}
       />}
       <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${!storyBeat ? " workspace-with-stats-hud" : ""}`}>
         <div className="stage-column">
@@ -1228,7 +1231,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             ) : scene === "fire-forest" ? (
               <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
             ) : scene === "hummingbird" ? (
-              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} />
+              <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} previewAlternatives={isDevelopment && devHummingbirdDialoguePreview === "draft" ? HUMMINGBIRD_DRAFT_ALTERNATIVES : undefined} />
             ) : scene === "nueve-sentidos" ? (
               <NueveSentidosScene key={`nueve-sentidos-${sceneReplayNonce}`} seedCollected={nueveSentidosSeedCollected} onCollectSeed={collectNueveSentidosSeed} onComplete={completeNueveSentidosScene} hummingbirdIsFriend={hummingbirdFriendForCurrentRun} />
             ) : (

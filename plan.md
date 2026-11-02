@@ -35,3 +35,7 @@ Eliminar la pestaña «Semillas»; abrir el Libro normalmente en el Índice y ma
 
 ## Reto del río y propuesta del Colibrí
 El reto distingue la entrada valerosa en la corriente de la retirada cautelosa hacia la orilla. Cada desenlace tiene texto propio en la escena y en el interludio siguiente, pero ambos abren el descenso a El Río; sus recompensas se mantienen en +6 de Valentía o +6 de Cautela. Un catálogo de consecuencias compartido evita que las dos capas narrativas se contradigan. El Colibrí solo recibe un documento de propuesta de respuestas valientes y empáticas: no se aplican textos, deltas ni nuevas condiciones de +9 hasta aprobación.
+
+
+## Vista previa de diálogo del Colibrí
+La paleta de pruebas de desarrollo podrá alternar entre el diálogo vigente y el borrador narrativo del Colibrí. La variante borrador reutilizará la escena gráfica, pero sus elecciones serán una secuencia local no puntuable: no podrán generar ánimo, desenlace, semilla ni progreso persistente. En producción no aparecerá el selector y seguirá activa solo la conversación aprobada.

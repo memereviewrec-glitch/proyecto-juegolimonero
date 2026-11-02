@@ -7,11 +7,13 @@ import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
 
 export type HummingbirdOutcome = "good" | "bad" | "neutral";
+export type HummingbirdPreviewAlternatives = readonly (readonly [string, string])[];
 
 type HummingbirdSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
   onOutcome?: (outcome: HummingbirdOutcome) => void;
+  previewAlternatives?: HummingbirdPreviewAlternatives;
 };
 
 type HummingbirdOption = {
@@ -81,7 +83,8 @@ function outcomeText(outcome: HummingbirdOutcome) {
   return "Aún no sé qué hacer. Me quedaré un momento en esta rama para decidir el siguiente paso.";
 }
 
-export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: HummingbirdSceneProps) {
+export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, previewAlternatives }: HummingbirdSceneProps) {
+  const draftAlternatives = import.meta.env.DEV ? previewAlternatives : undefined;
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -92,16 +95,41 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
   const [entryComplete, setEntryComplete] = useState(false);
   const [exitingScene, setExitingScene] = useState(false);
+  const [draftPreviewComplete, setDraftPreviewComplete] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setEntryComplete(true), 2200);
     return () => window.clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    setMood(0);
+    setQuestionIndex(0);
+    setOutcome(null);
+    setDraftPreviewComplete(false);
+    setExitingScene(false);
+  }, [draftAlternatives]);
+
   const question = QUESTIONS[questionIndex];
-  const answer = (delta: number) => {
+  const empathicResponse = question?.options.find(option => option.delta > 0)?.text ?? "";
+  const visibleOptions = draftAlternatives
+    ? [...(draftAlternatives[questionIndex] ?? []), empathicResponse]
+    : question?.options.map(option => option.text) ?? [];
+
+  const answer = (optionIndex: number) => {
+    if (draftAlternatives) {
+      if (draftPreviewComplete || !question) return;
+      if (questionIndex === QUESTIONS.length - 1) {
+        setDraftPreviewComplete(true);
+      } else {
+        setQuestionIndex(index => index + 1);
+      }
+      return;
+    }
     if (outcome || !question) return;
-    const nextMood = Math.max(-100, Math.min(100, mood + delta));
+    const selectedOption = question.options[optionIndex];
+    if (!selectedOption) return;
+    const nextMood = Math.max(-100, Math.min(100, mood + selectedOption.delta));
     setMood(nextMood);
     const nextOutcome = resolveHummingbirdOutcome(nextMood, questionIndex === QUESTIONS.length - 1);
     if (nextOutcome) {
@@ -126,22 +154,30 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
   const moodTone = mood >= 0 ? "positive" : "negative";
 
   return (
-    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${!entryComplete && !outcome ? " hummingbird-entering" : ""}${exitingScene ? " hummingbird-exiting" : ""}`}>
+    <div className={`hummingbird-scene-shell hummingbird-${outcome ?? "conversation"}${draftAlternatives ? " hummingbird-draft-preview" : ""}${draftPreviewComplete ? " hummingbird-draft-preview-complete" : ""}${!entryComplete && !outcome ? " hummingbird-entering" : ""}${exitingScene ? " hummingbird-exiting" : ""}`}>
       <div className="scene-stage game-screen hummingbird-stage">
-      <div className="hummingbird-sky" aria-hidden="true" />
-      <picture className="hummingbird-sprite">
-        <source media="(prefers-reduced-motion: reduce)" srcSet={gameAssetUrl("/colibri-still.png")} />
-        <img src={gameAssetUrl("/colibri.gif")} alt="Colibrí" />
-      </picture>
-      <div className="hummingbird-lemon" aria-hidden="true"><LemonSprite /></div>
-      <div className="hummingbird-meter" aria-label={`Ánimo del colibrí: ${mood} de 100`}>
-        <div className="hummingbird-meter-heading"><strong>{mood > 0 ? "+" : ""}{mood}</strong></div>
-        <div className="hummingbird-meter-track"><span className={moodTone} style={{ width: `${progress}%` }} /><i /></div>
-        <div className="hummingbird-meter-labels"><span>−100</span><span>0</span><span>+100</span></div>
-      </div>
+        <div className="hummingbird-sky" aria-hidden="true" />
+        <picture className="hummingbird-sprite">
+          <source media="(prefers-reduced-motion: reduce)" srcSet={gameAssetUrl("/colibri-still.png")} />
+          <img src={gameAssetUrl("/colibri.gif")} alt="Colibrí" />
+        </picture>
+        <div className="hummingbird-lemon" aria-hidden="true"><LemonSprite /></div>
+        {draftAlternatives
+          ? <div className="hummingbird-preview-badge" aria-hidden="true">VISTA DE DESARROLLO · BORRADOR · SIN PUNTUACIÓN</div>
+          : <div className="hummingbird-meter" aria-label={`Ánimo del colibrí: ${mood} de 100`}>
+              <div className="hummingbird-meter-heading"><strong>{mood > 0 ? "+" : ""}{mood}</strong></div>
+              <div className="hummingbird-meter-track"><span className={moodTone} style={{ width: `${progress}%` }} /><i /></div>
+              <div className="hummingbird-meter-labels"><span>−100</span><span>0</span><span>+100</span></div>
+            </div>}
       </div>
       <div className="hummingbird-dialogue" role="status" aria-live="polite">
-        {outcome ? (
+        {draftAlternatives && draftPreviewComplete ? (
+          <>
+            <span>FIN DE LA VISTA PREVIA · SIN PUNTUACIÓN</span>
+            <p>Has recorrido los seis diálogos del borrador. No se ha calculado un desenlace, entregado una semilla ni guardado ningún cambio.</p>
+            <button type="button" className="hummingbird-preview-restart" onClick={() => { setQuestionIndex(0); setDraftPreviewComplete(false); }}>Repetir vista previa</button>
+          </>
+        ) : outcome ? (
           <>
             <span>{outcome === "good" ? "AMISTAD" : outcome === "bad" ? "DESPEDIDA" : "DUDA"}</span>
             <p>{outcomeText(outcome)}</p>
@@ -151,10 +187,10 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
           </>
         ) : (
           <>
-            <span>COLIBRÍ · {questionIndex + 1}/{QUESTIONS.length}</span>
-            <p>{question.prompt}</p>
+            <span>{draftAlternatives ? `BORRADOR · SIN PUNTUACIÓN · ${questionIndex + 1}/${QUESTIONS.length}` : `COLIBRÍ · ${questionIndex + 1}/${QUESTIONS.length}`}</span>
+            <p>{question?.prompt}</p>
             <div className="hummingbird-options">
-              {question.options.map((option, index) => <button type="button" key={option.text} onClick={() => answer(option.delta)}><b>{String.fromCharCode(65 + index)}</b>{option.text}</button>)}
+              {visibleOptions.map((option, index) => <button type="button" key={option} className={draftAlternatives ? "hummingbird-preview-option" : undefined} onClick={() => answer(index)}>{draftAlternatives ? <small>{index < 2 ? "Alternativa propuesta" : "Respuesta empática actual"}</small> : <b>{String.fromCharCode(65 + index)}</b>}{option}</button>)}
             </div>
           </>
         )}

@@ -376,3 +376,18 @@
 - En el tercer enigma: no dejar que el conocimiento cambie suma Ingenio +9 y Empatía +2; usarlo para sentirse superior suma Ingenio +7 y Empatía +6; no atreverse a cuestionarlo suma Ingenio +10 y Cautela +3.
 - Si falla Cautela, el mensaje dice exactamente «El limón dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el Jaguar percibió el miedo del limón al hacer crujir la madera, entonces salió furioso de su escondite».
 - Evidencia: efectos finales comprobados mediante `scaleJaguarAnswerEffects`, los dos outcomes del Río verificados con estadísticas iniciales, `pnpm check`, `pnpm test` (88 pruebas, incluida la frase literal del fallo), `pnpm build:static` y `git diff --check` pasan.
+
+## [x] Modo «Reescribir historia» desde el Libro de semillas
+- El acceso a «Reescribir historia» aparece en el Libro solo una vez completado el encuentro con Jaguar y recogida su semilla final.
+- Desde el Libro el jugador puede entrar directamente, sin rehacer el resto del juego, a Amanecer, Rambla, Espíritus del río, reto del río, Colibrí o Jaguar para volver a tomar decisiones y repetir solo ese capítulo/encuentro.
+- Una nueva decisión sustituye la decisión anterior de esa escena; no se acumulan las bonificaciones anteriores y las semillas ya descubiertas y el acceso a las escenas se conservan.
+- Las estadísticas del siguiente encuentro con Jaguar se recalculan desde 35 para cada atributo usando la decisión vigente de cada capítulo, sin exigir reiniciar ni volver a jugar la historia completa.
+- Si la nueva resolución de Rambla cambia la ruta pacífica/drástica, se elimina la respuesta previa dependiente de Espíritus del río, se indica que está pendiente y el jugador puede abrir directamente ese capítulo desde el modo de reescritura para elegir una respuesta válida para la nueva ruta.
+- Evidencia: seis destinos se enrutan directamente desde el Libro, la invalidación de Espíritus del río se prueba en almacenamiento, las semillas se conservan al repetir, y `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan; auditoría de solo lectura sin hallazgos.
+
+## [x] Archivo de finales del Jaguar dentro del Libro
+- Al conseguir uno de los finales —Empatía, Enigmas, Valentía o Pesadilla—, se guarda el identificador del final; repetir el mismo no crea duplicados y conseguir un final distinto añade otro registro.
+- Tras completar Jaguar, el Libro permite abrir una diapositiva resumen por cada final conseguido, con su ilustración pixel art correspondiente.
+- Abrir una diapositiva del archivo solo visualiza el final; no inicia Jaguar, no reinicia el encuentro y no repite el combate.
+- El archivo y las decisiones guardadas se limpian con el reinicio total del juego; las semillas se conservan al reescribir capítulos.
+- Evidencia: los cuatro recursos de arte existen, los identificadores se deduplican y se borran en reinicio con pruebas automatizadas; las diapositivas son una vista interna del Libro sin callback de combate. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan; auditoría de solo lectura sin hallazgos.

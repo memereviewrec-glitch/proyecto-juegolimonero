@@ -4,6 +4,7 @@ import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
 import { STAT_LABELS } from "./JaguarStatsHud";
+import type { JaguarEndingId } from "./storyArchive";
 import {
   ANGRY_QUESTIONS,
   CAUTELA_FAILURE_MESSAGE,
@@ -35,6 +36,7 @@ type JaguarSceneProps = JaguarHistory & {
   stats: JaguarStats;
   onStatsChange: (stats: JaguarStats) => void;
   onCollectSeed: () => void;
+  onEndingDiscovered: (ending: JaguarEndingId) => void;
   onReturnHome: () => void;
   testMode?: boolean;
 };
@@ -42,7 +44,7 @@ type DialoguePhase = "inner" | "cautela-check" | "angry-questions" | "laughing-q
 type Phase = DialoguePhase | "skill-result";
 type Branch = "angry" | "laughing" | null;
 type Approach = "empatia" | "valentia";
-type EndingRoute = "empatia" | "enigmas" | "valentia" | "pesadilla";
+type EndingRoute = JaguarEndingId;
 type SkillResult = {
   stat: keyof JaguarStats;
   outcome: "success" | "failure" | "blocked";
@@ -117,7 +119,7 @@ function runDialogueTransition(update: () => void, schedule: (callback: () => vo
   else schedule(finishTransition, 2800);
 }
 
-export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, stats, onStatsChange, onCollectSeed, onReturnHome, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, testMode = false }: JaguarSceneProps) {
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -148,6 +150,14 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
   const [seedJustCollected, setSeedJustCollected] = useState(false);
   const [shownHummingbirdHintContext, setShownHummingbirdHintContext] = useState<string | null>(null);
   const advice = useMemo(() => getFinalJaguarAdvice(stats), [stats]);
+
+  useEffect(() => {
+    if (testMode) return;
+    const reachedEnding = phase === "nightmare"
+      ? "pesadilla"
+      : phase === "revelation" ? endingRoute : null;
+    if (reachedEnding) onEndingDiscovered(reachedEnding);
+  }, [endingRoute, onEndingDiscovered, phase, testMode]);
 
   function presentSkillResult(result: SkillResult) {
     setSkillResult(result);

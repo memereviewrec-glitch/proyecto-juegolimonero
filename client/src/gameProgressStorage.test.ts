@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clearStoredGameProgress, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome } from "./gameProgressStorage";
+import { clearStoredGameProgress, clearStoredRiverConversationOutcome, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, JAGUAR_ENDINGS_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredJaguarEndings, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveJaguarEnding, saveRiverChallengeOutcome, saveRiverConversationOutcome } from "./gameProgressStorage";
 import { DAWN_OUTCOME_STORAGE_KEY, readStoredDawnOutcome, saveDawnOutcome, SEED_BOOK_STORAGE_KEY } from "./gameProgressStorage";
 import { createInitialJaguarStats } from "./components/jaguarRules";
 
@@ -62,6 +62,34 @@ describe("mergeDiscoveredSeedIds", () => {
 
   it("ignores IDs not present in the catalog", () => {
     expect(mergeDiscoveredSeedIds(catalog, ["old-id"], ["ventana"])).toEqual(["ventana"]);
+  });
+});
+
+describe("archivo de finales del Jaguar", () => {
+  it("guarda finales distintos una sola vez y elimina el archivo al reiniciar", () => {
+    const values = new Map<string, string>();
+    const localStorage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); },
+      removeItem: (key: string) => { values.delete(key); },
+    };
+    vi.stubGlobal("window", { localStorage });
+
+    expect(saveJaguarEnding("empatia")).toEqual(["empatia"]);
+    expect(saveJaguarEnding("empatia")).toEqual(["empatia"]);
+    expect(saveJaguarEnding("pesadilla")).toEqual(["empatia", "pesadilla"]);
+    expect(readStoredJaguarEndings()).toEqual(["empatia", "pesadilla"]);
+    expect(values.get(JAGUAR_ENDINGS_STORAGE_KEY)).toBe('["empatia","pesadilla"]');
+    expect(clearStoredGameProgress()).toBe(true);
+    expect(readStoredJaguarEndings()).toEqual([]);
+  });
+
+  it("filtra identificadores de finales desconocidos o almacenamiento inválido", () => {
+    const values = new Map<string, string>([[JAGUAR_ENDINGS_STORAGE_KEY, '["valentia","unknown","valentia"]']]);
+    vi.stubGlobal("window", { localStorage: { getItem: (key: string) => values.get(key) ?? null } });
+    expect(readStoredJaguarEndings()).toEqual(["valentia"]);
+    values.set(JAGUAR_ENDINGS_STORAGE_KEY, "not-json");
+    expect(readStoredJaguarEndings()).toEqual([]);
   });
 });
 
@@ -139,6 +167,10 @@ describe("readStoredHummingbirdFriendship", () => {
     saveRiverConversationOutcome({ route: "drastico", choiceIndex: 2 });
     expect(values.get(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY)).toBe('{"route":"drastico","choiceIndex":2}');
     expect(readStoredRiverConversationOutcome()).toEqual({ route: "drastico", choiceIndex: 2 });
+
+    clearStoredRiverConversationOutcome();
+    expect(readStoredRiverConversationOutcome()).toBe(null);
+    saveRiverConversationOutcome({ route: "drastico", choiceIndex: 2 });
 
     values.set(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, '{"route":"unknown","choiceIndex":1}');
     expect(readStoredRiverConversationOutcome()).toBe(null);

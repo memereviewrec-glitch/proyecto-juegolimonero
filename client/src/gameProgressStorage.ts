@@ -1,4 +1,5 @@
 import type { RiverConversationOutcome } from "./components/riverChoiceRules";
+import type { JaguarEndingId } from "./components/storyArchive";
 import type { Branch } from "./gameRules";
 
 export type RamblaOutcomeValue = 1 | 2;
@@ -11,6 +12,8 @@ export const RAMBLA_ROUTE_STORAGE_KEY = "limonero-fuzz-rambla-route-v1";
 export const HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY = "limonero-fuzz-hummingbird-friendship-v1";
 export const RIVER_CHALLENGE_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-challenge-outcome-v1";
 export const RIVER_CONVERSATION_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-conversation-outcome-v1";
+export const JAGUAR_ENDINGS_STORAGE_KEY = "limonero-fuzz-jaguar-endings-v1";
+const VALID_JAGUAR_ENDINGS = new Set<JaguarEndingId>(["empatia", "enigmas", "valentia", "pesadilla"]);
 
 export function readStoredSeedBookIds<Id extends string>(knownIds: readonly Id[]): Id[] {
   if (typeof window === "undefined") return [];
@@ -118,6 +121,28 @@ export function saveRiverConversationOutcome(outcome: RiverConversationOutcome) 
   }
 }
 
+export function readStoredJaguarEndings(): JaguarEndingId[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(JAGUAR_ENDINGS_STORAGE_KEY) ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    return [...new Set(parsed.filter((ending): ending is JaguarEndingId => typeof ending === "string" && VALID_JAGUAR_ENDINGS.has(ending as JaguarEndingId)))];
+  } catch {
+    return [];
+  }
+}
+
+export function saveJaguarEnding(ending: JaguarEndingId): JaguarEndingId[] {
+  const endings = [...new Set([...readStoredJaguarEndings(), ending])];
+  if (typeof window === "undefined") return endings;
+  try {
+    window.localStorage.setItem(JAGUAR_ENDINGS_STORAGE_KEY, JSON.stringify(endings));
+  } catch {
+    // El archivo sigue disponible durante la sesión si el almacenamiento está bloqueado.
+  }
+  return endings;
+}
+
 export function mergeDiscoveredSeedIds<Id extends string>(catalogIds: readonly Id[], persistedIds: readonly string[], discoveredIds: readonly string[]): Id[] {
   const found = new Set([...persistedIds, ...discoveredIds]);
   return catalogIds.filter(id => found.has(id));
@@ -129,6 +154,15 @@ export function saveSeedBookIds(ids: readonly string[]) {
     window.localStorage.setItem(SEED_BOOK_STORAGE_KEY, JSON.stringify(ids));
   } catch {
     // La colección sigue disponible durante la sesión si el almacenamiento local está bloqueado.
+  }
+}
+
+export function clearStoredRiverConversationOutcome() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY);
+  } catch {
+    // El nuevo desenlace se conserva en memoria aunque el almacenamiento esté bloqueado.
   }
 }
 
@@ -150,6 +184,7 @@ export function clearStoredGameProgress(): boolean {
     window.localStorage.removeItem(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY);
     window.localStorage.removeItem(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY);
     window.localStorage.removeItem(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY);
+    window.localStorage.removeItem(JAGUAR_ENDINGS_STORAGE_KEY);
     return true;
   } catch {
     return false;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
 import { getPhysicalSeedId, PHYSICAL_SEED_COLORS } from "./seed-colors";
+import { JAGUAR_ENDINGS, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "./storyArchive";
 
 type SongResource = {
   id: string;
@@ -31,19 +32,28 @@ type SeedBookProps = {
   discoveredSongIds: SeedSongId[];
   previewSongId?: SeedSongId | null;
   focusSongId?: SeedSongId | null;
+  rewriteUnlocked: boolean;
+  rewriteSummaries: Partial<Record<RewriteChapterId, string>>;
+  archivedEndingIds: JaguarEndingId[];
   onClose: () => void;
   onReplaySong: (songId: SeedSongId) => void;
+  onRewriteChapter: (chapterId: RewriteChapterId) => void;
 };
 
-export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, onClose, onReplaySong }: SeedBookProps) {
+type BookView = "songs" | "rewrite" | "endings" | "ending";
+
+export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, archivedEndingIds, onClose, onReplaySong, onRewriteChapter }: SeedBookProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
   const [pageIndex, setPageIndex] = useState(0);
+  const [view, setView] = useState<BookView>("songs");
+  const [selectedEndingId, setSelectedEndingId] = useState<JaguarEndingId | null>(null);
   const discoveredSongs = SONG_CATALOG.filter(song => discoveredSongIds.includes(song.id));
   const previewSong = previewSongId && !discoveredSongIds.includes(previewSongId) ? SONG_CATALOG.find(song => song.id === previewSongId) ?? null : null;
   const visibleSongs = previewSong ? [...discoveredSongs, previewSong] : discoveredSongs;
   const currentSong = visibleSongs[pageIndex];
+  const selectedEnding = JAGUAR_ENDINGS.find(ending => ending.id === selectedEndingId && archivedEndingIds.includes(ending.id));
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -104,8 +114,14 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
           <button ref={closeButtonRef} type="button" className="seedbook-close" onClick={onClose} aria-label="Continuar y cerrar el Libro de semillas">continuar</button>
         </div>
 
+        <nav className="seedbook-library-tabs" aria-label="Secciones del Libro de semillas">
+          <button type="button" className={view === "songs" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "songs"} onClick={() => setView("songs")}>Semillas</button>
+          {rewriteUnlocked && <button type="button" className={view === "rewrite" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "rewrite"} onClick={() => setView("rewrite")}>Reescribir historia</button>}
+          {rewriteUnlocked && archivedEndingIds.length > 0 && <button type="button" className={view === "endings" || view === "ending" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "endings" || view === "ending"} onClick={() => setView("endings")}>Finales · {archivedEndingIds.length}</button>}
+        </nav>
+
         <div className="seedbook-page">
-        {visibleSongs.length === 0 ? (
+        {view === "songs" && (visibleSongs.length === 0 ? (
           <div className="seedbook-empty">
             <span aria-hidden="true">✳</span>
             <p>Aún no hay semillas en el libro.</p>
@@ -152,9 +168,40 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
               })()}
             </article>
           </>
-        ) : null}
+        ) : null)}
+        {view === "rewrite" && rewriteUnlocked && <section className="seedbook-rewrite-view" aria-labelledby="seedbook-rewrite-title">
+          <div className="seedbook-page-indicator">UN CAPÍTULO CADA VEZ · LAS SEMILLAS NO SE PIERDEN</div>
+          <h3 id="seedbook-rewrite-title">Elige qué recuerdo quieres volver a vivir</h3>
+          <p className="seedbook-rewrite-note">La nueva decisión sustituirá la anterior. Después podrás volver directamente al Jaguar con las estadísticas recalculadas.</p>
+          <div className="seedbook-rewrite-list">
+            {REWRITE_CHAPTERS.map(chapter => <button key={chapter.id} type="button" className="seedbook-rewrite-chapter" onClick={() => onRewriteChapter(chapter.id)}>
+              <span className="seedbook-rewrite-heading"><strong>{chapter.title}</strong><small>{rewriteSummaries[chapter.id] ?? "Todavía no hay una decisión guardada."}</small></span>
+              <span className="seedbook-rewrite-description">{chapter.description}</span>
+              <span className="seedbook-rewrite-action">volver a vivir →</span>
+            </button>)}
+          </div>
+        </section>}
+        {view === "endings" && rewriteUnlocked && <section className="seedbook-endings-view" aria-labelledby="seedbook-endings-title">
+          <div className="seedbook-page-indicator">RECUERDOS DEL JAGUAR</div>
+          <h3 id="seedbook-endings-title">Finales encontrados</h3>
+          <p className="seedbook-rewrite-note">Cada página muestra el arte del final que ya alcanzaste. Abrirla no vuelve a iniciar el encuentro.</p>
+          <div className="seedbook-ending-list">
+            {JAGUAR_ENDINGS.filter(ending => archivedEndingIds.includes(ending.id)).map(ending => <button key={ending.id} type="button" className="seedbook-ending-card" onClick={() => { setSelectedEndingId(ending.id); setView("ending"); }}>
+              <img src={gameAssetUrl(ending.artwork)} alt="" aria-hidden="true" />
+              <span><strong>{ending.title}</strong><small>{ending.summary}</small></span>
+              <b aria-hidden="true">ver diapositiva →</b>
+            </button>)}
+          </div>
+        </section>}
+        {view === "ending" && selectedEnding && <article className="seedbook-ending-slide" aria-labelledby="seedbook-ending-title">
+          <div className="seedbook-page-indicator">FINAL CONSEGUIDO</div>
+          <img className="seedbook-ending-art" src={gameAssetUrl(selectedEnding.artwork)} alt={`Ilustración pixel art: ${selectedEnding.title}`} />
+          <h3 id="seedbook-ending-title">{selectedEnding.title}</h3>
+          <p>{selectedEnding.summary}</p>
+          <button type="button" className="seedbook-ending-back" onClick={() => setView("endings")}>← volver al archivo de finales</button>
+        </article>}
         </div>
-        {visibleSongs.length > 0 && <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
+        {view === "songs" && visibleSongs.length > 0 && <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
           <button type="button" onClick={() => setPageIndex(index => index - 1)} disabled={pageIndex === 0}>← anterior</button>
           <button type="button" onClick={() => setPageIndex(index => index + 1)} disabled={pageIndex === visibleSongs.length - 1}>siguiente →</button>
         </nav>}

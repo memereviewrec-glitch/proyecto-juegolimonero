@@ -13,6 +13,7 @@ import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { JaguarScene } from "../components/JaguarScene";
 import { JaguarStatsHud } from "../components/JaguarStatsHud";
 import { createInitialJaguarStats, type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
+import type { JaguarEndingId, RewriteChapterId } from "../components/storyArchive";
 import { DevPlaytestTools, type DevFriendPreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
@@ -23,7 +24,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import { isSceneUnlocked, type GameScene } from "../sceneAccessRules";
 import { createAttemptTaskScope } from "../attemptTaskScope";
@@ -59,6 +60,15 @@ const REPLAY_TARGETS: Partial<Record<SeedSongId, Scene>> = {
   ponzona: "hummingbird",
   "nueve-sentidos": "nueve-sentidos",
   "el-jaguar": "jaguar",
+};
+
+const REWRITE_TARGETS: Record<RewriteChapterId, Scene> = {
+  dawn: "dawn",
+  rambla: "gathering",
+  river: "river",
+  "river-challenge": "river-challenge",
+  hummingbird: "hummingbird",
+  jaguar: "jaguar",
 };
 
 const WALK_DURATION_MS = 2600;
@@ -223,6 +233,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [nueveSentidosSeedCollected, setNueveSentidosSeedCollected] = useState(false);
   const [nueveSentidosEpilogueReady, setNueveSentidosEpilogueReady] = useState(false);
   const [jaguarSeedCollected, setJaguarSeedCollected] = useState(false);
+  const [archivedJaguarEndings, setArchivedJaguarEndings] = useState<JaguarEndingId[]>(readStoredJaguarEndings);
   const [hummingbirdIsFriend, setHummingbirdIsFriend] = useState(readStoredHummingbirdFriendship);
   const [hummingbirdOutcome, setHummingbirdOutcome] = useState<HummingbirdOutcome | null>(readStoredHummingbirdOutcome);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
@@ -248,6 +259,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const reportJaguarStats = useMemo(() => (stats: JaguarStats) => {
     setJaguarStatsSnapshot({ history: jaguarHistory, stats });
   }, [jaguarHistory]);
+  const recordJaguarEnding = useMemo(() => (ending: JaguarEndingId) => {
+    const storedEndings = saveJaguarEnding(ending);
+    setArchivedJaguarEndings(current => [...new Set([...current, ...storedEndings, ending])]);
+  }, []);
 
   useEffect(() => {
     if (!journeyMenuOpen) return;
@@ -678,12 +693,19 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     }
 
     const outcome = resolveRamblaOutcome(nextPacific, nextDrastic);
+    const riverChoiceMustBeRewritten = ramblaHistoryOutcome !== null && ramblaHistoryOutcome !== outcome;
     setRamblaOutcome(outcome);
     setRamblaHistoryOutcome(outcome);
     saveRamblaOutcome(outcome);
-    setNotice(outcome === 1
-      ? "El líder ríe secamente y acepta al limón como oráculo peregrino. El fuego reconoce tres recuerdos del bosque."
-      : "Los encapuchados gritan «¡Alimenta la hoguera!». El sendero tiembla bajo la sombra de la secta.");
+    if (riverChoiceMustBeRewritten) {
+      setRiverConversationOutcome(null);
+      clearStoredRiverConversationOutcome();
+      setNotice("La ruta de Rambla ha cambiado. La respuesta de Espíritus del río queda pendiente y podrás volver directamente desde Reescribir historia.");
+    } else {
+      setNotice(outcome === 1
+        ? "El líder ríe secamente y acepta al limón como oráculo peregrino. El fuego reconoce tres recuerdos del bosque."
+        : "Los encapuchados gritan «¡Alimenta la hoguera!». El sendero tiembla bajo la sombra de la secta.");
+    }
   }
 
   function attemptRamblaEscape(success: boolean) {
@@ -727,10 +749,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setRuinsView("scene");
   }
 
-  function replaySong(songId: SeedSongId) {
-    const targetScene = REPLAY_TARGETS[songId];
-    if (!targetScene) return;
-
+  function enterReplayScene(targetScene: Scene) {
     stopGameAudio();
     setSeedBookOpen(false);
     setStoryBeat(null);
@@ -747,9 +766,20 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setRoomAction(null);
     setRuinsView("scene");
     setRuinsAction(null);
+    setJourneyMenuOpen(false);
     setLemonWhistling(false);
     setDawnIsMoving(false);
     setIsMoving(false);
+  }
+
+  function replaySong(songId: SeedSongId) {
+    const targetScene = REPLAY_TARGETS[songId];
+    if (targetScene) enterReplayScene(targetScene);
+  }
+
+  function rewriteChapter(chapterId: RewriteChapterId) {
+    if (!discoveredSongIds.includes("el-jaguar")) return;
+    enterReplayScene(REWRITE_TARGETS[chapterId]);
   }
 
   function resetSceneAttempt(targetScene: Scene) {
@@ -823,7 +853,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
       setNueveSentidosSeedCollected(false);
       setNueveSentidosEpilogueReady(false);
     } else if (targetScene === "jaguar") {
-      setJaguarSeedCollected(false);
       setJaguarStatsSnapshot(null);
     }
   }
@@ -868,6 +897,17 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected, nueveSentidosSeedCollected, jaguarSeedCollected]);
 
   const nextLockedSongId = SONG_CATALOG.find(song => !discoveredSongIds.includes(song.id))?.id ?? null;
+  const rewriteUnlocked = discoveredSongIds.includes("el-jaguar");
+  const rewriteSummaries: Partial<Record<RewriteChapterId, string>> = {
+    dawn: dawnOutcome === "A" ? "Último recuerdo: Limón silbó." : dawnOutcome === "B" ? "Último recuerdo: escuchó silbar a los pájaros." : undefined,
+    rambla: ramblaHistoryOutcome === 1 ? "Último recuerdo: la ruta pacífica." : ramblaHistoryOutcome === 2 ? "Último recuerdo: la ruta drástica." : undefined,
+    river: riverConversationOutcome
+      ? `Último recuerdo: ruta ${riverConversationOutcome.route === "pacifico" ? "pacífica" : "drástica"}, respuesta ${riverConversationOutcome.choiceIndex + 1}.`
+      : ramblaHistoryOutcome !== null ? "Pendiente: elige una respuesta para la ruta actual de Rambla." : undefined,
+    "river-challenge": riverChallengeOutcome === "current" ? "Último recuerdo: siguió la corriente." : riverChallengeOutcome === "shore" ? "Último recuerdo: eligió la orilla." : undefined,
+    hummingbird: hummingbirdOutcome === "good" ? "Último recuerdo: el colibrí se hizo amigo." : hummingbirdOutcome === "bad" ? "Último recuerdo: el colibrí se marchó." : hummingbirdOutcome === "neutral" ? "Último recuerdo: el colibrí quedó en duda." : undefined,
+    jaguar: archivedJaguarEndings.length > 0 ? `${archivedJaguarEndings.length} final${archivedJaguarEndings.length === 1 ? "" : "es"} guardado${archivedJaguarEndings.length === 1 ? "" : "s"}.` : "El encuentro empieza con las estadísticas actuales.",
+  };
 
   useEffect(() => {
     const merged = mergeDiscoveredSeedIds(SONG_CATALOG.map(song => song.id), persistedSeedIds, discoveredSongIds);
@@ -1107,7 +1147,17 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
-            {!previewChromeHidden && seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={nextLockedSongId} focusSongId={storySeedPreview ?? nextLockedSongId} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
+            {!previewChromeHidden && seedBookOpen && <SeedBook
+              discoveredSongIds={discoveredSongIds}
+              previewSongId={nextLockedSongId}
+              focusSongId={storySeedPreview ?? nextLockedSongId}
+              rewriteUnlocked={rewriteUnlocked}
+              rewriteSummaries={rewriteSummaries}
+              archivedEndingIds={archivedJaguarEndings}
+              onClose={() => setSeedBookOpen(false)}
+              onReplaySong={replaySong}
+              onRewriteChapter={rewriteChapter}
+            />}
             {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
@@ -1193,6 +1243,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 seedCollected={jaguarSeedCollected}
                 stats={jaguarHudStats}
                 onCollectSeed={collectJaguarSeed}
+                onEndingDiscovered={recordJaguarEnding}
                 onReturnHome={returnHomeFromJaguar}
                 onStatsChange={reportJaguarStats}
                 dawnOutcome={dawnOutcome}

@@ -60,6 +60,41 @@ describe("HUD cronológico al reescribir historia", () => {
     }));
   });
 
+  it("aplica los bonos del Colibrí al final de la escena y reemplaza los de la reescritura", () => {
+    const completedFriendship = {
+      ...savedHistory,
+      hummingbirdOutcome: "good" as const,
+      hummingbirdEmpatiaBonus: 10,
+      hummingbirdValentiaBonus: 9,
+    };
+    const beforeAnswer = getJourneyHudStats(completedFriendship, "hummingbird", false);
+    expect(beforeAnswer).toEqual(createInitialJaguarStats({
+      ...completedFriendship,
+      hummingbirdOutcome: null,
+      hummingbirdEmpatiaBonus: 0,
+      hummingbirdValentiaBonus: 0,
+      nueveSentidosSeedCollected: false,
+    }));
+
+    const firstResult = getJourneyHudStats(completedFriendship, "hummingbird", true);
+    expect(firstResult).toEqual(createInitialJaguarStats({
+      ...completedFriendship,
+      nueveSentidosSeedCollected: false,
+    }));
+    expect(getJourneyHudStats(completedFriendship, "hummingbird", true)).toEqual(firstResult);
+
+    const rewrittenNeutral = {
+      ...completedFriendship,
+      hummingbirdOutcome: "neutral" as const,
+      hummingbirdEmpatiaBonus: 0,
+      hummingbirdValentiaBonus: 3,
+    };
+    expect(getJourneyHudStats(rewrittenNeutral, "hummingbird", true)).toEqual(createInitialJaguarStats({
+      ...rewrittenNeutral,
+      nueveSentidosSeedCollected: false,
+    }));
+  });
+
   it("no concede los cuatro de Ingenio de Nueve sentidos por tener su semilla archivada", () => {
     const before = getJourneyHudStats(savedHistory, "nueve-sentidos", false);
     expect(getJourneyHudStats(savedHistory, "nueve-sentidos", true)).toEqual({ ...before, ingenio: before.ingenio + 4 });

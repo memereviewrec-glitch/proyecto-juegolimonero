@@ -1,81 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { createAttemptTaskScope } from "../attemptTaskScope";
 import { gameAssetUrl } from "../gameAudio";
-import { resolveHummingbirdOutcome } from "./hummingbirdRules";
+import { HUMMINGBIRD_QUESTIONS, VALIANT_COURAGE_POINTS, resolveHummingbirdOutcome, type HummingbirdOutcome } from "./hummingbirdRules";
 import "./hummingbird-scene.css";
 import { SeedGlyph } from "./SeedGlyph";
 import { LemonSprite } from "./GameSprites";
 
-export type HummingbirdOutcome = "good" | "bad" | "neutral";
+export type { HummingbirdOutcome } from "./hummingbirdRules";
 export type HummingbirdPreviewAlternatives = readonly (readonly [string, string])[];
 
 type HummingbirdSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
-  onOutcome?: (outcome: HummingbirdOutcome) => void;
+  onOutcome?: (outcome: HummingbirdOutcome, valiantResponseCount: number) => void;
   previewAlternatives?: HummingbirdPreviewAlternatives;
 };
-
-type HummingbirdOption = {
-  text: string;
-  delta: number;
-};
-
-type HummingbirdQuestion = {
-  prompt: string;
-  options: readonly HummingbirdOption[];
-};
-
-const QUESTIONS: readonly HummingbirdQuestion[] = [
-  {
-    prompt: "Mi casa estaba en aquel árbol. Ahora solo quedan cenizas. No sé dónde volver.",
-    options: [
-      { text: "No tienes que resolverlo todo ahora. Puedes descansar un momento y luego pensamos qué hacer.", delta: 25 },
-      { text: "Todos hemos perdido cosas. Tendrás que acostumbrarte.", delta: -30 },
-      { text: "Si no tienes casa, busca otra. Quedarte aquí no va a cambiar nada.", delta: -30 },
-    ],
-  },
-  {
-    prompt: "Volaba de árbol en árbol, pero ya no queda ninguno. El cielo es demasiado grande cuando no tienes un lugar al que regresar.",
-    options: [
-      { text: "El mundo siempre ha sido grande. Eso no significa que tenga que importarte.", delta: -30 },
-      { text: "Aunque el bosque haya desaparecido, aquí quedan otros animales. Si quieres, podemos buscar a quienes también necesiten ayuda.", delta: 25 },
-      { text: "Deja de mirar atrás y vuela. Los pájaros deberían saber hacer eso.", delta: -30 },
-    ],
-  },
-  {
-    prompt: "Intenté llevar agua para apagar el fuego. Volé hasta el río tantas veces como pude, pero nunca fue suficiente. Quizá todo fue culpa mía.",
-    options: [
-      { text: "Si hubieras llevado más agua, tal vez el bosque seguiría vivo.", delta: -30 },
-      { text: "No pienses en eso ahora. Hay cosas que es mejor olvidar.", delta: -30 },
-      { text: "Que no pudieras apagar el incendio no significa que no hicieras nada. A veces el valor está en insistir aunque no sepamos si bastará.", delta: 25 },
-    ],
-  },
-  {
-    prompt: "Los animales me miraban mientras volvía del río. Yo sabía que no podía salvarlos. Cada viaje me hacía sentir más pequeño.",
-    options: [
-      { text: "No eras pequeño por no poder salvar el bosque. Eras valiente por volver a intentarlo.", delta: 25 },
-      { text: "Al menos aprendiste que no todos los problemas pueden resolverse.", delta: -30 },
-      { text: "No deberías preocuparte tanto por lo que piensen los demás.", delta: -30 },
-    ],
-  },
-  {
-    prompt: "Un jaguar se reía de mí. Decía que mis vuelos eran inútiles. Quizá tenía razón.",
-    options: [
-      { text: "El jaguar tenía razón. La próxima vez deberías dejar que el fuego se lo llevara a él.", delta: -30 },
-      { text: "Que alguien se burle de tus intentos no convierte tus esfuerzos en inútiles. Solo demuestra que no supo verlos.", delta: 25 },
-      { text: "No pienses en el jaguar. Hay cosas más importantes.", delta: -30 },
-    ],
-  },
-  {
-    prompt: "Ahora no tengo casa, ni bosque, ni un camino al que regresar. ¿Qué puedo hacer?",
-    options: [
-      { text: "Nada. Ya has hecho bastante.", delta: -30 },
-      { text: "Seguir volando es lo único que sabes hacer. Hazlo y deja de pensar.", delta: -30 },
-      { text: "No puedo devolverte tu casa, pero puedo ayudarte a encontrar un refugio con los demás animales.", delta: 25 },
-    ],
-  },
-];
 
 function outcomeText(outcome: HummingbirdOutcome) {
   if (outcome === "good") return "Gracias por escucharme. Seguiré adelante con un nuevo amigo.";
@@ -93,6 +32,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
   const [mood, setMood] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [outcome, setOutcome] = useState<HummingbirdOutcome | null>(null);
+  const [valiantResponseCount, setValiantResponseCount] = useState(0);
   const [entryComplete, setEntryComplete] = useState(false);
   const [exitingScene, setExitingScene] = useState(false);
   const [draftPreviewComplete, setDraftPreviewComplete] = useState(false);
@@ -106,12 +46,13 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
     setMood(0);
     setQuestionIndex(0);
     setOutcome(null);
+    setValiantResponseCount(0);
     setDraftPreviewComplete(false);
     setExitingScene(false);
   }, [draftAlternatives]);
 
-  const question = QUESTIONS[questionIndex];
-  const empathicResponse = question?.options.find(option => option.delta > 0)?.text ?? "";
+  const question = HUMMINGBIRD_QUESTIONS[questionIndex];
+  const empathicResponse = question?.options.find(option => option.kind === "empatica")?.text ?? "";
   const visibleOptions = draftAlternatives
     ? [...(draftAlternatives[questionIndex] ?? []), empathicResponse]
     : question?.options.map(option => option.text) ?? [];
@@ -119,7 +60,7 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
   const answer = (optionIndex: number) => {
     if (draftAlternatives) {
       if (draftPreviewComplete || !question) return;
-      if (questionIndex === QUESTIONS.length - 1) {
+      if (questionIndex === HUMMINGBIRD_QUESTIONS.length - 1) {
         setDraftPreviewComplete(true);
       } else {
         setQuestionIndex(index => index + 1);
@@ -129,12 +70,14 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
     if (outcome || !question) return;
     const selectedOption = question.options[optionIndex];
     if (!selectedOption) return;
-    const nextMood = Math.max(-100, Math.min(100, mood + selectedOption.delta));
+    const nextValiantResponseCount = valiantResponseCount + (selectedOption.kind === "valiente" ? 1 : 0);
+    setValiantResponseCount(nextValiantResponseCount);
+    const nextMood = Math.max(-100, Math.min(100, mood + selectedOption.moodDelta));
     setMood(nextMood);
-    const nextOutcome = resolveHummingbirdOutcome(nextMood, questionIndex === QUESTIONS.length - 1);
+    const nextOutcome = resolveHummingbirdOutcome(nextMood, questionIndex === HUMMINGBIRD_QUESTIONS.length - 1);
     if (nextOutcome) {
       setOutcome(nextOutcome);
-      onOutcome?.(nextOutcome);
+      onOutcome?.(nextOutcome, nextValiantResponseCount);
       return;
     }
     setQuestionIndex(index => index + 1);
@@ -182,12 +125,14 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome, prev
             <span>{outcome === "good" ? "AMISTAD" : outcome === "bad" ? "DESPEDIDA" : "DUDA"}</span>
             <p>{outcomeText(outcome)}</p>
             <p className="hummingbird-reward-copy">El colibrí te entrega una semilla para continuar el viaje.</p>
+            {outcome === "good" && <p className="hummingbird-reward-copy">Empatía +10: el Colibrí acompaña a Limón.</p>}
+            {valiantResponseCount > 0 && <p className="hummingbird-reward-copy">Valentía +{valiantResponseCount * VALIANT_COURAGE_POINTS} por {valiantResponseCount} {valiantResponseCount === 1 ? "respuesta valiente" : "respuestas valientes"}.</p>}
             {seedCollected && <small>El desenlace más reciente queda guardado en el Libro de Semillas.</small>}
             <button type="button" className="hummingbird-seed-button" onClick={continueFromOutcome} disabled={exitingScene} aria-label={seedCollected ? "Continuar, salir de la escena y volver al Libro de Semillas" : "Continuar, salir de la escena y recoger la semilla entregada por el colibrí"}><SeedGlyph seed="ponzona" /><b>{exitingScene ? "saliendo de la escena…" : "Continuar"}</b></button>
           </>
         ) : (
           <>
-            <span>{draftAlternatives ? `BORRADOR · SIN PUNTUACIÓN · ${questionIndex + 1}/${QUESTIONS.length}` : `COLIBRÍ · ${questionIndex + 1}/${QUESTIONS.length}`}</span>
+            <span>{draftAlternatives ? `BORRADOR · SIN PUNTUACIÓN · ${questionIndex + 1}/${HUMMINGBIRD_QUESTIONS.length}` : `COLIBRÍ · ${questionIndex + 1}/${HUMMINGBIRD_QUESTIONS.length}`}</span>
             <p>{question?.prompt}</p>
             <div className="hummingbird-options">
               {visibleOptions.map((option, index) => <button type="button" key={option} className={draftAlternatives ? "hummingbird-preview-option" : undefined} onClick={() => answer(index)}>{draftAlternatives ? <small>{index < 2 ? "Alternativa propuesta" : "Respuesta empática actual"}</small> : <b>{String.fromCharCode(65 + index)}</b>}{option}</button>)}

@@ -29,6 +29,8 @@ export function getJourneyStatsHistory(history: JaguarHistory, scene: GameScene,
     riverConversationOutcome: reached("river") ? history.riverConversationOutcome : null,
     riverChallengeOutcome: reached("river-challenge") ? history.riverChallengeOutcome : null,
     hummingbirdOutcome: reached("hummingbird") ? history.hummingbirdOutcome : null,
+    hummingbirdEmpatiaBonus: reached("hummingbird") ? history.hummingbirdEmpatiaBonus : 0,
+    hummingbirdValentiaBonus: reached("hummingbird") ? history.hummingbirdValentiaBonus : 0,
     nueveSentidosSeedCollected: reached("nueve-sentidos") && Boolean(history.nueveSentidosSeedCollected),
   };
 }

@@ -26,7 +26,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredHummingbirdRewards, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import { isSceneUnlocked, type GameScene } from "../sceneAccessRules";
 import { createAttemptTaskScope } from "../attemptTaskScope";
@@ -230,6 +230,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [archivedJaguarEndings, setArchivedJaguarEndings] = useState<JaguarEndingId[]>(readStoredJaguarEndings);
   const [hummingbirdIsFriend, setHummingbirdIsFriend] = useState(readStoredHummingbirdFriendship);
   const [hummingbirdOutcome, setHummingbirdOutcome] = useState<HummingbirdOutcome | null>(readStoredHummingbirdOutcome);
+  const [hummingbirdRewards, setHummingbirdRewards] = useState(readStoredHummingbirdRewards);
   const [hummingbirdDecisionMadeThisAttempt, setHummingbirdDecisionMadeThisAttempt] = useState(false);
   const [ramblaConversationStep, setRamblaConversationStep] = useState(0);
   const [ramblaPacificPoints, setRamblaPacificPoints] = useState(0);
@@ -244,10 +245,12 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     dawnOutcome,
     ramblaOutcome: ramblaHistoryOutcome,
     hummingbirdOutcome,
+    hummingbirdEmpatiaBonus: hummingbirdRewards.empatia,
+    hummingbirdValentiaBonus: hummingbirdRewards.valentia,
     riverConversationOutcome,
     riverChallengeOutcome,
     nueveSentidosSeedCollected: nueveSentidosSeedCollected || persistedSeedIds.includes("nueve-sentidos"),
-  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected, persistedSeedIds]);
+  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, hummingbirdRewards, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected, persistedSeedIds]);
   const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<JaguarStatsSnapshot | null>(null);
   const currentSceneDecisionResolved = scene === "dawn" ? branch !== null
     : scene === "gathering" ? ramblaOutcome !== null
@@ -675,11 +678,11 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setNotice("El limón atraviesa el portal y vuelve a casa. El Libro de Semillas sigue disponible.");
   }
 
-  function recordHummingbirdOutcome(outcome: HummingbirdOutcome) {
+  function recordHummingbirdOutcome(outcome: HummingbirdOutcome, valiantResponseCount: number) {
     setHummingbirdIsFriend(outcome === "good");
     setHummingbirdOutcome(outcome);
+    setHummingbirdRewards(saveHummingbirdOutcome(outcome, valiantResponseCount));
     setHummingbirdDecisionMadeThisAttempt(true);
-    saveHummingbirdOutcome(outcome);
   }
 
   function chooseRamblaResponse(choice: RamblaChoice) {

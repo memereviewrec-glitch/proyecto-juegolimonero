@@ -79,8 +79,23 @@ describe("reglas de El Jaguar", () => {
       cautela: 35,
       empatia: 35,
       ingenio: 40,
-      valentia: 53,
+      valentia: 44,
     });
+  });
+
+  it("usa los bonos registrados al resolver Colibrí y no concede +9 Valentía por despedirse", () => {
+    expect(createInitialJaguarStats({
+      ramblaOutcome: null,
+      hummingbirdOutcome: "good",
+      hummingbirdEmpatiaBonus: 10,
+      hummingbirdValentiaBonus: 9,
+    })).toEqual({ cautela: 35, empatia: 45, ingenio: 35, valentia: 44 });
+    expect(createInitialJaguarStats({
+      ramblaOutcome: null,
+      hummingbirdOutcome: "bad",
+      hummingbirdEmpatiaBonus: 0,
+      hummingbirdValentiaBonus: 0,
+    })).toEqual({ cautela: 35, empatia: 35, ingenio: 35, valentia: 35 });
   });
 
   it("aplica al colibrí amigo solo Empatía y al neutral solo Cautela, sin subir Ingenio", () => {
@@ -280,7 +295,7 @@ describe("reglas de El Jaguar", () => {
     expect(courageEntry.cautela).toBeLessThan(CAUTELA_THRESHOLD);
     expect(getJaguarBranchAfterCautela(meetsJaguarThreshold(courageEntry.cautela, CAUTELA_THRESHOLD))).toBe("angry");
     const courage = applySequence(courageEntry, ANGRY_QUESTIONS, [1, 2, 1]);
-    expect(courage.valentia).toBe(95);
+    expect(courage.valentia).toBe(86);
     expect(meetsJaguarThreshold(courage.valentia, COURAGE_THRESHOLD)).toBe(true);
     expect(resolveFightOutcome(0, 3)).toBe("victory");
     expect(resolveFightOutcome(2, 3)).toBe("nightmare");

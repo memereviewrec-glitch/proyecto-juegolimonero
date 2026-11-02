@@ -452,3 +452,17 @@
 - Añadir un botón visible para ocultar o mostrar el panel de controles de desarrollo.
 - Al plegarlo, el botón permanece visible para volver a abrirlo y el lienzo del juego recupera el espacio vertical que deja libre el panel.
 - Evidencia: en Preview el botón alterna ambos estados, queda visible plegado, y el panel vuelve expandido tras recargar. La reserva del workspace baja de 104 a 52 px y la escena conserva la proporción 1180:1333 (0.8852) en ambos estados; CSS contempla el breakpoint móvil. `pnpm check`, `pnpm test` (101), `pnpm build:static` y `git diff --check` pasan; los controles de desarrollo y el borrador no aparecen en el bundle de producción.
+
+
+## [x] Diálogo y recompensas aprobadas del Colibrí
+- Mantener las seis preguntas actuales y tres respuestas por pregunta: la respuesta empática actual permanece sin cambios; en cada turno se conserva la H seleccionada y se usa la V indicada. Las frases son:
+  1. H «Si no tienes casa, busca otra. Quedarte aquí no va a cambiar nada.»; V «No sé qué encontraremos más allá de las cenizas, pero también me da miedo. Busquemos refugio».
+  2. H «El mundo siempre ha sido grande, deja de mirar atrás y vuela»; V «El cielo infinito puede dar miedo, sin ser éste nuestro enemigo».
+  3. H «No pienses en eso ahora. Hay cosas que es mejor olvidar.»; V «No podemos cambiar lo que ardió, pero sí decidir cómo cuidar lo que queda».
+  4. H «No deberías preocuparte tanto por lo que piensen los demás.»; V «A veces pedir ayuda cuesta más que seguir solo, no necesitas demostrar que eres invencible».
+  5. H «No pienses en el jaguar. Hay cosas más importantes.»; V «No dejes que una risa decida cuánto vale tu esfuerzo.»
+  6. H «seguir volando es lo que mejor sabes hacer. Sigue haciéndolo y no mires atrás»; V «No puedo prometerte un camino seguro, pero sí te prometo que lo andaré junto a ti».
+- Cada H no suma ni resta ánimo ni estadísticas. Cada V suma +10 al ánimo del Colibrí y +3 a Valentía. La respuesta empática actual conserva su delta de +25 al ánimo.
+- Si el desenlace crea amistad y el Colibrí acompaña a Limón, se añaden +10 de Empatía al resolver el final de la escena del Colibrí, no al entrar en Jaguar. El desenlace neutral conserva +7 de Cautela; se elimina el +9 de Valentía que antes se concedía con la despedida.
+- Al reescribir el capítulo, la nueva resolución sustituye la recompensa anterior: los puntos no se acumulan por repetición y las semillas descubiertas no se pierden. El borrador de desarrollo sigue sin puntuar ni alterar el progreso.
+- Evidencia: `pnpm check` pasa; `pnpm test` pasa con 107 pruebas; `pnpm build:static` compila. El bundle contiene las seis frases V y excluye las frases H retiradas y el borrador de desarrollo. Revisión de código de solo lectura confirmó que las recompensas se sustituyen al reescribir y no duplican; la semilla queda preservada. La despedida negativa se conserva solo para partidas guardadas antiguas, pues las nuevas respuestas no reducen el ánimo.

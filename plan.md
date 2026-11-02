@@ -11,7 +11,8 @@
 - `client/src/pages/Home.tsx`: orquesta navegación directa a capítulos, invalida la decisión de río al cambiar Rambla, calcula el acceso desbloqueado y conecta Libro con Jaguar.
 - `client/src/components/SeedBook.tsx` y `client/src/pages/home.css`: añaden vistas de reescritura y archivo en el panel existente, adaptables a móvil y coherentes con su pixel art.
 - `client/src/components/JaguarScene.tsx` y `jaguarRules.ts`: notifican el final alcanzado y comparten el catálogo de identificadores/arte/resúmenes para la visualización sin combate.
-- `client/src/gameProgressStorage.ts` y sus pruebas: persisten/validan finales únicos y eliminan el archivo y las decisiones dependientes cuando corresponde.
+- `client/src/components/HummingbirdScene.tsx` y `hummingbirdRules.ts`: clasifican las respuestas empática, H y V, aplican los deltas aprobados y notifican la recompensa al resolver la escena.
+- `client/src/pages/Home.tsx`, `gameProgressStorage.ts`, `journeyStats.ts` y `jaguarRules.ts`: guardan la última recompensa del Colibrí, la proyectan al terminar su capítulo y la sustituyen al reescribir sin acumularla; también persisten finales únicos y limpian progreso cuando corresponde.
 
 ## Diseño
 Se conserva la estética aprobada del juego: Libro como objeto físico de pixel art ingenuo, papel cálido, marco oscuro, tipografía monoespaciada pequeña y botones explícitos. Las vistas son páginas internas (canciones, reescritura, finales); la repetición de un capítulo tiene una acción clara y no borra colección. La diapositiva archivada reutiliza las ilustraciones finales pixel art existentes, sin generar arte nuevo ni activar controles del combate. Movimiento y transiciones respetan el comportamiento accesible ya establecido en el Libro.
@@ -33,8 +34,10 @@ Actualizar la frase verificada por `PasswordGate` a la nueva frase elegida y ver
 Eliminar la pestaña «Semillas»; abrir el Libro normalmente en el Índice y mantener las páginas de canciones accesibles desde sus entradas. Los accesos narrativos pueden seguir abriendo directamente la canción pertinente. Se conservan las secciones Índice, Reescribir historia y Finales según disponibilidad.
 
 
-## Reto del río y propuesta del Colibrí
-El reto distingue la entrada valerosa en la corriente de la retirada cautelosa hacia la orilla. Cada desenlace tiene texto propio en la escena y en el interludio siguiente, pero ambos abren el descenso a El Río; sus recompensas se mantienen en +6 de Valentía o +6 de Cautela. Un catálogo de consecuencias compartido evita que las dos capas narrativas se contradigan. El Colibrí solo recibe un documento de propuesta de respuestas valientes y empáticas: no se aplican textos, deltas ni nuevas condiciones de +9 hasta aprobación.
+## Reto del río y diálogo aprobado del Colibrí
+El reto distingue la entrada valerosa en la corriente de la retirada cautelosa hacia la orilla. Cada desenlace tiene texto propio en la escena y en el interludio siguiente, pero ambos abren el descenso a El Río; sus recompensas se mantienen en +6 de Valentía o +6 de Cautela. Un catálogo de consecuencias compartido evita que las dos capas narrativas se contradigan. La escena del Colibrí conserva seis preguntas y tres opciones por turno: la respuesta empática actual (+25 ánimo), una H elegida (sin sumar ni restar) y una V aprobada (+10 ánimo y +3 Valentía). Las seis frases aprobadas están en TODO.md y en el documento de decisiones del Colibrí.
+
+La amistad concede +10 Empatía al resolver la escena del Colibrí, no al entrar en Jaguar. Home registra el resultado y sus recompensas al final de ese capítulo; el HUD las proyecta desde ese momento y Reescribir historia sustituye la última resolución sin acumular puntos ni borrar semillas. Se elimina la bonificación de +9 Valentía del desenlace de despedida; se conserva el +7 Cautela del resultado neutral.
 
 
 ## Vista previa de diálogo del Colibrí

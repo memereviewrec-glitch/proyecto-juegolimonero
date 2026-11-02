@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { clearStoredGameProgress, clearStoredRiverConversationOutcome, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, JAGUAR_ENDINGS_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredJaguarEndings, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveJaguarEnding, saveRiverChallengeOutcome, saveRiverConversationOutcome } from "./gameProgressStorage";
 import { DAWN_OUTCOME_STORAGE_KEY, readStoredDawnOutcome, saveDawnOutcome, SEED_BOOK_STORAGE_KEY } from "./gameProgressStorage";
 import { createInitialJaguarStats } from "./components/jaguarRules";
+import { HUMMINGBIRD_REWARDS_STORAGE_KEY, readStoredHummingbirdRewards } from "./gameProgressStorage";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -96,6 +97,7 @@ describe("archivo de finales del Jaguar", () => {
 describe("readStoredHummingbirdFriendship", () => {
   it("returns false when no browser storage is available", () => {
     expect(readStoredHummingbirdFriendship()).toBe(false);
+    expect(readStoredHummingbirdRewards()).toEqual({ empatia: 0, valentia: 0 });
   });
 
   it("persists the most recent ending and only keeps friendship for the good ending", () => {
@@ -107,22 +109,27 @@ describe("readStoredHummingbirdFriendship", () => {
     };
     vi.stubGlobal("window", { localStorage });
 
-    saveHummingbirdOutcome("good");
+    saveHummingbirdOutcome("good", 4);
     expect(values.get(HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY)).toBe("good");
+    expect(values.get(HUMMINGBIRD_REWARDS_STORAGE_KEY)).toBe('{"empatia":10,"valentia":12}');
     expect(readStoredHummingbirdOutcome()).toBe("good");
     expect(readStoredHummingbirdFriendship()).toBe(true);
+    expect(readStoredHummingbirdRewards()).toEqual({ empatia: 10, valentia: 12 });
 
-    saveHummingbirdOutcome("neutral");
+    saveHummingbirdOutcome("neutral", 2);
     expect(readStoredHummingbirdOutcome()).toBe("neutral");
     expect(readStoredHummingbirdFriendship()).toBe(false);
+    expect(readStoredHummingbirdRewards()).toEqual({ empatia: 0, valentia: 6 });
 
     saveHummingbirdOutcome("bad");
     expect(readStoredHummingbirdOutcome()).toBe("bad");
     expect(readStoredHummingbirdFriendship()).toBe(false);
+    expect(readStoredHummingbirdRewards()).toEqual({ empatia: 0, valentia: 0 });
 
     expect(clearStoredGameProgress()).toBe(true);
     expect(readStoredHummingbirdFriendship()).toBe(false);
     expect(readStoredHummingbirdOutcome()).toBe(null);
+    expect(readStoredHummingbirdRewards()).toEqual({ empatia: 0, valentia: 0 });
   });
 
   it("reads a friendship saved by an older version", () => {
@@ -131,6 +138,7 @@ describe("readStoredHummingbirdFriendship", () => {
 
     expect(readStoredHummingbirdOutcome()).toBe("good");
     expect(readStoredHummingbirdFriendship()).toBe(true);
+    expect(readStoredHummingbirdRewards()).toEqual({ empatia: 10, valentia: 0 });
   });
 
   it("persists the river challenge choice and removes it when progress is cleared", () => {

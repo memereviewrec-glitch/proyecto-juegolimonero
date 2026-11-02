@@ -7,6 +7,8 @@ export type JaguarHistory = {
   dawnOutcome?: Branch | null;
   ramblaOutcome: 1 | 2 | null;
   hummingbirdOutcome: "good" | "bad" | "neutral" | null;
+  hummingbirdEmpatiaBonus?: number;
+  hummingbirdValentiaBonus?: number;
   riverConversationOutcome?: RiverConversationOutcome | null;
   riverChallengeOutcome?: RiverChallengeOutcome | null;
   nueveSentidosSeedCollected?: boolean;
@@ -96,12 +98,13 @@ export function createInitialJaguarStats(history: JaguarHistory): JaguarStats {
   } else if (history.ramblaOutcome === 2) {
     stats = applyJaguarEffects(stats, { ingenio: 5, valentia: 9 });
   }
-  if (history.hummingbirdOutcome === "good") {
-    stats = applyJaguarEffects(stats, { empatia: 10 });
-  } else if (history.hummingbirdOutcome === "neutral") {
+  const hummingbirdEmpatiaBonus = history.hummingbirdEmpatiaBonus ?? (history.hummingbirdOutcome === "good" ? 10 : 0);
+  const hummingbirdValentiaBonus = history.hummingbirdValentiaBonus ?? 0;
+  if (hummingbirdEmpatiaBonus > 0 || hummingbirdValentiaBonus > 0) {
+    stats = applyJaguarEffects(stats, { empatia: hummingbirdEmpatiaBonus, valentia: hummingbirdValentiaBonus });
+  }
+  if (history.hummingbirdOutcome === "neutral") {
     stats = applyJaguarEffects(stats, { cautela: 7 });
-  } else if (history.hummingbirdOutcome === "bad") {
-    stats = applyJaguarEffects(stats, { valentia: 9 });
   }
   const riverConversation = history.riverConversationOutcome;
   if (riverConversation && riverConversation.choiceIndex >= 0 && riverConversation.choiceIndex < 3) {

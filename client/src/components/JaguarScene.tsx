@@ -6,6 +6,7 @@ import { SeedGlyph } from "./SeedGlyph";
 import { STAT_LABELS } from "./JaguarStatsHud";
 import {
   ANGRY_QUESTIONS,
+  CAUTELA_FAILURE_MESSAGE,
   CAUTELA_THRESHOLD,
   COURAGE_THRESHOLD,
   EMPATHY_THRESHOLD,
@@ -216,7 +217,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
       presentSkillResult({
         stat: "cautela",
         outcome: "failure",
-        message: "El limón dio media vuelta pero mientras salía de la cueva, pisó una rama, con tal mala fortuna que el jaguar percibió el miedo de Limón tras escuchar el crujido de la madera, y salió furioso de su escondite",
+        message: CAUTELA_FAILURE_MESSAGE,
         checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "angry-questions",
       });

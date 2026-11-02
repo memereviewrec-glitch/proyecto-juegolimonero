@@ -374,5 +374,5 @@
 - En el primer enigma del Jaguar burlón: sombra propia suma Ingenio +6 y Cautela +5; dudar de que la luz tenga todas las respuestas suma Ingenio +10 y Empatía +4; recordar al colibrí suma Ingenio +5 y Empatía +7.
 - En el segundo enigma: «Tal vez los dos…» suma Ingenio +5 y Empatía +5; quien hace la pregunta suma Ingenio +10 y Valentía +4; lo que la semilla decide suma Ingenio +8 y Valentía +4.
 - En el tercer enigma: no dejar que el conocimiento cambie suma Ingenio +9 y Empatía +2; usarlo para sentirse superior suma Ingenio +7 y Empatía +6; no atreverse a cuestionarlo suma Ingenio +10 y Cautela +3.
-- El mensaje de fallo de Cautela conserva «El limón dio media vuelta…», sin coma entre «El limón» y «dio».
-- Evidencia: efectos finales comprobados mediante `scaleJaguarAnswerEffects`, los dos outcomes del Río verificados con estadísticas iniciales, `pnpm check`, `pnpm test` (87 pruebas), `pnpm build:static` y `git diff --check` pasan.
+- Si falla Cautela, el mensaje dice exactamente «El limón dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el Jaguar percibió el miedo del limón al hacer crujir la madera, entonces salió furioso de su escondite».
+- Evidencia: efectos finales comprobados mediante `scaleJaguarAnswerEffects`, los dos outcomes del Río verificados con estadísticas iniciales, `pnpm check`, `pnpm test` (88 pruebas, incluida la frase literal del fallo), `pnpm build:static` y `git diff --check` pasan.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   ANGRY_QUESTIONS,
+  CAUTELA_FAILURE_MESSAGE,
   CAUTELA_THRESHOLD,
   COURAGE_THRESHOLD,
   EMPATHY_THRESHOLD,
@@ -22,6 +23,10 @@ import {
 } from "./jaguarRules";
 
 describe("reglas de El Jaguar", () => {
+  it("muestra literalmente el texto aprobado para el fallo de Cautela", () => {
+    expect(CAUTELA_FAILURE_MESSAGE).toBe("El limón dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el Jaguar percibió el miedo del limón al hacer crujir la madera, entonces salió furioso de su escondite");
+  });
+
   it("silbar suma exactamente 7 de Valentía y observar a los pájaros suma 7 de Cautela", () => {
     const history = { ramblaOutcome: null, hummingbirdOutcome: null };
     expect(createInitialJaguarStats({ ...history, dawnOutcome: "A" })).toEqual({

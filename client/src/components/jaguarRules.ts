@@ -46,6 +46,7 @@ export function getJaguarBranchAfterCautela(succeeded: boolean): JaguarBranch {
 }
 export const INGENUITY_RIDDLE = "Caminas sobre la escoria del mundo y los espejismos de la noche, rodeado de tesoros que no puedes tocar y peligros que solo existen mientras crees en ellos. ¿Qué milagro permite que la flor florezca en el cieno sin ensuciar sus pétalos?";
 export const INGENUITY_ANSWER = "El milagro no es alterar el mundo de los sueños, sino despertar en medio de ellos. El loto nace del lodo; de la misma manera, la sabiduría brota al reconocer que los fenómenos son transitorios y carentes de un núcleo propio, permitiendo que la mente permanezca libre en el mundo sin aferrarse a él.";
+export const CAUTELA_FAILURE_MESSAGE = "El limón dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el Jaguar percibió el miedo del limón al hacer crujir la madera, entonces salió furioso de su escondite";
 export const NIGHTMARE_VOICEOVER = "Tu mente misma creó la selva y al depredador. Al igual que cuando alguien se libera de las ataduras pero corre de regreso a enredarse, a menudo recreamos nuestros propios temores. El sueño muestra cómo la mente construye el miedo a la disolución, pero al despertar comprendemos que no era más que una ilusión.";
 
 export function clampJaguarStat(value: number): number {

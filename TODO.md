@@ -363,3 +363,16 @@
 ## [x] Pista narrativa de entrada a Rambla
 - Al principio de Rambla, los encapuchados piden a Limón que se acerque al círculo, como pista diegética para que se entienda que hay que clicar dentro del círculo de encapuchados.
 - Evidencia: el rótulo de estado `role="status"` anuncia «Los encapuchados te llaman desde el círculo» y «Limón, acércate al círculo» antes de que llegue al centro. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+## [x] Actualización de bonificaciones del Río y del Jaguar
+- En Espíritus del río, la tercera respuesta de la ruta pacífica («Ellos me dieron una semilla…») suma Ingenio +4; la tercera respuesta de la ruta drástica («Si el mundo fluye…») suma Empatía +5.
+- En la primera pregunta interior del Jaguar: «Respiro despacio…» suma Cautela +7 e Ingenio +3; «Observo las hojas…» suma Ingenio +7 y Cautela +3; «Pienso en el colibrí…» suma Empatía +7 y Valentía +2; «Sigo adelante…» suma Valentía +7 y Empatía +2.
+- En la segunda pregunta interior del Jaguar, «El fuego y el agua dejan señales distintas» suma Ingenio +7 y Cautela +7.
+- En la tercera pregunta interior: «Quiero descubrir qué oculta» suma Ingenio +7 y Empatía +4; «Me pregunto si también está solo» suma Empatía +7 y Cautela +5; «No dejaré que el miedo decida» suma Valentía +7 y Cautela +5.
+- En la segunda pregunta del Jaguar furioso: «El miedo también puede avisarme» suma Cautela +3 y Valentía +5; «Escucharé antes de responder» suma Empatía +5 y Cautela +3; «Daré el siguiente paso» suma Valentía +5 e Ingenio +3.
+- En la pregunta final del Jaguar furioso, comprender la furia suma Empatía +8 y Cautela +2; resistirla y mantenerse en pie suma Valentía +11 y Cautela +2.
+- En el primer enigma del Jaguar burlón: sombra propia suma Ingenio +6 y Cautela +5; dudar de que la luz tenga todas las respuestas suma Ingenio +10 y Empatía +4; recordar al colibrí suma Ingenio +5 y Empatía +7.
+- En el segundo enigma: «Tal vez los dos…» suma Ingenio +5 y Empatía +5; quien hace la pregunta suma Ingenio +10 y Valentía +4; lo que la semilla decide suma Ingenio +8 y Valentía +4.
+- En el tercer enigma: no dejar que el conocimiento cambie suma Ingenio +9 y Empatía +2; usarlo para sentirse superior suma Ingenio +7 y Empatía +6; no atreverse a cuestionarlo suma Ingenio +10 y Cautela +3.
+- El mensaje de fallo de Cautela conserva «El limón dio media vuelta…», sin coma entre «El limón» y «dio».
+- Evidencia: efectos finales comprobados mediante `scaleJaguarAnswerEffects`, los dos outcomes del Río verificados con estadísticas iniciales, `pnpm check`, `pnpm test` (87 pruebas), `pnpm build:static` y `git diff --check` pasan.

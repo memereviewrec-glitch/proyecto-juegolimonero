@@ -27,12 +27,12 @@ const RIVER_CONVERSATION_EFFECTS = {
   pacifico: [
     { cautela: 4 },
     { valentia: 4 },
-    { cautela: 3 },
+    { ingenio: 4 },
   ],
   drastico: [
     { valentia: 5 },
     { cautela: 5 },
-    { cautela: 2, valentia: 3 },
+    { empatia: 5 },
   ],
 } as const satisfies Record<"pacifico" | "drastico", readonly Partial<JaguarStats>[]>;
 
@@ -123,10 +123,10 @@ export const INNER_QUESTIONS: readonly JaguarQuestion[] = [
     speaker: "EL LIMÓN",
     prompt: "Dos luces doradas me miran desde la maleza. ¿Qué hago con el miedo que me aprieta la cáscara?",
     answers: [
-      { label: "Respiro despacio; no todo silencio es una amenaza.", effects: { cautela: 10, empatia: 3 } },
-      { label: "Observo las hojas: hasta una sombra deja pistas.", effects: { ingenio: 10, cautela: 3 } },
-      { label: "Pienso en el colibrí. No he llegado hasta aquí solo.", effects: { empatia: 10, cautela: 3 } },
-      { label: "Sigo adelante, aunque las rodillas me tiemblen.", effects: { valentia: 10, cautela: 3 } },
+      { label: "Respiro despacio; no todo silencio es una amenaza.", effects: { cautela: 10, ingenio: 4 } },
+      { label: "Observo las hojas: hasta una sombra deja pistas.", effects: { ingenio: 10, cautela: 4 } },
+      { label: "Pienso en el colibrí. No he llegado hasta aquí solo.", effects: { empatia: 10, valentia: 3 } },
+      { label: "Sigo adelante, aunque las rodillas me tiemblen.", effects: { valentia: 10, empatia: 3 } },
     ],
   },
   {
@@ -135,7 +135,7 @@ export const INNER_QUESTIONS: readonly JaguarQuestion[] = [
     answers: [
       { label: "Que escuchar también puede ser una forma de protegerse.", effects: { cautela: 9, empatia: 4 } },
       { label: "Que una amistad se demuestra cuando ayudar parece inútil.", effects: { empatia: 10, valentia: 3 } },
-      { label: "Que incluso el fuego y el agua dejan señales distintas.", effects: { ingenio: 10, cautela: 3 } },
+      { label: "Que incluso el fuego y el agua dejan señales distintas.", effects: { ingenio: 10, cautela: 10 } },
       { label: "Que puedo tener miedo y aun así elegir mi siguiente paso.", effects: { valentia: 10, cautela: 3 } },
     ],
   },
@@ -144,9 +144,9 @@ export const INNER_QUESTIONS: readonly JaguarQuestion[] = [
     prompt: "Esos ojos no parpadean. ¿Qué me inquieta más: no saber qué me mira o saberlo?",
     answers: [
       { label: "Me inquieta no saberlo; esperaré un instante más.", effects: { cautela: 10, ingenio: 3 } },
-      { label: "Quiero descubrir qué oculta; cada sombra tiene un borde.", effects: { ingenio: 10, cautela: 3 } },
-      { label: "Me pregunto si también está solo, como yo me sentía.", effects: { empatia: 10, cautela: 3 } },
-      { label: "Sea quien sea, no dejaré que el miedo decida por mí.", effects: { valentia: 10, cautela: 3 } },
+      { label: "Quiero descubrir qué oculta; cada sombra tiene un borde.", effects: { ingenio: 10, empatia: 6 } },
+      { label: "Me pregunto si también está solo, como yo me sentía.", effects: { empatia: 10, cautela: 7 } },
+      { label: "Sea quien sea, no dejaré que el miedo decida por mí.", effects: { valentia: 10, cautela: 7 } },
     ],
   },
 ];
@@ -165,9 +165,9 @@ export const ANGRY_QUESTIONS: readonly JaguarQuestion[] = [
     speaker: "EL JAGUAR · FURIOSO",
     prompt: "El jaguar baja la cabeza. «Entonces dime: ¿qué harás cuando el miedo vuelva a rugir?»",
     answers: [
-      { label: "Recordaré que el miedo también puede avisarme, no solo detenerme.", effects: { cautela: 7, ingenio: 4 } },
+      { label: "Recordaré que el miedo también puede avisarme, no solo detenerme.", effects: { cautela: 4, valentia: 7 } },
       { label: "Escucharé antes de responder con otro rugido.", effects: { empatia: 7, cautela: 4 } },
-      { label: "Daré el siguiente paso, aunque no pueda ver el camino entero.", effects: { valentia: 7, cautela: 4 } },
+      { label: "Daré el siguiente paso, aunque no pueda ver el camino entero.", effects: { valentia: 7, ingenio: 4 } },
     ],
   },
   {
@@ -176,12 +176,12 @@ export const ANGRY_QUESTIONS: readonly JaguarQuestion[] = [
     answers: [
       {
         label: "«No quiero vencerte. Quiero comprender qué hay detrás de tu furia.»",
-        effects: { empatia: 12, cautela: 2 },
+        effects: { empatia: 11, cautela: 3 },
         approach: "empatia",
       },
       {
         label: "«No voy a apartarme. Me mantendré en pie aunque me embistas.»",
-        effects: { valentia: 15, cautela: 2 },
+        effects: { valentia: 16, cautela: 3 },
         approach: "valentia",
       },
     ],
@@ -193,18 +193,18 @@ export const LAUGHING_QUESTIONS: readonly JaguarQuestion[] = [
     speaker: "EL JAGUAR · ENTRE RISAS",
     prompt: "Dime, limón: ¿qué sombra te sigue incluso cuando corres hacia la luz?",
     answers: [
-      { label: "La que proyecto yo; cambia cuando cambio de lugar.", effects: { ingenio: 14, cautela: 2 } },
-      { label: "La duda de que quizá la luz no tenga todas las respuestas.", effects: { ingenio: 9, empatia: 5 } },
-      { label: "La del colibrí, que aun sin bosque encontró a quién acompañar.", effects: { ingenio: 7, empatia: 7 } },
+      { label: "La que proyecto yo; cambia cuando cambio de lugar.", effects: { ingenio: 9, cautela: 7 } },
+      { label: "La duda de que quizá la luz no tenga todas las respuestas.", effects: { ingenio: 15, empatia: 6 } },
+      { label: "La del colibrí, que aun sin bosque encontró a quién acompañar.", effects: { ingenio: 7, empatia: 10 } },
     ],
   },
   {
     speaker: "EL JAGUAR · ENTRE RISAS",
     prompt: "Si una semilla sueña que es un árbol, ¿quién está soñando a quién?",
     answers: [
-      { label: "Tal vez los dos: un sueño puede crecer en ambas direcciones.", effects: { ingenio: 14, empatia: 2 } },
-      { label: "Quien hace la pregunta; así obliga al sueño a mirarse.", effects: { ingenio: 10, valentia: 4 } },
-      { label: "Ninguno. Lo importante es lo que la semilla decide al despertar.", effects: { ingenio: 8, valentia: 6 } },
+      { label: "Tal vez los dos: un sueño puede crecer en ambas direcciones.", effects: { ingenio: 7, empatia: 7 } },
+      { label: "Quien hace la pregunta; así obliga al sueño a mirarse.", effects: { ingenio: 15, valentia: 6 } },
+      { label: "Ninguno. Lo importante es lo que la semilla decide al despertar.", effects: { ingenio: 12, valentia: 6 } },
     ],
   },
   {
@@ -212,8 +212,8 @@ export const LAUGHING_QUESTIONS: readonly JaguarQuestion[] = [
     prompt: "Último acertijo: ¿qué conocimiento desaparece en cuanto intentas poseerlo?",
     answers: [
       { label: "El que no dejas cambiar cuando alguien más te habla.", effects: { ingenio: 13, empatia: 3 } },
-      { label: "El que solo sirve para sentirte por encima de los demás.", effects: { ingenio: 10, empatia: 6 } },
-      { label: "El que no te atreves a poner en duda.", effects: { ingenio: 11, cautela: 4 } },
+      { label: "El que solo sirve para sentirte por encima de los demás.", effects: { ingenio: 10, empatia: 9 } },
+      { label: "El que no te atreves a poner en duda.", effects: { ingenio: 15, cautela: 4 } },
     ],
   },
 ];

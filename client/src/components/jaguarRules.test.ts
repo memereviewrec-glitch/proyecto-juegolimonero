@@ -108,14 +108,14 @@ describe("reglas de El Jaguar", () => {
     });
   });
 
-  it("incorpora cada respuesta de la primera conversación del Río en Cautela o Valentía, nunca en Ingenio", () => {
+  it("incorpora cada respuesta de la primera conversación del Río en el atributo indicado", () => {
     const cases = [
       [{ route: "pacifico", choiceIndex: 0 }, { cautela: 39, empatia: 35, ingenio: 35, valentia: 35 }],
       [{ route: "pacifico", choiceIndex: 1 }, { cautela: 35, empatia: 35, ingenio: 35, valentia: 39 }],
-      [{ route: "pacifico", choiceIndex: 2 }, { cautela: 38, empatia: 35, ingenio: 35, valentia: 35 }],
+      [{ route: "pacifico", choiceIndex: 2 }, { cautela: 35, empatia: 35, ingenio: 39, valentia: 35 }],
       [{ route: "drastico", choiceIndex: 0 }, { cautela: 35, empatia: 35, ingenio: 35, valentia: 40 }],
       [{ route: "drastico", choiceIndex: 1 }, { cautela: 40, empatia: 35, ingenio: 35, valentia: 35 }],
-      [{ route: "drastico", choiceIndex: 2 }, { cautela: 37, empatia: 35, ingenio: 35, valentia: 38 }],
+      [{ route: "drastico", choiceIndex: 2 }, { cautela: 35, empatia: 40, ingenio: 35, valentia: 35 }],
     ] as const;
     for (const [riverConversationOutcome, expected] of cases) {
       expect(createInitialJaguarStats({ ramblaOutcome: null, hummingbirdOutcome: null, riverConversationOutcome })).toEqual(expected);
@@ -131,6 +131,36 @@ describe("reglas de El Jaguar", () => {
   it("deja la elección entre Empatía y Valentía para la pregunta 3/3 de la rama furiosa", () => {
     expect(ANGRY_QUESTIONS.map(question => question.answers.length)).toEqual([3, 3, 2]);
     expect(ANGRY_QUESTIONS[2].answers.map(answer => answer.approach)).toEqual(["empatia", "valentia"]);
+  });
+
+  it("aplica exactamente las nuevas bonificaciones efectivas a cada respuesta del Jaguar", () => {
+    const effective = (effects: Parameters<typeof scaleJaguarAnswerEffects>[0]) => scaleJaguarAnswerEffects(effects);
+    expect(INNER_QUESTIONS[0].answers.map(answer => effective(answer.effects))).toEqual([
+      { cautela: 7, ingenio: 3 },
+      { ingenio: 7, cautela: 3 },
+      { empatia: 7, valentia: 2 },
+      { valentia: 7, empatia: 2 },
+    ]);
+    expect(effective(INNER_QUESTIONS[1].answers[2].effects)).toEqual({ ingenio: 7, cautela: 7 });
+    expect(INNER_QUESTIONS[2].answers.slice(1).map(answer => effective(answer.effects))).toEqual([
+      { ingenio: 7, empatia: 4 },
+      { empatia: 7, cautela: 5 },
+      { valentia: 7, cautela: 5 },
+    ]);
+    expect(ANGRY_QUESTIONS[1].answers.map(answer => effective(answer.effects))).toEqual([
+      { cautela: 3, valentia: 5 },
+      { empatia: 5, cautela: 3 },
+      { valentia: 5, ingenio: 3 },
+    ]);
+    expect(ANGRY_QUESTIONS[2].answers.map(answer => effective(answer.effects))).toEqual([
+      { empatia: 8, cautela: 2 },
+      { valentia: 11, cautela: 2 },
+    ]);
+    expect(LAUGHING_QUESTIONS.map(question => question.answers.map(answer => effective(answer.effects)))).toEqual([
+      [{ ingenio: 6, cautela: 5 }, { ingenio: 10, empatia: 4 }, { ingenio: 5, empatia: 7 }],
+      [{ ingenio: 5, empatia: 5 }, { ingenio: 10, valentia: 4 }, { ingenio: 8, valentia: 4 }],
+      [{ ingenio: 9, empatia: 2 }, { ingenio: 7, empatia: 6 }, { ingenio: 10, cautela: 3 }],
+    ]);
   });
 
   it("separa el tercer enigma conversacional del enunciado de la tirada de Ingenio", () => {
@@ -222,10 +252,10 @@ describe("reglas de El Jaguar", () => {
       riverChallengeOutcome: "shore" as const,
     };
     const enigmaEntry = applySequence(createInitialJaguarStats(historyWithCaution), INNER_QUESTIONS, [1, 2, 0]);
-    expect(enigmaEntry.cautela).toBe(CAUTELA_THRESHOLD);
+    expect(enigmaEntry.cautela).toBeGreaterThanOrEqual(CAUTELA_THRESHOLD);
     expect(getJaguarBranchAfterCautela(meetsJaguarThreshold(enigmaEntry.cautela, CAUTELA_THRESHOLD))).toBe("laughing");
     const enigmas = applySequence(enigmaEntry, LAUGHING_QUESTIONS, [0, 0, 0]);
-    expect(enigmas.ingenio).toBe(80);
+    expect(enigmas.ingenio).toBeGreaterThanOrEqual(INGENUITY_THRESHOLD);
     expect(meetsJaguarThreshold(enigmas.ingenio, INGENUITY_THRESHOLD)).toBe(true);
 
     const empathyHistory = { ramblaOutcome: 1 as const, hummingbirdOutcome: "good" as const };

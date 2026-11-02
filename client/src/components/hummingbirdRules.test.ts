@@ -71,6 +71,16 @@ describe("respuestas aprobadas del Colibrí", () => {
     expect(getHummingbirdRewards("bad", 0)).toEqual({ empatia: 0, valentia: 0 });
   });
 
+  it("permite alcanzar el final negativo al elegir respuestas H", () => {
+    let mood = 0;
+    for (const question of HUMMINGBIRD_QUESTIONS) {
+      const hurtfulDelta = question.options.find(option => option.kind === "hiriente")?.moodDelta ?? 0;
+      mood = Math.max(-100, Math.min(100, mood + hurtfulDelta));
+    }
+    expect(mood).toBe(-100);
+    expect(resolveHummingbirdOutcome(mood, true)).toBe("bad");
+  });
+
   it("acota el contador a las seis respuestas de la escena", () => {
     expect(getHummingbirdRewards("good", 99)).toEqual({ empatia: 10, valentia: 18 });
     expect(getHummingbirdRewards("neutral", -1)).toEqual({ empatia: 0, valentia: 0 });

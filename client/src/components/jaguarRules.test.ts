@@ -42,6 +42,12 @@ describe("reglas de El Jaguar", () => {
     });
   });
 
+  it("suma exactamente cuatro puntos de Ingenio al conseguir la semilla de Nueve Sentidos", () => {
+    const history = { ramblaOutcome: null, hummingbirdOutcome: null, nueveSentidosSeedCollected: true };
+    expect(createInitialJaguarStats(history)).toEqual({ cautela: 35, empatia: 35, ingenio: 39, valentia: 35 });
+    expect(createInitialJaguarStats(history)).toEqual({ cautela: 35, empatia: 35, ingenio: 39, valentia: 35 });
+  });
+
   it("combina la recompensa del amanecer con Rambla, el colibrí y ambas decisiones del río", () => {
     const history = {
       ramblaOutcome: 1 as const,

@@ -145,8 +145,9 @@ export function HummingbirdScene({ seedCollected, onCollectSeed, onOutcome }: Hu
           <>
             <span>{outcome === "good" ? "AMISTAD" : outcome === "bad" ? "DESPEDIDA" : "DUDA"}</span>
             <p>{outcomeText(outcome)}</p>
-            {seedCollected && <small>La semilla de Ponzoña ya está en el Libro de Semillas. El desenlace más reciente queda guardado.</small>}
-            <button type="button" className="hummingbird-seed-button" onClick={continueFromOutcome} disabled={exitingScene} aria-label={seedCollected ? "Continuar, salir de la escena y volver al Libro de Semillas" : "Continuar, salir de la escena y recoger la semilla de Ponzoña"}><SeedGlyph seed="ponzona" /><b>{exitingScene ? "saliendo de la escena…" : "Continuar"}</b></button>
+            <p className="hummingbird-reward-copy">El colibrí te entrega una semilla para continuar el viaje.</p>
+            {seedCollected && <small>El desenlace más reciente queda guardado en el Libro de Semillas.</small>}
+            <button type="button" className="hummingbird-seed-button" onClick={continueFromOutcome} disabled={exitingScene} aria-label={seedCollected ? "Continuar, salir de la escena y volver al Libro de Semillas" : "Continuar, salir de la escena y recoger la semilla entregada por el colibrí"}><SeedGlyph seed="ponzona" /><b>{exitingScene ? "saliendo de la escena…" : "Continuar"}</b></button>
           </>
         ) : (
           <>

@@ -204,7 +204,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
       presentSkillResult({
         stat: "cautela",
         outcome: "success",
-        message: "El limón intuye el peligro y se aparta antes de pisar la rama. Desde la maleza estalla una carcajada y el jaguar aparece burlándose: «¿Quién anda ahí?».",
+        message: "El limón, antes de avanzar un paso más, preguntó \"hay alguien ahí\"?",
         checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "laughing-questions",
       });
@@ -216,7 +216,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
       presentSkillResult({
         stat: "cautela",
         outcome: "failure",
-        message: "El limón no advierte la rama a tiempo. El crujido corta el silencio; los ojos se fijan en él y el jaguar sale enfurecido.",
+        message: "El limón, dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el ruido de la madera crujiendo despertó al jaguar",
         checkDetails: `Cautela ${stats.cautela}% · mínimo ${CAUTELA_THRESHOLD}%`,
         nextPhase: "angry-questions",
       });
@@ -586,6 +586,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
         {phase === "complete" && <div className="jaguar-check-card jaguar-counsel-card">
           <span className="jaguar-check-label">{nightmareEnding ? "FINAL DE PESADILLA · SEMILLA ENCONTRADA" : "SEMILLA DEL JAGUAR · RECOGIDA"}</span>
           {nightmareEnding ? <>
+            <p>La semilla que buscabas estuvo debajo de tu cama todo el tiempo, Limón. Es la semilla que te generó.</p>
             <p>La última semilla está a salvo en el Libro. El limón vuelve tranquilo a dormir, sin descubrir quién era el jaguar.</p>
             <p>Puedes consultar el Libro de Semillas desde aquí sin despertarlo.</p>
           </> : <>

@@ -316,3 +316,34 @@
 - En «Ventana al sendero», silbar da exactamente +7 Valentía y observar/escuchar a los pájaros da exactamente +7 Cautela; no modifica los otros atributos.
 - El desenlace se aplica al ejecutar la acción final, se refleja en el HUD y se conserva al avanzar, recargar y reiniciar el encuentro del Jaguar.
 - Repetir la escena conserva la decisión previa hasta completar una nueva acción final, que la sustituye sin acumular recompensas; reiniciar el juego borra también esta decisión y no se alteran las semillas guardadas al repetir.
+
+## [x] Acceso al Libro y al menú fuera del lienzo
+- Sacar el icono del Libro de semillas y el icono del menú de la pantalla de juego; colocarlos en una fila superior a la barra de estadísticas.
+
+## [x] Diálogos y transición del incendio
+- Cada caja de diálogo del incendio tiene un botón visible «Continuar».
+- El incendio permanece visible a lo largo de la narración; no empieza a llover ni cambia al fondo posterior hasta que el relato llega a la lluvia enviada por el cielo.
+
+## [x] Progresión anticipada de entradas bloqueadas del Libro
+- Al empezar una pantalla que contiene una semilla, el Libro muestra ya la entrada de esa canción aunque el jugador no haya terminado la pantalla, marcada como bloqueada/no recogida.
+- Cuando se recoge una semilla, la entrada de la canción siguiente aparece también en el Libro, pero marcada como bloqueada. Las canciones futuras no se marcan como recogidas antes de obtener su semilla.
+
+## [x] Diálogo móvil del colibrí y recompensa de una semilla
+- Los diálogos del colibrí permiten desplazamiento vertical y en móvil se puede llegar a leer y accionar la parte inferior.
+- Al final, el texto solo dice que el colibrí dio una semilla; no la llama «semilla de Ponzoña» ni revela su nombre de canción.
+
+## [x] Nueve estrellas y recompensa de Ingenio
+- Antes del minijuego rítmico del cielo estrellado se ven nueve estrellas blancas, no siete; la pista del colibrí dice «nueve».
+- La semilla no produce ningún sonido al caer desde la luna y recogerla suma exactamente +4 de Ingenio.
+
+## [x] Textos exactos de las ramas de Jaguar
+- El final de la prueba de habilidad que lleva a la rama enfadada muestra exactamente: «El limón, dio media vuelta pero, mientras salía de la cueva, pisó una rama con tan mala fortuna que el ruido de la madera crujiendo despertó al jaguar».
+- La rama del Jaguar burlón que aparece con Cautela mejorada muestra exactamente: «El limón, antes de avanzar un paso más, preguntó \"hay alguien ahí\"?».
+
+## [x] Encuadre del Jaguar burlón
+- El Jaguar burlón se hace más pequeño y se centra para que quede completamente dentro de la pantalla.
+
+## [x] Caja final y libro de la pesadilla
+- La primera frase de la última caja dice exactamente: «La semilla que buscabas estuvo debajo de tu cama todo el tiempo, Limón. Es la semilla que te generó»; después conserva el mensaje de que la última semilla está a salvo en el libro y Limón vuelve tranquilo a dormir.
+- La animación/carga del libro se muestra por encima de la última caja de diálogo.
+- Evidencia: al recoger la semilla final, el callback abre el Libro con «El jaguar» enfocado; su capa (`z-index: 300`) queda sobre el cuadro. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.

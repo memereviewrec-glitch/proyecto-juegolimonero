@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from "react";
-import { gameAssetUrl, playFrequencies } from "../gameAudio";
+import { gameAssetUrl } from "../gameAudio";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
 import { applyRhythmPick, RHYTHM_COLORS, RHYTHM_PATTERNS, type RhythmColor } from "./nueveSentidosRules";
@@ -30,6 +30,8 @@ const AWAKENING_STARS: readonly AwakeningStar[] = [
   { x: 66, y: 50, size: 9 },
   { x: 24, y: 54, size: 6 },
   { x: 87, y: 54, size: 8 },
+  { x: 12, y: 42, size: 7 },
+  { x: 78, y: 45, size: 8 },
 ];
 
 const RHYTHM_LABELS: Record<RhythmColor, string> = {
@@ -54,7 +56,7 @@ const RHYTHM_HINTS = [
   "Cinco corazones cruzan el cielo, desde la larga espera hasta el regreso fugaz.",
 ] as const;
 
-const AWAKENING_HINT = "Siete luces velan en silencio; cada destello que descansa deja sitio para una nueva melodía.";
+const AWAKENING_HINT = "Nueve luces velan en silencio; cada destello que descansa deja sitio para una nueva melodía.";
 const MOON_HINT = "La luna blanca guarda una semilla dormida; cuando la alcanzan las estrellas, cae como rocío.";
 const MOON_DIALOGUE = [
   "Yo soy la roca que se mueve en el vacío.",
@@ -121,7 +123,6 @@ export function NueveSentidosScene({ seedCollected, onCollectSeed, onComplete, h
   function startSeedDrop() {
     if (seedCollected || seedDropState !== "idle") return;
     setSeedDropState("dropping");
-    playFrequencies([523.25, 659.25]);
   }
 
   function advanceMoonDialogue() {

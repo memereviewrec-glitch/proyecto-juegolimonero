@@ -85,8 +85,8 @@ function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null) {
   if (beat === "spirits-challenge") return "Las aguas respondieron y los Espíritus del Río se alzaron ante el limón. Después de escuchar sus palabras, lo retaron a entrar en la corriente y mirar más allá de su propio reflejo.";
   if (beat === "el-rio") return "Tras la conversación, los Espíritus del Río le recomendaron recoger las 10 semillas mágicas si quería volver a casa. Después le señalaron el fondo del cauce: allí se escondía la siguiente semilla. El limón se preparó para buscarla entre los peces y las corrientes.";
   if (beat === "ponzona-friend") return "Confiando en su nueva amistad, el colibrí entregó a Limón una semilla y decidió acompañarlo en el sendero.";
-  if (beat === "ponzona-doubt") return "El miedo dejó al colibrí paralizado. No podía acompañar a Limón, pero quiso ayudarlo y le entregó la semilla de Ponzoña para que continuara su viaje.";
-  if (beat === "ponzona-leaves") return "El colibrí dejó la semilla de Ponzoña junto a Limón y alzó el vuelo para alejarse. Limón la recogió mientras su compañero desaparecía en el cielo.";
+  if (beat === "ponzona-doubt") return "El miedo dejó al colibrí paralizado. No podía acompañar a Limón, pero quiso ayudarlo y le entregó una semilla para que continuara su viaje.";
+  if (beat === "ponzona-leaves") return "El colibrí dejó una semilla junto a Limón y alzó el vuelo para alejarse. Limón la recogió mientras su compañero desaparecía en el cielo.";
   if (beat === "ponzona") return "Tras el incendio, todos los animales se lamentaban. En especial el colibrí, cuya casa había quedado destruida. Sin bosque al que regresar, ya no sabía qué hacer. Entonces comenzó a conversar con Limón…";
   if (beat === "nueve-sentidos-cave") return "La luz de la luna señaló el camino hasta la cueva más profunda, donde aguarda el secreto mayor guardado del bosque.";
   return "Con la semilla de «El Río» guardada en el Libro, el limón siguió la corriente. En el fondo del cauce encontró otra señal del camino, que lo condujo hasta un bosque que ardía a lo lejos. Allí no había nada que hacer salvo esperar a que llegara la lluvia.";
@@ -240,7 +240,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     hummingbirdOutcome,
     riverConversationOutcome,
     riverChallengeOutcome,
-  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome]);
+    nueveSentidosSeedCollected: nueveSentidosSeedCollected || persistedSeedIds.includes("nueve-sentidos"),
+  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected, persistedSeedIds]);
   const initialJaguarStats = useMemo(() => createInitialJaguarStats(jaguarHistory), [jaguarHistory]);
   const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<{ history: JaguarHistory; stats: JaguarStats } | null>(null);
   const jaguarHudStats = jaguarStatsSnapshot?.history === jaguarHistory ? jaguarStatsSnapshot.stats : initialJaguarStats;
@@ -606,9 +607,9 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   function collectPonzonaSeed() {
     if (!ponzonaSeedCollected) {
       setPonzonaSeedCollected(true);
-      setNotice("La semilla de «Ponzoña» queda en el Libro de Semillas.");
+      setNotice("El colibrí entrega una semilla y queda guardada en el Libro de Semillas.");
     } else {
-      setNotice("El nuevo desenlace de «Ponzoña» queda guardado; la semilla ya estaba en el Libro.");
+      setNotice("El nuevo desenlace queda guardado; la semilla ya estaba en el Libro.");
     }
     const endingBeat: StoryBeat = hummingbirdOutcome === "good"
       ? "ponzona-friend"
@@ -866,6 +867,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     return SONG_CATALOG.filter(song => found.has(song.id)).map(song => song.id);
   }, [persistedSeedIds, portalOpen, seedCollected, rootsSeedCollected, campfireSeedCollected, riverSeedCollected, elRioSeedCollected, fireSeedCollected, ponzonaSeedCollected, nueveSentidosSeedCollected, jaguarSeedCollected]);
 
+  const nextLockedSongId = SONG_CATALOG.find(song => !discoveredSongIds.includes(song.id))?.id ?? null;
+
   useEffect(() => {
     const merged = mergeDiscoveredSeedIds(SONG_CATALOG.map(song => song.id), persistedSeedIds, discoveredSongIds);
     saveSeedBookIds(merged);
@@ -1053,56 +1056,57 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
           </div>
 
+          {!previewChromeHidden && !storyBeat && <div className={`game-hud-toolbar${scene === "jaguar" ? " game-hud-toolbar-jaguar" : ""}`}>
+            <div ref={journeyMenuRef} className={`journey-menu-anchor${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
+              <button
+                className="seedbook-toggle"
+                type="button"
+                onClick={() => { setSeedBookOpen(open => !open); setJourneyMenuOpen(false); }}
+                aria-label={`${seedBookOpen ? "Cerrar" : "Abrir"} Libro de semillas. ${discoveredSongIds.length} de 10 semillas descubiertas.`}
+                aria-haspopup="dialog"
+                aria-expanded={seedBookOpen}
+                aria-controls="seedbook-panel"
+              >
+                <img className="seedbook-toggle-icon" src={gameAssetUrl("/seedbook-art.png")} alt="" aria-hidden="true" />
+                <b aria-hidden="true">{discoveredSongIds.length}/10</b>
+              </button>
+              <button
+                className={`journey-menu-toggle${journeyMenuOpen ? " journey-menu-toggle-open" : ""}`}
+                type="button"
+                onClick={() => { setJourneyMenuOpen(open => !open); setSeedBookOpen(false); }}
+                aria-label={`${journeyMenuOpen ? "Cerrar" : "Abrir"} menú del viaje`}
+                aria-haspopup="menu"
+                aria-expanded={journeyMenuOpen}
+                aria-controls="journey-menu-panel"
+              >
+                <span aria-hidden="true">☷</span>
+              </button>
+              {journeyMenuOpen && <aside id="journey-menu-panel" className="journey-menu-panel" role="menu" aria-label="Menú del viaje">
+                <div className="journey-menu-heading">MÁS OPCIONES</div>
+                {journeyRestartConfirm ? (
+                  <div className="journey-restart-confirmation" role="group" aria-label="Confirmar reinicio del juego">
+                    <p>Se borrarán las semillas guardadas y el viaje volverá al inicio.</p>
+                    <div className="journey-menu-actions">
+                      <button type="button" role="menuitem" onClick={() => setJourneyRestartConfirm(false)}>cancelar</button>
+                      <button type="button" role="menuitem" className="journey-danger" onClick={restartGame}>sí, reiniciar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" role="menuitem" className="journey-restart-button" onClick={() => setJourneyRestartConfirm(true)}>↻ reiniciar juego</button>
+                )}
+                <div className="journey-menu-divider" />
+                {BAND_INSTAGRAM_LINKS.map(link => link.url ? (
+                  <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" role="menuitem">◎ {link.label}</a>
+                ) : (
+                  <button key={link.label} type="button" role="menuitem" disabled>◎ {link.label} · pendiente</button>
+                ))}
+              </aside>}
+            </div>
+          </div>}
+
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
-            {!previewChromeHidden && <>
-            <div ref={journeyMenuRef} className={`journey-menu-anchor${storyBeat ? " journey-menu-anchor-story" : ""}${seedBookOpen ? " journey-menu-anchor-book" : ""}`}>
-            <button
-              className="seedbook-toggle"
-              type="button"
-              onClick={() => { setSeedBookOpen(open => !open); setJourneyMenuOpen(false); }}
-              aria-label={`${seedBookOpen ? "Cerrar" : "Abrir"} Libro de semillas. ${discoveredSongIds.length} de 10 semillas descubiertas.`}
-              aria-haspopup="dialog"
-              aria-expanded={seedBookOpen}
-              aria-controls="seedbook-panel"
-            >
-              <img className="seedbook-toggle-icon" src={gameAssetUrl("/seedbook-art.png")} alt="" aria-hidden="true" />
-              <b aria-hidden="true">{discoveredSongIds.length}/10</b>
-            </button>
-            <button
-              className={`journey-menu-toggle${journeyMenuOpen ? " journey-menu-toggle-open" : ""}`}
-              type="button"
-              onClick={() => { setJourneyMenuOpen(open => !open); setSeedBookOpen(false); }}
-              aria-label={`${journeyMenuOpen ? "Cerrar" : "Abrir"} menú del viaje`}
-              aria-haspopup="menu"
-              aria-expanded={journeyMenuOpen}
-              aria-controls="journey-menu-panel"
-            >
-              <span aria-hidden="true">☷</span>
-            </button>
-            {journeyMenuOpen && <aside id="journey-menu-panel" className="journey-menu-panel" role="menu" aria-label="Menú del viaje">
-              <div className="journey-menu-heading">MÁS OPCIONES</div>
-              {journeyRestartConfirm ? (
-                <div className="journey-restart-confirmation" role="group" aria-label="Confirmar reinicio del juego">
-                  <p>Se borrarán las semillas guardadas y el viaje volverá al inicio.</p>
-                  <div className="journey-menu-actions">
-                    <button type="button" role="menuitem" onClick={() => setJourneyRestartConfirm(false)}>cancelar</button>
-                    <button type="button" role="menuitem" className="journey-danger" onClick={restartGame}>sí, reiniciar</button>
-                  </div>
-                </div>
-              ) : (
-                <button type="button" role="menuitem" className="journey-restart-button" onClick={() => setJourneyRestartConfirm(true)}>↻ reiniciar juego</button>
-              )}
-              <div className="journey-menu-divider" />
-              {BAND_INSTAGRAM_LINKS.map(link => link.url ? (
-                <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" role="menuitem">◎ {link.label}</a>
-              ) : (
-                <button key={link.label} type="button" role="menuitem" disabled>◎ {link.label} · pendiente</button>
-              ))}
-            </aside>}
-            </div>
-            {seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={storySeedPreview} focusSongId={storySeedPreview} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
-            </>}
+            {!previewChromeHidden && seedBookOpen && <SeedBook discoveredSongIds={discoveredSongIds} previewSongId={nextLockedSongId} focusSongId={storySeedPreview ?? nextLockedSongId} onClose={() => setSeedBookOpen(false)} onReplaySong={replaySong} />}
             {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>

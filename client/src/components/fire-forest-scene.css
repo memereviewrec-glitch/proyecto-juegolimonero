@@ -37,10 +37,12 @@
 .fire-forest-dialogue { position:absolute; z-index:12; left:50%; bottom:2%; width:min(78%,620px); max-height:25%; overflow:auto; transform:translateX(-50%); padding:11px 15px 9px; border:4px solid #292334; background:#e9dfcf; color:#28212d; box-shadow:5px 5px 0 #090a10; }
 .fire-forest-dialogue span { color:#7d4d48; font:8px 'DM Mono',monospace; letter-spacing:.12em; }
 .fire-forest-dialogue p { margin:6px 0 0; font:11px/1.4 'DM Mono',monospace; }
+.fire-forest-dialogue button { display:inline-flex; min-height:34px; align-items:center; justify-content:center; gap:8px; margin-top:9px; padding:6px 10px; border:2px solid #292334; background:#f4c968; color:#28212d; box-shadow:2px 2px 0 #292334; font:700 9px 'DM Mono',monospace; cursor:pointer; touch-action:manipulation; }
+.fire-forest-dialogue button:hover,.fire-forest-dialogue button:focus-visible { outline:2px dashed #7d4d48; outline-offset:2px; background:#ffe08a; }
 @keyframes forest-background-flicker { 0%,49.99% { background-position:0 50%; } 50%,100% { background-position:100% 50%; } }
 @keyframes forest-raindrop { 0% { transform:translateY(-7px); opacity:0; } 12% { opacity:.82; } 72% { opacity:.82; } 100% { transform:translateY(112vh); opacity:0; } }
 @keyframes seed-reveal { to { opacity:.15; transform:scale(1.12); } }
-@media (max-width:600px) { .fire-forest-dialogue { width:90%; max-height:28%; padding:9px 11px 8px; } .fire-forest-dialogue p { font-size:9px; } .fire-forest-rain i { width:2px; height:2px; box-shadow:1px 1px 0 #79b4c8; } }
+@media (max-width:600px) { .fire-forest-dialogue { width:90%; max-height:32%; padding:9px 11px 8px; } .fire-forest-dialogue p { font-size:9px; } .fire-forest-dialogue button { min-height:36px; font-size:9px; } .fire-forest-rain i { width:2px; height:2px; box-shadow:1px 1px 0 #79b4c8; } }
 @media (prefers-reduced-motion:reduce) {
   .fire-background-ready .fire-forest-world { animation:none; }
   .fire-forest-rain i,.burnt-seed::after { animation:none; }

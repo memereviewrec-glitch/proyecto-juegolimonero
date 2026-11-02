@@ -9,6 +9,7 @@ export type JaguarHistory = {
   hummingbirdOutcome: "good" | "bad" | "neutral" | null;
   riverConversationOutcome?: RiverConversationOutcome | null;
   riverChallengeOutcome?: RiverChallengeOutcome | null;
+  nueveSentidosSeedCollected?: boolean;
 };
 export type JaguarAnswer = {
   label: string;
@@ -110,6 +111,9 @@ export function createInitialJaguarStats(history: JaguarHistory): JaguarStats {
     stats = applyJaguarEffects(stats, { valentia: 6 });
   } else if (history.riverChallengeOutcome === "shore") {
     stats = applyJaguarEffects(stats, { cautela: 6 });
+  }
+  if (history.nueveSentidosSeedCollected) {
+    stats = applyJaguarEffects(stats, { ingenio: 4 });
   }
   return stats;
 }

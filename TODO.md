@@ -405,3 +405,9 @@
 - Al pulsar el glifo de una semilla en su página del Libro, no se inicia la escena ni el minijuego asociado.
 - La navegación a capítulos reescribibles sigue disponible desde su acceso explícito de «Reescribir historia».
 - Evidencia: el glifo se renderiza en un contenedor no interactivo y el único acceso a escenas desde SeedBook permanece en la sección explícita de reescritura.
+
+
+## [x] Frase de acceso informal
+- La frase que abre la puerta del juego debe ser exactamente `gran catalizador`, en lugar de `0123456789`.
+- Las sesiones guardadas con la marca anterior no deben abrir el juego después de recargar; el acceso sigue siendo una puerta informal de demostración, no protección de servidor.
+- Evidencia: contraseña antigua ausente de `client/src` y `client/public`; `ACCESS_KEY` versionada. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.

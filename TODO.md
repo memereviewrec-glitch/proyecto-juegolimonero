@@ -359,3 +359,7 @@
 ## [x] Texto del minijuego de guitarra
 - Al tocar la guitarra, el enunciado dice «hay acordes que abren ventanas...» y no pregunta sobre la belleza de las notas musicales.
 - Evidencia: `Home.tsx` muestra ese enunciado en la acción de tocar; TypeScript, 86 pruebas y el build estático pasan.
+
+## [x] Pista narrativa de entrada a Rambla
+- Al principio de Rambla, los encapuchados piden a Limón que se acerque al círculo, como pista diegética para que se entienda que hay que clicar dentro del círculo de encapuchados.
+- Evidencia: el rótulo de estado `role="status"` anuncia «Los encapuchados te llaman desde el círculo» y «Limón, acércate al círculo» antes de que llegue al centro. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.

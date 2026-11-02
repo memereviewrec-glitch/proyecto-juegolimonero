@@ -126,7 +126,7 @@ export function CampfireScene({
   const conversationApproachRequired = conversationOutcome === null && !seedCollected;
   const conversationReady = conversationApproachRequired && nearCampfireCenter && !walking;
   const skillCheckActive = conversationOutcome === 2 && !escapeSucceeded;
-  const showCampfireStatus = !seedCollected && (sticksUnlocked || escapeSeedAvailable || fireStage !== "unlit");
+  const showCampfireStatus = !seedCollected && ((conversationApproachRequired && !conversationReady) || sticksUnlocked || escapeSeedAvailable || fireStage !== "unlit");
   const status = escapeSeedAvailable
       ? "Una luz turquesa espera donde termina la caída."
     : ignitionSequenceStarted
@@ -137,7 +137,9 @@ export function CampfireScene({
       ? "Una semilla turquesa late entre las brasas."
     : selectedStickId !== null
       ? "Un fragmento del bosque viaja con el limón."
-    : sticksUnlocked
+      : conversationApproachRequired
+        ? "Los encapuchados te llaman desde el círculo."
+      : sticksUnlocked
         ? walking
           ? "La noche sigue los pasos del limón."
           : allSticksPlaced
@@ -156,6 +158,8 @@ export function CampfireScene({
       ? walking
         ? "La senda se curva hacia el calor."
         : "La madera conserva el perfume de la lluvia."
+      : conversationApproachRequired
+        ? "«Limón, acércate al círculo.»"
       : sticksUnlocked
         ? allSticksPlaced
           ? "Una chispa puede cambiar el curso de la noche."

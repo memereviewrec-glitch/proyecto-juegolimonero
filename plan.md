@@ -50,3 +50,7 @@ El panel solo de desarrollo tendrá un control accesible de ocultar/mostrar que 
 
 ## Diapositivas narrativas
 En `StoryInterlude`, justificar a ambos márgenes el párrafo narrativo y dejar la última línea alineada al inicio. No cambiar la alineación de botones, glifos de semilla ni cuadros de diálogo integrados en las escenas; la regla se aplica también en móvil.
+
+
+## Posición vertical del Libro
+El panel modal del Libro se ancla al alto visible de la ventana y se eleva respecto al área del juego, sin alterar el botón/icono que lo abre. El ancho sigue la proporción del escenario y el contenido conserva su desplazamiento interno en pantallas pequeñas.

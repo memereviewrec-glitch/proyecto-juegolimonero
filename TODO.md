@@ -480,3 +480,9 @@
 - Justificar a ambos márgenes el texto narrativo de todas las diapositivas `StoryInterlude`; la última línea del párrafo permanece alineada al inicio.
 - No cambiar la alineación ni el diseño de los botones de continuación, glifos de semillas ni cuadros de diálogo que aparecen dentro de las escenas. La justificación se mantiene en escritorio y móvil.
 - Evidencia: el Preview calcula `text-align: justify` y `text-align-last: start` para el párrafo narrativo; `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan. La regla está limitada a `.story-interlude p`, así que no altera botones, semillas ni paneles de diálogo de las escenas.
+
+
+## [x] Panel del Libro elevado para caber en pantalla
+- Elevar solo el panel del Libro para que no quede oculta su parte inferior cuando el área de juego no cabe en la altura de la pantalla.
+- No mover el icono/botón del Libro. Mantener el panel centrado respecto al escenario, limitado al alto visible y con su contenido desplazable en móviles y pantallas bajas.
+- Evidencia: en Preview el panel empieza en y=0 y termina en y=1100, igual que el viewport; el icono no se desplazó porque no se alteraron sus reglas. En móvil conserva el alto `100dvh` y el área interna sigue desplazable. `pnpm check`, `pnpm test` (110), `pnpm build:static` y `git diff --check` pasan.

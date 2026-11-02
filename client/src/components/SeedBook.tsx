@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
-import { getPhysicalSeedId, PHYSICAL_SEED_COLORS } from "./seed-colors";
+import { getPhysicalSeedId } from "./seed-colors";
 import { JAGUAR_ENDINGS, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "./storyArchive";
 
 type SongResource = {
@@ -40,7 +40,7 @@ type SeedBookProps = {
   onRewriteChapter: (chapterId: RewriteChapterId) => void;
 };
 
-type BookView = "songs" | "rewrite" | "endings" | "ending";
+type BookView = "songs" | "index" | "rewrite" | "endings" | "ending";
 
 export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, archivedEndingIds, onClose, onReplaySong, onRewriteChapter }: SeedBookProps) {
   const panelRef = useRef<HTMLElement | null>(null);
@@ -48,12 +48,27 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
   const onCloseRef = useRef(onClose);
   const [pageIndex, setPageIndex] = useState(0);
   const [view, setView] = useState<BookView>("songs");
+  const [selectedIndexSongId, setSelectedIndexSongId] = useState<SeedSongId | null>(null);
   const [selectedEndingId, setSelectedEndingId] = useState<JaguarEndingId | null>(null);
   const discoveredSongs = SONG_CATALOG.filter(song => discoveredSongIds.includes(song.id));
   const previewSong = previewSongId && !discoveredSongIds.includes(previewSongId) ? SONG_CATALOG.find(song => song.id === previewSongId) ?? null : null;
   const visibleSongs = previewSong ? [...discoveredSongs, previewSong] : discoveredSongs;
-  const currentSong = visibleSongs[pageIndex];
+  const currentSong = selectedIndexSongId
+    ? SONG_CATALOG.find(song => song.id === selectedIndexSongId)
+    : visibleSongs[pageIndex];
+  const currentSongLocked = currentSong ? !discoveredSongIds.includes(currentSong.id) : false;
   const selectedEnding = JAGUAR_ENDINGS.find(ending => ending.id === selectedEndingId && archivedEndingIds.includes(ending.id));
+
+  function openIndexSong(songId: SeedSongId) {
+    const visibleIndex = visibleSongs.findIndex(song => song.id === songId);
+    if (visibleIndex >= 0) {
+      setPageIndex(visibleIndex);
+      setSelectedIndexSongId(null);
+    } else {
+      setSelectedIndexSongId(songId);
+    }
+    setView("songs");
+  }
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -116,6 +131,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
 
         <nav className="seedbook-library-tabs" aria-label="Secciones del Libro de semillas">
           <button type="button" className={view === "songs" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "songs"} onClick={() => setView("songs")}>Semillas</button>
+          <button type="button" className={view === "index" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "index"} onClick={() => setView("index")}>Índice</button>
           {rewriteUnlocked && <button type="button" className={view === "rewrite" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "rewrite"} onClick={() => setView("rewrite")}>Reescribir historia</button>}
           {rewriteUnlocked && archivedEndingIds.length > 0 && <button type="button" className={view === "endings" || view === "ending" ? "seedbook-tab seedbook-tab-active" : "seedbook-tab"} aria-pressed={view === "endings" || view === "ending"} onClick={() => setView("endings")}>Finales · {archivedEndingIds.length}</button>}
         </nav>
@@ -129,11 +145,11 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
           </div>
         ) : currentSong ? (
           <>
-            <div className="seedbook-page-indicator" aria-live="polite">Página {pageIndex + 1} de {visibleSongs.length}</div>
-            <article className={`seedbook-entry${currentSong.id === previewSong?.id ? " seedbook-preview-entry" : ""}`}>
+            <div className="seedbook-page-indicator" aria-live="polite">Página {SONG_CATALOG.indexOf(currentSong) + 1} de {SONG_CATALOG.length}{currentSongLocked ? " · bloqueada" : ""}</div>
+            <article className={`seedbook-entry${currentSongLocked ? " seedbook-preview-entry" : ""}`}>
               {(() => {
                 const song = currentSong;
-                const isPreview = song.id === previewSong?.id;
+                const isPreview = currentSongLocked;
                 const seedId = getPhysicalSeedId(song.id);
                 const visibleTitle = isPreview ? "Semilla bloqueada" : song.title;
                 return <>
@@ -169,6 +185,23 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
             </article>
           </>
         ) : null)}
+        {view === "index" && <section className="seedbook-index-view" aria-labelledby="seedbook-index-title">
+          <div className="seedbook-page-indicator">CATÁLOGO COMPLETO · EN ORDEN</div>
+          <h3 id="seedbook-index-title">Índice de semillas</h3>
+          <div className="seedbook-index-list">
+            {SONG_CATALOG.map((song, index) => {
+              const seedId = getPhysicalSeedId(song.id);
+              const isDiscovered = discoveredSongIds.includes(song.id);
+              return <button key={song.id} type="button" className={`seedbook-index-entry${isDiscovered ? "" : " seedbook-index-entry-locked"}`} onClick={() => openIndexSong(song.id)} aria-label={`Ir a la página ${index + 1}: ${song.title}${isDiscovered ? "" : ", semilla bloqueada"}`}>
+                <span className="seedbook-index-seed" aria-hidden="true">{seedId && <SeedGlyph seed={seedId} />}</span>
+                <span className="seedbook-index-number">{String(index + 1).padStart(2, "0")}</span>
+                <strong>{song.title}</strong>
+                <span className="seedbook-index-status">{isDiscovered ? "descubierta" : "bloqueada"}</span>
+                <span className="seedbook-index-arrow" aria-hidden="true">→</span>
+              </button>;
+            })}
+          </div>
+        </section>}
         {view === "rewrite" && rewriteUnlocked && <section className="seedbook-rewrite-view" aria-labelledby="seedbook-rewrite-title">
           <div className="seedbook-page-indicator">UN CAPÍTULO CADA VEZ · LAS SEMILLAS NO SE PIERDEN</div>
           <h3 id="seedbook-rewrite-title">Elige qué recuerdo quieres volver a vivir</h3>
@@ -201,9 +234,9 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
           <button type="button" className="seedbook-ending-back" onClick={() => setView("endings")}>← volver al archivo de finales</button>
         </article>}
         </div>
-        {view === "songs" && visibleSongs.length > 0 && <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
-          <button type="button" onClick={() => setPageIndex(index => index - 1)} disabled={pageIndex === 0}>← anterior</button>
-          <button type="button" onClick={() => setPageIndex(index => index + 1)} disabled={pageIndex === visibleSongs.length - 1}>siguiente →</button>
+        {view === "songs" && visibleSongs.length > 0 && !selectedIndexSongId && <nav className="seedbook-pagination" aria-label="Páginas del Libro de semillas">
+          <button type="button" onClick={() => { setSelectedIndexSongId(null); setPageIndex(index => index - 1); }} disabled={pageIndex === 0}>← anterior</button>
+          <button type="button" onClick={() => { setSelectedIndexSongId(null); setPageIndex(index => index + 1); }} disabled={pageIndex === visibleSongs.length - 1}>siguiente →</button>
         </nav>}
       </aside>
     </div>

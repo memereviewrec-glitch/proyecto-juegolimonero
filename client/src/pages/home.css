@@ -600,6 +600,19 @@ button { font:inherit; }
 .seedbook-tab { min-height:34px; padding:7px 10px; border:2px solid #61546c; background:#eee7d8; color:#3c3346; font:9px 'DM Mono',monospace; cursor:pointer; }
 .seedbook-tab:hover,.seedbook-tab:focus-visible { outline:2px dashed #d98470; outline-offset:2px; }
 .seedbook-tab-active { border-color:#2b2631; background:#dcd1b9; box-shadow:2px 2px 0 #b9ad9c; font-weight:700; }
+.seedbook-index-view { width:100%; max-width:760px; margin:0 auto; padding-bottom:16px; }
+.seedbook-index-view h3 { margin:6px 0 12px; color:#2b2631; font-size:clamp(18px,2.3vw,25px); letter-spacing:-.04em; }
+.seedbook-index-list { display:flex; flex-direction:column; gap:5px; }
+.seedbook-index-entry { display:grid; grid-template-columns:36px 28px minmax(0,1fr) auto 18px; align-items:center; gap:8px; width:100%; min-height:50px; padding:5px 9px; border:2px solid #d9d0c0; background:#fffdf7; color:#28252c; text-align:left; cursor:pointer; }
+.seedbook-index-entry:hover,.seedbook-index-entry:focus-visible { border-color:#d98470; outline:2px dashed #d98470; outline-offset:2px; background:#fffaf0; }
+.seedbook-index-entry-locked { border-style:dashed; background:#f2f4ee; color:#69676a; }
+.seedbook-index-seed { display:grid; width:32px; height:36px; place-items:center; }
+.seedbook-index-seed .seed-glyph { width:27px; height:34px; image-rendering:pixelated; }
+.seedbook-index-entry-locked .seedbook-index-seed .seed-glyph { filter:grayscale(.75) opacity(.62); }
+.seedbook-index-number { color:#d98470; font:10px 'DM Mono',monospace; }
+.seedbook-index-entry strong { min-width:0; overflow:hidden; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+.seedbook-index-status { color:#6c7470; font:8px 'DM Mono',monospace; text-transform:uppercase; white-space:nowrap; }
+.seedbook-index-arrow { color:#61546c; font:16px 'DM Mono',monospace; text-align:center; }
 .seedbook-restart-area { margin:14px 0 18px; padding:12px; border:2px dashed #d98470; background:#fffdf7; }
 .seedbook-page { order:2; flex:1 1 auto; width:96%; min-height:0; margin:0 auto; display:flex; flex-direction:column; justify-content:flex-start; overflow-y:auto; overflow-x:hidden; scrollbar-color:#9a879d #eee7d8; }
 .seedbook-page-indicator { margin:16px 0 8px; color:#706a73; text-align:center; font:9px 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
@@ -701,6 +714,12 @@ button { font:inherit; }
  .seedbook-action { justify-content:flex-start; font-size:10px; }
  .seedbook-library-tabs { width:100%; gap:5px; }
  .seedbook-tab { min-height:38px; padding:7px 8px; font-size:8px; white-space:nowrap; }
+ .seedbook-index-entry { grid-template-columns:30px 22px minmax(0,1fr) auto 14px; gap:5px; min-height:47px; padding:4px 6px; }
+ .seedbook-index-seed { width:28px; height:32px; }
+ .seedbook-index-seed .seed-glyph { width:23px; height:29px; }
+ .seedbook-index-entry strong { font-size:10px; }
+ .seedbook-index-status { font-size:7px; }
+ .seedbook-index-arrow { font-size:13px; }
  .seedbook-rewrite-chapter { padding:9px; }
  .seedbook-rewrite-heading strong { font-size:12px; }
  .seedbook-rewrite-heading small,.seedbook-rewrite-description { font-size:9px; }

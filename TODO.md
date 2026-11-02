@@ -391,3 +391,10 @@
 - Abrir una diapositiva del archivo solo visualiza el final; no inicia Jaguar, no reinicia el encuentro y no repite el combate.
 - El archivo y las decisiones guardadas se limpian con el reinicio total del juego; las semillas se conservan al reescribir capítulos.
 - Evidencia: los cuatro recursos de arte existen, los identificadores se deduplican y se borran en reinicio con pruebas automatizadas; las diapositivas son una vista interna del Libro sin callback de combate. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan; auditoría de solo lectura sin hallazgos.
+
+
+## [x] Índice de semillas del Libro
+- El Libro incluye una página de índice con las diez semillas, sus títulos y el orden del catálogo.
+- Al pulsar cualquier semilla del índice, se abre directamente la página de esa canción, sin tener que avanzar página por página con «anterior» y «siguiente».
+- Si la semilla aún está bloqueada, su página se abre en estado bloqueado; el índice no altera la progresión ni concede semillas.
+- Evidencia: las diez filas se generan en orden desde `SONG_CATALOG`; las descubiertas saltan a su página y las futuras abren la vista «Semilla bloqueada» sin habilitar su repetición. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.

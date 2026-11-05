@@ -27,7 +27,7 @@ En las páginas de canción, el glifo es ornamental y no inicia escenas ni minij
 
 
 ## Puerta de acceso informal
-Actualizar la frase verificada por `PasswordGate` a la nueva frase elegida y versionar la clave de sesión para que la marca de acceso previa no desbloquee la aplicación tras recargar. Se conserva el aviso de que la puerta del navegador no es autenticación de servidor.
+La contraseña verificada por `PasswordGate` es exactamente `nko23`. Versionar la clave de sesión para que la marca de acceso previa no desbloquee la aplicación tras recargar. Se conserva el aviso de que la puerta del navegador no es autenticación de servidor.
 
 
 ## Navegación del Libro

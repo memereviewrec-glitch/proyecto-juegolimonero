@@ -407,10 +407,9 @@
 - Evidencia: el glifo se renderiza en un contenedor no interactivo y el único acceso a escenas desde SeedBook permanece en la sección explícita de reescritura.
 
 
-## [x] Frase de acceso informal
-- La frase que abre la puerta del juego debe ser exactamente `gran catalizador`, en lugar de `0123456789`.
-- Las sesiones guardadas con la marca anterior no deben abrir el juego después de recargar; el acceso sigue siendo una puerta informal de demostración, no protección de servidor.
-- Evidencia: contraseña antigua ausente de `client/src` y `client/public`; `ACCESS_KEY` versionada. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.
+## [x] Frase de acceso informal (versión anterior)
+- La versión previa cambió `0123456789` por `gran catalizador`, con marca de sesión versionada y aviso de que no era protección de servidor. Esta frase se reemplazó posteriormente; la contraseña vigente queda registrada en «Cambiar contraseña informal de acceso» al final de este TODO.
+- Evidencia histórica: el código de la versión previa versionaba `ACCESS_KEY`; `pnpm check`, `pnpm test` (90 pruebas) y `pnpm build:static` pasaron en esa actualización.
 
 
 ## [x] Retirar la pestaña «Semillas» del Libro
@@ -492,3 +491,9 @@
 - En el desenlace negativo, reemplazar «Tus palabras pesan más que las cenizas. No puedo quedarme aquí» por «Me da pena despedirme, Limón. Necesito seguir volando por mi cuenta, al menos por ahora».
 - La despedida debe seguir siendo triste, pero expresar la necesidad de seguir por su cuenta sin reprochar a Limón. No cambiar el umbral, la puntuación, la etiqueta «DESPEDIDA», la entrega de semilla ni los otros desenlaces.
 - Evidencia: el bundle de producción incluye la nueva despedida y excluye la anterior; `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan. Solo cambia el texto de `outcome === "bad"`; los demás desenlaces y recompensas permanecen intactos.
+
+
+## [x] Cambiar contraseña informal de acceso
+- Cambiar la contraseña informal exacta a `nko23`, sustituyendo `gran catalizador`.
+- Versionar la clave de sesión para que una autorización guardada con la versión anterior ya no abra el juego y se solicite la nueva contraseña. Mantener el acceso como barrera informal de interfaz, no autenticación de servidor.
+- Evidencia: `PasswordGate` ahora compara con `nko23` y usa `limonero-access-granted-v3`; el bundle incluye la clave nueva y no la anterior. `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan.

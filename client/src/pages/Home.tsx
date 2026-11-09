@@ -25,6 +25,7 @@ import type { RiverChallengeOutcome, RiverConversationOutcome } from "../compone
 import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook";
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
+import { getSeedSceneTarget } from "../seedSceneNavigation";
 import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
 import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredHummingbirdRewards, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
@@ -71,10 +72,10 @@ const CAMPFIRE_LIGHT_DURATION_MS = 2200;
 const BAND_INSTAGRAM_LINKS = [{ label: "Instagram de la banda", url: null }] as const;
 
 function storyText(beat: StoryBeat, ramblaOutcome: RamblaOutcome | null, riverChallengeOutcome: RiverChallengeOutcome | null) {
-  if (beat === "opening") return "Había una vez un limón que quería descubrir los límites del conocimiento y la realidad.";
-  if (beat === "portal") return "El limón tomó la semilla del conocimiento que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otra dimensión. Al otro lado se encontró muy solo y comprendió que ya no sabía cómo volver a casa. Desde entonces, encontrar un hogar se convirtió en el nudo de su historia.";
+  if (beat === "opening") return "";
+  if (beat === "portal") return "El limón tomó la semilla que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otro lugar. Al otro lado se encontró muy solo y comprendió que ya no sabía cómo volver a casa.";
   if (beat === "ruins") return "Sin saber todavía cómo volver, el limón comenzó a andar por las ruinas. Cada piedra parecía guardar una pregunta y cada raíz, un camino que no figuraba en ningún mapa.";
-  if (beat === "sect") return "Tras las ruinas encontró a la secta del conocimiento oculto. Sus encapuchados hablaban de una verdad reservada para unos pocos y aguardaban junto a una hoguera, como si el fuego pudiera responder por ellos.";
+  if (beat === "sect") return "Tras las ruinas encontró unos encapuchados, hablaban de una verdad reservada para unos pocos y aguardaban junto a una hoguera, como si el fuego pudiera responder por ellos.";
   if (beat === "river-arrival") {
     const arrival = ramblaOutcome === 2
       ? "El limón escapó de la secta rodando colina abajo y llegó al río con la cáscara raspada. Seguía vivo, pero se sentía aburrido y solo después de huir."
@@ -790,6 +791,12 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     enterReplayScene(REWRITE_TARGETS[chapterId]);
   }
 
+  function returnToSeedScene(songId: SeedSongId) {
+    const targetScene = getSeedSceneTarget(songId, discoveredSongIds);
+    if (!targetScene) return;
+    enterReplayScene(targetScene);
+  }
+
   function resetSceneAttempt(targetScene: Scene) {
     attemptTasks.reset();
     setJaguarStatsSnapshot(null);
@@ -1160,7 +1167,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
           </div>}
 
           <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
-            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome, riverChallengeOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome, riverChallengeOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} startAsLemon={storyBeat === "opening"} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             {!previewChromeHidden && seedBookOpen && <SeedBook
               discoveredSongIds={discoveredSongIds}
               previewSongId={nextLockedSongId}
@@ -1170,6 +1177,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               rewriteStartingStats={rewriteStartingStats}
               archivedEndingIds={archivedJaguarEndings}
               onClose={() => setSeedBookOpen(false)}
+              onReturnToScene={returnToSeedScene}
               onRewriteChapter={rewriteChapter}
             />}
             {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}

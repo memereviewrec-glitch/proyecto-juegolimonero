@@ -337,6 +337,10 @@
 - Los diálogos del colibrí permiten desplazamiento vertical y en móvil se puede llegar a leer y accionar la parte inferior.
 - Al final, el texto solo dice que el colibrí dio una semilla; no la llama «semilla de Ponzoña» ni revela su nombre de canción.
 
+## [x] Respuestas completas del Colibrí en escritorio
+- En ordenador, el texto completo de cada respuesta del diálogo del Colibrí se ve dentro de su botón y no queda recortado por el panel ni por los límites de la pantalla. El diseño de escritorio deja espacio suficiente para las tres opciones; en móvil se conserva el desplazamiento vertical ya aprobado.
+- Evidencia: en Preview a 1280×1100, el diálogo y las tres respuestas quedan dentro del viewport, sin scroll interno; `pnpm check`, `pnpm test` (113 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
 ## [x] Nueve estrellas y recompensa de Ingenio
 - Antes del minijuego rítmico del cielo estrellado se ven nueve estrellas blancas, no siete; la pista del colibrí dice «nueve».
 - La semilla no produce ningún sonido al caer desde la luna y recogerla suma exactamente +4 de Ingenio.
@@ -365,9 +369,22 @@
 - Al tocar la guitarra, el enunciado dice «hay acordes que abren ventanas...» y no pregunta sobre la belleza de las notas musicales.
 - Evidencia: `Home.tsx` muestra ese enunciado en la acción de tocar; TypeScript, 86 pruebas y el build estático pasan.
 
+## [x] Diapositivas iniciales y de llegada del portal
+- La primera diapositiva narrativa no muestra texto narrativo; solo presenta el botón accesible «comenzar el sendero», dibujado con el limón en pixel art.
+- La segunda diapositiva, tras cruzar el portal, dice literalmente: «El limón tomó la semilla que salió del portal. La semilla lo arrastró para atravesar la abertura con ella en su posesión y llegar a otro lugar. Al otro lado se encontró muy solo y comprendió que ya no sabía cómo volver a casa.» No añade más texto narrativo.
+- Evidencia: `StoryInterlude` omite el párrafo vacío y muestra el `LemonSprite` dentro del botón; la apertura se comprobó visualmente en Preview y el texto del portal en `Home.tsx`.
+
 ## [x] Pista narrativa de entrada a Rambla
 - Al principio de Rambla, los encapuchados piden a Limón que se acerque al círculo, como pista diegética para que se entienda que hay que clicar dentro del círculo de encapuchados.
 - Evidencia: el rótulo de estado `role="status"` anuncia «Los encapuchados te llaman desde el círculo» y «Limón, acércate al círculo» antes de que llegue al centro. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+## [x] Texto exacto de la diapositiva que introduce Rambla
+- La diapositiva narrativa de Rambla muestra literalmente: «Tras las ruinas encontró unos encapuchados, hablaban de una verdad reservada para unos pocos y aguardaban junto a una hoguera, como si el fuego pudiera responder por ellos.»
+- Evidencia: la rama `sect` de `storyText` devuelve exactamente el texto solicitado, sin prefijo ni sufijo.
+
+## [x] Círculo interactivo de Rambla más grande
+- El área circular clicable en medio de los encapuchados es más grande y permanece centrada en el círculo, para que resulte más fácil seleccionar ese objetivo sin solaparse con otros controles de la escena.
+- Evidencia: `.campfire-center-target` conserva el centro y aumenta de 27%/158 px a 36%/210 px de ancho máximo.
 
 ## [x] Actualización de bonificaciones del Río y del Jaguar
 - En Espíritus del río, la tercera respuesta de la ruta pacífica («Ellos me dieron una semilla…») suma Ingenio +4; la tercera respuesta de la ruta drástica («Si el mundo fluye…») suma Empatía +5.
@@ -403,13 +420,17 @@
 - Al pulsar cualquier semilla del índice, se abre directamente la página de esa canción, sin tener que avanzar página por página con «anterior» y «siguiente».
 - Si la semilla aún está bloqueada, su página se abre en estado bloqueado; el índice no altera la progresión ni concede semillas.
 - El título de una canción solo es visible después de conseguir su semilla; las entradas bloqueadas del índice y sus etiquetas accesibles no revelan el título.
-- Evidencia: nombres visuales y accesibles condicionados a que la semilla esté descubierta; `onReplaySong`, `replaySong` y `REPLAY_TARGETS` eliminados del flujo del glifo. `pnpm check`, `pnpm test` (90 pruebas), `pnpm build:static` y `git diff --check` pasan.
+- Evidencia: el índice conserva las diez entradas en orden y oculta el título de las semillas bloqueadas; pulsar una entrada abre su página sin cambiar progreso. El retorno al escenario está separado y se activa desde el glifo en la página de una semilla descubierta.
 
 
-## [x] Glifo de semilla no interactivo
-- Al pulsar el glifo de una semilla en su página del Libro, no se inicia la escena ni el minijuego asociado.
-- La navegación a capítulos reescribibles sigue disponible desde su acceso explícito de «Reescribir historia».
-- Evidencia: el glifo se renderiza en un contenedor no interactivo y el único acceso a escenas desde SeedBook permanece en la sección explícita de reescritura.
+## [x] Regla anterior del glifo ornamental — sustituida
+- En la versión anterior, pulsar el glifo de una semilla en su página del Libro no iniciaba la escena ni el minijuego asociado, para evitar errores de puntuación y duplicación de puntos; la navegación a capítulos reescribibles estaba disponible desde «Reescribir historia».
+- Evidencia histórica: el cambio anterior hizo no interactivo el glifo; la solicitud posterior de retorno desde el glifo sustituye expresamente esa regla.
+
+## [x] Volver a la escena guardada desde la página de una semilla
+- En la página de una semilla ya descubierta, pulsar su glifo vuelve a la escena correspondiente al progreso guardado: Aurora→local; Ventana al sendero→amanecer; Raíces→ruinas; Rambla→hoguera; Espíritus del río→orilla; El río→fondo del cauce; El fuego→bosque ardiendo; Ponzoña→Colibrí; Nueve sentidos→cielo estrellado; El Jaguar→Jaguar.
+- Las páginas bloqueadas no permiten ese retorno ni revelan títulos ocultos. El retorno reinicia solo el intento de la escena elegida, conserva las semillas descubiertas y las estadísticas guardadas de capítulos previos; abrir una página o volver a recoger una semilla no duplica la semilla ni sus puntos, y una nueva resolución sustituye la anterior.
+- Evidencia: `seedSceneNavigation` valida semilla descubierta y mapea las diez escenas; sus tres pruebas cubren catálogo, destinos y bloqueo. En Preview, el glifo de Ponzoña devolvió a la escena del Colibrí con las estadísticas guardadas. `pnpm check`, `pnpm test` (113 pruebas), `pnpm build:static` y `git diff --check` pasan.
 
 
 ## [x] Frase de acceso informal (versión anterior)

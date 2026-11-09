@@ -39,12 +39,13 @@ type SeedBookProps = {
   rewriteStartingStats: Record<RewriteChapterId, JaguarStats>;
   archivedEndingIds: JaguarEndingId[];
   onClose: () => void;
+  onReturnToScene: (songId: SeedSongId) => void;
   onRewriteChapter: (chapterId: RewriteChapterId) => void;
 };
 
 type BookView = "songs" | "index" | "rewrite" | "endings" | "ending";
 
-export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, rewriteStartingStats, archivedEndingIds, onClose, onRewriteChapter }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, rewriteStartingStats, archivedEndingIds, onClose, onReturnToScene, onRewriteChapter }: SeedBookProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
@@ -160,7 +161,9 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 const accessibleSongTitle = isPreview ? "semilla bloqueada" : song.title;
                 return <>
                 <div className="seedbook-page-seed">
-                  {seedId && <div className="seedbook-page-seed-display" aria-hidden="true"><SeedGlyph seed={seedId} /></div>}
+                  {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReturnToScene(song.id)} disabled={isPreview} aria-label={isPreview ? "Semilla bloqueada" : `Volver a la escena de ${song.title}`} title={isPreview ? undefined : `Volver a la escena de ${song.title}`}>
+                    <SeedGlyph seed={seedId} />
+                  </button>}
                 </div>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>

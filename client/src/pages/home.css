@@ -55,9 +55,19 @@ button { font:inherit; }
 .story-seed-el-rio { filter:drop-shadow(0 0 10px #dce9f0); }
 @keyframes story-seed-pulse { to { transform:scale(1.07) rotate(-2deg); } }
 .story-continue-button { align-self:center; }
+.story-interlude-opening { align-items:center; }
+.story-interlude-opening .story-interlude-inner { align-items:center; gap:0; }
+.story-interlude .story-start-button { display:flex; min-width:188px; flex-direction:column; align-items:center; gap:12px; padding:16px 22px; border:3px solid #fff0b5; background:#17131d; color:#fff0b5; box-shadow:5px 5px 0 #6c6875; font:600 11px 'DM Mono',monospace; letter-spacing:.05em; }
+.story-interlude .story-start-button:hover,.story-interlude .story-start-button:focus-visible { background:#f4c943; color:#29252d; outline:3px dashed #fff; outline-offset:4px; }
+.story-start-lemon { display:block; width:78px; height:92px; filter:drop-shadow(3px 4px 0 #09080c); }
+.story-start-lemon .lemon-sprite { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.story-start-button:hover .story-start-lemon .lemon-sprite { transform:translateY(-2px); }
 @media (max-width:600px) {
   .story-interlude-inner { width:88%; gap:10px; }
   .story-interlude p { max-width:100%; font-size:15px; line-height:1.5; }
+  .story-interlude-opening .story-interlude-inner { width:88%; }
+  .story-interlude .story-start-button { min-width:164px; gap:8px; padding:12px 16px; font-size:9px; }
+  .story-start-lemon { width:62px; height:72px; }
   .story-seed-button { width:78px; height:86px; }
   .story-seed-glyph { width:54px; height:74px; }
   .story-continue-button { padding:7px 9px; font-size:8px; }
@@ -622,12 +632,15 @@ button { font:inherit; }
 .seedbook-page-indicator { margin:16px 0 8px; color:#706a73; text-align:center; font:9px 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
 .seedbook-entry { padding:14px; border:2px solid #d9d0c0; background:#fffdf7; box-shadow:3px 3px #eee7d8; }
 .seedbook-preview-entry { border-style:dashed; background:#f7fbf5; }
-.seedbook-preview-entry .seedbook-page-seed-display { position:relative; border:2px dashed #9aa6a2; background:#e8efeb; opacity:.78; }
-.seedbook-preview-entry .seedbook-page-seed-display::after { content:"▣"; position:absolute; right:4px; bottom:3px; color:#52666a; font:12px 'DM Mono',monospace; }
-.seedbook-preview-entry .seedbook-page-seed-display .seed-glyph { filter:grayscale(.72) saturate(.55) opacity(.62); }
+.seedbook-preview-entry .seedbook-page-seed-button { position:relative; border:2px dashed #9aa6a2; background:#e8efeb; opacity:.78; }
+.seedbook-preview-entry .seedbook-page-seed-button::after { content:"▣"; position:absolute; right:4px; bottom:3px; color:#52666a; font:12px 'DM Mono',monospace; }
+.seedbook-preview-entry .seedbook-page-seed-button .seed-glyph { filter:grayscale(.72) saturate(.55) opacity(.62); }
 .seedbook-page-seed { display:flex; min-height:116px; align-items:center; justify-content:center; padding:10px 0 5px; }
-.seedbook-page-seed-display { display:grid; width:92px; height:104px; place-items:center; image-rendering:pixelated; }
-.seedbook-page-seed-display .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
+.seedbook-page-seed-button { display:grid; width:92px; height:104px; padding:0; place-items:center; border:2px solid transparent; background:transparent; cursor:pointer; image-rendering:pixelated; }
+.seedbook-page-seed-button:focus-visible { border-color:#5b4638; outline:2px dashed #a14e70; outline-offset:4px; }
+.seedbook-page-seed-button:disabled { cursor:not-allowed; }
+.seedbook-page-seed-button:not(:disabled):hover { transform:translateY(-2px); }
+.seedbook-page-seed-button .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
 .seedbook-entry-heading { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 .seedbook-number { color:#d98470; font:10px 'DM Mono',monospace; }
 .seedbook-entry-heading h3 { flex:1; margin:0; font-size:17px; letter-spacing:-.04em; }
@@ -708,8 +721,8 @@ button { font:inherit; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }
  .seedbook-page-seed { min-height:92px; padding-top:4px; }
- .seedbook-page-seed-display { width:72px; height:82px; }
- .seedbook-page-seed-display .seed-glyph { width:56px; height:72px; }
+ .seedbook-page-seed-button { width:72px; height:82px; }
+ .seedbook-page-seed-button .seed-glyph { width:56px; height:72px; }
  .seedbook-lyrics-space { min-height:104px; margin-bottom:12px; padding:9px; }
  .seedbook-metadata { gap:4px; }
  .seedbook-metadata span { padding:5px; }
@@ -849,8 +862,11 @@ body { background:#08070d; }
 .workspace.workspace-with-stats-hud .stage-column { width:min(100vw,calc((100dvh - 90px)*.885),1200px); }
 .workspace.workspace-with-stats-hud.workspace-with-dev-tools .stage-column { width:min(100vw,calc((100dvh - 200px)*.885),1200px); }
 .workspace.workspace-with-dev-tools-collapsed { inset:0 0 52px; height:auto; }
-.workspace.workspace-with-dev-tools-collapsed .stage-column { width:min(100vw,calc((100dvh - 52px)*.885),1200px); }
-.workspace.workspace-with-stats-hud.workspace-with-dev-tools-collapsed .stage-column { width:min(100vw,calc((100dvh - 142px)*.885),1200px); }
+.workspace.workspace-with-dev-tools-collapsed .stage-column { width:min(100vw,calc((100dvh - 52px) * .885),1200px); }
+.workspace.workspace-with-stats-hud.workspace-with-dev-tools-collapsed .stage-column { width:min(100vw,calc((100dvh - 142px) * .885),1200px); }
+.workspace.workspace-with-stats-hud { --hummingbird-top-reserve:60px; }
+.workspace.workspace-with-dev-tools { --hummingbird-bottom-reserve:104px; }
+.workspace.workspace-with-dev-tools-collapsed { --hummingbird-bottom-reserve:52px; }
 .dev-playtest-tools { position:fixed; z-index:120; inset:auto 0 0; min-height:104px; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px clamp(12px,3vw,36px); background:#f7f3e9; color:#28252c; border-top:2px solid #61546c; box-shadow:0 -4px 18px #08070d55; }
 .dev-playtest-intro { flex:0 1 auto; min-width:0; }
 .dev-playtest-title { display:block; font:600 12px 'Space Grotesk',system-ui,sans-serif; }

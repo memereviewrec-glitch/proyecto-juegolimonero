@@ -20,6 +20,9 @@
 ## Diseño
 Se conserva la estética aprobada del juego: Libro como objeto físico de pixel art ingenuo, papel cálido, marco oscuro, tipografía monoespaciada pequeña y botones explícitos. Las vistas son páginas internas (canciones, reescritura, finales); la repetición de un capítulo tiene una acción clara y no borra colección. La diapositiva archivada reutiliza las ilustraciones finales pixel art existentes, sin generar arte nuevo ni activar controles del combate. Movimiento y transiciones respetan el comportamiento accesible ya establecido en el Libro.
 
+## Encuadre del Jaguar en escritorio
+Reutilizar los overlays pixel art existentes del Jaguar furioso y burlón. En `jaguar-scene.css`, usar `.jaguar-forest > img.jaguar-character-art` para que las reglas del sprite prevalezcan sobre el selector genérico del fondo y restablecer `inset` antes de centrarlo; ambos overlays usan `object-fit: contain`. En escritorio (`min-width:900px`), el furioso usa `top:5%`, `width:clamp(220px,54%,400px)` y `height:60%`; el burlón usa `top:8%`, `width:clamp(190px,42%,320px)` y `height:52%`. Conservar los valores móviles existentes (`top:7%/height:62%` para el furioso y `top:9%/width:clamp(120px,44%,220px)/height:48%` para el burlón), el fondo, los cuadros, los controles y la lógica de combate.
+
 
 ## Índice de semillas
 El Libro tendrá una vista de índice ordenada con las diez canciones del catálogo. Elegir una entrada abrirá directamente su página; si la semilla aún está bloqueada, se mostrará como bloqueada y no modificará la progresión. Los títulos permanecerán ocultos tanto en pantalla como en etiquetas accesibles hasta conseguir su semilla. Se mantienen anterior/siguiente como navegación opcional para páginas contiguas.

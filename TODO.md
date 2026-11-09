@@ -355,6 +355,11 @@
 ## [x] Encuadre del Jaguar burlón
 - El Jaguar burlón se hace más pequeño y se centra para que quede completamente dentro de la pantalla.
 
+## [x] Encuadre de los Jaguares furioso y burlón en escritorio
+- En escritorio, las ilustraciones del Jaguar furioso y del Jaguar burlón se ven completas y bien encuadradas dentro del escenario: centradas, sin salirse del marco ni quedar tapadas de forma que se pierda su silueta. Cada variante mantiene un tamaño y una posición apropiados para su propia ilustración.
+- El ajuste se limita a escritorio; en móvil se conserva el encuadre ya aprobado. Se mantienen el arte pixelado, los diálogos, las ramas y todas las puntuaciones sin cambios.
+- Evidencia: el overlay usa `object-fit: contain`, se centra en el escenario y queda dentro de sus límites. En Preview de escritorio (1280×1100; escenario 788×890), los marcos furioso (400×533) y burlón (320×462) quedaron centrados, completos y con distinto tamaño apropiado; `pnpm check`, 113 pruebas, build estático y `git diff --check` pasan.
+
 ## [x] Caja final y libro de la pesadilla
 - La primera frase de la última caja dice exactamente «Los sueños son semillas que plantamos en el mundo.»; se elimina de esa caja la frase desde «La semilla que buscabas» hasta «que te generó». Después conserva el mensaje de que la última semilla está a salvo en el libro y Limón vuelve tranquilo a dormir.
 - La animación/carga del libro se muestra por encima de la última caja de diálogo.

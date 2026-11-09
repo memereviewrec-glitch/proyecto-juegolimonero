@@ -360,6 +360,11 @@
 - El ajuste se limita a escritorio; en móvil se conserva el encuadre ya aprobado. Se mantienen el arte pixelado, los diálogos, las ramas y todas las puntuaciones sin cambios.
 - Evidencia: el overlay usa `object-fit: contain`, se centra en el escenario y queda dentro de sus límites. En Preview de escritorio (1280×1100; escenario 788×890), los marcos furioso (400×533) y burlón (320×462) quedaron centrados, completos y con distinto tamaño apropiado; `pnpm check`, 113 pruebas, build estático y `git diff --check` pasan.
 
+## [x] Texto de revelación en los finales del Jaguar
+- En todas las diapositivas finales donde aparece el mensaje de revelación del Jaguar, se muestra literalmente: «El jaguar deja de ser una bestia y se revela como espíritu, ha estado hablando con el limón a través de sus sueños.»
+- El resumen del final de Enigmas en el archivo del Libro comparte la misma frase; los demás textos, diálogos y resultados de los finales no cambian.
+- Evidencia: `JAGUAR_REVELATION_TEXT` alimenta la fase común `revelation` de `JaguarScene` y el resumen de Enigmas; `storyArchive.test.ts` comprueba el texto exacto. La frase anterior ya no aparece en `client/src`. Pasan TypeScript, 114 pruebas, build estático y `git diff --check`.
+
 ## [x] Caja final y libro de la pesadilla
 - La primera frase de la última caja dice exactamente «Los sueños son semillas que plantamos en el mundo.»; se elimina de esa caja la frase desde «La semilla que buscabas» hasta «que te generó». Después conserva el mensaje de que la última semilla está a salvo en el libro y Limón vuelve tranquilo a dormir.
 - La animación/carga del libro se muestra por encima de la última caja de diálogo.

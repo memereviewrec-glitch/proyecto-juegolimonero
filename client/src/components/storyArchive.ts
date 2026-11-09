@@ -1,3 +1,5 @@
+export const JAGUAR_REVELATION_TEXT = "El jaguar deja de ser una bestia y se revela como espíritu, ha estado hablando con el limón a través de sus sueños.";
+
 export type JaguarEndingId = "empatia" | "enigmas" | "valentia" | "pesadilla";
 
 export const JAGUAR_ENDINGS: readonly {
@@ -15,7 +17,7 @@ export const JAGUAR_ENDINGS: readonly {
   {
     id: "enigmas",
     title: "La respuesta bajo la primera respuesta",
-    summary: "El limón resuelve los enigmas y el Jaguar revela su rostro de dios del conocimiento.",
+    summary: `El limón resuelve los enigmas. ${JAGUAR_REVELATION_TEXT}`,
     artwork: "/jaguar-ending-enigmas.webp",
   },
   {

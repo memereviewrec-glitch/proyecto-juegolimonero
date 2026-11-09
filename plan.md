@@ -6,6 +6,7 @@
 - Si se cambia la ruta de Rambla, se borra la respuesta anterior de Espíritus del río, porque sus opciones dependían de esa ruta; el Libro marca esa decisión como pendiente de volver a elegir. La navegación de reescritura permite entrar directamente en ese capítulo, sin volver a completar las escenas intermedias.
 - El Jaguar registra de forma persistente los identificadores de los finales distintos al alcanzar la pantalla final correspondiente: Empatía, Enigmas, Valentía y Pesadilla. El Libro ofrece un archivo de finales conseguidos con una diapositiva resumen e ilustración pixel art ya existente para cada final; abrirla solo muestra esa imagen y su síntesis, sin iniciar `JaguarScene` ni el combate.
 - La persistencia sigue en `localStorage` y el reinicio total borra archivo y elecciones, pero nunca se borra una semilla por repetir un capítulo. Los finales se guardan como conjunto deduplicado.
+- La frase de revelación final se mantiene como una única constante compartida por las diapositivas de `JaguarScene` y el resumen de Enigmas del archivo: «El jaguar deja de ser una bestia y se revela como espíritu, ha estado hablando con el limón a través de sus sueños.»
 
 ## Estructura del proyecto
 - `client/src/pages/Home.tsx`: orquesta navegación directa a capítulos, invalida la decisión de río al cambiar Rambla, calcula el acceso desbloqueado y conecta Libro con Jaguar.

@@ -4,7 +4,7 @@ import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
 import { STAT_LABELS } from "./JaguarStatsHud";
-import type { JaguarEndingId } from "./storyArchive";
+import { JAGUAR_REVELATION_TEXT, type JaguarEndingId } from "./storyArchive";
 import {
   ANGRY_QUESTIONS,
   CAUTELA_FAILURE_MESSAGE,
@@ -571,7 +571,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
         {phase === "revelation" && <div className="jaguar-check-card jaguar-revelation-card">
           <span className="jaguar-check-label">LA VERDAD DEL SUEÑO</span>
           {outcomeNote && <p className="jaguar-outcome-note">{outcomeNote}</p>}
-          <p>El jaguar deja de ser una bestia y se revela como un dios del conocimiento: ha estado hablando con el limón a través de sus sueños.</p>
+          <p>{JAGUAR_REVELATION_TEXT}</p>
           <p>Él envió <strong>el incendio y la lluvia</strong>, ambos, para poner a prueba la amistad entre el limón y el colibrí. «No era una prueba para ver si podíais vencer al fuego —dice—, sino para saber si seguiríais eligiéndoos después».</p>
           <button type="button" className="jaguar-primary-button" onClick={transitionAction(() => setPhase("counsel"))}>Escuchar el consejo final</button>
         </div>}

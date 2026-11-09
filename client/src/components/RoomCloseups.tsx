@@ -347,6 +347,7 @@ export function GuitarCloseup({
           <text x="97" y="234" className="headstock-caption" textAnchor="middle">6 CLAVIJAS</text>
         </svg>
       </div>
+      <p className="guitar-hint" role="note">donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo</p>
       <div className="guitar-closeup-footer">
         <div className="fretboard-actions"><button className="closeup-back" onClick={onClose} aria-label="Volver al local" title="Volver al local">↗</button></div>
       </div>

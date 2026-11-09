@@ -20,9 +20,14 @@
 - El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación.
 - Los enlaces de Instagram se dejan para la fase final de publicación; no se inventan handles ni destinos durante el desarrollo.
 
-## [x] Acceso inicial al Libro y texto del minijuego de guitarra
-- El Libro de semillas permanece oculto durante el local y el minijuego de la guitarra; se habilita después de completar el primer cruce del portal y obtener la semilla inicial de «Aurora». En partidas ya guardadas con esa semilla, el acceso se conserva.
+## [x] Frase narrativa del minijuego de guitarra
 - En el primer plano de la guitarra, la única frase narrativa visible es exactamente «hay acordes que abren otras realidades...». Se conservan las marcas visuales del mástil y controles de tocar/volver como interfaz funcional, con etiquetas accesibles no visibles.
+
+## [ ] Acceso inicial al Libro de semillas
+- El Libro de semillas permanece oculto durante el local y el minijuego de la guitarra; se habilita después de completar el primer cruce del portal y obtener la semilla inicial de «Aurora». En partidas ya guardadas con esa semilla, el acceso se conserva.
+
+## [x] Pista del minijuego de guitarra
+- El primer plano conserva la indicación superior existente y muestra, inmediatamente debajo del mástil, la pista exacta «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo». Se conservan las marcas visuales del mástil y los controles funcionales de tocar/volver; la pista no los sustituye ni queda superpuesta al mástil.
 
 ## [x] Transición al bosque en llamas y fuego pixel art
 - La semilla blanca del pez blanco sigue visible como recompensa de «El Río». La diapositiva narrativa inmediatamente anterior al bosque en llamas no muestra la semilla negra de «El fuego»: contiene solo texto y el botón de avance.

@@ -58,3 +58,7 @@ El panel modal del Libro se ancla al alto visible de la ventana y se eleva respe
 
 ## Despedida triste del Colibrí
 En el desenlace negativo, sustituir el reproche por una frase triste pero amable: «Me da pena despedirme, Limón. Necesito seguir volando por mi cuenta, al menos por ahora». Mantener intactos el desenlace, su puntuación y la recompensa de la escena.
+
+
+## Pista del primer plano de guitarra
+`GuitarCloseup` muestra la frase exacta «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo» inmediatamente después del área desplazable del mástil y antes de los controles inferiores. El texto se mantiene centrado, legible y responsive, con la paleta crema/dorada del minijuego; no reemplaza instrucciones, marcas ni controles.

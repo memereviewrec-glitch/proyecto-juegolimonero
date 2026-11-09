@@ -417,6 +417,7 @@ button { font:inherit; }
 .cable-closeup-footer .closeup-back { grid-column:1/-1; justify-self:center; }
 .guitar-closeup { justify-content:flex-start; padding-top:clamp(14px,3vh,30px); }
 .guitar-whisper { margin:0; color:#f4e4c8; font:11px/1.4 'DM Mono',monospace; text-align:center; letter-spacing:.04em; }
+.guitar-hint { width:min(100%,900px); margin:0; color:#f1d878; font:600 12px/1.5 'DM Mono',monospace; text-align:center; letter-spacing:.025em; text-shadow:1px 1px 0 #211d25; }
 .fretboard-scroll { width:min(100%,980px); overflow-x:auto; overscroll-behavior-inline:contain; scrollbar-color:#c1a87d #37313b; }
 .guitar-fretboard-svg { display:block; width:100%; min-width:680px; height:auto; background:#211d25; border:4px solid #1a171e; box-shadow:4px 5px 0 #17141a; }
 .guitar-fretboard-svg .fret-number { fill:#f3e2bd; font:600 17px 'DM Mono',monospace; }
@@ -454,6 +455,8 @@ button { font:inherit; }
  .cable-progress { justify-content:center; }
  .cable-closeup-footer .closeup-back { grid-column:1; }
  .guitar-fretboard-svg { min-width:680px; }
+ .guitar-closeup { gap:7px; }
+ .guitar-hint { font-size:10px; line-height:1.4; letter-spacing:0; }
  .guitar-closeup-footer { align-items:stretch; flex-direction:column; }
  .fretboard-actions { justify-content:center; }
 }

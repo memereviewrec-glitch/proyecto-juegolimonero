@@ -14,7 +14,8 @@ export function advanceSecretScreen(screen: SecretScreen, action: SecretScreenAc
   if (screen === "cave-offer" && action === "enter-cave") return "maze";
   if (screen === "cave-offer" && action === "leave-cave") return "tree";
   if (screen === "maze" && action === "escape-maze") return "canopy-entry";
-  if (screen === "canopy-entry" && action === "meet-owl") return "riddle";
+  if (screen === "canopy-entry" && action === "meet-owl") return "owl";
+  if (screen === "owl" && action === "meet-owl") return "riddle";
   if (screen === "riddle" && action === "return-to-door") return "riddle-fail";
   if (screen === "riddle-fail" && action === "return-to-door") return "tree";
   return screen;

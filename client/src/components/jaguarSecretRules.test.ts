@@ -28,25 +28,26 @@ describe("desbloqueo del epílogo secreto de Jaguar", () => {
 });
 
 describe("rutas narrativas del epílogo secreto", () => {
-	it("despertar muestra la caída antes del árbol; tocar la cueva abre una oferta antes de entrar", () => {
-		expect(advanceSecretScreen("question", "wake")).toBe("fall-interlude");
-		expect(advanceSecretScreen("fall-interlude", "continue-fall")).toBe("tree");
+  it("despertar muestra la caída antes del árbol; tocar la cueva abre una oferta antes de entrar", () => {
+    expect(advanceSecretScreen("question", "wake")).toBe("fall-interlude");
+    expect(advanceSecretScreen("fall-interlude", "continue-fall")).toBe("tree");
     expect(advanceSecretScreen("tree", "touch-cave")).toBe("cave-offer");
     expect(advanceSecretScreen("cave-offer", "enter-cave")).toBe("maze");
     expect(advanceSecretScreen("cave-offer", "leave-cave")).toBe("tree");
   });
 
-	it("no despertar lleva a la lechuza y no abre el laberinto; despertar permite entrar y llegar a la superficie", () => {
-			expect(advanceSecretScreen("question", "stay-asleep")).toBe("sleep-interlude");
-			expect(advanceSecretScreen("sleep-interlude", "continue-sleep")).toBe("owl");
-			expect(advanceSecretScreen("owl", "enter-cave")).toBe("owl");
-		expect(advanceSecretScreen("cave-offer", "enter-cave")).toBe("maze");
-	    expect(advanceSecretScreen("maze", "escape-maze")).toBe("canopy-entry");
-	    expect(advanceSecretScreen("canopy-entry", "meet-owl")).toBe("riddle");
-	    expect(advanceSecretScreen("riddle", "return-to-door")).toBe("riddle-fail");
-	    expect(advanceSecretScreen("riddle-fail", "return-to-door")).toBe("tree");
-	    expect(advanceSecretScreen("tree", "escape-maze")).toBe("tree");
-	    expect(advanceSecretScreen("surface", "escape-maze")).toBe("surface");
+  it("no despertar lleva a la lechuza y no abre el laberinto; despertar permite entrar y llegar a la superficie", () => {
+    expect(advanceSecretScreen("question", "stay-asleep")).toBe("sleep-interlude");
+    expect(advanceSecretScreen("sleep-interlude", "continue-sleep")).toBe("owl");
+    expect(advanceSecretScreen("owl", "enter-cave")).toBe("owl");
+    expect(advanceSecretScreen("owl", "meet-owl")).toBe("riddle");
+    expect(advanceSecretScreen("cave-offer", "enter-cave")).toBe("maze");
+    expect(advanceSecretScreen("maze", "escape-maze")).toBe("canopy-entry");
+    expect(advanceSecretScreen("canopy-entry", "meet-owl")).toBe("owl");
+    expect(advanceSecretScreen("riddle", "return-to-door")).toBe("riddle-fail");
+    expect(advanceSecretScreen("riddle-fail", "return-to-door")).toBe("tree");
+    expect(advanceSecretScreen("tree", "escape-maze")).toBe("tree");
+    expect(advanceSecretScreen("surface", "escape-maze")).toBe("surface");
   });
 });
 

@@ -199,10 +199,12 @@ export function JaguarSecretPath({ onReturnHome, muted, onFinScreenChange }: Jag
         <button type="button" onClick={() => transitionSecretPath("continue-sleep")}>Continuar</button>
       </div>}
 
-      {screen === "owl" && <div className="jaguar-secret-owl-card jaguar-secret-card" role="group" aria-label="La lechuza en las ramas">
-        <p>No son iguales, pero uno refleja al otro.<br />Lo que sucede en uno puede encontrarse, en el otro.<br />Si quieres comprender el cielo, observa la tierra. Si quieres comprender tus pies, observa tus alas. Si quieres comprender adentro y afuera... Dime limón, ¿qué eres?</p>
-        {renderRiddleKeyboard()}
-      </div>}
+      {screen === "owl" && <button
+        type="button"
+        className="jaguar-secret-owl-hotspot"
+        aria-label="Tocar a la lechuza para escuchar el acertijo"
+        onClick={() => transitionSecretPath("meet-owl")}
+      />}
 
       {screen === "canopy-entry" && <div className="jaguar-secret-card jaguar-secret-canopy-card" role="group">
         <p>Limón encontró la entrada secreta a la copa del árbol.</p>

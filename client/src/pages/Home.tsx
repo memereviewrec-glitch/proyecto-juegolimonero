@@ -1069,17 +1069,29 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 <img className="seedbook-toggle-icon" src={gameAssetUrl("/seedbook-art.png")} alt="" aria-hidden="true" />
                 <b aria-hidden="true">{discoveredSongIds.length}/10</b>
               </button>
-              <button
-                className={`journey-menu-toggle${journeyMenuOpen ? " journey-menu-toggle-open" : ""}`}
-                type="button"
-                onClick={() => { setJourneyMenuOpen(open => !open); setSeedBookOpen(false); }}
-                aria-label={`${journeyMenuOpen ? "Cerrar" : "Abrir"} menú del viaje`}
-                aria-haspopup="menu"
-                aria-expanded={journeyMenuOpen}
-                aria-controls="journey-menu-panel"
-              >
-                <span aria-hidden="true">☷</span>
-              </button>
+              <div className="journey-toolbar-controls">
+                <button
+                  className={`journey-menu-toggle${journeyMenuOpen ? " journey-menu-toggle-open" : ""}`}
+                  type="button"
+                  onClick={() => { setJourneyMenuOpen(open => !open); setSeedBookOpen(false); }}
+                  aria-label={`${journeyMenuOpen ? "Cerrar" : "Abrir"} menú del viaje`}
+                  aria-haspopup="menu"
+                  aria-expanded={journeyMenuOpen}
+                  aria-controls="journey-menu-panel"
+                >
+                  <span aria-hidden="true">☷</span>
+                </button>
+                <button
+                  className="journey-mute-toggle"
+                  type="button"
+                  onClick={() => setMusicMuted(muted => !muted)}
+                  aria-label={musicMuted ? "Activar música de fondo" : "Silenciar música de fondo"}
+                  aria-pressed={musicMuted}
+                  title={musicMuted ? "Activar música de fondo" : "Silenciar música de fondo"}
+                >
+                  <span aria-hidden="true">{musicMuted ? "×♫" : "♫"}</span>
+                </button>
+              </div>
               {journeyMenuOpen && <aside id="journey-menu-panel" className="journey-menu-panel" role="menu" aria-label="Menú del viaje">
                 <div className="journey-menu-heading">MÁS OPCIONES</div>
                 {journeyRestartConfirm ? (
@@ -1093,15 +1105,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 ) : (
                   <button type="button" role="menuitem" className="journey-restart-button" onClick={() => setJourneyRestartConfirm(true)}>↻ reiniciar juego</button>
                 )}
-                <button
-                  type="button"
-                  role="menuitemcheckbox"
-                  aria-checked={musicMuted}
-                  className="journey-music-toggle"
-                  onClick={() => setMusicMuted(muted => !muted)}
-                >
-                  {musicMuted ? "♫ activar música de fondo" : "silenciar música de fondo"}
-                </button>
                 <div className="journey-menu-divider" />
                 {BAND_INSTAGRAM_LINKS.map(link => link.url ? (
                   <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" role="menuitem">◎ {link.label}</a>

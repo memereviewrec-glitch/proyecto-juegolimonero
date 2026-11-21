@@ -595,6 +595,10 @@ button { font:inherit; }
 .journey-menu-toggle:hover,.journey-menu-toggle-open { background:#f0e7d6; opacity:1; }
 .journey-menu-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; }
 .journey-menu-toggle span { font:700 25px/1 'DM Mono',monospace; transform:rotate(90deg); }
+.journey-toolbar-controls { display:flex; flex:0 0 auto; align-items:center; gap:8px; }
+.journey-mute-toggle { display:grid; flex:0 0 48px; place-items:center; width:48px; height:42px; padding:0; border:2px solid #2b263188; background:#fbf7ecd9; color:#302638; box-shadow:2px 2px #2b263133; font:700 18px/1 'DM Mono',monospace; cursor:pointer; }
+.journey-mute-toggle:hover { background:#f0e7d6; }
+.journey-mute-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; }
 .journey-menu-anchor-story,.journey-menu-anchor-book { display:none; }
 .journey-menu-panel { position:absolute; z-index:122; top:calc(100% + 6px); left:92px; width:min(260px,calc(100% - 92px)); padding:10px; border:3px solid #2b2631cc; background:#fbf7eceb; color:#302638; box-shadow:4px 4px #2b263166; image-rendering:pixelated; }
 .journey-menu-heading { padding:2px 3px 7px; color:#706a73; font:8px 'DM Mono',monospace; letter-spacing:.12em; }
@@ -615,6 +619,8 @@ button { font:inherit; }
  .game-hud-toolbar { position:absolute; top:0; left:calc(100% + 16px); width:82px; height:auto; margin:0; }
  .journey-menu-anchor { flex-direction:column; align-items:stretch; width:82px; height:auto; gap:10px; }
  .journey-menu-toggle { width:82px; height:48px; }
+ .journey-toolbar-controls { align-self:flex-start; }
+ .journey-mute-toggle { height:48px; }
  .journey-menu-panel { top:0; right:calc(100% + 10px); left:auto; width:260px; }
 }
 
@@ -730,6 +736,8 @@ button { font:inherit; }
  .seedbook-toggle-icon { width:58px; height:58px; }
  .seedbook-toggle b { right:-7px; bottom:-6px; min-width:36px; min-height:25px; }
  .journey-menu-toggle { top:auto; left:auto; width:48px; height:38px; }
+ .journey-toolbar-controls { gap:7px; }
+ .journey-mute-toggle { height:38px; }
  .journey-menu-panel { top:calc(100% + 6px); left:83px; width:min(240px,calc(100% - 83px)); }
  .seed-spark { width:46px; height:50px; padding:7px; }
  .seedbook-panel { inset:auto; width:100%; height:100vh; height:100dvh; padding:12px; border-width:4px; }

@@ -43,6 +43,8 @@ type JaguarSceneProps = JaguarHistory & {
   musicMuted: boolean;
   onSecretPathActiveChange: (active: boolean) => void;
   onFinScreenChange: (visible: boolean) => void;
+  startSecretPathFromBook: boolean;
+  onSecretPathLaunchConsumed: () => void;
   testMode?: boolean;
 };
 type DialoguePhase = "inner" | "cautela-check" | "angry-questions" | "laughing-questions" | "angry-check" | "ingenio-check" | "fight" | "nightmare" | "revelation" | "counsel" | "complete";
@@ -124,7 +126,7 @@ function runDialogueTransition(update: () => void, schedule: (callback: () => vo
   else schedule(finishTransition, 2800);
 }
 
-export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, musicMuted, onSecretPathActiveChange, onFinScreenChange, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, musicMuted, onSecretPathActiveChange, onFinScreenChange, startSecretPathFromBook, onSecretPathLaunchConsumed, testMode = false }: JaguarSceneProps) {
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -161,6 +163,12 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
     onSecretPathActiveChange(secretPathActive);
     return () => onSecretPathActiveChange(false);
   }, [onSecretPathActiveChange, secretPathActive]);
+
+  useEffect(() => {
+    if (!startSecretPathFromBook) return;
+    setSecretPathActive(true);
+    onSecretPathLaunchConsumed();
+  }, [onSecretPathLaunchConsumed, startSecretPathFromBook]);
 
   useEffect(() => {
     if (testMode) return;

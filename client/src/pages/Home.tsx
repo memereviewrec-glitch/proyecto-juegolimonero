@@ -15,7 +15,7 @@ import { JaguarScene } from "../components/JaguarScene";
 import { JaguarStatsHud, STAT_LABELS } from "../components/JaguarStatsHud";
 import { type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
-import { hasCompletedAllJaguarEndings, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
+import { hasCompletedAllJaguarEndings, hasUnlockedSecretEnding, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
 import { DevPlaytestTools, HUMMINGBIRD_DRAFT_ALTERNATIVES, type DevFriendPreview, type DevHummingbirdDialoguePreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { GameMusicControls, type GameMusicControlsHandle } from "../components/GameMusicControls";
@@ -172,6 +172,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [musicMuted, setMusicMuted] = useState(false);
   const [secretPathActive, setSecretPathActive] = useState(false);
   const [secretFinScreenVisible, setSecretFinScreenVisible] = useState(false);
+  const [secretPathLaunchPending, setSecretPathLaunchPending] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
   const musicControlsRef = useRef<GameMusicControlsHandle | null>(null);
@@ -776,6 +777,22 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     enterReplayScene(REWRITE_TARGETS[chapterId]);
   }
 
+  function openSecretEndingFromBook() {
+    if (!hasUnlockedSecretEnding(archivedJaguarEndings)) return;
+    stopGameAudio();
+    setSeedBookOpen(false);
+    setJourneyMenuOpen(false);
+    setStoryBeat(null);
+    setStorySeedBookOpened(false);
+    setStorySeedPreview(null);
+    setScene("jaguar");
+    setSceneReplayNonce(version => version + 1);
+    setSecretPathActive(false);
+    setSecretFinScreenVisible(false);
+    setSecretPathLaunchPending(true);
+    setNotice("");
+  }
+
   function returnToSeedScene(songId: SeedSongId) {
     const targetScene = getSeedSceneTarget(songId, discoveredSongIds);
     if (!targetScene) return;
@@ -1184,6 +1201,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               onClose={() => setSeedBookOpen(false)}
               onReturnToScene={returnToSeedScene}
               onRewriteChapter={rewriteChapter}
+              onOpenSecretEnding={openSecretEndingFromBook}
             />}
             {!storyBeat && !secretFinScreenVisible && <JaguarStatsHud stats={jaguarHudStats} gainNotice={statGainNotice} className="jaguar-global-stats" />}
           {scene === "room" ? (
@@ -1274,6 +1292,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 musicMuted={musicMuted}
                 onSecretPathActiveChange={setSecretPathActive}
                 onFinScreenChange={setSecretFinScreenVisible}
+                startSecretPathFromBook={secretPathLaunchPending}
+                onSecretPathLaunchConsumed={() => setSecretPathLaunchPending(false)}
                 dawnOutcome={dawnOutcome}
                 ramblaOutcome={ramblaHistoryOutcome}
                 hummingbirdOutcome={hummingbirdOutcome}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasCompletedAllJaguarEndings, JAGUAR_ENDINGS, JAGUAR_REVELATION_TEXT } from "./storyArchive";
+import { hasCompletedAllJaguarEndings, hasUnlockedSecretEnding, JAGUAR_ENDINGS, JAGUAR_REVELATION_TEXT } from "./storyArchive";
 
 describe("texto de revelación de El Jaguar", () => {
   it("mantiene el mensaje exacto en el archivo de Enigmas", () => {
@@ -14,6 +14,12 @@ describe("texto de revelación de El Jaguar", () => {
 });
 
 describe("desbloqueo del epílogo secreto", () => {
+  it("habilita la entrada del Libro tras descubrir los tres finales principales", () => {
+    expect(hasUnlockedSecretEnding(["empatia", "enigmas"])).toBe(false);
+    expect(hasUnlockedSecretEnding(["empatia", "enigmas", "valentia"])).toBe(true);
+    expect(hasUnlockedSecretEnding(["empatia", "empatia", "enigmas", "pesadilla"])).toBe(false);
+  });
+
   it("exige haber alcanzado cada uno de los cuatro finales", () => {
     expect(hasCompletedAllJaguarEndings(["empatia", "enigmas", "valentia"])).toBe(false);
     expect(hasCompletedAllJaguarEndings(["empatia", "enigmas", "valentia", "pesadilla"])).toBe(true);

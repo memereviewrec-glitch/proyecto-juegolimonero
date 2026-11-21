@@ -4,7 +4,7 @@ import { SeedGlyph } from "./SeedGlyph";
 import { getPhysicalSeedId } from "./seed-colors";
 import { STAT_LABELS } from "./JaguarStatsHud";
 import type { JaguarStats } from "./jaguarRules";
-import { JAGUAR_ENDINGS, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "./storyArchive";
+import { hasUnlockedSecretEnding, JAGUAR_ENDINGS, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "./storyArchive";
 
 type SongResource = {
   id: string;
@@ -41,11 +41,12 @@ type SeedBookProps = {
   onClose: () => void;
   onReturnToScene: (songId: SeedSongId) => void;
   onRewriteChapter: (chapterId: RewriteChapterId) => void;
+  onOpenSecretEnding: () => void;
 };
 
 type BookView = "songs" | "index" | "rewrite" | "endings" | "ending";
 
-export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, rewriteStartingStats, archivedEndingIds, onClose, onReturnToScene, onRewriteChapter }: SeedBookProps) {
+export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId = null, rewriteUnlocked, rewriteSummaries, rewriteStartingStats, archivedEndingIds, onClose, onReturnToScene, onRewriteChapter, onOpenSecretEnding }: SeedBookProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const onCloseRef = useRef(onClose);
@@ -233,13 +234,18 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
         {view === "endings" && rewriteUnlocked && <section className="seedbook-endings-view" aria-labelledby="seedbook-endings-title">
           <div className="seedbook-page-indicator">RECUERDOS DEL JAGUAR</div>
           <h3 id="seedbook-endings-title">Finales encontrados</h3>
-          <p className="seedbook-rewrite-note">Cada página muestra el arte del final que ya alcanzaste. Abrirla no vuelve a iniciar el encuentro.</p>
+          <p className="seedbook-rewrite-note">Las tarjetas muestran los finales ya alcanzados sin repetir el encuentro. Al reunir los tres finales principales del Jaguar, también podrás continuar el sueño desde aquí.</p>
           <div className="seedbook-ending-list">
             {JAGUAR_ENDINGS.filter(ending => archivedEndingIds.includes(ending.id)).map(ending => <button key={ending.id} type="button" className="seedbook-ending-card" onClick={() => { setSelectedEndingId(ending.id); setView("ending"); }}>
               <img src={gameAssetUrl(ending.artwork)} alt="" aria-hidden="true" />
               <span><strong>{ending.title}</strong><small>{ending.summary}</small></span>
               <b aria-hidden="true">ver diapositiva →</b>
             </button>)}
+            {hasUnlockedSecretEnding(archivedEndingIds) && <button type="button" className="seedbook-ending-card seedbook-secret-ending-card" onClick={onOpenSecretEnding}>
+              <img src={gameAssetUrl("/limonero-secret-logo-jaguar.png")} alt="" aria-hidden="true" />
+              <span><strong>¿el limón sigue durmiendo?</strong><small>Vuelve a entrar en la ruta secreta y avanza hasta el final del sueño.</small></span>
+              <b aria-hidden="true">entrar en el sueño →</b>
+            </button>}
           </div>
         </section>}
         {view === "ending" && selectedEnding && <article className="seedbook-ending-slide" aria-labelledby="seedbook-ending-title">

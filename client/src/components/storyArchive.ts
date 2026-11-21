@@ -39,6 +39,13 @@ export function hasCompletedAllJaguarEndings(endingIds: readonly JaguarEndingId[
   return JAGUAR_ENDINGS.every(ending => discovered.has(ending.id));
 }
 
+const SECRET_ENDING_PREREQUISITES: readonly JaguarEndingId[] = ["empatia", "enigmas", "valentia"];
+
+export function hasUnlockedSecretEnding(endingIds: readonly JaguarEndingId[]): boolean {
+  const discovered = new Set(endingIds);
+  return SECRET_ENDING_PREREQUISITES.every(endingId => discovered.has(endingId));
+}
+
 export type RewriteChapterId = "dawn" | "rambla" | "river" | "river-challenge" | "hummingbird" | "jaguar";
 
 export const REWRITE_CHAPTERS: readonly {

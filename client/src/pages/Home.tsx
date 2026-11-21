@@ -1238,7 +1238,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             />
           </div>}
 
-          {showOverlay && <aside key={scene === "room" ? `room-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
+          {showOverlay && <aside key={scene === "room" ? `room-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}${scene === "dawn" && seedAvailable && !seedCollected ? " dawn-seed-controls" : ""}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
               {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>Tocar la guitarra <span aria-hidden="true">→</span></button></div>}
             </> : scene === "dawn" ? <>

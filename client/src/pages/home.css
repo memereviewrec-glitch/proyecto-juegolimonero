@@ -532,6 +532,9 @@ button { font:inherit; }
 .dawn-controls .choice-list button { display:flex; width:100%; min-height:54px; align-items:center; justify-content:flex-start; padding:10px 14px; }
 .dawn-controls .choice-list strong { display:block; min-width:0; font:600 16px/1.35 'DM Mono',monospace; text-align:left; }
 .dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:14px; }
+@media (min-width:601px) {
+ .dawn-controls.dawn-seed-controls { top:8px; }
+}
 
 @media (max-width:600px) {
  .lemon-left { left:8%; }

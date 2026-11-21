@@ -46,6 +46,7 @@
 .el-rio-dialogue .el-rio-speaker-rio { color:#2e6468; }
 .el-rio-dialogue p { margin: 7px 0 10px; color: #233943; font: 11px/1.45 'DM Mono', monospace; }
 .el-rio-dialogue .el-rio-black-thought { margin: 3px 0 7px; font-size: 10px; line-height: 1.25; }
+.el-rio-dialogue .el-rio-water-reward { margin:8px 0 7px; color:#286b60; font-weight:700; }
 .el-rio-dialogue button { border: 3px solid #193945; background: #3e7077; color: #efffe7; padding: 9px 12px; font: 10px 'DM Mono', monospace; cursor: pointer; box-shadow: 3px 3px 0 #8ea99b; }
 .el-rio-dialogue button b { color: #d7ffe4; }
 .el-rio-choices { display: flex; gap: 7px; flex-wrap: wrap; }

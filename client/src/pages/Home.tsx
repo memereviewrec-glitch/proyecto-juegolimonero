@@ -28,7 +28,7 @@ import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { getSeedSceneTarget } from "../seedSceneNavigation";
 import { gameAssetUrl, playWhistle, stopGameAudio } from "../gameAudio";
-import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredHummingbirdRewards, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
+import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredFireSeedWatered, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredHummingbirdRewards, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredRiverWaterCollected, readStoredSeedBookIds, saveDawnOutcome, saveFireSeedWatered, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveRiverWaterCollected, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import { isSceneUnlocked, type GameScene } from "../sceneAccessRules";
 import { createAttemptTaskScope } from "../attemptTaskScope";
@@ -222,7 +222,11 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [riverChoiceMadeThisAttempt, setRiverChoiceMadeThisAttempt] = useState(false);
   const [elRioSeedCollected, setElRioSeedCollected] = useState(false);
   const [elRioBlackAnsweredWhite, setElRioBlackAnsweredWhite] = useState(false);
+  const [riverWaterCollected, setRiverWaterCollected] = useState(readStoredRiverWaterCollected);
+  const riverWaterCollectedRef = useRef(riverWaterCollected);
   const [fireSeedCollected, setFireSeedCollected] = useState(false);
+  const [fireSeedWatered, setFireSeedWatered] = useState(readStoredFireSeedWatered);
+  const fireSeedWateredRef = useRef(fireSeedWatered);
   const [ponzonaSeedCollected, setPonzonaSeedCollected] = useState(false);
   const [nueveSentidosSeedCollected, setNueveSentidosSeedCollected] = useState(false);
   const [nueveSentidosEpilogueReady, setNueveSentidosEpilogueReady] = useState(false);
@@ -251,8 +255,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     hummingbirdValentiaBonus: hummingbirdRewards.valentia,
     riverConversationOutcome,
     riverChallengeOutcome,
+    riverWaterCollected,
+    fireSeedWatered,
     nueveSentidosSeedCollected: nueveSentidosSeedCollected || persistedSeedIds.includes("nueve-sentidos"),
-  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, hummingbirdRewards, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected, persistedSeedIds]);
+  }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, hummingbirdRewards, riverConversationOutcome, riverChallengeOutcome, riverWaterCollected, fireSeedWatered, nueveSentidosSeedCollected, persistedSeedIds]);
   const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<JaguarStatsSnapshot | null>(null);
   const [statGainNotice, setStatGainNotice] = useState<{ id: number; gains: Partial<JaguarStats> } | null>(null);
   const previousHudStats = useRef<JaguarStats | null>(null);
@@ -262,6 +268,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     : scene === "gathering" ? ramblaOutcome !== null
     : scene === "river" ? riverChoiceMadeThisAttempt
     : scene === "river-challenge" ? riverChallengeComplete
+    : scene === "el-rio" ? riverWaterCollected
+    : scene === "fire-forest" ? fireSeedWatered
     : scene === "hummingbird" ? hummingbirdDecisionMadeThisAttempt
     : scene === "nueve-sentidos" ? nueveSentidosSeedCollected
     : false;
@@ -584,6 +592,20 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     if (elRioSeedCollected) return;
     setElRioSeedCollected(true);
     setNotice("El pez blanco entrega la semilla de «El Río» al Libro de Semillas.");
+  }
+
+  function collectRiverWater() {
+    if (riverWaterCollectedRef.current) return;
+    riverWaterCollectedRef.current = true;
+    setRiverWaterCollected(true);
+    saveRiverWaterCollected();
+  }
+
+  function waterFireSeed() {
+    if (!riverWaterCollectedRef.current || fireSeedWateredRef.current) return;
+    fireSeedWateredRef.current = true;
+    setFireSeedWatered(true);
+    saveFireSeedWatered();
   }
 
   function collectFireSeed() {
@@ -1229,9 +1251,9 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             ) : scene === "river-challenge" ? (
               <RiverChallengeScene key={`river-challenge-${sceneReplayNonce}`} onComplete={outcome => { setRiverChallengeOutcome(outcome); saveRiverChallengeOutcome(outcome); setRiverChallengeComplete(true); }} onPreviewContinue={openRiverChallengePreview ? () => { resetSceneAttempt("jaguar"); setSceneReplayNonce(version => version + 1); setScene("jaguar"); } : undefined} />
             ) : scene === "el-rio" ? (
-              <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} onBlackReplyToWhite={() => setElRioBlackAnsweredWhite(true)} />
+              <ElRioScene key={`el-rio-${sceneReplayNonce}`} seedCollected={elRioSeedCollected} onCollectSeed={collectElRioSeed} onBlackReplyToWhite={() => setElRioBlackAnsweredWhite(true)} onCollectRiverWater={collectRiverWater} />
             ) : scene === "fire-forest" ? (
-              <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} />
+              <FireForestScene key={`fire-forest-${sceneReplayNonce}`} seedCollected={fireSeedCollected} onCollectSeed={collectFireSeed} riverWaterCollected={riverWaterCollected} fireSeedWatered={fireSeedWatered} onWaterSeed={waterFireSeed} />
             ) : scene === "hummingbird" ? (
               <HummingbirdScene key={`hummingbird-${sceneReplayNonce}`} seedCollected={ponzonaSeedCollected} onCollectSeed={collectPonzonaSeed} onOutcome={recordHummingbirdOutcome} onValiantResponseCountChange={reportHummingbirdValiantResponseCount} previewAlternatives={isDevelopment && devHummingbirdDialoguePreview === "draft" ? HUMMINGBIRD_DRAFT_ALTERNATIVES : undefined} />
             ) : scene === "nueve-sentidos" ? (

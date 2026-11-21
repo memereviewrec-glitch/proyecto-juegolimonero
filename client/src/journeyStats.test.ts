@@ -134,6 +134,29 @@ describe("HUD cronológico al reescribir historia", () => {
     expect(getJourneyHudStats(savedHistory, "nueve-sentidos", false)).toEqual(before);
   });
 
+  it("proyecta el agua y el riego solo desde sus escenas, sin duplicar recompensas al repetirlas", () => {
+    const rewarded = { ...savedHistory, riverWaterCollected: true, fireSeedWatered: true };
+    const atRiverBeforeReading = getJourneyHudStats(rewarded, "el-rio", false);
+    const atRiverAfterReading = getJourneyHudStats(rewarded, "el-rio", true);
+    expect(atRiverAfterReading.empatia).toBe(atRiverBeforeReading.empatia + 6);
+    expect(atRiverAfterReading.ingenio).toBe(atRiverBeforeReading.ingenio);
+    expect(getJourneyHudStats(rewarded, "el-rio", true)).toEqual(atRiverAfterReading);
+
+    const atFireBeforeWatering = getJourneyHudStats(rewarded, "fire-forest", false);
+    expect(atFireBeforeWatering.empatia).toBe(atRiverAfterReading.empatia);
+    const atFireAfterWatering = getJourneyHudStats(rewarded, "fire-forest", true);
+    expect(atFireAfterWatering.ingenio).toBe(atFireBeforeWatering.ingenio + 5);
+    expect(getJourneyHudStats(rewarded, "fire-forest", true)).toEqual(atFireAfterWatering);
+    expect(getJourneyHudStats(rewarded, "hummingbird", false)).toEqual(atFireAfterWatering);
+  });
+
+  it("no anticipa ni concede el riego si no hay agua guardada", () => {
+    const invalidWatering = { ...savedHistory, riverWaterCollected: false, fireSeedWatered: true };
+    const before = getJourneyHudStats(invalidWatering, "el-rio", false);
+    expect(getJourneyHudStats(invalidWatering, "el-rio", true)).toEqual(before);
+    expect(getJourneyHudStats(invalidWatering, "fire-forest", true).ingenio).toBe(before.ingenio);
+  });
+
   it("al saltar directamente a Jaguar reutiliza todas las decisiones vigentes sin exigir repetirlas", () => {
     expect(getJourneyHudStats(savedHistory, "jaguar")).toEqual(createInitialJaguarStats(savedHistory));
     const newHistory = { ...savedHistory, dawnOutcome: "A" as const };

@@ -11,6 +11,8 @@ export type JaguarHistory = {
   hummingbirdValentiaBonus?: number;
   riverConversationOutcome?: RiverConversationOutcome | null;
   riverChallengeOutcome?: RiverChallengeOutcome | null;
+  riverWaterCollected?: boolean;
+  fireSeedWatered?: boolean;
   nueveSentidosSeedCollected?: boolean;
 };
 export type JaguarAnswer = {
@@ -115,6 +117,12 @@ export function createInitialJaguarStats(history: JaguarHistory): JaguarStats {
     stats = applyJaguarEffects(stats, { valentia: 6 });
   } else if (history.riverChallengeOutcome === "shore") {
     stats = applyJaguarEffects(stats, { cautela: 6 });
+  }
+  if (history.riverWaterCollected) {
+    stats = applyJaguarEffects(stats, { empatia: 6 });
+  }
+  if (history.riverWaterCollected && history.fireSeedWatered) {
+    stats = applyJaguarEffects(stats, { ingenio: 5 });
   }
   if (history.nueveSentidosSeedCollected) {
     stats = applyJaguarEffects(stats, { ingenio: 4 });

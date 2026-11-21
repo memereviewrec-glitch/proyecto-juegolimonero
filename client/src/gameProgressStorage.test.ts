@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clearStoredGameProgress, clearStoredRiverConversationOutcome, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, JAGUAR_ENDINGS_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredJaguarEndings, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveHummingbirdOutcome, saveJaguarEnding, saveRiverChallengeOutcome, saveRiverConversationOutcome } from "./gameProgressStorage";
+import { clearStoredGameProgress, clearStoredRiverConversationOutcome, HUMMINGBIRD_FRIENDSHIP_STORAGE_KEY, JAGUAR_ENDINGS_STORAGE_KEY, mergeDiscoveredSeedIds, readStoredFireSeedWatered, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredJaguarEndings, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredRiverWaterCollected, RIVER_CHALLENGE_OUTCOME_STORAGE_KEY, RIVER_CONVERSATION_OUTCOME_STORAGE_KEY, saveFireSeedWatered, saveHummingbirdOutcome, saveJaguarEnding, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveRiverWaterCollected } from "./gameProgressStorage";
 import { DAWN_OUTCOME_STORAGE_KEY, readStoredDawnOutcome, saveDawnOutcome, SEED_BOOK_STORAGE_KEY } from "./gameProgressStorage";
 import { createInitialJaguarStats } from "./components/jaguarRules";
 import { HUMMINGBIRD_REWARDS_STORAGE_KEY, readStoredHummingbirdRewards } from "./gameProgressStorage";
@@ -91,6 +91,41 @@ describe("archivo de finales del Jaguar", () => {
     expect(readStoredJaguarEndings()).toEqual(["valentia"]);
     values.set(JAGUAR_ENDINGS_STORAGE_KEY, "not-json");
     expect(readStoredJaguarEndings()).toEqual([]);
+  });
+});
+
+describe("recompensas del agua entre escenas", () => {
+  it("persiste agua y riego, y los borra al reiniciar todo el progreso", () => {
+    const values = new Map<string, string>();
+    vi.stubGlobal("window", { localStorage: {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); },
+      removeItem: (key: string) => { values.delete(key); },
+    } });
+
+    expect(readStoredRiverWaterCollected()).toBe(false);
+    expect(readStoredFireSeedWatered()).toBe(false);
+    saveRiverWaterCollected();
+    saveRiverWaterCollected();
+    expect(readStoredRiverWaterCollected()).toBe(true);
+    expect(values.size).toBe(1);
+    saveFireSeedWatered();
+    saveFireSeedWatered();
+    expect(readStoredFireSeedWatered()).toBe(true);
+    expect(values.size).toBe(2);
+    expect(clearStoredGameProgress()).toBe(true);
+    expect(readStoredRiverWaterCollected()).toBe(false);
+    expect(readStoredFireSeedWatered()).toBe(false);
+  });
+
+  it("trata valores dañados como recompensas no obtenidas", () => {
+    const values = new Map<string, string>([
+      ["limonero-fuzz-river-water-collected-v1", "yes"],
+      ["limonero-fuzz-fire-seed-watered-v1", "not-json"],
+    ]);
+    vi.stubGlobal("window", { localStorage: { getItem: (key: string) => values.get(key) ?? null } });
+    expect(readStoredRiverWaterCollected()).toBe(false);
+    expect(readStoredFireSeedWatered()).toBe(false);
   });
 });
 

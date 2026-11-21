@@ -15,6 +15,8 @@ export const HUMMINGBIRD_REWARDS_STORAGE_KEY = "limonero-fuzz-hummingbird-reward
 export const RIVER_CHALLENGE_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-challenge-outcome-v1";
 export const RIVER_CONVERSATION_OUTCOME_STORAGE_KEY = "limonero-fuzz-river-conversation-outcome-v1";
 export const JAGUAR_ENDINGS_STORAGE_KEY = "limonero-fuzz-jaguar-endings-v1";
+export const RIVER_WATER_COLLECTED_STORAGE_KEY = "limonero-fuzz-river-water-collected-v1";
+export const FIRE_SEED_WATERED_STORAGE_KEY = "limonero-fuzz-fire-seed-watered-v1";
 const VALID_JAGUAR_ENDINGS = new Set<JaguarEndingId>(["empatia", "enigmas", "valentia", "pesadilla"]);
 
 export function readStoredSeedBookIds<Id extends string>(knownIds: readonly Id[]): Id[] {
@@ -112,6 +114,40 @@ export function readStoredRiverConversationOutcome(): RiverConversationOutcome |
   }
 }
 
+function readStoredBoolean(key: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(key) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function saveStoredBoolean(key: string) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, "true");
+  } catch {
+    // La recompensa sigue disponible durante la sesión aunque el almacenamiento esté bloqueado.
+  }
+}
+
+export function readStoredRiverWaterCollected(): boolean {
+  return readStoredBoolean(RIVER_WATER_COLLECTED_STORAGE_KEY);
+}
+
+export function saveRiverWaterCollected() {
+  saveStoredBoolean(RIVER_WATER_COLLECTED_STORAGE_KEY);
+}
+
+export function readStoredFireSeedWatered(): boolean {
+  return readStoredBoolean(FIRE_SEED_WATERED_STORAGE_KEY);
+}
+
+export function saveFireSeedWatered() {
+  saveStoredBoolean(FIRE_SEED_WATERED_STORAGE_KEY);
+}
+
 export function saveHummingbirdOutcome(outcome: HummingbirdOutcomeValue, valiantResponseCount = 0): HummingbirdRewards {
   const rewards = getHummingbirdRewards(outcome, valiantResponseCount);
   if (typeof window === "undefined") return rewards;
@@ -207,6 +243,8 @@ export function clearStoredGameProgress(): boolean {
     window.localStorage.removeItem(RIVER_CHALLENGE_OUTCOME_STORAGE_KEY);
     window.localStorage.removeItem(RIVER_CONVERSATION_OUTCOME_STORAGE_KEY);
     window.localStorage.removeItem(JAGUAR_ENDINGS_STORAGE_KEY);
+    window.localStorage.removeItem(RIVER_WATER_COLLECTED_STORAGE_KEY);
+    window.localStorage.removeItem(FIRE_SEED_WATERED_STORAGE_KEY);
     return true;
   } catch {
     return false;

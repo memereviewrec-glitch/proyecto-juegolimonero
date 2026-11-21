@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
+import { canOfferFireSeedWatering } from "./fireForestRules";
 import "./fire-forest-scene.css";
 
 type FireForestSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
+  riverWaterCollected: boolean;
+  fireSeedWatered: boolean;
+  onWaterSeed: () => void;
 };
 
 type FireForestNarrativeStep = 0 | 1 | 2 | 3 | 4;
 
 const FIRE_FOREST_BACKGROUND = "/fire-forest-burning-frames.png";
 
-export function FireForestScene({ seedCollected, onCollectSeed }: FireForestSceneProps) {
+export function FireForestScene({ seedCollected, onCollectSeed, riverWaterCollected, fireSeedWatered, onWaterSeed }: FireForestSceneProps) {
   const [rainStarted, setRainStarted] = useState(false);
   const [fireOut, setFireOut] = useState(false);
   const [narrativeStep, setNarrativeStep] = useState<FireForestNarrativeStep>(0);
   const [postFireDialogueDismissed, setPostFireDialogueDismissed] = useState(false);
   const [backgroundReady, setBackgroundReady] = useState(false);
   const [backgroundFallback, setBackgroundFallback] = useState(false);
+  const canWaterSeed = canOfferFireSeedWatering({ fireOut, postFireDialogueDismissed, riverWaterCollected, fireSeedWatered });
+  const seedWasWatered = fireOut && postFireDialogueDismissed && riverWaterCollected && fireSeedWatered;
 
   useEffect(() => {
     let active = true;
@@ -80,6 +86,11 @@ export function FireForestScene({ seedCollected, onCollectSeed }: FireForestScen
           <p>{seedCollected ? "La semilla conserva el calor de lo que terminó." : "Entre la ceniza ha quedado una semilla negra, quemada por el fuego."}</p>
           <button type="button" onClick={() => setPostFireDialogueDismissed(true)}>Continuar <span aria-hidden="true">→</span></button>
         </div>}
+        {canWaterSeed && <div className="fire-forest-water-action" role="group" aria-label="Regar la semilla">
+          <p>El agua del río puede llegar hasta la semilla.</p>
+          <button type="button" onClick={onWaterSeed}>Regar la semilla</button>
+        </div>}
+        {seedWasWatered && <div className="fire-forest-watered" role="status" aria-live="polite">La semilla bebe el agua del río y despierta lentamente.</div>}
       </>}
     </div>
   );

@@ -39,10 +39,15 @@
 .fire-forest-dialogue p { margin:6px 0 0; font:11px/1.4 'DM Mono',monospace; }
 .fire-forest-dialogue button { display:inline-flex; min-height:34px; align-items:center; justify-content:center; gap:8px; margin-top:9px; padding:6px 10px; border:2px solid #292334; background:#f4c968; color:#28212d; box-shadow:2px 2px 0 #292334; font:700 9px 'DM Mono',monospace; cursor:pointer; touch-action:manipulation; }
 .fire-forest-dialogue button:hover,.fire-forest-dialogue button:focus-visible { outline:2px dashed #7d4d48; outline-offset:2px; background:#ffe08a; }
+.fire-forest-water-action,.fire-forest-watered { position:absolute; z-index:22; left:50%; bottom:5%; width:min(88%,560px); transform:translateX(-50%); padding:10px 13px; border:3px solid #173c49; background:#e0f4dfed; color:#1c3941; box-shadow:4px 4px 0 #080a10; text-align:center; font:9px/1.45 'DM Mono',monospace; }
+.fire-forest-water-action p { margin:0 0 7px; }
+.fire-forest-water-action button { min-height:38px; padding:7px 13px; border:2px solid #173c49; background:#79cfbf; color:#112b35; box-shadow:2px 2px 0 #173c49; font:700 10px 'DM Mono',monospace; cursor:pointer; touch-action:manipulation; }
+.fire-forest-water-action button:hover,.fire-forest-water-action button:focus-visible { outline:2px dashed #fff6c8; outline-offset:2px; background:#9fe2c9; }
+.fire-forest-watered { border-color:#436a4b; background:#e3f2cde8; color:#30543a; }
 @keyframes forest-background-flicker { 0%,49.99% { background-position:0 50%; } 50%,100% { background-position:100% 50%; } }
 @keyframes forest-raindrop { 0% { transform:translateY(-7px); opacity:0; } 12% { opacity:.82; } 72% { opacity:.82; } 100% { transform:translateY(112vh); opacity:0; } }
 @keyframes seed-reveal { to { opacity:.15; transform:scale(1.12); } }
-@media (max-width:600px) { .fire-forest-dialogue { width:90%; max-height:32%; padding:9px 11px 8px; } .fire-forest-dialogue p { font-size:9px; } .fire-forest-dialogue button { min-height:36px; font-size:9px; } .fire-forest-rain i { width:2px; height:2px; box-shadow:1px 1px 0 #79b4c8; } }
+@media (max-width:600px) { .fire-forest-dialogue { width:90%; max-height:32%; padding:9px 11px 8px; } .fire-forest-dialogue p { font-size:9px; } .fire-forest-dialogue button { min-height:36px; font-size:9px; } .fire-forest-water-action,.fire-forest-watered { bottom:4%; width:88%; padding:8px 9px; font-size:8px; } .fire-forest-water-action button { min-height:36px; font-size:9px; } .fire-forest-rain i { width:2px; height:2px; box-shadow:1px 1px 0 #79b4c8; } }
 @media (prefers-reduced-motion:reduce) {
   .fire-background-ready .fire-forest-world { animation:none; }
   .fire-forest-rain i,.burnt-seed::after { animation:none; }

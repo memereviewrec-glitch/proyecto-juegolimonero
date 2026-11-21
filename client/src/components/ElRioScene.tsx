@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { LemonSprite } from "./GameSprites";
 import { SeedGlyph } from "./SeedGlyph";
+import { recordBlackFishReply, RIO_FISH_COLORS, type RioFishColor } from "./elRioRules";
 import "./el-rio-scene.css";
 
-type FishColor = "verde" | "azul" | "rojo" | "amarillo";
+type FishColor = RioFishColor;
 
 type ElRioSceneProps = {
   seedCollected: boolean;
   onCollectSeed: () => void;
   onBlackReplyToWhite?: () => void;
+  onCollectRiverWater?: () => void;
 };
 
 const FISH_THOUGHTS: Record<FishColor, string> = {
@@ -25,7 +27,7 @@ const FISH_LABELS: Record<FishColor, string> = {
   amarillo: "pez amarillo",
 };
 
-const FISH_COLORS: readonly FishColor[] = ["verde", "azul", "rojo", "amarillo"];
+const FISH_COLORS = RIO_FISH_COLORS;
 
 const BLACK_RESPONSES: Record<FishColor, string> = {
   verde: "La alegría es un comienzo, no una respuesta final.",
@@ -34,7 +36,7 @@ const BLACK_RESPONSES: Record<FishColor, string> = {
   amarillo: "La sabiduría empieza cuando aceptamos que no poseemos el principio.",
 };
 
-export function ElRioScene({ seedCollected, onCollectSeed, onBlackReplyToWhite }: ElRioSceneProps) {
+export function ElRioScene({ seedCollected, onCollectSeed, onBlackReplyToWhite, onCollectRiverWater }: ElRioSceneProps) {
   const fishLanes = useMemo(() => ({
     green: 22 + Math.random() * 39,
     blue: 22 + Math.random() * 39,
@@ -48,6 +50,8 @@ export function ElRioScene({ seedCollected, onCollectSeed, onBlackReplyToWhite }
   const [blackThought, setBlackThought] = useState<string | null>(null);
   const [activeFish, setActiveFish] = useState<FishColor | "blanco" | "negro" | null>(null);
   const [showingBlackReply, setShowingBlackReply] = useState(false);
+  const [readBlackReplies, setReadBlackReplies] = useState<FishColor[]>([]);
+  const [riverWaterMessageVisible, setRiverWaterMessageVisible] = useState(false);
   const [whiteHeard, setWhiteHeard] = useState(seedCollected);
   const whiteUnlocked = heardFish.length === 4;
 
@@ -85,6 +89,14 @@ export function ElRioScene({ seedCollected, onCollectSeed, onBlackReplyToWhite }
   function showBlackReply() {
     setShowingBlackReply(true);
     if (activeFish === "blanco") onBlackReplyToWhite?.();
+    if (activeFish && activeFish !== "blanco" && activeFish !== "negro") {
+      const result = recordBlackFishReply(readBlackReplies, activeFish);
+      setReadBlackReplies(result.replies);
+      if (result.allRead) {
+        setRiverWaterMessageVisible(true);
+        if (result.newlyRead) onCollectRiverWater?.();
+      }
+    }
   }
 
   const speakerFish = showingBlackReply && blackThought ? "negro" : activeFish;
@@ -109,7 +121,7 @@ export function ElRioScene({ seedCollected, onCollectSeed, onBlackReplyToWhite }
         <div className="river-coordinate">LF · 07</div>
       </div>
       <div className="el-rio-dialogue" role="status" aria-live="polite">
-        {thought ? <><span className={`el-rio-speaker el-rio-speaker-${speakerFish ?? "unknown"}`}>PEZ {speakerFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla bloqueada"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span className="el-rio-speaker el-rio-speaker-rio">EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p></>}
+        {thought ? <><span className={`el-rio-speaker el-rio-speaker-${speakerFish ?? "unknown"}`}>PEZ {speakerFish?.toUpperCase()}</span><p>{showingBlackReply && blackThought ? blackThought : thought}</p>{riverWaterMessageVisible && <p className="el-rio-water-reward">has recogido un poco de agua del río...</p>}{!showingBlackReply && activeFish === "blanco" && <div className="el-rio-seed-reward"><SeedGlyph seed="el-rio" /><small>{seedCollected ? "Semilla añadida al Libro" : "Semilla bloqueada"}</small></div>}<button type="button" onClick={showingBlackReply || !blackThought ? closeFishThought : showBlackReply}>{showingBlackReply || !blackThought ? "continuar" : "escuchar la respuesta"} <b aria-hidden="true">▶</b></button></> : <><span className="el-rio-speaker el-rio-speaker-rio">EL RÍO</span><p>El limón ya descansa en el fondo del cauce. Los peces atraviesan el agua como pensamientos de color.</p></>}
       </div>
     </div>
   );

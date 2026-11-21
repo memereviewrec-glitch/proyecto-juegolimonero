@@ -1091,6 +1091,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 >
                   <span aria-hidden="true">{musicMuted ? "×♫" : "♫"}</span>
                 </button>
+                <span className={`journey-music-status${musicMuted ? " journey-music-status-muted" : " journey-music-status-active"}`} role="status" aria-live="polite">
+                  <span className="journey-music-status-light" aria-hidden="true" />
+                  {musicMuted ? "SILENCIADA" : "ACTIVADA"}
+                </span>
               </div>
               {journeyMenuOpen && <aside id="journey-menu-panel" className="journey-menu-panel" role="menu" aria-label="Menú del viaje">
                 <div className="journey-menu-heading">MÁS OPCIONES</div>

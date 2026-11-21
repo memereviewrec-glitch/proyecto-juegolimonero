@@ -599,6 +599,11 @@ button { font:inherit; }
 .journey-mute-toggle { display:grid; flex:0 0 48px; place-items:center; width:48px; height:42px; padding:0; border:2px solid #2b263188; background:#fbf7ecd9; color:#302638; box-shadow:2px 2px #2b263133; font:700 18px/1 'DM Mono',monospace; cursor:pointer; }
 .journey-mute-toggle:hover { background:#f0e7d6; }
 .journey-mute-toggle:focus-visible { outline:3px solid #d98470; outline-offset:3px; }
+.journey-music-status { display:flex; flex:0 0 auto; align-items:center; gap:4px; min-height:28px; padding:4px 6px; border:1px solid #61546c88; background:#fbf7ecd9; font:700 7px/1 'DM Mono',monospace; letter-spacing:.03em; white-space:nowrap; }
+.journey-music-status-active { color:#31593d; }
+.journey-music-status-muted { color:#883f44; }
+.journey-music-status-light { width:7px; height:7px; border:1px solid currentColor; background:#57b96b; box-shadow:0 0 4px #57b96b99; }
+.journey-music-status-muted .journey-music-status-light { background:#c45b62; box-shadow:0 0 4px #c45b6299; }
 .journey-menu-anchor-story,.journey-menu-anchor-book { display:none; }
 .journey-menu-panel { position:absolute; z-index:122; top:calc(100% + 6px); left:92px; width:min(260px,calc(100% - 92px)); padding:10px; border:3px solid #2b2631cc; background:#fbf7eceb; color:#302638; box-shadow:4px 4px #2b263166; image-rendering:pixelated; }
 .journey-menu-heading { padding:2px 3px 7px; color:#706a73; font:8px 'DM Mono',monospace; letter-spacing:.12em; }

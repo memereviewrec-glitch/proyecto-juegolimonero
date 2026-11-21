@@ -537,5 +537,5 @@
 ## [x] Música de fondo durante el juego
 - Incorporar el MP3 entregado por el grupo como una pista ambiental continua. Debe comenzar al pulsar «comenzar el sendero», repetirse en bucle y seguir reproduciéndose al cambiar de escena y al mostrar diapositivas narrativas, sin reiniciarse en cada transición.
 - Mantener en el marco jugable un control accesible para reproducir/pausar y un volumen fijo del 36 % durante todo el juego; la música no debe empezar antes de una acción del jugador que habilite el audio del navegador.
-- No atenuar ni variar el volumen durante diálogos, narraciones o al abrir el Libro de Semillas o el menú del viaje. El control para silenciar o volver a activar la música permanece visible junto al botón del menú del viaje, fuera del desplegable.
+- No atenuar ni variar el volumen durante diálogos, narraciones o al abrir el Libro de Semillas o el menú del viaje. El control para silenciar o volver a activar la música permanece visible junto al botón del menú del viaje, fuera del desplegable, y un indicador visual muestra claramente si está activada o silenciada.
 - La música de fondo no debe detener ni sustituir los silbidos del limón y de los pájaros.

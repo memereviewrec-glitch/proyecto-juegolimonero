@@ -234,7 +234,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
         {view === "endings" && rewriteUnlocked && <section className="seedbook-endings-view" aria-labelledby="seedbook-endings-title">
           <div className="seedbook-page-indicator">RECUERDOS DEL JAGUAR</div>
           <h3 id="seedbook-endings-title">Finales encontrados</h3>
-          <p className="seedbook-rewrite-note">Las tarjetas muestran los finales ya alcanzados sin repetir el encuentro. Al reunir los tres finales principales del Jaguar, también podrás continuar el sueño desde aquí.</p>
+          <p className="seedbook-rewrite-note">Las tarjetas muestran los finales ya alcanzados sin repetir el encuentro. Al reunir los cuatro finales del Jaguar, también podrás continuar el sueño desde aquí.</p>
           <div className="seedbook-ending-list">
             {JAGUAR_ENDINGS.filter(ending => archivedEndingIds.includes(ending.id)).map(ending => <button key={ending.id} type="button" className="seedbook-ending-card" onClick={() => { setSelectedEndingId(ending.id); setView("ending"); }}>
               <img src={gameAssetUrl(ending.artwork)} alt="" aria-hidden="true" />

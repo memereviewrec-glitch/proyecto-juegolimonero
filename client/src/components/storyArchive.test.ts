@@ -14,10 +14,10 @@ describe("texto de revelación de El Jaguar", () => {
 });
 
 describe("desbloqueo del epílogo secreto", () => {
-  it("habilita la entrada del Libro tras descubrir los tres finales principales", () => {
+  it("habilita la entrada del Libro tras descubrir los cuatro finales", () => {
     expect(hasUnlockedSecretEnding(["empatia", "enigmas"])).toBe(false);
-    expect(hasUnlockedSecretEnding(["empatia", "enigmas", "valentia"])).toBe(true);
-    expect(hasUnlockedSecretEnding(["empatia", "empatia", "enigmas", "pesadilla"])).toBe(false);
+    expect(hasUnlockedSecretEnding(["empatia", "enigmas", "valentia"])).toBe(false);
+    expect(hasUnlockedSecretEnding(["empatia", "enigmas", "valentia", "pesadilla"])).toBe(true);
   });
 
   it("exige haber alcanzado cada uno de los cuatro finales", () => {

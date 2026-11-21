@@ -12,7 +12,7 @@ import { FireForestScene } from "../components/FireForestScene";
 import { HummingbirdScene, type HummingbirdOutcome } from "../components/HummingbirdScene";
 import { NueveSentidosScene } from "../components/NueveSentidosScene";
 import { JaguarScene } from "../components/JaguarScene";
-import { JaguarStatsHud } from "../components/JaguarStatsHud";
+import { JaguarStatsHud, STAT_LABELS } from "../components/JaguarStatsHud";
 import { type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
 import { REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
@@ -254,6 +254,10 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     nueveSentidosSeedCollected: nueveSentidosSeedCollected || persistedSeedIds.includes("nueve-sentidos"),
   }), [dawnOutcome, ramblaHistoryOutcome, hummingbirdOutcome, hummingbirdRewards, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected, persistedSeedIds]);
   const [jaguarStatsSnapshot, setJaguarStatsSnapshot] = useState<JaguarStatsSnapshot | null>(null);
+  const [statGainNotice, setStatGainNotice] = useState<{ id: number; gains: Partial<JaguarStats> } | null>(null);
+  const previousHudStats = useRef<JaguarStats | null>(null);
+  const statGainNoticeId = useRef(0);
+  const statGainNoticeTimer = useRef<number | null>(null);
   const currentSceneDecisionResolved = scene === "dawn" ? branch !== null
     : scene === "gathering" ? ramblaOutcome !== null
     : scene === "river" ? riverChoiceMadeThisAttempt
@@ -262,6 +266,29 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     : scene === "nueve-sentidos" ? nueveSentidosSeedCollected
     : false;
   const jaguarHudStats = getJourneyHudStats(jaguarHistory, scene, currentSceneDecisionResolved, jaguarStatsSnapshot, hummingbirdValiantResponseCount);
+  useEffect(() => {
+    const previous = previousHudStats.current;
+    previousHudStats.current = { ...jaguarHudStats };
+    if (!previous) return;
+
+    const gains: Partial<JaguarStats> = {};
+    for (const stat of Object.keys(STAT_LABELS) as (keyof JaguarStats)[]) {
+      const increase = jaguarHudStats[stat] - previous[stat];
+      if (increase > 0) gains[stat] = increase;
+    }
+    if (Object.keys(gains).length === 0) return;
+
+    const id = ++statGainNoticeId.current;
+    setStatGainNotice({ id, gains });
+    if (statGainNoticeTimer.current !== null) window.clearTimeout(statGainNoticeTimer.current);
+    statGainNoticeTimer.current = window.setTimeout(() => {
+      setStatGainNotice(current => current?.id === id ? null : current);
+      statGainNoticeTimer.current = null;
+    }, 2200);
+  }, [jaguarHudStats.cautela, jaguarHudStats.empatia, jaguarHudStats.ingenio, jaguarHudStats.valentia]);
+  useEffect(() => () => {
+    if (statGainNoticeTimer.current !== null) window.clearTimeout(statGainNoticeTimer.current);
+  }, []);
   const rewriteStartingStats = useMemo(() => Object.fromEntries(
     REWRITE_CHAPTERS.map(chapter => [
       chapter.id,
@@ -1133,7 +1160,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               onReturnToScene={returnToSeedScene}
               onRewriteChapter={rewriteChapter}
             />}
-            {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
+            {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} gainNotice={statGainNotice} className="jaguar-global-stats" />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>

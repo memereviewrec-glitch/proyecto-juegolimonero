@@ -20,14 +20,11 @@
 - El reinicio se retira del Libro de semillas y pasa a un menú desplegable independiente. Su icono aparece debajo del icono del Libro, con un tratamiento más transparente; el menú contiene «reiniciar juego» con confirmación.
 - Los enlaces de Instagram se dejan para la fase final de publicación; no se inventan handles ni destinos durante el desarrollo.
 
-## [x] Frase narrativa del minijuego de guitarra
-- En el primer plano de la guitarra, la única frase narrativa visible es exactamente «hay acordes que abren otras realidades...». Se conservan las marcas visuales del mástil y controles de tocar/volver como interfaz funcional, con etiquetas accesibles no visibles.
+## [x] Nota histórica sobre la frase-pista de guitarra
+- Este criterio antiguo queda sustituido por el apartado canónico de «Pantalla 1: fondo, papel y minijuego de guitarra»; no debe reintroducirse texto-pista en la tarjeta ni en el mástil.
 
 ## [ ] Acceso inicial al Libro de semillas
 - El Libro de semillas permanece oculto durante el local y el minijuego de la guitarra; se habilita después de completar el primer cruce del portal y obtener la semilla inicial de «Aurora». En partidas ya guardadas con esa semilla, el acceso se conserva.
-
-## [x] Pista del minijuego de guitarra
-- El primer plano conserva la indicación superior existente y muestra, inmediatamente debajo del mástil, la pista exacta «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo». Se conservan las marcas visuales del mástil y los controles funcionales de tocar/volver; la pista no los sustituye ni queda superpuesta al mástil.
 
 ## [x] Transición al bosque en llamas y fuego pixel art
 - La semilla blanca del pez blanco sigue visible como recompensa de «El Río». La diapositiva narrativa inmediatamente anterior al bosque en llamas no muestra la semilla negra de «El fuego»: contiene solo texto y el botón de avance.
@@ -37,31 +34,28 @@
 - Durante los 22 segundos de la escena se cuenta la historia en cinco pasos, dejando un segundo adicional entre cambios para facilitar la lectura: los animales intentan llevar agua del río al bosque sin conseguirlo; un jaguar que pasaba por allí se ríe; se anuncia «Al tiempo, llegó la lluvia» y en ese instante comienzan las gotas; después la lluvia apaga el incendio y aparece la semilla en una zona clicable por encima del diálogo.
 - Con `prefers-reduced-motion`, el relato conserva el mismo orden usando fases estáticas de incendio, lluvia y bosque apagado; no se muestra una lluvia animada.
 
-## [x] Pantalla 1: fondo y flujo de juego
+## [x] Pantalla 1: fondo, papel y minijuego de guitarra
 - La pantalla 1 conserva la composición del local y el portal del storyboard; la guitarra y el amplificador mantienen sus posiciones y perspectiva. El limón se dibuja como actor independiente para poder caminar.
-- En la escena principal, el arte visible de la guitarra, el cable y el amplificador queda detrás del actor limón; sus hotspots transparentes se mantienen separados por encima para conservar la interacción y la accesibilidad.
-- La secuencia es conectar el cable primero a la guitarra y luego al amplificador; examinar el amplificador, encenderlo y tocar la guitarra.
+- En la escena principal, el cable se ve conectado desde el inicio entre la guitarra y el amplificador. Solo el papel del suelo y la guitarra tienen hotspots de objeto: el cable y el amplificador no se pueden clicar ni abren vistas o minijuegos. Se conserva el movimiento del limón por el suelo y, al resolver el acorde, el control explícito para atravesar el portal.
+- Clicar el papel abre un primer plano pixel art del papel con la frase literal «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo», compuesta con letras pixeladas; al volver al local no se altera ninguna estadística, semilla ni progreso.
+- Al clicar la guitarra, Limón camina hasta ella y aparece la acción «Tocar la guitarra»; al elegirla se abre el minijuego. Se mantienen su comportamiento, mástil, afinación, cuerdas, trastes, reproducción de notas, condición del acorde y apertura del portal, pero la frase-pista solo aparece en el papel del suelo.
+- El arte del amplificador y del cable puede tener más detalle y realismo material, siempre conservando pixel art, perspectiva y composición de la escena.
 - Para cruzar basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; cuentan las díadas. Se admiten inversiones y extensiones dentro de la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
 ## [x] Nombre de la canción inicial: Aurora
 - En el Libro de Semillas, el rótulo de desbloqueo y los mensajes que nombran la canción se muestra «Aurora», no «Intro». Se conserva `intro` como identificador interno para mantener intactos el desbloqueo del portal y el progreso local ya guardado.
 
-## [x] Primer plano detallado del amplificador
-- Al elegir «Examinar amplificador», el amplificador ocupa una vista frontal grande y legible, conserva la acción ON/OFF y muestra detalles de tólex antiguo desgastado y una rejilla de altavoz de aspecto antiguo.
+## [x] Primer plano detallado del amplificador (retirado del flujo actual)
+- Esta vista pertenecía a una versión anterior y ya no se puede abrir desde la pantalla 1. El detalle de tólex y rejilla se conserva únicamente en el sprite del amplificador integrado en el local.
 
-## [x] Confirmación tras encender el amplificador
-- Al pulsar ON/OFF, una luz roja visible en el propio botón se enciende y el jugador permanece en el primer plano del amplificador; la vista no se cierra automáticamente.
-- Solo al pulsar «Siguiente» se abandona el primer plano y se vuelve al local para continuar hacia la guitarra.
+## [x] Minijuego ON/OFF del amplificador retirado
+- La interacción de encendido ya no forma parte de la pantalla 1; el amplificador es un elemento visual no interactivo.
 
-## [x] Examinar y conectar el cable con arrastre
-- El cable y sus dos conectores jack se distinguen claramente en la escena. Al acercarse al cable aparece la acción «Examinar cable», que abre un primer plano independiente, como la vista del amplificador.
-- En el primer plano se arrastra un extremo del cable a la guitarra y, después, el otro extremo al amplificador. La secuencia obligatoria sigue siendo guitarra primero, amplificador después; la conexión incorrecta no avanza el acertijo.
-- La interfaz muestra los destinos guitarra/amplificador, el estado de cada extremo y una forma clara de volver al local. El arrastre no mueve al limón ni dispara la caminata del escenario.
+## [x] Minijuego de conexión del cable retirado
+- El acertijo de arrastrar los conectores ya no forma parte de la pantalla 1; el cable solo se representa conectado entre ambos instrumentos y no es interactivo.
 
-## [x] Separación y pistas de los objetos en la pantalla 1
-- La guitarra, el cable y el amplificador se ven como tres sprites separados, con espacio suficiente entre sí para distinguir sus zonas clicables y deducir que cada uno es un objeto interactivo.
-- La guitarra se puede clicar desde el principio; antes de que ambos extremos estén conectados, el protagonista muestra un diálogo interno indicando que la guitarra no está enchufada y que hay que conectarla.
-- El amplificador no se puede clicar hasta que el cable esté conectado por ambos extremos.
+## [x] Nota histórica de los hotspots de pantalla 1
+- La secuencia anterior queda sustituida por el criterio canónico de la pantalla 1; no deben restaurarse las interacciones del amplificador o del cable.
 
 ## [x] Tocar en el primer plano del mástil
 - Al elegir «Tocar la guitarra», la escena cambia a un primer plano horizontal del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes visibles y numerados.
@@ -69,10 +63,10 @@
 - Las notas de las cuerdas al aire se muestran sobre la posición explícita de traste 0, antes del primer traste; no deben parecer notas del traste 1.
 - Se conserva la regla del portal: al menos dos notas distintas que formen clases de nota de la escala de Do♯ menor natural, incluido Do♯. Las notas sueltas, dos posiciones de la misma clase de nota y las notas/acordes fuera de la escala no abren el portal.
 
-## [x] Sustain y legibilidad de las vistas ampliadas
+## [x] Sustain y legibilidad del minijuego de guitarra
 - Cada nota de guitarra tiene un sustain estable y una caída suave en una muestra MP3 de aproximadamente 2 segundos.
 - En el dibujo, la cuerda grave Mi queda abajo; de abajo arriba aparecen Mi–La–Re–Sol–Si–Mi, en afinación estándar.
-- Los textos de las vistas ampliadas del amplificador, el cable y el mástil aumentan alrededor de dos puntos y permanecen legibles también en el breakpoint móvil.
+- El texto del mástil permanece legible también en el breakpoint móvil; ya no existen vistas ampliadas interactivas del amplificador ni del cable.
 
 ## [x] Pantalla 2: conversación y cierre de rama
 - Cada turno normal ofrece tres respuestas: reiniciar la conversación, favorecer A o favorecer B.
@@ -98,10 +92,9 @@
 - No aparece ningún símbolo, icono o código junto a la respuesta elegible: se quitan, entre otros, el símbolo de reinicio y las letras A y B; las opciones conservan su texto y su comportamiento.
 
 ## [x] Arte y limpieza de las pantallas 1 y 2
-- La guitarra y el amplificador de la pantalla 1 usan exactamente el dibujo del fondo anterior, separado como sprites interactivos; no se ven rótulos como «CABLE», «GUITARRA» o «AMPLIFICADOR» en la escena principal.
-- El primer plano del acertijo del cable no tiene letras, instrucciones ni título; solo se ven el cable y la opción «Volver al local».
-- El primer plano del acertijo del amplificador tampoco muestra títulos, indicaciones ni rótulos explicativos; conserva solo el control físico ON/OFF y la acción «Siguiente» necesarios para completar el acertijo.
-- El local comienza sin instrucciones, pistas ni leyendas visibles sobre los objetos; el diálogo interno solo aparece después de interactuar con la guitarra.
+- La guitarra y el amplificador usan sus dibujos de pixel art separados y no muestran rótulos como «CABLE», «GUITARRA» o «AMPLIFICADOR» en la escena principal.
+- Las antiguas vistas de cable y amplificador están retiradas de la escena 1 y no se pueden abrir.
+- La escena principal no muestra instrucciones, pistas ni leyendas visibles sobre los objetos; el diálogo interno de la guitarra aparece después de interactuar con ella y conserva una invitación neutral a tocar.
 - Al terminar y recoger la semilla de «Ventana al sendero», la acción de avance abre la pantalla siguiente «Raíces»; no ofrece volver al local.
 
 ## [x] Pantalla 3: ruinas, inscripciones y canción «Raíces»
@@ -164,8 +157,8 @@
 - El recorte de la Stratocaster conserva completa la punta izquierda del cuerpo, sin que quede amputada ni pegada al borde del sprite.
 - En la escena principal el amplificador se ve más claro y legible, siguiendo los valores y detalles visibles en el storyboard original.
 
-## [x] Cable conectado persistente en la escena 1
-- Al terminar el minijuego del cable y volver al local, el cable queda visible recorriendo el suelo y conectando físicamente la guitarra con el amplificador; no vuelve a parecer un cable suelto.
+## [x] Registro histórico: cable conectado al iniciar la escena 1
+- El criterio anterior queda integrado en «Pantalla 1: fondo, papel y minijuego de guitarra»; el minijuego del cable ya no forma parte del juego.
 
 ## [x] Dos opciones en la pregunta final de Ventana al sendero
 - Los turnos normales mantienen sus tres respuestas. La última pregunta muestra exactamente dos opciones: «Volver al principio de la conversación» o ejecutar el resultado acumulado hasta entonces.
@@ -226,21 +219,19 @@
 - Cada nota conserva aproximadamente dos segundos de sustain y las muestras de acordes pueden reproducirse simultáneamente.
 
 ## [x] Validación de la versión actual
-- `pnpm check`, `pnpm build:static` y `git diff --check` pasan; la build incluye el manifiesto de rutas, los fondos PNG, los sprites v2 de guitarra/amplificador, las columnas inscritas y los 36 MP3 de juego.
-- En esta tanda también pasan `pnpm test` (2 archivos, 6 pruebas). Preview confirma cuatro hojas iniciales por columna, grabados ocultos antes de retirarlas, notas abiertas alineadas con traste 0, separación del Libro respecto a los cuadros y movimiento del limón en Rambla con clic y flechas. La build incluye el fondo de escena 04 sin limón estático y los primeros planos revisados.
+- `pnpm check`, `pnpm test` (17 archivos, 114 pruebas), `pnpm build:static` y `git diff --check` pasan en la iteración actual. La build emite únicamente el aviso conocido de tamaño de bundle y del script de configuración de plataforma.
+- En el Preview de escritorio se verificó que la escena del local solo ofrece hotspots de papel y guitarra, que el ampli y el cable son decorativos, y que el papel abre la frase solicitada con tipografía pixelada.
 - Se incluyen 34 muestras MP3 de guitarra entre E2 y C#5 y dos silbidos MP3; `ffprobe` confirma codec MP3 y una duración aproximada de 2 s para las notas. No quedan `AudioContext` ni osciladores en el código del juego.
 - El sprite `guitar-sprite-recut-v2.png` mide 839 × 1874 px; su alfa deja 25 px libres a la izquierda y no toca ninguno de los cuatro bordes. El asset está incluido en `dist/public`.
 - La ruta del banco de guitarra apunta a `/audio/guitar/`; el panel del libro recibe el foco al abrirse, atrapa Tab/Mayús+Tab, cierra con Escape y devuelve el foco al control que lo abrió.
-- En Preview se usaron eventos de puntero `pointerdown`/`pointermove`/`pointerup` para conectar la punta A a la guitarra y después la punta B al amplificador; la conexión completa habilita la siguiente etapa.
-- Con clics de navegador se verificó que al inicio la guitarra está activa y abre el pensamiento «La guitarra no está enchufada. Tengo que conectar el cable antes de tocar», sin mover al limón; el ampli permanece deshabilitado.
-- Tras conectar primero la punta A a la guitarra y luego la B al ampli, ambos destinos quedan conectados y el hotspot del ampli se habilita.
-- Se abrió el primer plano del amplificador y se verificaron su tamaño, textura de tólex/rejilla, mandos y control ON/OFF. Tras pulsar ON/OFF, el LED rojo se iluminó y el primer plano siguió abierto; «Siguiente» cerró ese primer plano.
-- La escena principal empieza sin pistas ni rótulos; el diálogo solo aparece al interactuar. La ventana del cable muestra solo cable/conectores y «Volver al local». El ampli conserva únicamente controles funcionales, sin título ni indicaciones.
+- Al pulsar la guitarra, Limón llega caminando y aparece la tarjeta con la invitación neutral «La guitarra está lista para tocar» y el botón «Tocar la guitarra».
+- Al abrir el minijuego se ven el mástil, la afinación estándar, las seis clavijas y los nueve trastes; no aparece la frase-pista del papel.
+- La vista móvil independiente mostró solo la barrera de acceso, porque no comparte la sesión autenticada del Preview; por eso no se registra como verificación visual del juego en móvil.
 - Se abrió el mástil y se verificaron E–A–D–G–B–E, seis clavijas y los nueve trastes. Una nota sola y dos notas sin Do♯ no abrieron el portal; una díada Do♯–Mi en cuerdas distintas sí lo abrió.
 - En el código actual los turnos normales conservan tres respuestas y la pregunta final muestra exactamente dos: «Volver al principio de la conversación» o la acción correspondiente a la rama acumulada (Silbar para A; Escuchar a los pájaros silbar para B), ejecutada directamente.
 - Al recoger «Ventana al sendero», «Siguiente: Raíces» abre la tercera escena; no aparece un botón de retorno al local. La navegación de progreso tampoco habilita volver a pantallas anteriores.
 - En las ruinas se caminaron las zonas del sendero, se examinó cada columna por separado y se arrastraron sus hojas: izquierda «as above», derecha «so below». Al despejar ambas, creció la flor, cayó la tercera semilla y se desbloqueó «Raíces».
-- Las dos rutas del amanecer, la flor, la semilla y el salto del limón siguen verificadas de la iteración anterior; se capturaron vistas responsive de escritorio y móvil para comprobar la separación de los sprites.
+- Las dos rutas del amanecer, la flor, la semilla y el salto del limón siguen verificadas de iteraciones anteriores.
 
 
 ## [x] Ajustes narrativos del Río, el incendio y la transición hacia El Jaguar
@@ -375,9 +366,8 @@
 - En móvil, los dos iconos se mantienen en su fila superior actual y no se trasladan al lateral.
 - A partir de 1.000 px, la botonera se ancla al lateral derecho del lienzo sin ocupar altura; en anchos menores conserva la fila superior. `pnpm check`, `pnpm test` (86 pruebas), `pnpm build:static` y `git diff --check` pasan.
 
-## [x] Texto del minijuego de guitarra
-- Al tocar la guitarra, el enunciado dice «hay acordes que abren ventanas...» y no pregunta sobre la belleza de las notas musicales.
-- Evidencia: `Home.tsx` muestra ese enunciado en la acción de tocar; TypeScript, 86 pruebas y el build estático pasan.
+## [x] Nota histórica del texto del minijuego de guitarra
+- La frase de una versión anterior queda retirada del flujo actual; el texto neutral de acción y la pista única del papel se describen en los criterios canónicos de «Pantalla 1».
 
 ## [x] Diapositivas iniciales y de llegada del portal
 - La primera diapositiva narrativa no muestra texto narrativo; solo presenta el botón accesible «comenzar el sendero», dibujado con el limón en pixel art.
@@ -533,3 +523,11 @@
 - Cambiar la contraseña informal exacta a `nko23`, sustituyendo `gran catalizador`.
 - Versionar la clave de sesión para que una autorización guardada con la versión anterior ya no abra el juego y se solicite la nueva contraseña. Mantener el acceso como barrera informal de interfaz, no autenticación de servidor.
 - Evidencia: `PasswordGate` ahora compara con `nko23` y usa `limonero-access-granted-v3`; el bundle incluye la clave nueva y no la anterior. `pnpm check`, `pnpm test` (110 pruebas), `pnpm build:static` y `git diff --check` pasan.
+
+
+## [ ] Pantalla 1: pista en papel y solo dos objetos interactivos
+- En la primera pantalla, en el local, quitar los minijuegos del amplificador y del cable; solo se mantiene el minijuego de la guitarra. El cable aparece conectado directamente entre la guitarra y el amplificador desde el principio, y no se puede clicar; lo mismo ocurre con el amplificador. En la pantalla del local solo se puede clicar en el papel del suelo y en la guitarra; se conserva el control explícito de atravesar el portal cuando el acorde abre la ventana.
+- Al clicar en el papel, se abre una vista del papel en pixel art, con las letras también hechas en pixel art, y aparece literalmente «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo». Al volver, se regresa al local sin cambiar estadísticas, semillas ni progreso.
+- El minijuego de la guitarra es el mismo, pero sin la pista en él: la pista está en el papel del suelo. Se conservan el mástil, las cuerdas y trastes, la afinación, las notas seleccionadas y escuchadas, la condición del acorde de Do♯ menor y la apertura del portal.
+- El arte del amplificador y del cable puede ser más realista, pero mantiene el estilo pixel art, la perspectiva y la composición de la escena.
+- Este resultado sustituye los requisitos históricos de conectar el cable con arrastre y encender/examinar el amplificador como pasos obligatorios; no deben quedar accesibles hotspots o primeros planos de esos dos objetos.

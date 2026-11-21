@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { AmpCloseup, CableCloseup, CableSceneArt, GuitarCloseup, type FretSelection } from "../components/RoomCloseups";
+import { CableSceneArt, GuitarCloseup, PaperCloseup, PaperSprite, type FretSelection } from "../components/RoomCloseups";
 import { LemonSprite } from "../components/GameSprites";
 import { RuinsColumnPuzzle, type RuinsColumnSide } from "../components/RuinsColumnPuzzle";
 import { RuinsScene, type RuinsFlowerStage } from "../components/RuinsScene";
@@ -48,10 +48,9 @@ const SCENE_PRESENTATION: Record<Scene, { number: string; title: string; locatio
   jaguar: { number: "11", title: "El Jaguar", location: "BOSQUE · CUEVA OCULTA DEL JAGUAR" },
 };
 type StoryBeat = "opening" | "portal" | "ruins" | "sect" | "river-arrival" | "spirits-challenge" | "el-rio" | "fire-forest" | "ponzona" | "ponzona-friend" | "ponzona-doubt" | "ponzona-leaves" | "nueve-sentidos-cave";
-type RoomPhase = "guitar-cable" | "amp-cable" | "power" | "play" | "portal";
-type RoomTarget = "guitar" | "amp" | "cable";
-type RoomAction = "examine-cable" | "examine" | "play" | "guitar-unplugged" | "amp-off" | null;
-type RoomView = "scene" | "cable" | "amp" | "guitar";
+type RoomTarget = "guitar" | "paper";
+type RoomAction = "play" | null;
+type RoomView = "scene" | "paper" | "guitar";
 const REWRITE_TARGETS: Record<RewriteChapterId, Scene> = {
   dawn: "dawn",
   rambla: "gathering",
@@ -175,11 +174,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     ? SONG_CATALOG.map(song => song.id)
     : readStoredSeedBookIds(SONG_CATALOG.map(song => song.id)));
   const [sceneReplayNonce, setSceneReplayNonce] = useState(0);
-  const [roomPhase, setRoomPhase] = useState<RoomPhase>("guitar-cable");
   const [roomView, setRoomView] = useState<RoomView>("scene");
-  const [pluggedGuitar, setPluggedGuitar] = useState(false);
-  const [pluggedAmp, setPluggedAmp] = useState(false);
-  const [ampOn, setAmpOn] = useState(false);
   const [roomAction, setRoomAction] = useState<RoomAction>(null);
   const [lemonPosition, setLemonPosition] = useState("lemon-left");
   const [isMoving, setIsMoving] = useState(false);
@@ -338,82 +333,20 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
   function handleRoomHotspot(target: RoomTarget) {
     if (isMoving || roomAction || roomView !== "scene" || portalOpen) return;
-    if (target === "cable") {
-      moveTo("lemon-cable", () => setRoomAction("examine-cable"));
-      setNotice("El cable une los instrumentos. Examínalo para conectar sus dos puntas.");
+    if (target === "paper") {
+      moveTo("lemon-paper", () => setRoomView("paper"));
+      setNotice("Una hoja descansa en el suelo.");
       return;
     }
-    if (target === "guitar") {
-      if (!pluggedGuitar || !pluggedAmp) {
-        moveTo("lemon-guitar", () => setRoomAction("guitar-unplugged"));
-        setNotice("La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.");
-        return;
-      }
-      if (!ampOn) {
-        moveTo("lemon-guitar", () => setRoomAction("amp-off"));
-        setNotice("La guitarra ya está conectada, pero el amplificador sigue apagado.");
-        return;
-      }
-      moveTo("lemon-guitar", () => setRoomAction("play"));
-      setNotice("El amplificador está encendido. Ya puedes tocar.");
-      return;
-    }
-    if (target === "amp" && pluggedGuitar && pluggedAmp) {
-      moveTo("lemon-amp", () => setRoomAction("examine"));
-      setNotice(ampOn ? "El amplificador está encendido." : "El cable está conectado por ambos extremos. Examina y enciende el amplificador.");
-    }
+    moveTo("lemon-guitar", () => setRoomAction("play"));
+    setNotice("La guitarra espera una nota.");
   }
 
   function performRoomAction() {
-    if (roomAction === "guitar-unplugged" || roomAction === "amp-off") {
-      setRoomAction(null);
-      return;
-    }
-    if (roomAction === "examine-cable") {
-      setRoomView("cable");
-      setRoomAction(null);
-    } else if (roomAction === "examine") {
-      setRoomView("amp");
-      setRoomAction(null);
-    } else if (roomAction === "play") {
-      setRoomView("guitar");
-      setRoomAction(null);
-      setNotice("Pulsa una cuerda y un traste; después toca la selección.");
-    }
-  }
-
-  function connectCableEnd(end: "a" | "b", target: "guitar" | "amp") {
-    if (end === "a" && target === "guitar" && !pluggedGuitar && roomPhase === "guitar-cable") {
-      setPluggedGuitar(true);
-      setRoomPhase("amp-cable");
-      setNotice("Primera punta conectada a la guitarra. Ahora lleva la otra al amplificador.");
-      return;
-    }
-    if (end === "b" && target === "amp" && pluggedGuitar && !pluggedAmp && roomPhase === "amp-cable") {
-      setPluggedAmp(true);
-      setRoomPhase("power");
-      setNotice("Las dos puntas están conectadas. Acércate al amplificador para examinarlo.");
-      return;
-    }
-    setNotice(end === "a" ? "Primero arrastra la punta A a la guitarra." : "La punta B va después, a la entrada del amplificador.");
-  }
-
-  function toggleAmplifier() {
-    const nextState = !ampOn;
-    setAmpOn(nextState);
-    if (nextState) {
-      setNotice("El piloto rojo está encendido. Pulsa «Siguiente» para continuar.");
-    } else {
-      setRoomPhase("power");
-      setNotice("Altavoz apagado. Enciéndelo para habilitar la guitarra.");
-    }
-  }
-
-  function continueAfterAmplifier() {
-    if (!ampOn) return;
-    setRoomPhase("play");
-    setRoomView("scene");
-    setNotice("Altavoz encendido. Vuelve a la guitarra para tocar.");
+    if (roomAction !== "play") return;
+    setRoomView("guitar");
+    setRoomAction(null);
+    setNotice("Pulsa una cuerda y un traste; después toca la selección.");
   }
 
   function toggleFret(note: FretSelection) {
@@ -427,7 +360,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
       playFrequencies(nextFrets.map(selectedNote => selectedNote.frequency));
       setPortalOpen(true);
       setIntroStarted(true);
-      setRoomPhase("portal");
       setRoomView("scene");
       setNotice("Acorde válido de Do♯ menor. El portal se abre y empieza «Aurora».");
       return;
@@ -808,11 +740,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setNotice("");
 
     if (targetScene === "room") {
-      setRoomPhase("guitar-cable");
       setRoomView("scene");
-      setPluggedGuitar(false);
-      setPluggedAmp(false);
-      setAmpOn(false);
       setRoomAction(null);
       setSelectedFrets([]);
       setPortalOpen(false);
@@ -1182,25 +1110,22 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             />}
             {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
           {scene === "room" ? (
-            <div className={`scene-stage game-screen room-stage ${ampOn ? "amp-is-on" : ""} ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
+            <div className={`scene-stage game-screen room-stage amp-is-on ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
-                <div className="cable-art-layer" aria-hidden="true"><CableSceneArt pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} /></div>
+                <div className="cable-art-layer" aria-hidden="true"><CableSceneArt /></div>
                 <div className="room-object-art guitar-art" aria-hidden="true"><img className="guitar-sprite" src={gameAssetUrl("/guitar-sprite-recut-v2.png")} alt="" /></div>
-                <div className="room-object-art amp-art" aria-hidden="true"><img className="amp-sprite amp-art-sprite" src={gameAssetUrl("/amp-sprite-light.png")} alt="" /></div>
+                <div className="room-object-art amp-art" aria-hidden="true"><img className="amp-sprite amp-art-sprite" src={gameAssetUrl("/amp-sprite-room-vintage.png")} alt="" /></div>
+                <div className="room-object-art paper-art" aria-hidden="true"><PaperSprite /></div>
                 <div className={`lemon-actor ${lemonPosition} ${isMoving ? "walking" : ""} ${portalTransit ? "lemon-portal-leap" : ""}`}><LemonSprite /></div>
-                <button type="button" className="hotspot cable-hotspot" aria-label="Examinar cable y conectores" onClick={() => handleRoomHotspot("cable")} disabled={isMoving || portalOpen}>
-                  <span className="sr-only">Cable en el suelo</span>
+                <button type="button" className="hotspot paper-hotspot" aria-label="Leer el papel del suelo" onClick={() => handleRoomHotspot("paper")} disabled={isMoving || portalOpen}>
+                  <span className="sr-only">Hoja de papel en el suelo</span>
                 </button>
                 <button type="button" className="hotspot guitar-hotspot" aria-label="Guitarra eléctrica roja" onClick={() => handleRoomHotspot("guitar")} disabled={isMoving || portalOpen}>
                   <span className="sr-only">Guitarra eléctrica roja</span>
                 </button>
-                <button type="button" className="hotspot amp-hotspot" aria-label="Amplificador" onClick={() => handleRoomHotspot("amp")} disabled={isMoving || !pluggedGuitar || !pluggedAmp || portalOpen}>
-                  <span className="sr-only">Amplificador</span>
-                </button>
               </div>}
-              {roomView === "amp" && <AmpCloseup powered={ampOn} onPower={toggleAmplifier} onContinue={continueAfterAmplifier} />}
-              {roomView === "cable" && <CableCloseup pluggedGuitar={pluggedGuitar} pluggedAmp={pluggedAmp} onConnect={connectCableEnd} onClose={() => setRoomView("scene")} />}
+              {roomView === "paper" && <PaperCloseup onClose={() => setRoomView("scene")} />}
               {roomView === "guitar" && <GuitarCloseup selectedPositions={selectedFrets.map(note => note.key)} onSelectNote={toggleFret} onClose={() => setRoomView("scene")} />}
             </div>
           ) : scene === "dawn" ? (
@@ -1288,9 +1213,9 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             />
           </div>}
 
-          {showOverlay && <aside key={scene === "room" ? `room-${roomPhase}-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
+          {showOverlay && <aside key={scene === "room" ? `room-${roomAction ?? "none"}` : scene === "dawn" ? `dawn-${dialogueTurn}-${showDialogueChoices}-${branch ?? "none"}-${flowerOpen}-${seedCollected}` : `ruins-${ruinsAction ?? "none"}-${ruinsFlowerStage}-${rootsSeedCollected}`} className={`control-column ${scene === "room" ? "room-controls" : scene === "dawn" ? "dawn-controls" : "dawn-controls ruins-controls"}`} aria-label="Cuadro de diálogo del juego">
             {scene === "room" ? <>
-              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>{roomAction === "guitar-unplugged" || roomAction === "amp-off" ? "Siguiente" : roomAction === "examine-cable" || roomAction === "examine" ? "Examinar" : "Tocar la guitarra"} <span aria-hidden="true">→</span></button></div>}
+              {roomAction && <div key={roomAction} className="dialogue-card action-card"><div className="thought-bubble"><span>EL LIMÓN</span><p>{roomActionLabel(roomAction)}</p></div><button className="action-button" onClick={performRoomAction}>Tocar la guitarra <span aria-hidden="true">→</span></button></div>}
             </> : scene === "dawn" ? <>
               {dialogueStarted && !branch && <div key={`line-${dialogueTurn}-${showDialogueChoices}`} className="dialogue-card">
                 {!showDialogueChoices ? <div className="thought-bubble"><span>EL LIMÓN</span><p>{currentDialogue.prompt}</p><button className="dialogue-next" onClick={advanceDialogue}>Siguiente <span>▶</span></button></div> : <div className="choice-list" aria-label={dialogueTurn === DIALOGUE.length - 1 ? "Dos opciones finales" : "Tres respuestas posibles"}>
@@ -1342,11 +1267,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
 function roomActionLabel(action: Exclude<RoomAction, null>) {
   const labels: Record<Exclude<RoomAction, null>, string> = {
-    "examine-cable": "Siempre tengo los cables por el suelo... ¿Alguien me echa un cable?",
-    examine: "Tengo que enchufar esto... quizá el amplificador despierte.",
-    play: "hay acordes que abren ventanas...",
-    "guitar-unplugged": "La guitarra no está enchufada. Tengo que conectar el cable antes de tocar.",
-    "amp-off": "La guitarra ya está conectada, pero el amplificador sigue apagado. Primero tengo que encenderlo.",
+    play: "La guitarra está lista para tocar.",
   };
   return labels[action];
 }

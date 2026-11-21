@@ -44,30 +44,32 @@ function noteAt(stringIndex: number, fret: number): FretSelection {
   };
 }
 
-export function CableSceneArt({ pluggedGuitar, pluggedAmp }: { pluggedGuitar: boolean; pluggedAmp: boolean }) {
-  const start = pluggedGuitar ? { x: 264, y: 1218 } : { x: 338, y: 1242 };
-  const end = pluggedAmp ? { x: 708, y: 1136 } : { x: 654, y: 1262 };
-  const cablePath = `M ${start.x} ${start.y} C ${start.x + 82} ${start.y - 96}, 442 1432, 510 1344 S 615 1186, ${end.x - 73} ${end.y + 74} S ${end.x - 24} ${end.y + 10}, ${end.x} ${end.y}`;
+export function CableSceneArt() {
+  const start = { x: 264, y: 1218 };
+  const end = { x: 708, y: 1136 };
+  const cablePath = `M ${start.x} ${start.y} C 335 1260, 391 1407, 493 1382 C 587 1358, 635 1313, 610 1260 C 585 1206, 518 1219, 485 1274 C 454 1325, 501 1352, 549 1328 C 618 1294, 611 1210, 641 1170 C 661 1144, 685 1143, ${end.x} ${end.y}`;
 
   return (
     <svg className="cable-scene-art" viewBox="0 0 981 1604" aria-hidden="true" shapeRendering="crispEdges">
-      <path d={cablePath} fill="none" stroke="#211b24" strokeWidth="18" strokeLinecap="round" />
-      <path d={cablePath} fill="none" stroke="#584a50" strokeWidth="11" strokeLinecap="round" />
-      <path d={cablePath} fill="none" stroke="#9b7b62" strokeWidth="3" strokeLinecap="round" />
+      <path d={cablePath} fill="none" stroke="#211923" strokeWidth="28" strokeLinecap="square" strokeLinejoin="miter" opacity=".85" />
+      <path d={cablePath} fill="none" stroke="#29232d" strokeWidth="21" strokeLinecap="square" strokeLinejoin="miter" />
+      <path d={cablePath} fill="none" stroke="#65505a" strokeWidth="13" strokeLinecap="square" strokeLinejoin="miter" />
+      <path d={cablePath} fill="none" stroke="#b09479" strokeWidth="3" strokeDasharray="3 13" strokeLinecap="square" opacity=".9" />
+      <path d={cablePath} fill="none" stroke="#17151c" strokeWidth="2" strokeDasharray="1 7" strokeLinecap="square" opacity=".8" />
       <g transform={`translate(${start.x - 24} ${start.y - 14}) rotate(-12 20 14)`}>
-        <path d="M0 4h29v20H0z" fill="#332a32" stroke="#211b24" strokeWidth="4" />
-        <path d="M22 1h30v26H22z" fill="#c5b18a" stroke="#28222b" strokeWidth="4" />
+        <path d="M0 4h29v20H0z" fill="#211d25" stroke="#17151d" strokeWidth="4" />
+        <path d="M22 1h30v26H22z" fill="#b69a74" stroke="#28222b" strokeWidth="4" />
         <path d="M30 3v22m8-22v22m8-22v22" stroke="#5c5360" strokeWidth="2" />
-        <path d="M48 7h19v14H48z" fill="#d9d2c4" stroke="#28222b" strokeWidth="3" />
-        <path d="M65 10h16v8H65z" fill="#61585b" stroke="#28222b" strokeWidth="2" />
+        <path d="M48 7h19v14H48z" fill="#ded5c1" stroke="#28222b" strokeWidth="3" />
+        <path d="M65 10h16v8H65z" fill="#777074" stroke="#28222b" strokeWidth="2" />
         <circle cx="5" cy="14" r="3" fill="#e6b84f" />
       </g>
       <g transform={`translate(${end.x - 50} ${end.y - 14}) rotate(168 40 14)`}>
-        <path d="M0 4h29v20H0z" fill="#332a32" stroke="#211b24" strokeWidth="4" />
-        <path d="M22 1h30v26H22z" fill="#c5b18a" stroke="#28222b" strokeWidth="4" />
+        <path d="M0 4h29v20H0z" fill="#211d25" stroke="#17151d" strokeWidth="4" />
+        <path d="M22 1h30v26H22z" fill="#b69a74" stroke="#28222b" strokeWidth="4" />
         <path d="M30 3v22m8-22v22m8-22v22" stroke="#5c5360" strokeWidth="2" />
-        <path d="M48 7h19v14H48z" fill="#d9d2c4" stroke="#28222b" strokeWidth="3" />
-        <path d="M65 10h16v8H65z" fill="#61585b" stroke="#28222b" strokeWidth="2" />
+        <path d="M48 7h19v14H48z" fill="#ded5c1" stroke="#28222b" strokeWidth="3" />
+        <path d="M65 10h16v8H65z" fill="#777074" stroke="#28222b" strokeWidth="2" />
         <circle cx="5" cy="14" r="3" fill="#e6b84f" />
       </g>
     </svg>
@@ -253,6 +255,33 @@ export function CableCloseup({
   );
 }
 
+const GUITAR_CLUE = "donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo";
+
+export function PaperSprite() {
+  return (
+    <svg className="paper-floor-sprite" viewBox="0 0 144 92" aria-hidden="true" shapeRendering="crispEdges">
+      <path d="M12 12h112v68H19L8 70z" fill="#2c2430" opacity=".7" />
+      <path d="M8 7h111l17 13v62H18L5 69z" fill="#d7c99f" stroke="#342b34" strokeWidth="5" />
+      <path d="M119 7v16h17" fill="#f1e5c4" stroke="#342b34" strokeWidth="4" />
+      <path d="M20 34h30m8 0h37M20 45h24m9 0h52M20 56h35m8 0h39" stroke="#786d62" strokeWidth="3" opacity=".75" />
+      <path d="M13 66h35m7 0h14" stroke="#aa9b78" strokeWidth="2" opacity=".8" />
+      <path d="M15 15h12m84 0h3M14 73h3m104 1h5" stroke="#f8edcc" strokeWidth="2" opacity=".75" />
+    </svg>
+  );
+}
+
+export function PaperCloseup({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="room-closeup paper-closeup" role="dialog" aria-modal="true" aria-label="Papel encontrado en el suelo">
+      <div className="paper-sheet" role="document">
+        <span className="paper-pixel-fold" aria-hidden="true" />
+        <p className="paper-clue">{GUITAR_CLUE}</p>
+      </div>
+      <button className="closeup-back paper-closeup-back" onClick={onClose}>Volver al local <span aria-hidden="true">←</span></button>
+    </div>
+  );
+}
+
 export function GuitarCloseup({
   selectedPositions,
   onSelectNote,
@@ -347,7 +376,6 @@ export function GuitarCloseup({
           <text x="97" y="234" className="headstock-caption" textAnchor="middle">6 CLAVIJAS</text>
         </svg>
       </div>
-      <p className="guitar-hint" role="note">donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo</p>
       <div className="guitar-closeup-footer">
         <div className="fretboard-actions"><button className="closeup-back" onClick={onClose} aria-label="Volver al local" title="Volver al local">↗</button></div>
       </div>

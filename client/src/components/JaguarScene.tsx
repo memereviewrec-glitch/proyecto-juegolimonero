@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { createAttemptTaskScope } from "../attemptTaskScope";
 import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
@@ -40,6 +40,9 @@ type JaguarSceneProps = JaguarHistory & {
   onCollectSeed: () => void;
   onEndingDiscovered: (ending: JaguarEndingId) => void;
   onReturnHome: () => void;
+  musicMuted: boolean;
+  onSecretPathActiveChange: (active: boolean) => void;
+  onFinScreenChange: (visible: boolean) => void;
   testMode?: boolean;
 };
 type DialoguePhase = "inner" | "cautela-check" | "angry-questions" | "laughing-questions" | "angry-check" | "ingenio-check" | "fight" | "nightmare" | "revelation" | "counsel" | "complete";
@@ -121,7 +124,7 @@ function runDialogueTransition(update: () => void, schedule: (callback: () => vo
   else schedule(finishTransition, 2800);
 }
 
-export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, musicMuted, onSecretPathActiveChange, onFinScreenChange, testMode = false }: JaguarSceneProps) {
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -153,6 +156,11 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
   const [secretPathActive, setSecretPathActive] = useState(false);
   const [shownHummingbirdHintContext, setShownHummingbirdHintContext] = useState<string | null>(null);
   const advice = useMemo(() => getFinalJaguarAdvice(stats), [stats]);
+
+  useLayoutEffect(() => {
+    onSecretPathActiveChange(secretPathActive);
+    return () => onSecretPathActiveChange(false);
+  }, [onSecretPathActiveChange, secretPathActive]);
 
   useEffect(() => {
     if (testMode) return;
@@ -479,7 +487,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
 
   return (
     <div className={`jaguar-preview-layout${testMode ? " jaguar-preview-layout-test" : ""}`}>
-    {secretPathActive ? <JaguarSecretPath onReturnHome={onReturnHome} /> : <>
+    {secretPathActive ? <JaguarSecretPath onReturnHome={onReturnHome} muted={musicMuted} onFinScreenChange={onFinScreenChange} /> : <>
     <div className={`scene-stage game-screen jaguar-stage${branch ? ` jaguar-stage-${branch}` : ""}`} role="group" aria-label="El Jaguar: encuentro final con pruebas por umbral">
       <div className="jaguar-forest" aria-hidden="true">
         <img className={endingArtwork ? "jaguar-ending-art" : showReturnPortal ? "jaguar-cave-art" : "jaguar-background-art"} src={gameAssetUrl(endingArtwork ?? "/jaguar-cave-background.webp")} alt="" />

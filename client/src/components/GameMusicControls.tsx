@@ -7,20 +7,25 @@ export type GameMusicControlsHandle = {
 
 type GameMusicControlsProps = {
   muted: boolean;
+  paused?: boolean;
 };
 
 export const GameMusicControls = forwardRef<GameMusicControlsHandle, GameMusicControlsProps>(
-  function GameMusicControls({ muted }, ref) {
+  function GameMusicControls({ muted, paused = false }, ref) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const wasPausedRef = useRef(false);
+    const shouldResumeRef = useRef(false);
+    const startPlaybackRef = useRef<() => void>(() => undefined);
 
     const startPlayback = useCallback(() => {
       const audio = audioRef.current;
-      if (!audio) return;
+      if (!audio || paused) return;
       audio.volume = GAME_MUSIC_VOLUME;
       audio.muted = muted;
       void audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
-    }, [muted]);
+    }, [muted, paused]);
+    startPlaybackRef.current = startPlayback;
 
     useImperativeHandle(ref, () => ({ start: startPlayback }), [startPlayback]);
 
@@ -29,9 +34,27 @@ export const GameMusicControls = forwardRef<GameMusicControlsHandle, GameMusicCo
       if (audio) audio.volume = GAME_MUSIC_VOLUME;
     }, []);
 
-    const togglePlayback = () => {
+    useEffect(() => {
       const audio = audioRef.current;
       if (!audio) return;
+      if (paused) {
+        if (!wasPausedRef.current) shouldResumeRef.current = isPlaying;
+        wasPausedRef.current = true;
+        audio.pause();
+        return;
+      }
+      if (wasPausedRef.current) {
+        wasPausedRef.current = false;
+        if (shouldResumeRef.current) {
+          shouldResumeRef.current = false;
+          startPlaybackRef.current();
+        }
+      }
+    }, [isPlaying, paused]);
+
+    const togglePlayback = () => {
+      const audio = audioRef.current;
+      if (!audio || paused) return;
       if (isPlaying) {
         audio.pause();
         setIsPlaying(false);
@@ -50,6 +73,7 @@ export const GameMusicControls = forwardRef<GameMusicControlsHandle, GameMusicCo
           aria-label={isPlaying ? "Pausar música de fondo" : "Reproducir música de fondo"}
           aria-pressed={isPlaying}
           title={isPlaying ? "Pausar música de fondo" : "Reproducir música de fondo"}
+          disabled={paused}
         >
           <span aria-hidden="true">{isPlaying ? "Ⅱ" : "♫"}</span>
         </button>

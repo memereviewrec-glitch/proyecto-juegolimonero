@@ -170,6 +170,8 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [previewChromeHidden, setPreviewChromeHidden] = useState(openJaguarPreview || openRiverChallengePreview);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [musicMuted, setMusicMuted] = useState(false);
+  const [secretPathActive, setSecretPathActive] = useState(false);
+  const [secretFinScreenVisible, setSecretFinScreenVisible] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
   const musicControlsRef = useRef<GameMusicControlsHandle | null>(null);
@@ -1087,7 +1089,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
         collapsed={devToolsCollapsed}
         onCollapsedChange={setDevToolsCollapsed}
       />}
-      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${isDevelopment && devToolsCollapsed ? " workspace-with-dev-tools-collapsed" : ""}${!storyBeat ? " workspace-with-stats-hud" : ""}`}>
+      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${isDevelopment && devToolsCollapsed ? " workspace-with-dev-tools-collapsed" : ""}${!storyBeat && !secretFinScreenVisible ? " workspace-with-stats-hud" : ""}`}>
         <div className="stage-column">
           <div className="stage-heading">
             <div>
@@ -1099,6 +1101,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               <GameMusicControls
                 ref={musicControlsRef}
                 muted={musicMuted}
+                paused={scene === "jaguar" && secretPathActive}
               />
             </div>
           </div>
@@ -1182,7 +1185,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               onReturnToScene={returnToSeedScene}
               onRewriteChapter={rewriteChapter}
             />}
-            {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} gainNotice={statGainNotice} className="jaguar-global-stats" />}
+            {!storyBeat && !secretFinScreenVisible && <JaguarStatsHud stats={jaguarHudStats} gainNotice={statGainNotice} className="jaguar-global-stats" />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>
@@ -1268,6 +1271,9 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 onEndingDiscovered={recordJaguarEnding}
                 onReturnHome={returnHomeFromJaguar}
                 onStatsChange={reportJaguarStats}
+                musicMuted={musicMuted}
+                onSecretPathActiveChange={setSecretPathActive}
+                onFinScreenChange={setSecretFinScreenVisible}
                 dawnOutcome={dawnOutcome}
                 ramblaOutcome={ramblaHistoryOutcome}
                 hummingbirdOutcome={hummingbirdOutcome}

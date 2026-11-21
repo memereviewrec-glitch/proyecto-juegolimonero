@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, type SyntheticEvent } from "react";
-import { gameAssetUrl } from "../gameAudio";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type SyntheticEvent } from "react";
+import { GAME_MUSIC_VOLUME, gameAssetUrl } from "../gameAudio";
 import { LemonSprite } from "./GameSprites";
 import {
   SECRET_MAZE_CENTER,
@@ -20,13 +20,65 @@ const SECRET_TREE_ART = "/manus-storage/async-images/f2ZgGBX6u1EfP8kvaSoAPY/imag
 const SECRET_MAZE_ROOTS_BACKGROUND = "/manus-storage/async-images/BRFQSfm4KKoQFfIm6YIwQm/image-1.webp";
 const SECRET_OWL_BRANCHES_ART = "/manus-storage/async-images/SKaWGX0a3aSFiduzhSCDUx/image-1.webp";
 
-export function JaguarSecretPath({ onReturnHome }: { onReturnHome: () => void }) {
+type JaguarSecretPathProps = {
+  onReturnHome: () => void;
+  muted: boolean;
+  onFinScreenChange: (visible: boolean) => void;
+};
+
+const SECRET_MUSIC_FADE_MS = 3200;
+
+export function JaguarSecretPath({ onReturnHome, muted, onFinScreenChange }: JaguarSecretPathProps) {
+  const secretMusicRef = useRef<HTMLAudioElement | null>(null);
   const [screen, setScreen] = useState<SecretScreen>("question");
   const [lemonPosition, setLemonPosition] = useState<SecretMazePosition>(SECRET_MAZE_START);
   const [mazeMask, setMazeMask] = useState<SecretMazeMask | null>(null);
   const [treeArtUnavailable, setTreeArtUnavailable] = useState(false);
   const [riddleAnswer, setRiddleAnswer] = useState("");
-    const [showFallAtDoor, setShowFallAtDoor] = useState(false);
+  const [showFallAtDoor, setShowFallAtDoor] = useState(false);
+
+  useEffect(() => {
+    const audio = secretMusicRef.current;
+    if (!audio) return;
+    audio.volume = GAME_MUSIC_VOLUME;
+    audio.loop = true;
+    void audio.play().catch(() => undefined);
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (secretMusicRef.current) secretMusicRef.current.muted = muted;
+  }, [muted]);
+
+  const finScreenVisible = screen === "riddle-solved" || screen === "final-image";
+  useLayoutEffect(() => {
+    onFinScreenChange(finScreenVisible);
+    return () => onFinScreenChange(false);
+  }, [finScreenVisible, onFinScreenChange]);
+
+  useEffect(() => {
+    if (screen !== "riddle-solved") return;
+    const audio = secretMusicRef.current;
+    if (!audio) return;
+    const initialVolume = audio.volume;
+    const startedAt = performance.now();
+    let frame = 0;
+    const fade = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / SECRET_MUSIC_FADE_MS);
+      audio.volume = initialVolume * (1 - progress);
+      if (progress >= 1) {
+        audio.pause();
+        return;
+      }
+      frame = window.requestAnimationFrame(fade);
+    };
+    frame = window.requestAnimationFrame(fade);
+    return () => window.cancelAnimationFrame(frame);
+  }, [screen]);
+
   const transitionSecretPath = (action: Parameters<typeof advanceSecretScreen>[1]) => setScreen(current => advanceSecretScreen(current, action));
   const submitRiddle = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,6 +165,7 @@ export function JaguarSecretPath({ onReturnHome }: { onReturnHome: () => void })
 
   return (
     <section className={`scene-stage game-screen jaguar-stage jaguar-secret-stage is-${screen}`} role="group" aria-label={stageLabel}>
+      <audio ref={secretMusicRef} src={gameAssetUrl("/audio/secret-epilogue.mp3")} preload="auto" loop muted={muted} aria-hidden="true" />
       <div className="jaguar-secret-background" aria-hidden="true">
         {screen === "final-image"
           ? <img className="jaguar-secret-final-image" src="/limonero-secret-logo-jaguar.png" alt="" />

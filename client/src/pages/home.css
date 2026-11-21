@@ -534,7 +534,7 @@ button { font:inherit; }
 .dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:14px; }
 @media (min-width:601px) {
  .dawn-controls.dawn-seed-controls { top:8px; }
- .dawn-controls.ruins-controls { top:8px; }
+ .dawn-controls.ruins-controls { top:8px; left:3%; right:3%; width:94%; max-width:none; max-height:50%; }
 }
 
 @media (max-width:600px) {

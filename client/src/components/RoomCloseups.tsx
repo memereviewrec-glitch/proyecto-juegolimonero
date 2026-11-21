@@ -312,19 +312,19 @@ export function GuitarCloseup({
 
   return (
     <div className="room-closeup guitar-closeup" role="dialog" aria-label="Primer plano del mástil de guitarra">
-      <p className="guitar-whisper">Toca las posiciones para escuchar cada nota. Al completar el acorde correcto, sonará y abrirá el portal automáticamente.</p>
       <div className="fretboard-scroll">
-        <svg className="guitar-fretboard-svg" viewBox="0 0 1080 414" role="group" aria-label="Mástil de guitarra con la pala y los primeros nueve trastes">
+        <svg className="guitar-fretboard-svg" viewBox="0 0 700 1080" role="group" aria-label="Mástil de guitarra vertical con la pala y los primeros nueve trastes">
           <defs>
             <linearGradient id="fretboardWood" x1="0" x2="1" y1="0" y2="1"><stop stopColor="#bc8b58" /><stop offset=".5" stopColor="#744e3c" /><stop offset="1" stopColor="#402f32" /></linearGradient>
             <linearGradient id="headstockWood" x1="0" x2="1"><stop stopColor="#b96152" /><stop offset="1" stopColor="#713e44" /></linearGradient>
             <linearGradient id="stringMetal" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#fff5d8" /><stop offset=".5" stopColor="#bcb7b0" /><stop offset="1" stopColor="#5f5960" /></linearGradient>
           </defs>
+          <g transform="translate(700 0) scale(1.7 1.05) rotate(90)">
           <path d="M20 131 56 93 185 122v184L56 336 20 298 34 256 22 216 34 175z" fill="url(#headstockWood)" stroke="#29242c" strokeWidth="9" />
           <path d="M46 134 183 151v124L46 292" fill="#3c3033" opacity=".55" />
           <path d="M177 116h817v223H177z" fill="url(#fretboardWood)" stroke="#2b242b" strokeWidth="9" />
           <path d="M184 125h809v12H184z" fill="#ddd2bb" stroke="#42343a" strokeWidth="3" />
-          <text x={openFretCenter} y="119" className="fret-number fret-number-open" textAnchor="middle">0</text>
+          <text x={openFretCenter} y="119" className="fret-number fret-number-open" textAnchor="middle" transform={`rotate(-90 ${openFretCenter} 119)`}>0</text>
           {stringY.map((y, row) => {
             const stringIndex = VISUAL_STRING_ORDER[row];
             const pegX = 56 + row * 17;
@@ -344,7 +344,7 @@ export function GuitarCloseup({
             return <g key={`fret-${fret}`}>
               <path d={`M ${x} 127 V 334`} stroke="#d8d0c1" strokeWidth="7" />
               <path d={`M ${x + 4} 127 V 334`} stroke="#3d3235" strokeWidth="2" opacity=".75" />
-              <text x={center} y="119" className="fret-number" textAnchor="middle">{fret}</text>
+              <text x={center} y="119" className="fret-number" textAnchor="middle" transform={`rotate(-90 ${center} 119)`}>{fret}</text>
               {inlayFrets.includes(fret) && <circle cx={center} cy="235" r="9" fill="#d9ccb0" stroke="#59464a" strokeWidth="3" />}
               {fret === 9 && <circle cx={center} cy="235" r="3" fill="#7c5b4a" />}
             </g>;
@@ -354,7 +354,7 @@ export function GuitarCloseup({
             return <g key={`string-${stringIndex}`}>
               <path d={`M 184 ${y} H 992`} stroke="#373038" strokeWidth="5" opacity=".65" />
               <path d={`M 184 ${y - 1} H 992`} stroke="url(#stringMetal)" strokeWidth={stringIndex === 0 ? 2.8 : stringIndex === 5 ? 1.2 : 1.7} />
-              <text x={openFretCenter} y={y - 8} className="open-note-label" textAnchor="middle">{STRINGS[stringIndex].tuning}</text>
+              <text x={openFretCenter} y={y - 8} className="open-note-label" textAnchor="middle" transform={`rotate(-90 ${openFretCenter} ${y - 8})`}>{STRINGS[stringIndex].tuning}</text>
             </g>;
           })}
           {stringY.flatMap((y, row) => {
@@ -367,13 +367,14 @@ export function GuitarCloseup({
               const active = selectedPositions.includes(note.key);
               return <g key={note.key}>
                 <rect x={left + 3} y={y - 14} width={Math.max(10, right - left - 6)} height="28" rx="5" fill={active ? "#f1d878" : "transparent"} fillOpacity={active ? ".74" : "0"} stroke={active ? "#f7e8aa" : "transparent"} strokeWidth="2" role="button" tabIndex={0} aria-label={`${STRINGS[stringIndex].tuning}, ${fret === 0 ? "traste 0, cuerda al aire" : `traste ${fret}`}: ${note.label}`} aria-pressed={active} onClick={() => activate(note)} onKeyDown={event => handleKeyDown(event, note)} />
-                {active && <text x={center} y={y + 5} className={`selected-note-label ${fret === 0 ? "open-string-note-label" : ""}`} textAnchor="middle">{note.label}</text>}
+                {active && <text x={center} y={y + 5} className={`selected-note-label ${fret === 0 ? "open-string-note-label" : ""}`} textAnchor="middle" transform={`rotate(-90 ${center} ${y + 5})`}>{note.label}</text>}
               </g>;
             });
           })}
           <path d="M22 216h32" stroke="#d8c69e" strokeWidth="3" />
-          <text x="97" y="215" className="headstock-title" textAnchor="middle">PALA</text>
-          <text x="97" y="234" className="headstock-caption" textAnchor="middle">6 CLAVIJAS</text>
+          <text x="97" y="215" className="headstock-title" textAnchor="middle" transform="rotate(-90 97 215)">PALA</text>
+          <text x="97" y="234" className="headstock-caption" textAnchor="middle" transform="rotate(-90 97 234)">6 CLAVIJAS</text>
+          </g>
         </svg>
       </div>
       <div className="guitar-closeup-footer">

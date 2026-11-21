@@ -37,9 +37,9 @@
 ## [x] Pantalla 1: fondo, papel y minijuego de guitarra
 - La pantalla 1 conserva la composición del local y el portal del storyboard; la guitarra y el amplificador mantienen sus posiciones y perspectiva. El limón se dibuja como actor independiente para poder caminar.
 - En la escena principal, el cable se ve conectado desde el inicio entre la guitarra y el amplificador. Solo el papel del suelo y la guitarra tienen hotspots de objeto: el cable y el amplificador no se pueden clicar ni abren vistas o minijuegos. Se conserva el movimiento del limón por el suelo y, al resolver el acorde, el control explícito para atravesar el portal.
-- Clicar el papel abre un primer plano pixel art del papel con la frase literal «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo», compuesta con letras pixeladas; al volver al local no se altera ninguna estadística, semilla ni progreso.
-- Al clicar la guitarra, Limón camina hasta ella y aparece la acción «Tocar la guitarra»; al elegirla se abre el minijuego. Se mantienen su comportamiento, mástil, afinación, cuerdas, trastes, reproducción de notas, condición del acorde y apertura del portal, pero la frase-pista solo aparece en el papel del suelo.
-- El arte del amplificador y del cable puede tener más detalle y realismo material, siempre conservando pixel art, perspectiva y composición de la escena.
+- El papel clicable está en la esquina inferior derecha, completamente dentro del suelo y del lienzo del juego. Al clicar, se abre un primer plano pixel art con la frase literal «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo», letras pixeladas y la inscripción completa visible, también en escritorio; al volver al local no se altera ninguna estadística, semilla ni progreso.
+- El amplificador se apoya sobre el suelo del local, un poco más abajo que antes, y no muestra un halo o brillo alrededor. El arte del amplificador y del cable puede tener más detalle y realismo material, siempre conservando pixel art, perspectiva y composición de la escena.
+- Al clicar la guitarra, Limón camina hasta ella y aparece un cuadro con el texto exacto «hay acordes que abren ventanas» y el botón «Tocar la guitarra» debajo, sin tapar ni solaparse con el texto. Al elegirlo se abre el minijuego en posición vertical; se mantienen su comportamiento, afinación, cuerdas, trastes, reproducción de notas, condición del acorde y apertura del portal. El minijuego no muestra el texto explicativo «Toca las posiciones para escuchar cada nota. Al completar el acorde correcto, sonará y abrirá el portal automáticamente.»; la frase-pista solo aparece en el papel del suelo.
 - Para cruzar basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; cuentan las díadas. Se admiten inversiones y extensiones dentro de la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
 ## [x] Nombre de la canción inicial: Aurora
@@ -58,7 +58,7 @@
 - La secuencia anterior queda sustituida por el criterio canónico de la pantalla 1; no deben restaurarse las interacciones del amplificador o del cable.
 
 ## [x] Tocar en el primer plano del mástil
-- Al elegir «Tocar la guitarra», la escena cambia a un primer plano horizontal del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes visibles y numerados.
+- Al elegir «Tocar la guitarra», la escena cambia a un primer plano vertical del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes visibles y numerados.
 - La afinación estándar se muestra con la cuerda grave Mi abajo. De abajo arriba aparecen Mi–La–Re–Sol–Si–Mi (E2–A2–D3–G3–B3–E4). Se pueden elegir cuerdas/trastes en el mástil y tocar la selección; las notas se oyen según la altura real que corresponde a esa cuerda y traste.
 - Las notas de las cuerdas al aire se muestran sobre la posición explícita de traste 0, antes del primer traste; no deben parecer notas del traste 1.
 - Se conserva la regla del portal: al menos dos notas distintas que formen clases de nota de la escala de Do♯ menor natural, incluido Do♯. Las notas sueltas, dos posiciones de la misma clase de nota y las notas/acordes fuera de la escala no abren el portal.
@@ -94,7 +94,7 @@
 ## [x] Arte y limpieza de las pantallas 1 y 2
 - La guitarra y el amplificador usan sus dibujos de pixel art separados y no muestran rótulos como «CABLE», «GUITARRA» o «AMPLIFICADOR» en la escena principal.
 - Las antiguas vistas de cable y amplificador están retiradas de la escena 1 y no se pueden abrir.
-- La escena principal no muestra instrucciones, pistas ni leyendas visibles sobre los objetos; el diálogo interno de la guitarra aparece después de interactuar con ella y conserva una invitación neutral a tocar.
+- La escena principal no muestra instrucciones, pistas ni leyendas visibles sobre los objetos; el diálogo interno de la guitarra aparece después de interactuar con ella, dice «hay acordes que abren ventanas» y mantiene el botón «Tocar la guitarra» debajo del texto, sin solapamiento.
 - Al terminar y recoger la semilla de «Ventana al sendero», la acción de avance abre la pantalla siguiente «Raíces»; no ofrece volver al local.
 
 ## [x] Pantalla 3: ruinas, inscripciones y canción «Raíces»
@@ -224,8 +224,8 @@
 - Se incluyen 34 muestras MP3 de guitarra entre E2 y C#5 y dos silbidos MP3; `ffprobe` confirma codec MP3 y una duración aproximada de 2 s para las notas. No quedan `AudioContext` ni osciladores en el código del juego.
 - El sprite `guitar-sprite-recut-v2.png` mide 839 × 1874 px; su alfa deja 25 px libres a la izquierda y no toca ninguno de los cuatro bordes. El asset está incluido en `dist/public`.
 - La ruta del banco de guitarra apunta a `/audio/guitar/`; el panel del libro recibe el foco al abrirse, atrapa Tab/Mayús+Tab, cierra con Escape y devuelve el foco al control que lo abrió.
-- Al pulsar la guitarra, Limón llega caminando y aparece la tarjeta con la invitación neutral «La guitarra está lista para tocar» y el botón «Tocar la guitarra».
-- Al abrir el minijuego se ven el mástil, la afinación estándar, las seis clavijas y los nueve trastes; no aparece la frase-pista del papel.
+- Al pulsar la guitarra, Limón llega caminando y aparece la tarjeta con el texto «hay acordes que abren ventanas» y el botón «Tocar la guitarra» separado debajo.
+- Al abrir el minijuego se ven verticalmente el mástil, la afinación estándar, las seis clavijas y los nueve trastes; no aparece texto explicativo ni la frase-pista del papel.
 - La vista móvil independiente mostró solo la barrera de acceso, porque no comparte la sesión autenticada del Preview; por eso no se registra como verificación visual del juego en móvil.
 - Se abrió el mástil y se verificaron E–A–D–G–B–E, seis clavijas y los nueve trastes. Una nota sola y dos notas sin Do♯ no abrieron el portal; una díada Do♯–Mi en cuerdas distintas sí lo abrió.
 - En el código actual los turnos normales conservan tres respuestas y la pregunta final muestra exactamente dos: «Volver al principio de la conversación» o la acción correspondiente a la rama acumulada (Silbar para A; Escuchar a los pájaros silbar para B), ejecutada directamente.

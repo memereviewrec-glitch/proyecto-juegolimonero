@@ -1110,7 +1110,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             />}
             {!storyBeat && <JaguarStatsHud stats={jaguarHudStats} className="jaguar-global-stats" />}
           {scene === "room" ? (
-            <div className={`scene-stage game-screen room-stage amp-is-on ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
+            <div className={`scene-stage game-screen room-stage ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>
                 {portalTransit && <div className="portal-spin" aria-hidden="true" />}
                 <div className="cable-art-layer" aria-hidden="true"><CableSceneArt /></div>
@@ -1267,7 +1267,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
 function roomActionLabel(action: Exclude<RoomAction, null>) {
   const labels: Record<Exclude<RoomAction, null>, string> = {
-    play: "La guitarra está lista para tocar.",
+    play: "hay acordes que abren ventanas",
   };
   return labels[action];
 }

@@ -142,7 +142,6 @@ button { font:inherit; }
 .paper-hotspot { left:41%; top:72.5%; width:18%; height:9.5%; }
 .cable-art-layer { position:absolute; z-index:2; inset:0; pointer-events:none; }
 .cable-scene-art { position:absolute; inset:0; display:block; width:100%; height:100%; overflow:visible; image-rendering:pixelated; }
-.amp-is-on .amp-art-sprite { filter:drop-shadow(0 0 7px #efc64799); }
 .amp-closeup { position:absolute; z-index:7; inset:0; background:#665c70; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; border:9px solid #514759; }
 .closeup-label { font:8px 'DM Mono',monospace; color:#e9dfc9; letter-spacing:.13em; }
 .power-switch { display:flex; align-items:center; gap:8px; background:#f7f1de; color:#28252c; border:2px solid #29252d; padding:8px 12px; font:10px 'DM Mono',monospace; letter-spacing:.06em; box-shadow:3px 3px #39323f; }
@@ -547,6 +546,35 @@ button { font:inherit; }
  .dawn-controls .choice-list button { min-height:50px; padding:8px 11px; }
  .dawn-controls .choice-list strong { font-size:14px; }
  .dawn-controls .action-button,.dawn-controls .dialogue-next { font-size:13px; }
+}
+
+/* Ajustes de la primera escena: objetos apoyados en el suelo y mástil vertical */
+.room-world .amp-art { left:68%; top:61%; width:28%; height:32%; display:flex; align-items:flex-end; justify-content:center; }
+.room-world .amp-art-sprite { width:clamp(84px,14vw,122px); max-width:100%; max-height:100%; height:auto; object-fit:contain; object-position:center bottom; filter:none; }
+.room-world .paper-art { left:79%; top:87%; width:17%; height:6.8%; }
+.room-world .paper-hotspot { left:78.5%; top:85.5%; width:19%; height:10.5%; }
+.room-world .lemon-paper { left:76%; bottom:9%; }
+.room-controls .action-card { display:flex; flex-direction:column; align-items:stretch; gap:10px; }
+.room-controls .thought-bubble { width:100%; min-width:0; }
+.room-controls .thought-bubble p { overflow-wrap:anywhere; }
+.room-controls .action-button { width:100%; min-width:0; }
+.paper-closeup { gap:clamp(10px,2vh,18px); padding:clamp(10px,2vw,20px); }
+.paper-sheet { min-height:clamp(230px,46vh,390px); max-height:calc(100% - 56px); padding:clamp(24px,5vw,54px) clamp(22px,5vw,56px) clamp(54px,7vh,80px); overflow-x:hidden; overflow-y:auto; }
+.paper-clue { font-size:clamp(14px,1.7vw,18px); line-height:1.5; }
+.guitar-closeup { justify-content:flex-start; gap:6px; padding:clamp(8px,1.5vw,14px); }
+.fretboard-scroll { display:flex; flex:1 1 auto; min-height:0; width:100%; max-width:980px; align-items:center; justify-content:center; overflow:hidden; }
+.guitar-fretboard-svg { width:auto; min-width:0; height:100%; max-width:100%; max-height:100%; }
+.guitar-closeup-footer { flex:0 0 auto; width:auto; min-height:40px; }
+
+@media (max-width:600px) {
+ .room-world .amp-art { left:67%; top:60%; width:30%; height:33%; }
+ .room-world .amp-art-sprite { width:min(74px,22vw); }
+ .room-world .paper-art { left:78.5%; top:86.5%; width:18%; height:7.2%; }
+ .room-world .paper-hotspot { left:78%; top:85%; width:20%; height:11.5%; }
+ .room-world .lemon-paper { left:76%; bottom:9%; }
+ .paper-sheet { width:min(95%,460px); min-height:min(46vh,330px); max-height:calc(100% - 56px); padding:25px 22px 54px; }
+ .paper-clue { font-size:clamp(12px,3.4vw,16px); line-height:1.5; }
+ .guitar-closeup { gap:4px; padding:7px; }
 }
 
 .game-stage-layout { position:relative; width:min(100%,760px); margin-inline:auto; }

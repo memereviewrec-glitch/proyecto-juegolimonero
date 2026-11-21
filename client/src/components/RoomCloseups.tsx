@@ -312,29 +312,38 @@ export function GuitarCloseup({
 
   return (
     <div className="room-closeup guitar-closeup" role="dialog" aria-label="Primer plano del mástil de guitarra">
-      <div className="fretboard-scroll">
-        <svg className="guitar-fretboard-svg" viewBox="0 0 700 1080" role="group" aria-label="Mástil de guitarra vertical con la pala y los primeros nueve trastes">
+      <div className="fretboard-scroll" role="region" tabIndex={0} aria-label="Mástil ampliado: desplázate hacia abajo para recorrer los nueve trastes">
+        <svg className="guitar-fretboard-svg" viewBox="0 0 800 1080" role="group" aria-label="Mástil de guitarra vertical ampliado, con clavijero, seis cuerdas y nueve trastes">
           <defs>
             <linearGradient id="fretboardWood" x1="0" x2="1" y1="0" y2="1"><stop stopColor="#bc8b58" /><stop offset=".5" stopColor="#744e3c" /><stop offset="1" stopColor="#402f32" /></linearGradient>
             <linearGradient id="headstockWood" x1="0" x2="1"><stop stopColor="#b96152" /><stop offset="1" stopColor="#713e44" /></linearGradient>
             <linearGradient id="stringMetal" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#fff5d8" /><stop offset=".5" stopColor="#bcb7b0" /><stop offset="1" stopColor="#5f5960" /></linearGradient>
           </defs>
-          <g transform="translate(700 0) scale(1.7 1.05) rotate(90)">
-          <path d="M20 131 56 93 185 122v184L56 336 20 298 34 256 22 216 34 175z" fill="url(#headstockWood)" stroke="#29242c" strokeWidth="9" />
-          <path d="M46 134 183 151v124L46 292" fill="#3c3033" opacity=".55" />
+          <g transform="translate(915 0) scale(2.4 1.05) rotate(90)">
+          <path d="M24 157 38 130Q50 108 82 100l44-9q29-5 47 17l11 18v210l-11 15q-18 22-47 17l-44-9q-32-7-44-30l-14-26 9-35-12-33 12-33-12-33z" fill="url(#headstockWood)" stroke="#29242c" strokeWidth="9" />
+          <path d="M34 158 46 135q12-20 39-27l39-8q25-4 41 16l9 14v198l-9 13q-16 20-41 16l-39-8q-27-6-39-25l-12-22 8-32-10-32 10-32-10-32z" fill="#fff0d2" fillOpacity=".08" stroke="#d6b087" strokeWidth="3" />
+          <path d="M48 150q37-25 84-27m-83 190q41 24 82 25m-89-162 18-7m-13 105 17 7" fill="none" stroke="#f3c590" strokeWidth="3" opacity=".42" />
+          <path d="M43 236c10-18 24-18 34 0-10 18-24 18-34 0z" fill="#e6d4b2" stroke="#493b3b" strokeWidth="4" />
+          <path d="M60 224v24m-10-12h20" stroke="#9a6658" strokeWidth="4" />
           <path d="M177 116h817v223H177z" fill="url(#fretboardWood)" stroke="#2b242b" strokeWidth="9" />
           <path d="M184 125h809v12H184z" fill="#ddd2bb" stroke="#42343a" strokeWidth="3" />
           <text x={openFretCenter} y="119" className="fret-number fret-number-open" textAnchor="middle" transform={`rotate(-90 ${openFretCenter} 119)`}>0</text>
           {stringY.map((y, row) => {
             const stringIndex = VISUAL_STRING_ORDER[row];
-            const pegX = 56 + row * 17;
-            const pegDirection = row < 3 ? -1 : 1;
+            const pegX = 150 - row * 18;
+            const pegY = 116;
+            const stringWidth = stringIndex === 0 ? 3.2 : stringIndex === 5 ? 1.4 : 2.2;
             return <g key={`tuner-${stringIndex}`}>
-              <path d={`M ${pegX} ${y} H 185`} fill="none" stroke="url(#stringMetal)" strokeWidth={stringIndex === 0 ? 3.2 : stringIndex === 5 ? 1.4 : 2.2} />
-              <path d={`M ${pegX} ${y} v ${pegDirection * 23}`} stroke="#d3c7aa" strokeWidth="4" />
-              <circle cx={pegX} cy={y} r="7" fill="#d8d0bc" stroke="#393238" strokeWidth="3" />
-              <rect x={pegX - 8} y={y + pegDirection * 31 - 9} width="16" height="18" rx="4" fill="#d1c7b0" stroke="#393238" strokeWidth="3" />
-              <circle cx={pegX} cy={y + pegDirection * 31} r="3" fill="#77716e" />
+              <path d={`M ${pegX} ${pegY} L 184 ${y}`} fill="none" stroke="#312b31" strokeWidth={stringWidth + 2} opacity=".75" />
+              <path d={`M ${pegX} ${pegY} L 184 ${y}`} fill="none" stroke="url(#stringMetal)" strokeWidth={stringWidth} />
+              <path d={`M ${pegX} ${pegY - 2} V ${pegY - 21}`} stroke="#403941" strokeWidth="8" />
+              <path d={`M ${pegX} ${pegY - 2} V ${pegY - 21}`} stroke="url(#stringMetal)" strokeWidth="5" />
+              <circle cx={pegX} cy={pegY} r="12" fill="#27232a" stroke="#d9c9a9" strokeWidth="4" />
+              <circle cx={pegX} cy={pegY} r="6" fill="url(#stringMetal)" stroke="#625a5a" strokeWidth="2" />
+              <path d={`M ${pegX} ${pegY - 18} V ${pegY - 27}`} stroke="#d8cfbc" strokeWidth="5" />
+              <rect x={pegX - 14} y={pegY - 46} width="28" height="20" rx="8" fill="#c9c0ae" stroke="#39343a" strokeWidth="4" />
+              <rect x={pegX - 8} y={pegY - 42} width="16" height="12" rx="5" fill="#eee4cc" stroke="#736b67" strokeWidth="2" />
+              <circle cx={pegX} cy={pegY - 36} r="2.5" fill="#5f5960" />
             </g>;
           })}
           {Array.from({ length: 9 }, (_, index) => {
@@ -349,6 +358,9 @@ export function GuitarCloseup({
               {fret === 9 && <circle cx={center} cy="235" r="3" fill="#7c5b4a" />}
             </g>;
           })}
+          <path d="M 183 128 V 336" stroke="#332c33" strokeWidth="18" />
+          <path d="M 183 128 V 336" stroke="#e5d8bd" strokeWidth="12" />
+          <path d="M 186 128 V 336" stroke="#8c7c70" strokeWidth="2" />
           {stringY.map((y, row) => {
             const stringIndex = VISUAL_STRING_ORDER[row];
             return <g key={`string-${stringIndex}`}>
@@ -371,9 +383,6 @@ export function GuitarCloseup({
               </g>;
             });
           })}
-          <path d="M22 216h32" stroke="#d8c69e" strokeWidth="3" />
-          <text x="97" y="215" className="headstock-title" textAnchor="middle" transform="rotate(-90 97 215)">PALA</text>
-          <text x="97" y="234" className="headstock-caption" textAnchor="middle" transform="rotate(-90 97 234)">6 CLAVIJAS</text>
           </g>
         </svg>
       </div>

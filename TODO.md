@@ -58,10 +58,12 @@
 - La secuencia anterior queda sustituida por el criterio canónico de la pantalla 1; no deben restaurarse las interacciones del amplificador o del cable.
 
 ## [x] Tocar en el primer plano del mástil
-- Al elegir «Tocar la guitarra», la escena cambia a un primer plano vertical del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes visibles y numerados.
+- Al elegir «Tocar la guitarra», la escena cambia a un primer plano vertical del mástil, con la pala, seis clavijas y cuerdas amarradas, seis cuerdas y los nueve primeros trastes disponibles y numerados.
 - La afinación estándar se muestra con la cuerda grave Mi abajo. De abajo arriba aparecen Mi–La–Re–Sol–Si–Mi (E2–A2–D3–G3–B3–E4). Se pueden elegir cuerdas/trastes en el mástil y tocar la selección; las notas se oyen según la altura real que corresponde a esa cuerda y traste.
 - Las notas de las cuerdas al aire se muestran sobre la posición explícita de traste 0, antes del primer traste; no deben parecer notas del traste 1.
 - Se conserva la regla del portal: al menos dos notas distintas que formen clases de nota de la escala de Do♯ menor natural, incluido Do♯. Las notas sueltas, dos posiciones de la misma clase de nota y las notas/acordes fuera de la escala no abren el portal.
+- El dibujo prioriza el ancho transversal para que las seis cuerdas y sus zonas clicables se distingan mejor, sin alargar el mástil en la misma proporción; el clavijero tiene una silueta más realista y seis clavijas metálicas en línea, sin rótulos impresos.
+- La zona del mástil permite desplazarse verticalmente hacia abajo para recorrer sus nueve trastes; el desplazamiento es utilizable con ratón, tacto y teclado y no oculta el botón para volver al local.
 
 ## [x] Sustain y legibilidad del minijuego de guitarra
 - Cada nota de guitarra tiene un sustain estable y una caída suave en una muestra MP3 de aproximadamente 2 segundos.

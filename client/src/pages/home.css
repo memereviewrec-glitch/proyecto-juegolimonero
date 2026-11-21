@@ -562,8 +562,9 @@ button { font:inherit; }
 .paper-sheet { min-height:clamp(230px,46vh,390px); max-height:calc(100% - 56px); padding:clamp(24px,5vw,54px) clamp(22px,5vw,56px) clamp(54px,7vh,80px); overflow-x:hidden; overflow-y:auto; }
 .paper-clue { font-size:clamp(14px,1.7vw,18px); line-height:1.5; }
 .guitar-closeup { justify-content:flex-start; gap:6px; padding:clamp(8px,1.5vw,14px); }
-.fretboard-scroll { display:flex; flex:1 1 auto; min-height:0; width:100%; max-width:980px; align-items:center; justify-content:center; overflow:hidden; }
-.guitar-fretboard-svg { width:auto; min-width:0; height:100%; max-width:100%; max-height:100%; }
+.fretboard-scroll { display:block; flex:1 1 auto; min-height:0; width:100%; max-width:980px; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:contain; scrollbar-color:#d7c99f #302a36; scrollbar-width:thin; scroll-behavior:smooth; }
+.fretboard-scroll:focus-visible { outline:2px dashed #f5d77f; outline-offset:3px; }
+.guitar-fretboard-svg { display:block; width:auto; min-width:0; height:calc(100% + clamp(56px,10vh,88px)); max-width:none; max-height:none; margin:0 auto; }
 .guitar-closeup-footer { flex:0 0 auto; width:auto; min-height:40px; }
 
 @media (max-width:600px) {
@@ -575,6 +576,7 @@ button { font:inherit; }
  .paper-sheet { width:min(95%,460px); min-height:min(46vh,330px); max-height:calc(100% - 56px); padding:25px 22px 54px; }
  .paper-clue { font-size:clamp(12px,3.4vw,16px); line-height:1.5; }
  .guitar-closeup { gap:4px; padding:7px; }
+ .guitar-fretboard-svg { height:calc(100% + clamp(36px,9vh,64px)); }
 }
 
 .game-stage-layout { position:relative; width:min(100%,760px); margin-inline:auto; }

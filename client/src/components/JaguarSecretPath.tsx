@@ -16,9 +16,9 @@ import {
 } from "./jaguarSecretRules";
 import "./jaguar-secret-path.css";
 
-const SECRET_TREE_ART = "/manus-storage/async-images/f2ZgGBX6u1EfP8kvaSoAPY/image-1.webp";
-const SECRET_MAZE_ROOTS_BACKGROUND = "/manus-storage/async-images/BRFQSfm4KKoQFfIm6YIwQm/image-1.webp";
-const SECRET_OWL_BRANCHES_ART = "/manus-storage/async-images/SKaWGX0a3aSFiduzhSCDUx/image-1.webp";
+const SECRET_TREE_ART = gameAssetUrl("/jaguar-secret-tree-background.webp");
+const SECRET_MAZE_ROOTS_BACKGROUND = gameAssetUrl("/jaguar-secret-maze-roots-background.webp");
+const SECRET_OWL_BRANCHES_ART = gameAssetUrl("/jaguar-secret-owl-branches-background.webp");
 
 type JaguarSecretPathProps = {
   onReturnHome: () => void;
@@ -168,7 +168,7 @@ export function JaguarSecretPath({ onReturnHome, muted, onFinScreenChange }: Jag
       <audio ref={secretMusicRef} src={gameAssetUrl("/audio/secret-epilogue.mp3")} preload="auto" loop muted={muted} aria-hidden="true" />
       <div className="jaguar-secret-background" aria-hidden="true">
         {screen === "final-image"
-          ? <img className="jaguar-secret-final-image" src="/limonero-secret-logo-jaguar.png" alt="" />
+          ? <img className="jaguar-secret-final-image" src={gameAssetUrl("/limonero-secret-logo-jaguar.png")} alt="" />
           : screen === "tree" || screen === "cave-offer" || screen === "surface" || screen === "canopy-entry" || screen === "riddle-fail"
           ? treeBackground()
           : screen === "maze"

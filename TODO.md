@@ -174,7 +174,7 @@
 - Solo en modo de desarrollo aparece un selector de las escenas ya implementadas y el botón «Saltar a escena», que permite entrar sin cumplir requisitos de desbloqueo; no añade ni borra semillas y no modifica el progreso persistente. La vista previa del colibrí puede seguir la partida o forzar temporalmente amigo/sin amistad en Nueve Sentidos, sin guardar ese resultado. El panel no se incluye en la versión de producción.
 
 ## [x] Acceso por teclado para apartar hojas en Raíces
-- El arrastre con ratón o tacto se conserva. Cada hoja también se puede enfocar y apartar individualmente con Intro o Espacio; tras cada acción el foco avanza a la siguiente hoja y, al apartar la última, se revela la inscripción una sola vez. Con movimiento reducido se retira sin espera ni animación, y una indicación visible y accesible explica el control.
+- El arrastre con ratón o tacto se conserva. Cada hoja también se puede enfocar y apartar individualmente con Intro o Espacio; tras cada acción el foco avanza a la siguiente hoja y, al apartar la última, se revela la inscripción una sola vez. Con movimiento reducido se retira sin espera ni animación. El minijuego no muestra una pista que explique los controles de teclado.
 
 ## [x] Libro de semillas desplegable dentro de la ventana de juego
 - Tanto el botón que abre el libro como el panel desplegable están dentro del marco 1180:1333 del juego. El panel se abre sobre la escena, queda contenido por la ventana jugable y se cierra desde ahí; no aparece fijado al viewport ni sobre el encabezado exterior.

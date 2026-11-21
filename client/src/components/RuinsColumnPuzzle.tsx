@@ -109,7 +109,6 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
     <div className="ruins-puzzle" role="dialog" aria-label="Columna antigua" data-side={side}>
       <div className="ruins-puzzle-stage" ref={stageRef}>
         <span className="sr-only" aria-live="polite">{leaves.length === 0 ? inscription : ""}</span>
-        <p className="ruins-puzzle-keyboard-hint" id="ruins-puzzle-keyboard-hint">Teclado: enfoca una hoja y pulsa Intro o Espacio para apartarla.</p>
         {leaves.map((leaf, index) => (
           <button
             key={leaf.id}
@@ -118,7 +117,6 @@ export function RuinsColumnPuzzle({ side, alreadyRevealed, onReveal, onClose }: 
             className={`ruins-puzzle-leaf${dragging === leaf.id ? " is-dragging" : ""}${leaving === leaf.id ? " is-leaving" : ""}`}
             style={{ left: `${leaf.x}%`, top: `${leaf.y}%`, transform: `translate(-50%, -50%) rotate(${leaf.rotation}deg)` }}
             aria-label={`Apartar hoja ${index + 1}`}
-            aria-describedby="ruins-puzzle-keyboard-hint"
             onKeyDown={event => activateByKeyboard(leaf.id, event)}
             onAnimationEnd={() => finishKeyboardRemoval(leaf.id)}
             onPointerDown={event => beginDrag(leaf.id, event)}

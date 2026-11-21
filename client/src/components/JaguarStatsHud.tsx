@@ -17,9 +17,9 @@ export function JaguarStatsHud({ stats, gainNotice = null, className = "" }: Jag
   return (
     <aside className={`jaguar-player-stats${className ? ` ${className}` : ""}`} aria-label="Estado actual del limón">
       {gainNotice && <div key={gainNotice.id} className="stat-gain-message" role="status" aria-live="polite" aria-atomic="true">
-        <strong>¡Sumas puntos!</strong>
+        <strong>Tu mente se acidifica...</strong>
         {(Object.keys(STAT_LABELS) as (keyof JaguarStats)[]).filter(stat => (gainNotice.gains[stat] ?? 0) > 0).map(stat => (
-          <span key={stat}>{STAT_LABELS[stat]} +{gainNotice.gains[stat]}</span>
+          <span key={stat} className={`stat-gain-${stat}`}>{STAT_LABELS[stat]} +{gainNotice.gains[stat]}</span>
         ))}
       </div>}
       <section className="jaguar-stats" aria-label="Barras de porcentaje de los cuatro rasgos">

@@ -18,6 +18,7 @@ import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
 import { REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
 import { DevPlaytestTools, HUMMINGBIRD_DRAFT_ALTERNATIVES, type DevFriendPreview, type DevHummingbirdDialoguePreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
+import { GameMusicControls, type GameMusicControlsHandle } from "../components/GameMusicControls";
 import { CAMPFIRE_STICK_COUNT, canCollectCampfireStick, canPlaceCampfireStick, type CampfirePoint } from "../components/campfireMovementRules";
 import { RAMBLA_CONVERSATION, resolveRamblaOutcome } from "../components/ramblaConversationRules";
 import type { RamblaChoice, RamblaOutcome } from "../components/ramblaConversationRules";
@@ -170,6 +171,9 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
+  const musicControlsRef = useRef<GameMusicControlsHandle | null>(null);
+  const playfieldRef = useRef<HTMLDivElement | null>(null);
+  const [dialogueActive, setDialogueActive] = useState(false);
   const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(() => openWorldExplorer
     ? SONG_CATALOG.map(song => song.id)
     : readStoredSeedBookIds(SONG_CATALOG.map(song => song.id)));
@@ -283,6 +287,23 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [journeyMenuOpen]);
+
+  useEffect(() => {
+    const playfield = playfieldRef.current;
+    if (!playfield) return;
+    const dialogueSelector = ".story-interlude, .control-column:not(:empty), [class*='dialogue'], [class*='conversation']";
+    const updateDialogueState = () => {
+      const active = Array.from(playfield.querySelectorAll<HTMLElement>(dialogueSelector)).some(element => {
+        const style = window.getComputedStyle(element);
+        return style.display !== "none" && style.visibility !== "hidden" && element.getClientRects().length > 0;
+      });
+      setDialogueActive(previous => previous === active ? previous : active);
+    };
+    updateDialogueState();
+    const observer = new MutationObserver(updateDialogueState);
+    observer.observe(playfield, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "style", "hidden"] });
+    return () => observer.disconnect();
+  }, [scene, storyBeat, seedBookOpen]);
 
   useEffect(() => {
     if (!leftColumnRevealed || !rightColumnRevealed) return;
@@ -885,6 +906,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   function advanceStory() {
     if (!storyBeat) return;
     if (storyBeat === "opening") {
+      musicControlsRef.current?.start();
       setStoryBeat(null);
       return;
     }
@@ -1042,7 +1064,13 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               <span className="stage-kicker">PANTALLA {SCENE_PRESENTATION[scene].number}</span>
               <h2>{SCENE_PRESENTATION[scene].title}</h2>
             </div>
-            {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
+            <div className="stage-heading-tools">
+              {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
+              <GameMusicControls
+                ref={musicControlsRef}
+                ducked={dialogueActive || Boolean(storyBeat) || seedBookOpen || journeyMenuOpen}
+              />
+            </div>
           </div>
 
           <div className={`game-stage-layout${scene === "jaguar" ? " game-stage-layout-jaguar" : ""}`}>
@@ -1094,7 +1122,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             </div>
           </div>}
 
-          <div className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
+          <div ref={playfieldRef} className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
             {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome, riverChallengeOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} startAsLemon={storyBeat === "opening"} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             {!previewChromeHidden && seedBookOpen && <SeedBook
               discoveredSongIds={discoveredSongIds}

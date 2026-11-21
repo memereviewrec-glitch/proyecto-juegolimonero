@@ -533,3 +533,9 @@
 - El minijuego de la guitarra es el mismo, pero sin la pista en él: la pista está en el papel del suelo. Se conservan el mástil, las cuerdas y trastes, la afinación, las notas seleccionadas y escuchadas, la condición del acorde de Do♯ menor y la apertura del portal.
 - El arte del amplificador y del cable puede ser más realista, pero mantiene el estilo pixel art, la perspectiva y la composición de la escena.
 - Este resultado sustituye los requisitos históricos de conectar el cable con arrastre y encender/examinar el amplificador como pasos obligatorios; no deben quedar accesibles hotspots o primeros planos de esos dos objetos.
+## [x] Música de fondo durante el juego
+- Incorporar el MP3 entregado por el grupo como una pista ambiental continua. Debe comenzar al pulsar «comenzar el sendero», repetirse en bucle y seguir reproduciéndose al cambiar de escena y al mostrar diapositivas narrativas, sin reiniciarse en cada transición.
+- Mantener en el marco jugable controles accesibles para reproducir/pausar y ajustar el volumen; la música no debe empezar antes de una acción del jugador que habilite el audio del navegador.
+- Atenuar la pista de forma gradual mientras hay diálogo, narración, o está abierto el Libro de Semillas o el menú del viaje, y devolver el volumen elegido al cerrar esos paneles.
+- La música de fondo no debe detener ni sustituir los sonidos puntuales ya existentes de guitarra y silbidos.
+- La música de fondo no debe detener ni sustituir los sonidos puntuales ya existentes de guitarra y silbidos.

@@ -1,5 +1,10 @@
 const activeGameAudio = new Set<HTMLAudioElement>();
 
+export function resolveGameMusicVolume(volumePercent: number, ducked: boolean): number {
+  const normalizedVolume = Math.max(0, Math.min(100, volumePercent)) / 100;
+  return normalizedVolume * (ducked ? 0.3 : 1);
+}
+
 /** Resolves a public asset against Vite's base without repeating an already-prefixed path. */
 export function resolveGameAssetUrl(path: string, basePath: string): string {
   const base = basePath.endsWith("/") ? basePath : `${basePath}/`;

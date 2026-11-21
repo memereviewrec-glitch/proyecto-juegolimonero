@@ -171,7 +171,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
   const [musicMuted, setMusicMuted] = useState(false);
   const [secretPathActive, setSecretPathActive] = useState(false);
-  const [secretFinScreenVisible, setSecretFinScreenVisible] = useState(false);
+  const [secretEndingActive, setSecretEndingActive] = useState(false);
   const [secretPathLaunchPending, setSecretPathLaunchPending] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
@@ -788,7 +788,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setScene("jaguar");
     setSceneReplayNonce(version => version + 1);
     setSecretPathActive(false);
-    setSecretFinScreenVisible(false);
+    setSecretEndingActive(false);
     setSecretPathLaunchPending(true);
     setNotice("");
   }
@@ -1104,9 +1104,9 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
         hummingbirdDialoguePreview={devHummingbirdDialoguePreview}
         onHummingbirdDialoguePreviewChange={setDevHummingbirdDialoguePreview}
         collapsed={devToolsCollapsed}
-        onCollapsedChange={setDevToolsCollapsed}
+      onCollapsedChange={setDevToolsCollapsed}
       />}
-      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${isDevelopment && devToolsCollapsed ? " workspace-with-dev-tools-collapsed" : ""}${!storyBeat && !secretFinScreenVisible ? " workspace-with-stats-hud" : ""}`}>
+      <section className={`workspace${isDevelopment ? " workspace-with-dev-tools" : ""}${isDevelopment && devToolsCollapsed ? " workspace-with-dev-tools-collapsed" : ""}${!storyBeat && !secretEndingActive ? " workspace-with-stats-hud" : ""}`}>
         <div className="stage-column">
           <div className="stage-heading">
             <div>
@@ -1203,7 +1203,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               onRewriteChapter={rewriteChapter}
               onOpenSecretEnding={openSecretEndingFromBook}
             />}
-            {!storyBeat && !secretFinScreenVisible && <JaguarStatsHud stats={jaguarHudStats} gainNotice={statGainNotice} className="jaguar-global-stats" />}
+            {!storyBeat && !secretEndingActive && <JaguarStatsHud stats={jaguarHudStats} gainNotice={statGainNotice} className="jaguar-global-stats" />}
           {scene === "room" ? (
             <div className={`scene-stage game-screen room-stage ${portalOpen ? "room-portal-open" : ""} ${portalTransit ? "room-portal-spinning" : ""}`}>
               {roomView === "scene" && <div className={`room-world${portalOpen ? " room-world-portal-open" : ""}`}>
@@ -1291,7 +1291,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 onStatsChange={reportJaguarStats}
                 musicMuted={musicMuted}
                 onSecretPathActiveChange={setSecretPathActive}
-                onFinScreenChange={setSecretFinScreenVisible}
+                onSecretEndingActiveChange={setSecretEndingActive}
                 startSecretPathFromBook={secretPathLaunchPending}
                 onSecretPathLaunchConsumed={() => setSecretPathLaunchPending(false)}
                 dawnOutcome={dawnOutcome}

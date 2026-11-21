@@ -42,7 +42,7 @@ type JaguarSceneProps = JaguarHistory & {
   onReturnHome: () => void;
   musicMuted: boolean;
   onSecretPathActiveChange: (active: boolean) => void;
-  onFinScreenChange: (visible: boolean) => void;
+  onSecretEndingActiveChange: (active: boolean) => void;
   startSecretPathFromBook: boolean;
   onSecretPathLaunchConsumed: () => void;
   testMode?: boolean;
@@ -126,7 +126,7 @@ function runDialogueTransition(update: () => void, schedule: (callback: () => vo
   else schedule(finishTransition, 2800);
 }
 
-export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, musicMuted, onSecretPathActiveChange, onFinScreenChange, startSecretPathFromBook, onSecretPathLaunchConsumed, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, musicMuted, onSecretPathActiveChange, onSecretEndingActiveChange, startSecretPathFromBook, onSecretPathLaunchConsumed, testMode = false }: JaguarSceneProps) {
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -495,7 +495,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
 
   return (
     <div className={`jaguar-preview-layout${testMode ? " jaguar-preview-layout-test" : ""}`}>
-    {secretPathActive ? <JaguarSecretPath onReturnHome={onReturnHome} muted={musicMuted} onFinScreenChange={onFinScreenChange} /> : <>
+    {secretPathActive ? <JaguarSecretPath onReturnHome={onReturnHome} muted={musicMuted} onSecretEndingActiveChange={onSecretEndingActiveChange} /> : <>
     <div className={`scene-stage game-screen jaguar-stage${branch ? ` jaguar-stage-${branch}` : ""}`} role="group" aria-label="El Jaguar: encuentro final con pruebas por umbral">
       <div className="jaguar-forest" aria-hidden="true">
         <img className={endingArtwork ? "jaguar-ending-art" : showReturnPortal ? "jaguar-cave-art" : "jaguar-background-art"} src={gameAssetUrl(endingArtwork ?? "/jaguar-cave-background.webp")} alt="" />

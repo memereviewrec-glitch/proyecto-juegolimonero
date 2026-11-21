@@ -23,12 +23,12 @@ const SECRET_OWL_BRANCHES_ART = gameAssetUrl("/jaguar-secret-owl-branches-backgr
 type JaguarSecretPathProps = {
   onReturnHome: () => void;
   muted: boolean;
-  onFinScreenChange: (visible: boolean) => void;
+  onSecretEndingActiveChange: (active: boolean) => void;
 };
 
 const SECRET_MUSIC_FADE_MS = 3200;
 
-export function JaguarSecretPath({ onReturnHome, muted, onFinScreenChange }: JaguarSecretPathProps) {
+export function JaguarSecretPath({ onReturnHome, muted, onSecretEndingActiveChange }: JaguarSecretPathProps) {
   const secretMusicRef = useRef<HTMLAudioElement | null>(null);
   const [screen, setScreen] = useState<SecretScreen>("question");
   const [lemonPosition, setLemonPosition] = useState<SecretMazePosition>(SECRET_MAZE_START);
@@ -53,11 +53,10 @@ export function JaguarSecretPath({ onReturnHome, muted, onFinScreenChange }: Jag
     if (secretMusicRef.current) secretMusicRef.current.muted = muted;
   }, [muted]);
 
-  const finScreenVisible = screen === "riddle-solved" || screen === "final-image";
   useLayoutEffect(() => {
-    onFinScreenChange(finScreenVisible);
-    return () => onFinScreenChange(false);
-  }, [finScreenVisible, onFinScreenChange]);
+    onSecretEndingActiveChange(true);
+    return () => onSecretEndingActiveChange(false);
+  }, [onSecretEndingActiveChange]);
 
   useEffect(() => {
     if (screen !== "riddle-solved") return;

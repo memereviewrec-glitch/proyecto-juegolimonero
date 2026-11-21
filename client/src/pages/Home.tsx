@@ -15,7 +15,7 @@ import { JaguarScene } from "../components/JaguarScene";
 import { JaguarStatsHud, STAT_LABELS } from "../components/JaguarStatsHud";
 import { type JaguarHistory, type JaguarStats } from "../components/jaguarRules";
 import { getJourneyHudStats, type JaguarStatsSnapshot } from "../journeyStats";
-import { REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
+import { hasCompletedAllJaguarEndings, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "../components/storyArchive";
 import { DevPlaytestTools, HUMMINGBIRD_DRAFT_ALTERNATIVES, type DevFriendPreview, type DevHummingbirdDialoguePreview } from "./DevPlaytestTools";
 import { StoryInterlude } from "../components/StoryInterlude";
 import { GameMusicControls, type GameMusicControlsHandle } from "../components/GameMusicControls";
@@ -1261,6 +1261,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
             ) : (
               <JaguarScene
                 key={`jaguar-${sceneReplayNonce}`}
+                allEndingsDiscovered={hasCompletedAllJaguarEndings(archivedJaguarEndings)}
                 seedCollected={jaguarSeedCollected}
                 stats={jaguarHudStats}
                 onCollectSeed={collectJaguarSeed}

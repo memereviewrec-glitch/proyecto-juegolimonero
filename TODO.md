@@ -539,3 +539,12 @@
 - Mantener en el marco jugable un control accesible para reproducir/pausar y un volumen fijo del 36 % durante todo el juego; la música no debe empezar antes de una acción del jugador que habilite el audio del navegador.
 - No atenuar ni variar el volumen durante diálogos, narraciones o al abrir el Libro de Semillas o el menú del viaje. El control para silenciar o volver a activar la música permanece visible junto al botón del menú del viaje, fuera del desplegable, y un indicador visual muestra claramente si está activada o silenciada.
 - La música de fondo no debe detener ni sustituir los silbidos del limón y de los pájaros.
+
+## [ ] Epílogo secreto: desbloqueo y elección de despertar
+- La pantalla secreta aparece solo después de que los cuatro finales distintos del Jaguar («empatia», «enigmas», «valentia» y «pesadilla») estén registrados. Si se continúa desde el último final, no se vuelve directamente al local; primero se pregunta literalmente: «Crees que limón sigue durmiendo, pero... ¿Cómo podríamos saberlo? Al fin y al cabo, ¿cómo puede un limón despertar?». El jugador puede decidir despertar a Limón o no; esto no añade un quinto final, no repite el combate y conserva el archivo de finales y las semillas.
+- Si el jugador lo despierta, Limón aparece ante un árbol pixel art cuya cueva está formada por sus raíces. Sobre la entrada debe aparecer inscrito en pixel art: «como es arriba, así es abajo». Al tocar la entrada se ofrece entrar y, al confirmar, aparece el laberinto.
+- Si el jugador decide no despertar a Limón, mostrar literalmente: «Partir, partir, partir a lo alto, partir a lo más alto, despertar, así sea. No hay ignorancia, ni fin de la ignorancia. No hay vejez y muerte, ni fin de la vejez y muerte. No hay sufrimiento, ni origen, ni cesación, ni camino. No hay sabiduría, ni logro, ni no-logro». Limón aparece directamente en el laberinto, sin pasar primero por la escena exterior.
+
+## [ ] Laberinto secreto de raíces y salida común
+- El laberinto está formado por raíces, tiene una entrada superior y exige atravesar los pasillos hasta salir otra vez hacia arriba, a la superficie. Las raíces bloquean el paso; la ruta puede jugarse con controles táctiles y teclado.
+- Al salir del laberinto, mostrar la misma imagen exterior del árbol pixel art, desde fuera, con la inscripción exacta «como es arriba, así es abajo». Las dos elecciones iniciales conducen a esta pantalla final común.

@@ -3,6 +3,7 @@ import { createAttemptTaskScope } from "../attemptTaskScope";
 import { flushSync } from "react-dom";
 import { gameAssetUrl } from "../gameAudio";
 import { SeedGlyph } from "./SeedGlyph";
+import { JaguarSecretPath } from "./JaguarSecretPath";
 import { STAT_LABELS } from "./JaguarStatsHud";
 import { JAGUAR_REVELATION_TEXT, type JaguarEndingId } from "./storyArchive";
 import {
@@ -32,6 +33,7 @@ import {
 import "./jaguar-scene.css";
 
 type JaguarSceneProps = JaguarHistory & {
+  allEndingsDiscovered: boolean;
   seedCollected: boolean;
   stats: JaguarStats;
   onStatsChange: (stats: JaguarStats) => void;
@@ -119,7 +121,7 @@ function runDialogueTransition(update: () => void, schedule: (callback: () => vo
   else schedule(finishTransition, 2800);
 }
 
-export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, testMode = false }: JaguarSceneProps) {
+export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, riverConversationOutcome, riverChallengeOutcome, nueveSentidosSeedCollected = false, allEndingsDiscovered, seedCollected, stats, onStatsChange, onCollectSeed, onEndingDiscovered, onReturnHome, testMode = false }: JaguarSceneProps) {
   const attemptTasks = useMemo(() => createAttemptTaskScope(
     (callback, delay) => window.setTimeout(callback, delay),
     id => window.clearTimeout(id),
@@ -148,6 +150,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
   const [feedback, setFeedback] = useState("");
   const [skillResult, setSkillResult] = useState<SkillResult | null>(null);
   const [seedJustCollected, setSeedJustCollected] = useState(false);
+  const [secretPathActive, setSecretPathActive] = useState(false);
   const [shownHummingbirdHintContext, setShownHummingbirdHintContext] = useState<string | null>(null);
   const advice = useMemo(() => getFinalJaguarAdvice(stats), [stats]);
 
@@ -476,6 +479,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
 
   return (
     <div className={`jaguar-preview-layout${testMode ? " jaguar-preview-layout-test" : ""}`}>
+    {secretPathActive ? <JaguarSecretPath onReturnHome={onReturnHome} /> : <>
     <div className={`scene-stage game-screen jaguar-stage${branch ? ` jaguar-stage-${branch}` : ""}`} role="group" aria-label="El Jaguar: encuentro final con pruebas por umbral">
       <div className="jaguar-forest" aria-hidden="true">
         <img className={endingArtwork ? "jaguar-ending-art" : showReturnPortal ? "jaguar-cave-art" : "jaguar-background-art"} src={gameAssetUrl(endingArtwork ?? "/jaguar-cave-background.webp")} alt="" />
@@ -600,9 +604,10 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
             <p>Los sueños son semillas que plantamos en el mundo.</p>
             <p>La última semilla está a salvo en el Libro. El limón vuelve tranquilo a dormir, sin descubrir quién era el jaguar.</p>
             <p>Puedes consultar el Libro de Semillas desde aquí sin despertarlo.</p>
+            {allEndingsDiscovered && <button type="button" className="jaguar-primary-button" onClick={transitionAction(() => setSecretPathActive(true))}>Continuar el sueño</button>}
           </> : <>
             <p>El Jaguar abre de nuevo el portal. Al otro lado espera la casa del limón, junto a su árbol y al Libro de Semillas.</p>
-            <button type="button" className="jaguar-primary-button" onClick={transitionAction(onReturnHome)}>Volver a casa por el portal</button>
+            <button type="button" className="jaguar-primary-button" onClick={transitionAction(() => allEndingsDiscovered ? setSecretPathActive(true) : onReturnHome())}>{allEndingsDiscovered ? "Continuar el sendero" : "Volver a casa por el portal"}</button>
           </>}
         </div>}
       </main>
@@ -610,6 +615,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
     {testMode && <aside className="jaguar-debug-panel" aria-label="Controles externos del modo de prueba">
       <div className="jaguar-test-tools" aria-label="Atajos de prueba de desarrollo">
         <span>MODO DE PRUEBA</span>
+        <button type="button" onClick={transitionAction(() => setSecretPathActive(true))}>Abrir epílogo secreto directamente</button>
         <button type="button" onClick={transitionAction(resetEncounter)}>Volver al inicio · reiniciar stats</button>
         <button type="button" onClick={transitionAction(() => prepareTest("cautelaSuccess"))}>Cautela ≥ 70 → burlona / Ingenio</button>
         <button type="button" onClick={transitionAction(() => prepareTest("cautelaFail"))}>Cautela &lt; 70 → furiosa / Empatía o Valentía</button>
@@ -627,6 +633,7 @@ export function JaguarScene({ dawnOutcome, ramblaOutcome, hummingbirdOutcome, ri
         <button type="button" onClick={transitionAction(() => prepareTest("nightmare"))}>Probar pesadilla</button>
       </div>
     </aside>}
+    </>}
     </div>
   );
 }

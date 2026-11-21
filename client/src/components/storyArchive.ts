@@ -34,6 +34,11 @@ export const JAGUAR_ENDINGS: readonly {
   },
 ];
 
+export function hasCompletedAllJaguarEndings(endingIds: readonly JaguarEndingId[]): boolean {
+  const discovered = new Set(endingIds);
+  return JAGUAR_ENDINGS.every(ending => discovered.has(ending.id));
+}
+
 export type RewriteChapterId = "dawn" | "rambla" | "river" | "river-challenge" | "hummingbird" | "jaguar";
 
 export const REWRITE_CHAPTERS: readonly {

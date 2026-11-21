@@ -657,12 +657,13 @@ button { font:inherit; }
 .seedbook-preview-entry .seedbook-page-seed-button { position:relative; border:2px dashed #9aa6a2; background:#e8efeb; opacity:.78; }
 .seedbook-preview-entry .seedbook-page-seed-button::after { content:"▣"; position:absolute; right:4px; bottom:3px; color:#52666a; font:12px 'DM Mono',monospace; }
 .seedbook-preview-entry .seedbook-page-seed-button .seed-glyph { filter:grayscale(.72) saturate(.55) opacity(.62); }
-.seedbook-page-seed { display:flex; min-height:116px; align-items:center; justify-content:center; padding:10px 0 5px; }
+.seedbook-page-seed { display:flex; min-height:142px; flex-direction:column; align-items:center; justify-content:center; padding:10px 0 5px; }
 .seedbook-page-seed-button { display:grid; width:92px; height:104px; padding:0; place-items:center; border:2px solid transparent; background:transparent; cursor:pointer; image-rendering:pixelated; }
 .seedbook-page-seed-button:focus-visible { border-color:#5b4638; outline:2px dashed #a14e70; outline-offset:4px; }
 .seedbook-page-seed-button:disabled { cursor:not-allowed; }
 .seedbook-page-seed-button:not(:disabled):hover { transform:translateY(-2px); }
 .seedbook-page-seed-button .seed-glyph { width:72px; height:92px; filter:drop-shadow(0 0 8px #d19a3a); }
+.seedbook-page-seed-hint { margin:0; color:#61546c; text-align:center; font:8px/1.35 'DM Mono',monospace; }
 .seedbook-entry-heading { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 .seedbook-number { color:#d98470; font:10px 'DM Mono',monospace; }
 .seedbook-entry-heading h3 { flex:1; margin:0; font-size:17px; letter-spacing:-.04em; }
@@ -744,7 +745,7 @@ button { font:inherit; }
  .seedbook-header h2 { font-size:21px; }
  .seedbook-art { width:56px; height:56px; }
  .seedbook-entry { padding:11px; }
- .seedbook-page-seed { min-height:92px; padding-top:4px; }
+ .seedbook-page-seed { min-height:124px; padding-top:4px; }
  .seedbook-page-seed-button { width:72px; height:82px; }
  .seedbook-page-seed-button .seed-glyph { width:56px; height:72px; }
  .seedbook-lyrics-space { min-height:104px; margin-bottom:12px; padding:9px; }

@@ -212,6 +212,7 @@
 
 ## [ ] Libro de semillas y canciones · recursos finales aplazados
 - Un panel desplegable «Libro de semillas» permanece accesible durante la partida y añade cada semilla al descubrirla. Muestra el título y metadatos independientes de las semillas encontradas.
+- En cada página de semilla descubierta, debajo del glifo clicable que vuelve a su escena aparece literalmente «pulsa la semilla para revivir su sueño».
 - Cada entrada ofrece únicamente dos acciones separadas: abrir el enlace del vídeo de YouTube y descargar la canción completa; no existe espacio ni reproductor para MP3 dentro del Libro.
 - La colección incluye las diez canciones en el orden facilitado por el grupo y solo muestra como descubiertas las semillas que el jugador ya haya encontrado.
 - Los enlaces oficiales de YouTube y las descargas WAV se añadirán únicamente en la fase final, cuando el grupo entregue los destinos definitivos; no se inventan canciones, enlaces ni archivos durante el desarrollo.

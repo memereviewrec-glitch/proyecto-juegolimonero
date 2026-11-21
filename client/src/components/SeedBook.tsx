@@ -164,6 +164,7 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                   {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReturnToScene(song.id)} disabled={isPreview} aria-label={isPreview ? "Semilla bloqueada" : `Volver a la escena de ${song.title}`} title={isPreview ? undefined : `Volver a la escena de ${song.title}`}>
                     <SeedGlyph seed={seedId} />
                   </button>}
+                  {seedId && !isPreview && <p className="seedbook-page-seed-hint">pulsa la semilla para revivir su sueño</p>}
                 </div>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>

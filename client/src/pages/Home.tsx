@@ -169,11 +169,11 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [seedBookOpen, setSeedBookOpen] = useState(openWorldExplorer && !openJaguarPreview && !openRiverChallengePreview);
   const [previewChromeHidden, setPreviewChromeHidden] = useState(openJaguarPreview || openRiverChallengePreview);
   const [journeyMenuOpen, setJourneyMenuOpen] = useState(false);
+  const [musicMuted, setMusicMuted] = useState(false);
   const [journeyRestartConfirm, setJourneyRestartConfirm] = useState(false);
   const journeyMenuRef = useRef<HTMLDivElement | null>(null);
   const musicControlsRef = useRef<GameMusicControlsHandle | null>(null);
   const playfieldRef = useRef<HTMLDivElement | null>(null);
-  const [dialogueActive, setDialogueActive] = useState(false);
   const [persistedSeedIds, setPersistedSeedIds] = useState<SeedSongId[]>(() => openWorldExplorer
     ? SONG_CATALOG.map(song => song.id)
     : readStoredSeedBookIds(SONG_CATALOG.map(song => song.id)));
@@ -287,23 +287,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [journeyMenuOpen]);
-
-  useEffect(() => {
-    const playfield = playfieldRef.current;
-    if (!playfield) return;
-    const dialogueSelector = ".story-interlude, .control-column:not(:empty), [class*='dialogue'], [class*='conversation']";
-    const updateDialogueState = () => {
-      const active = Array.from(playfield.querySelectorAll<HTMLElement>(dialogueSelector)).some(element => {
-        const style = window.getComputedStyle(element);
-        return style.display !== "none" && style.visibility !== "hidden" && element.getClientRects().length > 0;
-      });
-      setDialogueActive(previous => previous === active ? previous : active);
-    };
-    updateDialogueState();
-    const observer = new MutationObserver(updateDialogueState);
-    observer.observe(playfield, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "style", "hidden"] });
-    return () => observer.disconnect();
-  }, [scene, storyBeat, seedBookOpen]);
 
   useEffect(() => {
     if (!leftColumnRevealed || !rightColumnRevealed) return;
@@ -1066,7 +1049,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
               {SCENE_PRESENTATION[scene].location && <span className="stage-location">{SCENE_PRESENTATION[scene].location}</span>}
               <GameMusicControls
                 ref={musicControlsRef}
-                ducked={dialogueActive || Boolean(storyBeat) || seedBookOpen || journeyMenuOpen}
+                muted={musicMuted}
               />
             </div>
           </div>
@@ -1110,6 +1093,15 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
                 ) : (
                   <button type="button" role="menuitem" className="journey-restart-button" onClick={() => setJourneyRestartConfirm(true)}>↻ reiniciar juego</button>
                 )}
+                <button
+                  type="button"
+                  role="menuitemcheckbox"
+                  aria-checked={musicMuted}
+                  className="journey-music-toggle"
+                  onClick={() => setMusicMuted(muted => !muted)}
+                >
+                  {musicMuted ? "♫ activar música de fondo" : "silenciar música de fondo"}
+                </button>
                 <div className="journey-menu-divider" />
                 {BAND_INSTAGRAM_LINKS.map(link => link.url ? (
                   <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" role="menuitem">◎ {link.label}</a>

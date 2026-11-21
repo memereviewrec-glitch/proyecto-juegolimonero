@@ -938,8 +938,7 @@ body { background:#08070d; }
 .game-music-label { color:#ead38a; font:7px 'DM Mono',monospace; letter-spacing:.08em; }
 .game-music-toggle { display:grid; place-items:center; width:27px; height:25px; padding:0; border:1px solid #b8a9c2; background:#453b50; color:#fff4dc; font:14px/1 'DM Mono',monospace; cursor:pointer; }
 .game-music-toggle:hover,.game-music-toggle[aria-pressed="true"] { background:#76647f; }
-.game-music-toggle:focus-visible,.game-music-volume:focus-visible { outline:2px dashed #f2d97e; outline-offset:2px; }
-.game-music-volume { width:62px; height:18px; margin:0; accent-color:#efc647; cursor:pointer; }
+.game-music-toggle:focus-visible { outline:2px dashed #f2d97e; outline-offset:2px; }
 @media (max-width:600px) {
   .stage-heading-tools { width:100%; justify-content:space-between; }
   .stage-heading-tools .stage-location { flex:1; text-align:left; }

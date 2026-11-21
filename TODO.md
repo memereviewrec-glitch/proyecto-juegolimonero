@@ -530,12 +530,11 @@
 ## [ ] Pantalla 1: pista en papel y solo dos objetos interactivos
 - En la primera pantalla, en el local, quitar los minijuegos del amplificador y del cable; solo se mantiene el minijuego de la guitarra. El cable aparece conectado directamente entre la guitarra y el amplificador desde el principio, y no se puede clicar; lo mismo ocurre con el amplificador. En la pantalla del local solo se puede clicar en el papel del suelo y en la guitarra; se conserva el control explícito de atravesar el portal cuando el acorde abre la ventana.
 - Al clicar en el papel, se abre una vista del papel en pixel art, con las letras también hechas en pixel art, y aparece literalmente «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo». Al volver, se regresa al local sin cambiar estadísticas, semillas ni progreso.
-- El minijuego de la guitarra es el mismo, pero sin la pista en él: la pista está en el papel del suelo. Se conservan el mástil, las cuerdas y trastes, la afinación, las notas seleccionadas y escuchadas, la condición del acorde de Do♯ menor y la apertura del portal.
+- El minijuego de la guitarra es el mismo, pero sin la pista en él: la pista está en el papel del suelo. Se conservan el mástil, las cuerdas y trastes, la afinación, la selección de notas, la condición del acorde de Do♯ menor y la apertura del portal; no se reproducen sonidos al seleccionar notas o completar el acorde.
 - El arte del amplificador y del cable puede ser más realista, pero mantiene el estilo pixel art, la perspectiva y la composición de la escena.
 - Este resultado sustituye los requisitos históricos de conectar el cable con arrastre y encender/examinar el amplificador como pasos obligatorios; no deben quedar accesibles hotspots o primeros planos de esos dos objetos.
 ## [x] Música de fondo durante el juego
 - Incorporar el MP3 entregado por el grupo como una pista ambiental continua. Debe comenzar al pulsar «comenzar el sendero», repetirse en bucle y seguir reproduciéndose al cambiar de escena y al mostrar diapositivas narrativas, sin reiniciarse en cada transición.
-- Mantener en el marco jugable controles accesibles para reproducir/pausar y ajustar el volumen; la música no debe empezar antes de una acción del jugador que habilite el audio del navegador.
-- Atenuar la pista de forma gradual mientras hay diálogo, narración, o está abierto el Libro de Semillas o el menú del viaje, y devolver el volumen elegido al cerrar esos paneles.
-- La música de fondo no debe detener ni sustituir los sonidos puntuales ya existentes de guitarra y silbidos.
-- La música de fondo no debe detener ni sustituir los sonidos puntuales ya existentes de guitarra y silbidos.
+- Mantener en el marco jugable un control accesible para reproducir/pausar y un volumen fijo del 36 % durante todo el juego; la música no debe empezar antes de una acción del jugador que habilite el audio del navegador.
+- No atenuar ni variar el volumen durante diálogos, narraciones o al abrir el Libro de Semillas o el menú del viaje. El menú desplegable debe incluir una opción para silenciar y otra para volver a activar la música.
+- La música de fondo no debe detener ni sustituir los silbidos del limón y de los pájaros.

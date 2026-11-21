@@ -1,47 +1,33 @@
-import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useRef, useState } from "react";
-import { gameAssetUrl, resolveGameMusicVolume } from "../gameAudio";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { GAME_MUSIC_VOLUME, gameAssetUrl } from "../gameAudio";
 
 export type GameMusicControlsHandle = {
   start: () => void;
 };
 
 type GameMusicControlsProps = {
-  ducked: boolean;
+  muted: boolean;
 };
 
 export const GameMusicControls = forwardRef<GameMusicControlsHandle, GameMusicControlsProps>(
-  function GameMusicControls({ ducked }, ref) {
+  function GameMusicControls({ muted }, ref) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const volumeInputId = useId();
-    const [volume, setVolume] = useState(36);
     const [isPlaying, setIsPlaying] = useState(false);
 
     const startPlayback = useCallback(() => {
       const audio = audioRef.current;
       if (!audio) return;
-      audio.volume = resolveGameMusicVolume(volume, ducked);
+      audio.volume = GAME_MUSIC_VOLUME;
+      audio.muted = muted;
       void audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
-    }, [ducked, volume]);
+    }, [muted]);
 
     useImperativeHandle(ref, () => ({ start: startPlayback }), [startPlayback]);
 
     useEffect(() => {
       const audio = audioRef.current;
-      if (!audio) return;
-      const initialVolume = audio.volume;
-      const targetVolume = resolveGameMusicVolume(volume, ducked);
-      const startedAt = performance.now();
-      let frame = 0;
-
-      const fadeVolume = (now: number) => {
-        const progress = Math.min((now - startedAt) / 550, 1);
-        audio.volume = initialVolume + (targetVolume - initialVolume) * progress;
-        if (progress < 1) frame = requestAnimationFrame(fadeVolume);
-      };
-
-      frame = requestAnimationFrame(fadeVolume);
-      return () => cancelAnimationFrame(frame);
-    }, [ducked, volume]);
+      if (audio) audio.volume = GAME_MUSIC_VOLUME;
+    }, []);
 
     const togglePlayback = () => {
       const audio = audioRef.current;
@@ -67,24 +53,12 @@ export const GameMusicControls = forwardRef<GameMusicControlsHandle, GameMusicCo
         >
           <span aria-hidden="true">{isPlaying ? "Ⅱ" : "♫"}</span>
         </button>
-        <label className="sr-only" htmlFor={volumeInputId}>Volumen de la música de fondo</label>
-        <input
-          id={volumeInputId}
-          className="game-music-volume"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={volume}
-          onChange={event => setVolume(Number(event.currentTarget.value))}
-          aria-valuetext={`${volume}%`}
-          aria-label="Volumen de la música de fondo"
-        />
         <audio
           ref={audioRef}
           src={gameAssetUrl("/audio/limonero-tema-fondo.mp3")}
           preload="none"
           loop
+          muted={muted}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           aria-hidden="true"

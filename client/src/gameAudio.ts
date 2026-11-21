@@ -41,16 +41,6 @@ function playMp3Sample(source: string, volume: number) {
   void audio.play().catch(remove);
 }
 
-export function playFrequencies(frequencies: number[]) {
-  if (typeof window === "undefined" || frequencies.length === 0) return;
-  stopGameAudio();
-  frequencies.forEach(frequency => {
-    const midi = Math.round(69 + 12 * Math.log2(frequency / 440));
-    if (midi < 40 || midi > 73) return;
-    playMp3Sample(`/audio/guitar/guitar-midi-${midi}.mp3`, 0.48 / frequencies.length);
-  });
-}
-
 export function playWhistle(source: "lemon" | "birds") {
   stopGameAudio();
   playMp3Sample(source === "birds" ? "/audio/bird-whistles.mp3" : "/audio/lemon-whistle.mp3", 0.32);

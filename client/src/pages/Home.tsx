@@ -27,7 +27,7 @@ import { SeedBook, SONG_CATALOG, type SeedSongId } from "../components/SeedBook"
 import { SeedGlyph } from "../components/SeedGlyph";
 import type { PhysicalSeedId } from "../components/seed-colors";
 import { getSeedSceneTarget } from "../seedSceneNavigation";
-import { gameAssetUrl, playFrequencies, playWhistle, stopGameAudio } from "../gameAudio";
+import { gameAssetUrl, playWhistle, stopGameAudio } from "../gameAudio";
 import { clearStoredGameProgress, clearStoredRiverConversationOutcome, mergeDiscoveredSeedIds, readStoredDawnOutcome, readStoredHummingbirdFriendship, readStoredHummingbirdOutcome, readStoredHummingbirdRewards, readStoredJaguarEndings, readStoredRamblaOutcome, readStoredRiverChallengeOutcome, readStoredRiverConversationOutcome, readStoredSeedBookIds, saveDawnOutcome, saveHummingbirdOutcome, saveJaguarEnding, saveRamblaOutcome, saveRiverChallengeOutcome, saveRiverConversationOutcome, saveSeedBookIds } from "../gameProgressStorage";
 import { DIALOGUE, clamp, dawnWalkableTop, isValidCSharpMinorChord, resolveBranch, type Branch, type Response } from "../gameRules";
 import { isSceneUnlocked, type GameScene } from "../sceneAccessRules";
@@ -367,7 +367,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     if (roomAction !== "play") return;
     setRoomView("guitar");
     setRoomAction(null);
-    setNotice("Pulsa una cuerda y un traste; después toca la selección.");
+    setNotice("Selecciona una cuerda y un traste para formar un acorde.");
   }
 
   function toggleFret(note: FretSelection) {
@@ -378,7 +378,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setSelectedFrets(nextFrets);
 
     if (isValidCSharpMinorChord(nextFrets.map(selectedNote => selectedNote.noteId))) {
-      playFrequencies(nextFrets.map(selectedNote => selectedNote.frequency));
       setPortalOpen(true);
       setIntroStarted(true);
       setRoomView("scene");
@@ -386,7 +385,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
       return;
     }
 
-    playFrequencies([note.frequency]);
   }
 
   function enterDawn() {

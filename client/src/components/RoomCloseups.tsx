@@ -12,7 +12,6 @@ export type FretSelection = {
   fret: number;
   noteId: string;
   label: string;
-  frequency: number;
 };
 
 const STRINGS = [
@@ -40,7 +39,6 @@ function noteAt(stringIndex: number, fret: number): FretSelection {
     fret,
     noteId: PITCH_NAMES[pitchIndex].replace("♯", "#"),
     label: PITCH_NAMES[pitchIndex],
-    frequency: 440 * 2 ** ((midi - 69) / 12),
   };
 }
 

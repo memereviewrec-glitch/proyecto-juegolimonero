@@ -39,7 +39,7 @@
 - En la escena principal, el cable se ve conectado desde el inicio entre la guitarra y el amplificador. Solo el papel del suelo y la guitarra tienen hotspots de objeto: el cable y el amplificador no se pueden clicar ni abren vistas o minijuegos. Se conserva el movimiento del limón por el suelo y, al resolver el acorde, el control explícito para atravesar el portal.
 - El papel clicable está en la esquina inferior derecha, completamente dentro del suelo y del lienzo del juego. Al clicar, se abre un primer plano pixel art con la frase literal «donde sospecho, dorados sosiegos. Donde sostengo dolores al soslayo», letras pixeladas y la inscripción completa visible, también en escritorio; al volver al local no se altera ninguna estadística, semilla ni progreso.
 - El amplificador se apoya sobre el suelo del local, un poco más abajo que antes, y no muestra un halo o brillo alrededor. El arte del amplificador y del cable puede tener más detalle y realismo material, siempre conservando pixel art, perspectiva y composición de la escena.
-- Al clicar la guitarra, Limón camina hasta ella y aparece un cuadro con el texto exacto «hay acordes que abren ventanas» y el botón «Tocar la guitarra» debajo, sin tapar ni solaparse con el texto. Al elegirlo se abre el minijuego en posición vertical; se mantienen su comportamiento, afinación, cuerdas, trastes, reproducción de notas, condición del acorde y apertura del portal. El minijuego no muestra el texto explicativo «Toca las posiciones para escuchar cada nota. Al completar el acorde correcto, sonará y abrirá el portal automáticamente.»; la frase-pista solo aparece en el papel del suelo.
+- Al clicar la guitarra, Limón camina hasta ella y aparece un cuadro con el texto exacto «hay acordes que abren ventanas» y el botón «Tocar la guitarra» debajo, sin tapar ni solaparse con el texto. Al elegirlo se abre el minijuego en posición vertical; conserva la afinación estándar, las cuerdas, los trastes, la selección de notas, la condición del acorde y la apertura del portal, pero no reproduce sonidos al seleccionar notas ni al completar el acorde. El minijuego no muestra el texto explicativo «Toca las posiciones para escuchar cada nota. Al completar el acorde correcto, sonará y abrirá el portal automáticamente.»; la frase-pista solo aparece en el papel del suelo.
 - Para cruzar basta un acorde de Do♯ menor de dos o más notas que incluya Do♯; cuentan las díadas. Se admiten inversiones y extensiones dentro de la tonalidad de Do♯ menor. No valen notas sueltas ni acordes fuera de la tonalidad.
 
 ## [x] Nombre de la canción inicial: Aurora
@@ -216,16 +216,16 @@
 - La colección incluye las diez canciones en el orden facilitado por el grupo y solo muestra como descubiertas las semillas que el jugador ya haya encontrado.
 - Los enlaces oficiales de YouTube y las descargas WAV se añadirán únicamente en la fase final, cuando el grupo entregue los destinos definitivos; no se inventan canciones, enlaces ni archivos durante el desarrollo.
 
-## [x] Notas y efectos de sonido en MP3
-- Las notas seleccionadas en el mástil, de E2 a C#5 dentro de los nueve primeros trastes, y los dos silbidos del limón y los pájaros se reproducen desde archivos MP3; el juego no sintetiza estas notas mediante osciladores Web Audio.
-- Cada nota conserva aproximadamente dos segundos de sustain y las muestras de acordes pueden reproducirse simultáneamente.
+## [x] Sonidos de guitarra retirados del minijuego
+- Seleccionar o quitar notas del mástil no reproduce audio; completar un acorde válido tampoco reproduce sonidos. La selección de notas, la validación del acorde y la apertura del portal permanecen intactas.
+- La música de fondo y los silbidos del limón y de los pájaros se gestionan por separado y se conservan.
 
 ## [x] Validación de la versión actual
 - `pnpm check`, `pnpm test` (17 archivos, 114 pruebas), `pnpm build:static` y `git diff --check` pasan en la iteración actual. La build emite únicamente el aviso conocido de tamaño de bundle y del script de configuración de plataforma.
 - En el Preview de escritorio se verificó que la escena del local solo ofrece hotspots de papel y guitarra, que el ampli y el cable son decorativos, y que el papel abre la frase solicitada con tipografía pixelada.
-- Se incluyen 34 muestras MP3 de guitarra entre E2 y C#5 y dos silbidos MP3; `ffprobe` confirma codec MP3 y una duración aproximada de 2 s para las notas. No quedan `AudioContext` ni osciladores en el código del juego.
+- La música de fondo y los dos silbidos MP3 se conservan; el minijuego de guitarra no reproduce audio al seleccionar notas ni al completar un acorde.
 - El sprite `guitar-sprite-recut-v2.png` mide 839 × 1874 px; su alfa deja 25 px libres a la izquierda y no toca ninguno de los cuatro bordes. El asset está incluido en `dist/public`.
-- La ruta del banco de guitarra apunta a `/audio/guitar/`; el panel del libro recibe el foco al abrirse, atrapa Tab/Mayús+Tab, cierra con Escape y devuelve el foco al control que lo abrió.
+- El panel del libro recibe el foco al abrirse, atrapa Tab/Mayús+Tab, cierra con Escape y devuelve el foco al control que lo abrió.
 - Al pulsar la guitarra, Limón llega caminando y aparece la tarjeta con el texto «hay acordes que abren ventanas» y el botón «Tocar la guitarra» separado debajo.
 - Al abrir el minijuego se ven verticalmente el mástil, la afinación estándar, las seis clavijas y los nueve trastes; no aparece texto explicativo ni la frase-pista del papel.
 - La vista móvil independiente mostró solo la barrera de acceso, porque no comparte la sesión autenticada del Preview; por eso no se registra como verificación visual del juego en móvil.

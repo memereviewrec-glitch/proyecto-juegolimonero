@@ -164,7 +164,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
   const [devHummingbirdDialoguePreview, setDevHummingbirdDialoguePreview] = useState<DevHummingbirdDialoguePreview>("current");
   const [devToolsCollapsed, setDevToolsCollapsed] = useState(false);
   const [storyBeat, setStoryBeat] = useState<StoryBeat | null>(openWorldExplorer || openJaguarPreview || openRiverChallengePreview ? null : "opening");
-  const [storySeedBookOpened, setStorySeedBookOpened] = useState(false);
   const [storySeedPreview, setStorySeedPreview] = useState<SeedSongId | null>(null);
   const [seedBookOpen, setSeedBookOpen] = useState(openWorldExplorer && !openJaguarPreview && !openRiverChallengePreview);
   const [previewChromeHidden, setPreviewChromeHidden] = useState(openJaguarPreview || openRiverChallengePreview);
@@ -421,7 +420,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
       setScene("dawn");
       setSceneReplayNonce(version => version + 1);
       setPortalTransit(false);
-      setStorySeedBookOpened(false);
       setStorySeedPreview(null);
       setStoryBeat("portal");
       setLemonPosition("lemon-left");
@@ -641,7 +639,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setJourneyMenuOpen(false);
     // La semilla se guarda sin abrir el Libro encima del botón que lleva a la diapositiva de la cueva.
     setSeedBookOpen(false);
-    setStorySeedBookOpened(false);
     setStorySeedPreview(null);
   }
   function completeNueveSentidosScene() {
@@ -754,7 +751,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     stopGameAudio();
     setSeedBookOpen(false);
     setStoryBeat(null);
-    setStorySeedBookOpened(false);
     setStorySeedPreview(null);
     resetSceneAttempt(targetScene);
     setScene(targetScene);
@@ -783,7 +779,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     setSeedBookOpen(false);
     setJourneyMenuOpen(false);
     setStoryBeat(null);
-    setStorySeedBookOpened(false);
     setStorySeedPreview(null);
     setScene("jaguar");
     setSceneReplayNonce(version => version + 1);
@@ -878,7 +873,6 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
     resetSceneAttempt(devSelectedScene);
     setScene(devSelectedScene);
     setStoryBeat(null);
-    setStorySeedBookOpened(false);
     setStorySeedPreview(null);
     setSeedBookOpen(false);
     setJourneyMenuOpen(false);
@@ -996,13 +990,11 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
 
   function showStory(beat: StoryBeat) {
     setJourneyMenuOpen(false);
-    setStorySeedBookOpened(false);
     setStorySeedPreview(null);
     setStoryBeat(beat);
   }
 
   function openStorySeedBook(seed: PhysicalSeedId | undefined) {
-    setStorySeedBookOpened(true);
     setStorySeedPreview(seed ?? null);
     setSeedBookOpen(true);
   }
@@ -1189,7 +1181,7 @@ export default function Home({ openWorldExplorer = false, openJaguarPreview = fa
           </div>}
 
           <div ref={playfieldRef} className={`playfield ${scene === "room" ? "playfield-room" : "playfield-portrait"}${scene === "jaguar" ? " playfield-jaguar" : ""}${scene === "jaguar" && previewTestMode ? " playfield-jaguar-test" : ""}`}>
-            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} seedBookOpened={storySeedBookOpened} text={storyText(storyBeat, ramblaHistoryOutcome, riverChallengeOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} startAsLemon={storyBeat === "opening"} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
+            {storyBeat && <StoryInterlude seed={STORY_SEEDS[storyBeat]} text={storyText(storyBeat, ramblaHistoryOutcome, riverChallengeOutcome)} continueLabel={storyBeat === "opening" ? "comenzar el sendero" : undefined} startAsLemon={storyBeat === "opening"} onOpenSeedBook={openStorySeedBook} onContinue={advanceStory} />}
             {!previewChromeHidden && seedBookOpen && <SeedBook
               discoveredSongIds={discoveredSongIds}
               previewSongId={nextLockedSongId}

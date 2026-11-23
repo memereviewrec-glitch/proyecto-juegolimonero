@@ -47,6 +47,7 @@ button { font:inherit; }
 .story-seed-button { align-self:center; display:grid; place-items:center; width:132px; height:150px; border:0 !important; background:transparent !important; box-shadow:none !important; outline:0; }
 .story-seed-button:hover,.story-seed-button:focus-visible { background:transparent !important; outline:2px dashed #fff !important; outline-offset:6px; }
 .story-seed-glyph { width:92px; height:126px; image-rendering:pixelated; animation:story-seed-pulse 2.4s ease-in-out infinite alternate; }
+.story-seed-actions { align-self:center; display:flex; align-items:center; justify-content:center; gap:14px; }
 .story-seed-intro { filter:drop-shadow(0 0 10px #b99cff); }
 .story-seed-ventana { filter:drop-shadow(0 0 10px #efc547); }
 .story-seed-raices { filter:drop-shadow(0 0 10px #7fbc61); }

@@ -14,6 +14,10 @@ export const SEED_SCENE_TARGETS: Readonly<Record<SeedSongId, GameScene>> = {
   "el-jaguar": "jaguar",
 };
 
+export function canReturnToSeedScene(songId: SeedSongId, discoveredSongIds: readonly SeedSongId[]): boolean {
+  return songId !== "intro" && discoveredSongIds.includes(songId);
+}
+
 export function getSeedSceneTarget(songId: SeedSongId, discoveredSongIds: readonly SeedSongId[]): GameScene | null {
-  return discoveredSongIds.includes(songId) ? SEED_SCENE_TARGETS[songId] : null;
+  return canReturnToSeedScene(songId, discoveredSongIds) ? SEED_SCENE_TARGETS[songId] : null;
 }

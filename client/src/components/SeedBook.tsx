@@ -5,6 +5,7 @@ import { getPhysicalSeedId } from "./seed-colors";
 import { STAT_LABELS } from "./JaguarStatsHud";
 import type { JaguarStats } from "./jaguarRules";
 import { hasUnlockedSecretEnding, JAGUAR_ENDINGS, REWRITE_CHAPTERS, type JaguarEndingId, type RewriteChapterId } from "./storyArchive";
+import { canReturnToSeedScene } from "../seedSceneNavigation";
 
 type SongResource = {
   id: string;
@@ -160,12 +161,13 @@ export function SeedBook({ discoveredSongIds, previewSongId = null, focusSongId 
                 const seedId = getPhysicalSeedId(song.id);
                 const visibleTitle = isPreview ? "Semilla bloqueada" : song.title;
                 const accessibleSongTitle = isPreview ? "semilla bloqueada" : song.title;
+                const canReturnToScene = canReturnToSeedScene(song.id, discoveredSongIds);
                 return <>
                 <div className="seedbook-page-seed">
-                  {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReturnToScene(song.id)} disabled={isPreview} aria-label={isPreview ? "Semilla bloqueada" : `Volver a la escena de ${song.title}`} title={isPreview ? undefined : `Volver a la escena de ${song.title}`}>
+                  {seedId && <button className="seedbook-page-seed-button" type="button" onClick={() => onReturnToScene(song.id)} disabled={!canReturnToScene} aria-label={isPreview ? "Semilla bloqueada" : canReturnToScene ? `Volver a la escena de ${song.title}` : "Semilla de Aurora; no abre su escena desde el libro"} title={canReturnToScene ? `Volver a la escena de ${song.title}` : undefined}>
                     <SeedGlyph seed={seedId} />
                   </button>}
-                  {seedId && !isPreview && <p className="seedbook-page-seed-hint">pulsa la semilla para revivir su sueño</p>}
+                  {seedId && canReturnToScene && <p className="seedbook-page-seed-hint">pulsa la semilla para revivir su sueño</p>}
                 </div>
                 <div className="seedbook-entry-heading">
                   <span className="seedbook-number">{String(SONG_CATALOG.indexOf(song) + 1).padStart(2, "0")}</span>
